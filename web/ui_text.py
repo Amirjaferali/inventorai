@@ -11827,117 +11827,375 @@ UI_STRINGS = {
         "en": "Stated with your idea:",
         "ar": "ورد في وصف فكرتك:",
     },
-    # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the board-enclosure planar clearance
-    # journey. English-first: its copy is English only (the page and report
-    # render it in English on both interfaces) and is NOT presented as
-    # Arabic-qualified; the ONE localized notice below says so on the Arabic
-    # interface. Arabic and dialect qualification of this journey is the next
-    # priority (method contract §14).
-    "UI_PCC_TITLE": {"en": "Board and enclosure: planar clearance check"},
-    "UI_PCC_LINK": {"en": "Check the planar clearance between a board and its enclosure"},
-    "UI_PCC_LINK_NOTE": {"en": "Optional. A nominal comparison you can use once two components take part in this interaction."},
-    "UI_PCC_INTRO": {"en": "This optional check compares the outline of one rectangular board with one rectangular usable region inside its enclosure, at the board plane, with the clear distance you need on every side. You choose which component is the board and which is the enclosure; InventorAI does not decide that from their names. It tells you, for the values and placement you declare, whether the required planar clearance is met, what information is still missing, and what remains unassessed before prototype work."},
-    "UI_PCC_ENGLISH_ONLY": {
-        "en": "This tool is currently available in English only.",
-        "ar": "هذه الأداة متاحة حاليًا باللغة الإنجليزية فقط، وتُعرَض محتوياتها بالإنجليزية."},
-    "UI_PCC_BACK": {"en": "Back to interactions"},
-    "UI_PCC_BETWEEN": {"en": "Interaction between"},
-    "UI_PCC_AND": {"en": "and"},
-    "UI_PCC_NOT_ELIGIBLE": {"en": "Two different components must take part in this interaction before a board and an enclosure can be chosen. Record the participants on the interactions page first."},
-    "UI_PCC_UNAVAILABLE": {"en": "The planar clearance information cannot be read right now. Nothing is shown rather than an incomplete or misleading result."},
-    "UI_PCC_STATE_NONE": {"en": "No planar clearance has been declared for this interaction yet."},
-    "UI_PCC_STATE_WITHDRAWN": {"en": "An earlier declaration for this interaction was withdrawn. It stays in the history; you can make a new one below."},
-    "UI_PCC_STATE_RECONFIRM": {"en": "This declaration needs your reconfirmation before it is compared again. Something it was made against has changed:"},
-    "UI_PCC_ISSUE_COMPONENT_WITHDRAWN": {"en": "the %s component was withdrawn"},
-    "UI_PCC_ISSUE_COMPONENT_CHANGED": {"en": "the %s component was corrected since this declaration"},
-    "UI_PCC_ISSUE_NOT_PARTICIPATING": {"en": "the %s component no longer takes part in this interaction"},
-    "UI_PCC_ISSUE_PARTICIPATION_CHANGED": {"en": "the %s component was removed from this interaction and added again"},
-    "UI_PCC_ISSUE_METHOD_CHANGED": {"en": "the check's method or declaration version changed"},
-    "UI_PCC_RECONFIRM_HOW": {"en": "Review the values below and save them again to rebind the declaration, or withdraw it. The earlier version stays in the history."},
-    "UI_PCC_ROLE_board": {"en": "board"},
-    "UI_PCC_ROLE_enclosure": {"en": "enclosure"},
-    "UI_PCC_RESULT_HEADING": {"en": "Result for your declared values"},
-    "UI_PCC_OUTCOME_MET": {"en": "With the values and placement you declared, the required planar clearance is met."},
-    "UI_PCC_OUTCOME_NOT_MET": {"en": "With the values and placement you declared, the required planar clearance is not met."},
-    "UI_PCC_OUTCOME_MISSING_INFORMATION": {"en": "No comparison yet: some information is missing. Nothing has been assumed for it."},
-    "UI_PCC_OUTCOME_INAPPLICABLE": {"en": "No comparison: you said the following does not apply, so this check does not fit your configuration:"},
-    "UI_PCC_OUTCOME_COULD_NOT_BE_COMPUTED": {"en": "The comparison could not be computed. This is not a geometric result in either direction."},
-    "UI_PCC_MISSING_LABEL": {"en": "Missing:"},
-    "UI_PCC_AXIS": {"en": "Axis"},
-    "UI_PCC_MARGIN": {"en": "Margin"},
-    "UI_PCC_AXIS_MET": {"en": "met"},
-    "UI_PCC_AXIS_NOT_MET": {"en": "not met: short by %s mm"},
-    "UI_PCC_MARGIN_EXPLAINED": {"en": "Margin = (region − board) / 2 − required clearance, per axis. A margin of zero meets the declared condition."},
-    "UI_PCC_NOT_MET_NOTE": {"en": "A not-met result applies to this declared placement only. It does not show that no other placement, orientation or enclosure could work, and InventorAI does not suggest a replacement component or a different clearance."},
-    "UI_PCC_DISCLOSURE_HEADING": {"en": "What this comparison does and does not show"},
-    "UI_PCC_DECLARED_HEADING": {"en": "What you declared"},
-    "UI_PCC_BOARD": {"en": "Board"},
-    "UI_PCC_ENCLOSURE": {"en": "Enclosure"},
-    "UI_PCC_REVISION_OF": {"en": "component version"},
-    "UI_PCC_WITHDRAWN_MARK": {"en": "(withdrawn)"},
-    "UI_PCC_REGION_DESCRIPTION": {"en": "Board plane and selected usable region"},
-    "UI_PCC_AXIS_PAIRING": {"en": "Axis pairing: board X along region X, board Y along region Y (no rotation)."},
-    "UI_PCC_VALUE_board_x": {"en": "Board length along X (mm)"},
-    "UI_PCC_VALUE_board_y": {"en": "Board width along Y (mm)"},
-    "UI_PCC_VALUE_region_x": {"en": "Usable region along X (mm)"},
-    "UI_PCC_VALUE_region_y": {"en": "Usable region along Y (mm)"},
-    "UI_PCC_VALUE_c": {"en": "Required clear distance on each side (mm)"},
-    "UI_PCC_VALUE_UNKNOWN": {"en": "unknown"},
-    "UI_PCC_VALUE_NOT_ENTERED": {"en": "not entered"},
-    "UI_PCC_BASIS_basis_board": {"en": "Basis for the board dimensions"},
-    "UI_PCC_BASIS_basis_region": {"en": "Basis for the region dimensions"},
-    "UI_PCC_BASIS_basis_clearance": {"en": "Basis for the required clearance"},
-    "UI_PCC_BASIS_NOT_RECORDED": {"en": "basis not recorded"},
-    "UI_PCC_BASIS_NOTE": {"en": "Your own note of where a value comes from (a measurement, a drawing, a design target). InventorAI does not open links or check notes; a note does not verify a value."},
-    "UI_PCC_APPLICABILITY_HEADING": {"en": "Does each of these describe your configuration?"},
-    "UI_PCC_ANSWER_applies": {"en": "applies"},
-    "UI_PCC_ANSWER_does_not_apply": {"en": "does not apply"},
-    "UI_PCC_ANSWER_NONE": {"en": "not answered"},
-    "UI_PCC_METHOD_LINE": {"en": "Method"},
-    "UI_PCC_DECLARATION_LINE": {"en": "Declaration"},
-    "UI_PCC_REVISION_LINE": {"en": "revision"},
-    "UI_PCC_SNAPSHOT_LINE": {"en": "Snapshot"},
-    "UI_PCC_OWNER_STATED": {"en": "Your own statements (OWNER_STATED / UNVALIDATED); InventorAI has not measured or verified them."},
-    "UI_PCC_FORM_HEADING_NEW": {"en": "Declare the planar clearance"},
-    "UI_PCC_FORM_HEADING_CORRECT": {"en": "Correct or rebind this declaration"},
-    "UI_PCC_PICK_BOARD": {"en": "Which component is the board?"},
-    "UI_PCC_PICK_ENCLOSURE": {"en": "Which component is the enclosure?"},
-    "UI_PCC_PICK_NONE": {"en": "choose"},
-    "UI_PCC_REGION_HELP": {"en": "Describe where the board will sit and which inner area you measured: for example, the inner floor between the four mounting posts, at the height of the board. Measure the clear rectangle that nothing intrudes into at that plane; walls, ribs, bosses or connectors inside it reduce it."},
-    "UI_PCC_VALUE_HELP": {"en": "Type a plain number in millimetres, for example 84 or 84.5 (up to four decimals). If you do not know a value yet, tick “I do not know yet” instead of guessing; it will never be treated as zero."},
-    "UI_PCC_UNKNOWN_BOX": {"en": "I do not know yet"},
-    "UI_PCC_CLEARANCE_HELP": {"en": "The free distance you want between each board edge and the region edge. Zero means touching is acceptable. If you are not sure what clearance you need, tick “I do not know yet”; InventorAI does not suggest a value."},
-    "UI_PCC_SAVE": {"en": "Save declaration"},
-    "UI_PCC_WITHDRAW_HEADING": {"en": "Withdraw this declaration"},
-    "UI_PCC_WITHDRAW_CONFIRM": {"en": "I want to withdraw this declaration. It stays in the history; withdrawal is not erasure."},
-    "UI_PCC_WITHDRAW": {"en": "Withdraw"},
-    "UI_PCC_HISTORY_HEADING": {"en": "History of this declaration"},
-    "UI_PCC_KIND_DECLARED": {"en": "declared"},
-    "UI_PCC_KIND_CORRECTED": {"en": "corrected"},
-    "UI_PCC_KIND_WITHDRAWN": {"en": "withdrawn"},
-    "UI_PCC_MSG_SAVED": {"en": "Saved."},
-    "UI_PCC_MSG_WITHDRAWN": {"en": "Withdrawn. It stays in the history."},
-    "UI_PCC_MSG_RECORDED_CURRENCY_UNKNOWN": {"en": "This submission was recorded. Whether it is still the latest state cannot be confirmed right now; reload the page before relying on what is shown."},
-    "UI_PCC_MSG_RECORDED_EARLIER": {"en": "This submission was already recorded earlier and is no longer the latest state; nothing new was saved. The current state is shown below."},
-    "UI_PCC_MSG_UNCHANGED": {"en": "Nothing changed: the declaration already holds exactly these values."},
-    "UI_PCC_MSG_STALE": {"en": "Not saved: the declaration, a component or a participation changed since this page was shown. Review the current state below."},
-    "UI_PCC_MSG_NOT_ELIGIBLE": {"en": "Not saved: the board and the enclosure must be two different components that currently take part in this interaction."},
-    "UI_PCC_MSG_ACTIVE_EXISTS": {"en": "Not saved: this interaction already has a declaration. Correct it instead."},
-    "UI_PCC_MSG_CORRECTION_LIMIT": {"en": "Not saved: this declaration has reached its correction limit. You can still withdraw it and declare again."},
-    "UI_PCC_MSG_IDENTITY_LIMIT": {"en": "Not saved: this project has reached its limit of planar clearance declarations."},
-    "UI_PCC_MSG_ALREADY_WITHDRAWN": {"en": "Not saved: this declaration is already withdrawn."},
-    "UI_PCC_MSG_REJECTED": {"en": "Not saved: please check the values. Each value must be a plain number in millimetres (up to six digits and four decimals), dimensions above zero, or marked “I do not know yet” — not both."},
-    "UI_PCC_MSG_CONFIRM_WITHDRAW": {"en": "Not withdrawn: please confirm the withdrawal."},
-    "UI_PCC_MSG_NOT_SAVED": {"en": "Not saved."},
-    "UI_PCC_MSG_UNKNOWN": {"en": "Whether this was saved cannot be confirmed right now. Reload the page before trying again."},
-    "UI_PCC_DIAGRAM_TITLE": {"en": "Explanatory sketch, not to scale"},
-    "UI_PCC_DIAGRAM_DESC": {"en": "The outer rectangle is the selected usable region; the dashed rectangle is the area left after the required clearance on every side; the inner rectangle is the board, centered. Where the board crosses the dashed line, the declared clearance is not available."},
-    "UI_PCC_DIAGRAM_NOTE": {"en": "An explanatory sketch only: not a drawing, not to scale and not a manufacturable design."},
-    "UI_PCC_DIAGRAM_OVERLAP": {"en": "overlap: clearance not available"},
-    "UI_PCC_HISTORICAL_NOTE": {"en": "A downloaded report or PDF is a fixed snapshot of the declaration revision named here, generated at the time shown. It does not update, cannot be refreshed or revoked, and may no longer match the current state."},
-    "UI_PCC_REPORT_HEADING": {"en": "Board and enclosure planar clearance (declared)"},
-    "UI_PCC_REPORT_UNAVAILABLE": {"en": "The planar clearance information could not be read for this report; nothing is shown rather than an incomplete result."},
-    "UI_PCC_GENERATED": {"en": "Report generated"},
+    # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 (+ BOARD-ENCLOSURE-ARABIC-QUALIFICATION-01):
+    # the board-enclosure planar clearance journey in English and Modern Standard
+    # Arabic. The DECL_* and DISCLOSURE_* English variants are the governed
+    # method artifact's own statements word for word (a test pins the equality),
+    # so each Arabic variant translates ONE stable governed meaning; canonical
+    # tokens (mm, X / Y, c, board_x ...) stay unchanged inside the Arabic text.
+    "UI_PCC_TITLE": {
+        "en": "Board and enclosure: planar clearance check",
+        "ar": "اللوحة والحاوية: فحص الخلوص المستوي"},
+    "UI_PCC_LINK": {
+        "en": "Check the planar clearance between a board and its enclosure",
+        "ar": "افحص الخلوص المستوي بين لوحة وحاويتها"},
+    "UI_PCC_LINK_NOTE": {
+        "en": "Optional. A nominal comparison you can use once two components take part in this interaction.",
+        "ar": "اختياري. مقارنة اسمية يمكنك استخدامها بعد أن يشارك مكوّنان في هذا التفاعل."},
+    "UI_PCC_INTRO": {
+        "en": "This optional check compares the outline of one rectangular board with one rectangular usable region inside its enclosure, at the board plane, with the clear distance you need on every side. You choose which component is the board and which is the enclosure; InventorAI does not decide that from their names. It tells you, for the values and placement you declare, whether the required planar clearance is met, what information is still missing, and what remains unassessed before prototype work.",
+        "ar": "يقارن هذا الفحص الاختياري مخطط لوحة مستطيلة واحدة بمنطقة مستطيلة واحدة قابلة للاستخدام داخل حاويتها، عند مستوى اللوحة، مع المسافة الخالية التي تحتاجها على كل جانب. أنت تختار أي مكوّن هو اللوحة وأيّهما الحاوية؛ ولا يحدّد InventorAI ذلك من أسمائهما. ويبيّن لك، بالقيم وطريقة الوضع اللتين تصرّح بهما، ما إذا كان الخلوص المستوي المطلوب متحققًا، وما المعلومات التي ما زالت ناقصة، وما الذي يبقى دون تقييم قبل العمل على النموذج الأولي."},
+    "UI_PCC_BACK": {
+        "en": "Back to interactions",
+        "ar": "العودة إلى التفاعلات"},
+    "UI_PCC_BETWEEN": {
+        "en": "Interaction between",
+        "ar": "التفاعل بين"},
+    "UI_PCC_AND": {
+        "en": "and",
+        "ar": "و"},
+    "UI_PCC_NOT_ELIGIBLE": {
+        "en": "Two different components must take part in this interaction before a board and an enclosure can be chosen. Record the participants on the interactions page first.",
+        "ar": "يجب أن يشارك مكوّنان مختلفان في هذا التفاعل قبل أن يمكن اختيار لوحة وحاوية. سجّل المشاركين في صفحة التفاعلات أولًا."},
+    "UI_PCC_UNAVAILABLE": {
+        "en": "The planar clearance information cannot be read right now. Nothing is shown rather than an incomplete or misleading result.",
+        "ar": "لا يمكن قراءة معلومات الخلوص المستوي الآن. لا يُعرض شيء بدلًا من نتيجة ناقصة أو مضلِّلة."},
+    "UI_PCC_STATE_NONE": {
+        "en": "No planar clearance has been declared for this interaction yet.",
+        "ar": "لم يُصرَّح بعد بأي خلوص مستوٍ لهذا التفاعل."},
+    "UI_PCC_STATE_WITHDRAWN": {
+        "en": "An earlier declaration for this interaction was withdrawn. It stays in the history; you can make a new one below.",
+        "ar": "سُحب تصريح سابق لهذا التفاعل. يبقى في السجل، ويمكنك إنشاء تصريح جديد أدناه."},
+    "UI_PCC_STATE_RECONFIRM": {
+        "en": "This declaration needs your reconfirmation before it is compared again. Something it was made against has changed:",
+        "ar": "يحتاج هذا التصريح إلى إعادة تأكيدك قبل مقارنته مرة أخرى. تغيّر شيء مما بُني عليه:"},
+    "UI_PCC_ISSUE_COMPONENT_WITHDRAWN": {
+        "en": "the %s component was withdrawn",
+        "ar": "سُحب مكوّن %s"},
+    "UI_PCC_ISSUE_COMPONENT_CHANGED": {
+        "en": "the %s component was corrected since this declaration",
+        "ar": "صُحّح مكوّن %s بعد هذا التصريح"},
+    "UI_PCC_ISSUE_NOT_PARTICIPATING": {
+        "en": "the %s component no longer takes part in this interaction",
+        "ar": "لم يعد مكوّن %s مشاركًا في هذا التفاعل"},
+    "UI_PCC_ISSUE_PARTICIPATION_CHANGED": {
+        "en": "the %s component was removed from this interaction and added again",
+        "ar": "أُزيل مكوّن %s من هذا التفاعل ثم أُضيف مرة أخرى"},
+    "UI_PCC_ISSUE_METHOD_CHANGED": {
+        "en": "the check's method or declaration version changed",
+        "ar": "تغيّر إصدار طريقة الفحص أو إصدار التصريح"},
+    "UI_PCC_RECONFIRM_HOW": {
+        "en": "Review the values below and save them again to rebind the declaration, or withdraw it. The earlier version stays in the history.",
+        "ar": "راجع القيم أدناه واحفظها مرة أخرى لإعادة ربط التصريح، أو اسحبه. تبقى النسخة السابقة في السجل."},
+    "UI_PCC_ROLE_board": {
+        "en": "board",
+        "ar": "اللوحة"},
+    "UI_PCC_ROLE_enclosure": {
+        "en": "enclosure",
+        "ar": "الحاوية"},
+    "UI_PCC_RESULT_HEADING": {
+        "en": "Result for your declared values",
+        "ar": "النتيجة للقيم التي صرّحت بها"},
+    "UI_PCC_OUTCOME_MET": {
+        "en": "With the values and placement you declared, the required planar clearance is met.",
+        "ar": "بالقيم وطريقة الوضع اللتين صرّحت بهما، الخلوص المستوي المطلوب متحقق."},
+    "UI_PCC_OUTCOME_NOT_MET": {
+        "en": "With the values and placement you declared, the required planar clearance is not met.",
+        "ar": "بالقيم وطريقة الوضع اللتين صرّحت بهما، الخلوص المستوي المطلوب غير متحقق."},
+    "UI_PCC_OUTCOME_MISSING_INFORMATION": {
+        "en": "No comparison yet: some information is missing. Nothing has been assumed for it.",
+        "ar": "لا توجد مقارنة بعد: بعض المعلومات ناقصة. لم يُفترض أي شيء بدلًا منها."},
+    "UI_PCC_OUTCOME_INAPPLICABLE": {
+        "en": "No comparison: you said the following does not apply, so this check does not fit your configuration:",
+        "ar": "لا توجد مقارنة: ذكرتَ أن ما يلي لا ينطبق، لذلك لا يناسب هذا الفحص تهيئتك:"},
+    "UI_PCC_OUTCOME_COULD_NOT_BE_COMPUTED": {
+        "en": "The comparison could not be computed. This is not a geometric result in either direction.",
+        "ar": "تعذّر حساب المقارنة. وهذا لا يعني أن الخلوص متحقق ولا أنه غير متحقق."},
+    "UI_PCC_MISSING_LABEL": {
+        "en": "Missing:",
+        "ar": "الناقص:"},
+    "UI_PCC_AXIS": {
+        "en": "Axis",
+        "ar": "المحور"},
+    "UI_PCC_MARGIN": {
+        "en": "Margin",
+        "ar": "الهامش"},
+    "UI_PCC_AXIS_MET": {
+        "en": "met",
+        "ar": "متحقق"},
+    "UI_PCC_AXIS_NOT_MET": {
+        "en": "not met: short by",
+        "ar": "غير متحقق: ينقص بمقدار"},
+    "UI_PCC_MARGIN_EXPLAINED": {
+        "en": "Margin = (region − board) / 2 − required clearance, per axis. A margin of zero meets the declared condition.",
+        "ar": "الهامش = (المنطقة − اللوحة) / 2 − الخلوص المطلوب، لكل محور. والهامش الذي يساوي صفرًا يحقق الشرط المصرَّح به."},
+    "UI_PCC_NOT_MET_NOTE": {
+        "en": "A not-met result applies to this declared placement only. It does not show that no other placement, orientation or enclosure could work, and InventorAI does not suggest a replacement component or a different clearance.",
+        "ar": "تنطبق نتيجة «غير متحقق» على طريقة الوضع المصرَّح بها هذه فقط. وهي لا تُثبت أنه لا يمكن لأي وضع أو اتجاه أو حاوية أخرى أن تنجح، ولا يقترح InventorAI مكوّنًا بديلًا أو خلوصًا مختلفًا."},
+    "UI_PCC_DISCLOSURE_HEADING": {
+        "en": "What this comparison does and does not show",
+        "ar": "ما الذي تبيّنه هذه المقارنة وما الذي لا تبيّنه"},
+    "UI_PCC_DECLARED_HEADING": {
+        "en": "What you declared",
+        "ar": "ما صرّحت به"},
+    "UI_PCC_BOARD": {
+        "en": "Board",
+        "ar": "اللوحة"},
+    "UI_PCC_ENCLOSURE": {
+        "en": "Enclosure",
+        "ar": "الحاوية"},
+    "UI_PCC_REVISION_OF": {
+        "en": "component version",
+        "ar": "إصدار المكوّن"},
+    "UI_PCC_WITHDRAWN_MARK": {
+        "en": "(withdrawn)",
+        "ar": "(مسحوب)"},
+    "UI_PCC_REGION_DESCRIPTION": {
+        "en": "Board plane and selected usable region",
+        "ar": "مستوى اللوحة والمنطقة المختارة القابلة للاستخدام"},
+    "UI_PCC_AXIS_PAIRING": {
+        "en": "Axis pairing: board X along region X, board Y along region Y (no rotation).",
+        "ar": "إقران المحاور: المحور X للوحة على امتداد المحور X للمنطقة، والمحور Y للوحة على امتداد المحور Y للمنطقة (دون تدوير)."},
+    "UI_PCC_VALUE_board_x": {
+        "en": "Board length along X (mm)",
+        "ar": "طول اللوحة على امتداد X (mm)"},
+    "UI_PCC_VALUE_board_y": {
+        "en": "Board width along Y (mm)",
+        "ar": "عرض اللوحة على امتداد Y (mm)"},
+    "UI_PCC_VALUE_region_x": {
+        "en": "Usable region along X (mm)",
+        "ar": "المنطقة القابلة للاستخدام على امتداد X (mm)"},
+    "UI_PCC_VALUE_region_y": {
+        "en": "Usable region along Y (mm)",
+        "ar": "المنطقة القابلة للاستخدام على امتداد Y (mm)"},
+    "UI_PCC_VALUE_c": {
+        "en": "Required clear distance on each side (mm)",
+        "ar": "المسافة الخالية المطلوبة على كل جانب (mm)"},
+    "UI_PCC_VALUE_UNKNOWN": {
+        "en": "unknown",
+        "ar": "غير معروف"},
+    "UI_PCC_VALUE_NOT_ENTERED": {
+        "en": "not entered",
+        "ar": "لم يُدخَل"},
+    "UI_PCC_BASIS_basis_board": {
+        "en": "Basis for the board dimensions",
+        "ar": "مصدر أبعاد اللوحة"},
+    "UI_PCC_BASIS_basis_region": {
+        "en": "Basis for the region dimensions",
+        "ar": "مصدر أبعاد المنطقة"},
+    "UI_PCC_BASIS_basis_clearance": {
+        "en": "Basis for the required clearance",
+        "ar": "مصدر الخلوص المطلوب"},
+    "UI_PCC_BASIS_NOT_RECORDED": {
+        "en": "basis not recorded",
+        "ar": "لم يُسجَّل المصدر"},
+    "UI_PCC_BASIS_NOTE": {
+        "en": "Your own note of where a value comes from (a measurement, a drawing, a design target). InventorAI does not open links or check notes; a note does not verify a value.",
+        "ar": "ملاحظتك الخاصة عن مصدر القيمة (قياس، أو رسم، أو هدف تصميمي). لا يفتح InventorAI الروابط ولا يتحقق من الملاحظات؛ والملاحظة لا تُثبت صحة القيمة."},
+    "UI_PCC_APPLICABILITY_HEADING": {
+        "en": "Does each of these describe your configuration?",
+        "ar": "هل تصف كلٌّ من العبارات التالية تهيئتك؟"},
+    "UI_PCC_ANSWER_applies": {
+        "en": "applies",
+        "ar": "ينطبق"},
+    "UI_PCC_ANSWER_does_not_apply": {
+        "en": "does not apply",
+        "ar": "لا ينطبق"},
+    "UI_PCC_ANSWER_NONE": {
+        "en": "not answered",
+        "ar": "لم يُجَب عنه"},
+    "UI_PCC_METHOD_LINE": {
+        "en": "Method",
+        "ar": "الطريقة"},
+    "UI_PCC_DECLARATION_LINE": {
+        "en": "Declaration",
+        "ar": "التصريح"},
+    "UI_PCC_REVISION_LINE": {
+        "en": "revision",
+        "ar": "رقم المراجعة"},
+    "UI_PCC_SNAPSHOT_LINE": {
+        "en": "Snapshot",
+        "ar": "اللقطة"},
+    "UI_PCC_OWNER_STATED": {
+        "en": "Your own statements (OWNER_STATED / UNVALIDATED); InventorAI has not measured or verified them.",
+        "ar": "تصريحاتك الخاصة (OWNER_STATED / UNVALIDATED)؛ لم يقِسها InventorAI ولم يتحقق منها."},
+    "UI_PCC_FORM_HEADING_NEW": {
+        "en": "Declare the planar clearance",
+        "ar": "صرّح بالخلوص المستوي"},
+    "UI_PCC_FORM_HEADING_CORRECT": {
+        "en": "Correct or rebind this declaration",
+        "ar": "صحّح هذا التصريح أو أعِد ربطه"},
+    "UI_PCC_PICK_BOARD": {
+        "en": "Which component is the board?",
+        "ar": "أي مكوّن هو اللوحة؟"},
+    "UI_PCC_PICK_ENCLOSURE": {
+        "en": "Which component is the enclosure?",
+        "ar": "أي مكوّن هو الحاوية؟"},
+    "UI_PCC_PICK_NONE": {
+        "en": "choose",
+        "ar": "اختر"},
+    "UI_PCC_REGION_HELP": {
+        "en": "Describe where the board will sit and which inner area you measured: for example, the inner floor between the four mounting posts, at the height of the board. Measure the clear rectangle that nothing intrudes into at that plane; walls, ribs, bosses or connectors inside it reduce it.",
+        "ar": "صِف المكان الذي ستستقر فيه اللوحة والمساحة الداخلية التي قستها: مثلًا الأرضية الداخلية بين أعمدة التثبيت الأربعة عند ارتفاع اللوحة. قِس المستطيل الخالي الذي لا يتداخل معه أي شيء عند ذلك المستوى؛ فالجدران والأضلاع والنتوءات أو الموصلات الموجودة داخله تقلّصه."},
+    "UI_PCC_VALUE_HELP": {
+        "en": "Type a plain number in millimetres, for example 84 or 84.5 (up to four decimals). If you do not know a value yet, tick “I do not know yet” instead of guessing; it will never be treated as zero.",
+        "ar": "اكتب رقمًا بسيطًا بالمليمتر، مثل 84 أو 84.5 (حتى أربع خانات عشرية). إذا كنت لا تعرف قيمة بعد، فاختر «لا أعرف بعد» بدلًا من التخمين؛ ولن تُعامَل أبدًا على أنها صفر."},
+    "UI_PCC_UNKNOWN_BOX": {
+        "en": "I do not know yet",
+        "ar": "لا أعرف بعد"},
+    "UI_PCC_CLEARANCE_HELP": {
+        "en": "The free distance you want between each board edge and the region edge. Zero means touching is acceptable. If you are not sure what clearance you need, tick “I do not know yet”; InventorAI does not suggest a value.",
+        "ar": "المسافة الحرة التي تريدها بين كل حافة من حواف اللوحة وحافة المنطقة. الصفر يعني أن التلامس مقبول. إذا لم تكن متأكدًا من الخلوص الذي تحتاجه، فاختر «لا أعرف بعد»؛ ولا يقترح InventorAI قيمة."},
+    "UI_PCC_SAVE": {
+        "en": "Save declaration",
+        "ar": "احفظ التصريح"},
+    "UI_PCC_WITHDRAW_HEADING": {
+        "en": "Withdraw this declaration",
+        "ar": "سحب هذا التصريح"},
+    "UI_PCC_WITHDRAW_CONFIRM": {
+        "en": "I want to withdraw this declaration. It stays in the history; withdrawal is not erasure.",
+        "ar": "أريد سحب هذا التصريح. يبقى في السجل؛ والسحب ليس محوًا."},
+    "UI_PCC_WITHDRAW": {
+        "en": "Withdraw",
+        "ar": "اسحب"},
+    "UI_PCC_HISTORY_HEADING": {
+        "en": "History of this declaration",
+        "ar": "سجل هذا التصريح"},
+    "UI_PCC_KIND_DECLARED": {
+        "en": "declared",
+        "ar": "صُرِّح به"},
+    "UI_PCC_KIND_CORRECTED": {
+        "en": "corrected",
+        "ar": "صُحِّح"},
+    "UI_PCC_KIND_WITHDRAWN": {
+        "en": "withdrawn",
+        "ar": "سُحِب"},
+    "UI_PCC_MSG_SAVED": {
+        "en": "Saved.",
+        "ar": "حُفظ."},
+    "UI_PCC_MSG_WITHDRAWN": {
+        "en": "Withdrawn. It stays in the history.",
+        "ar": "سُحب. ويبقى في السجل."},
+    "UI_PCC_MSG_RECORDED_CURRENCY_UNKNOWN": {
+        "en": "This submission was recorded. Whether it is still the latest state cannot be confirmed right now; reload the page before relying on what is shown.",
+        "ar": "سُجِّل هذا الإرسال. لا يمكن التأكد الآن مما إذا كان لا يزال الحالة الأحدث؛ أعِد تحميل الصفحة قبل الاعتماد على ما يُعرض."},
+    "UI_PCC_MSG_RECORDED_EARLIER": {
+        "en": "This submission was already recorded earlier and is no longer the latest state; nothing new was saved. The current state is shown below.",
+        "ar": "سُجِّل هذا الإرسال سابقًا ولم يعد الحالة الأحدث؛ ولم يُحفظ شيء جديد. تُعرض الحالة الحالية أدناه."},
+    "UI_PCC_MSG_UNCHANGED": {
+        "en": "Nothing changed: the declaration already holds exactly these values.",
+        "ar": "لم يتغيّر شيء: يحمل التصريح هذه القيم نفسها بالضبط."},
+    "UI_PCC_MSG_STALE": {
+        "en": "Not saved: the declaration, a component or a participation changed since this page was shown. Review the current state below.",
+        "ar": "لم يُحفظ: تغيّر التصريح أو أحد المكوّنات أو إحدى المشاركات منذ عرض هذه الصفحة. راجع الحالة الحالية أدناه."},
+    "UI_PCC_MSG_NOT_ELIGIBLE": {
+        "en": "Not saved: the board and the enclosure must be two different components that currently take part in this interaction.",
+        "ar": "لم يُحفظ: يجب أن تكون اللوحة والحاوية مكوّنين مختلفين يشاركان حاليًا في هذا التفاعل."},
+    "UI_PCC_MSG_ACTIVE_EXISTS": {
+        "en": "Not saved: this interaction already has a declaration. Correct it instead.",
+        "ar": "لم يُحفظ: لهذا التفاعل تصريح قائم بالفعل. صحّحه بدلًا من ذلك."},
+    "UI_PCC_MSG_CORRECTION_LIMIT": {
+        "en": "Not saved: this declaration has reached its correction limit. You can still withdraw it and declare again.",
+        "ar": "لم يُحفظ: بلغ هذا التصريح حدّ التصحيحات. لا يزال بإمكانك سحبه والتصريح من جديد."},
+    "UI_PCC_MSG_IDENTITY_LIMIT": {
+        "en": "Not saved: this project has reached its limit of planar clearance declarations.",
+        "ar": "لم يُحفظ: بلغ هذا المشروع حدّه من تصريحات الخلوص المستوي."},
+    "UI_PCC_MSG_ALREADY_WITHDRAWN": {
+        "en": "Not saved: this declaration is already withdrawn.",
+        "ar": "لم يُحفظ: هذا التصريح مسحوب بالفعل."},
+    "UI_PCC_MSG_REJECTED": {
+        "en": "Not saved: please check the values. Each value must be a plain number in millimetres written with the digits 0–9 and a decimal point (up to six digits before the point and four after), dimensions above zero, or marked “I do not know yet” — not both.",
+        "ar": "لم يُحفظ: يُرجى التحقق من القيم. يجب أن تكون كل قيمة رقمًا بسيطًا بالمليمتر مكتوبًا بالأرقام 0–9 والنقطة العشرية (حتى ست خانات قبل النقطة وأربع بعدها)، وأن تكون الأبعاد أكبر من صفر، أو أن تُعلَّم «لا أعرف بعد» — وليس الأمرين معًا."},
+    "UI_PCC_MSG_CONFIRM_WITHDRAW": {
+        "en": "Not withdrawn: please confirm the withdrawal.",
+        "ar": "لم يُسحب: يُرجى تأكيد السحب."},
+    "UI_PCC_MSG_NOT_SAVED": {
+        "en": "Not saved.",
+        "ar": "لم يُحفظ."},
+    "UI_PCC_MSG_UNKNOWN": {
+        "en": "Whether this was saved cannot be confirmed right now. Reload the page before trying again.",
+        "ar": "لا يمكن التأكد الآن مما إذا كان قد حُفظ. أعِد تحميل الصفحة قبل المحاولة مرة أخرى."},
+    "UI_PCC_DIAGRAM_TITLE": {
+        "en": "Explanatory sketch, not to scale",
+        "ar": "رسم توضيحي، ليس بمقياس رسم"},
+    "UI_PCC_DIAGRAM_DESC": {
+        "en": "The outer rectangle is the selected usable region; the dashed rectangle is the area left after the required clearance on every side; the inner rectangle is the board, centered. Where the board crosses the dashed line, the declared clearance is not available.",
+        "ar": "المستطيل الخارجي هو المنطقة المختارة القابلة للاستخدام؛ والمستطيل المتقطع هو المساحة المتبقية بعد الخلوص المطلوب على كل جانب؛ والمستطيل الداخلي هو اللوحة في المنتصف. وحيثما تتجاوز اللوحة الخط المتقطع، لا يتوفر الخلوص المصرَّح به."},
+    "UI_PCC_DIAGRAM_NOTE": {
+        "en": "An explanatory sketch only: not a drawing, not to scale and not a manufacturable design.",
+        "ar": "رسم توضيحي فقط: ليس رسمًا هندسيًا، ولا بمقياس رسم، وليس تصميمًا قابلًا للتصنيع."},
+    "UI_PCC_DIAGRAM_OVERLAP": {
+        "en": "overlap: clearance not available",
+        "ar": "تداخل: الخلوص غير متوفر"},
+    "UI_PCC_HISTORICAL_NOTE": {
+        "en": "A downloaded report or PDF is a fixed snapshot of the declaration revision named here, generated at the time shown. It does not update, cannot be refreshed or revoked, and may no longer match the current state.",
+        "ar": "التقرير أو ملف PDF الذي يُنزَّل لقطة ثابتة لمراجعة التصريح المذكورة هنا، أُنشئت في الوقت المبيَّن. لا تُحدَّث تلقائيًا، ولا يمكن تحديثها أو إلغاؤها، وقد لا تطابق الحالة الحالية."},
+    "UI_PCC_REPORT_HEADING": {
+        "en": "Board and enclosure planar clearance (declared)",
+        "ar": "الخلوص المستوي بين اللوحة والحاوية (المصرَّح به)"},
+    "UI_PCC_REPORT_UNAVAILABLE": {
+        "en": "The planar clearance information could not be read for this report; nothing is shown rather than an incomplete result.",
+        "ar": "تعذّرت قراءة معلومات الخلوص المستوي لهذا التقرير؛ لا يُعرض شيء بدلًا من نتيجة ناقصة."},
+    "UI_PCC_GENERATED": {
+        "en": "Report generated",
+        "ar": "أُنشئ التقرير"},
+    "UI_PCC_DIGITS_HELP": {
+        "en": "Use the digits 0–9 and a dot (.) as the decimal point, for example 84.5. Arabic-Indic digits (٠–٩), commas (، or ,) and units typed in the box are not accepted yet; such an entry is refused and never read as a number.",
+        "ar": "استخدم الأرقام 0–9 والنقطة (.) فاصلةً عشرية، مثل 84.5. الأرقام العربية الهندية (٠–٩) والفاصلة (، أو ,) والوحدات المكتوبة داخل الخانة غير مقبولة حاليًا؛ يُرفض مثل هذا الإدخال ولا يُقرأ رقمًا أبدًا."},
+    "UI_PCC_DIAGRAM_LEGEND": {
+        "en": "Symbols in the sketch: region_x and region_y are the usable region; board_x × board_y is the board; c is the clearance per side; ✕ marks an axis where the clearance is not available. The sketch is not mirrored for right-to-left reading: X runs left to right, as declared.",
+        "ar": "رموز الرسم: region_x و region_y هما المنطقة القابلة للاستخدام؛ و board_x × board_y هي اللوحة؛ و c هو الخلوص لكل جانب؛ وتشير ✕ إلى محور لا يتوفر فيه الخلوص. الرسم غير معكوس للقراءة من اليمين إلى اليسار: يمتد X من اليسار إلى اليمين كما صُرِّح به."},
+    "UI_PCC_SOURCE_LINE": {
+        "en": "Method: InventorAI's own derivation for a centered rectangle; unit: millimetre (NIST SP 811). No external text, table or code is used.",
+        "ar": "الطريقة: اشتقاق InventorAI الخاص لمستطيل في المنتصف؛ الوحدة: المليمتر (NIST SP 811). لا يُستخدم أي نص أو جدول أو شيفرة من مصدر خارجي."},
+    "UI_PCC_DISCLOSURE_HEADING": {
+        "en": "What this comparison does and does not show",
+        "ar": "ما الذي تبيّنه هذه المقارنة وما الذي لا تبيّنه"},
+    "UI_PCC_DECL_rectangular_board": {
+        "en": "The board outline is treated as one rectangle, board_x by board_y.",
+        "ar": "يُعامَل مخطط اللوحة على أنه مستطيل واحد، board_x في board_y."},
+    "UI_PCC_DECL_rectangular_region": {
+        "en": "The selected usable region is one rectangle, region_x by region_y, at the board plane, inside the enclosure.",
+        "ar": "المنطقة المختارة القابلة للاستخدام مستطيل واحد، region_x في region_y، عند مستوى اللوحة، داخل الحاوية."},
+    "UI_PCC_DECL_region_unobstructed": {
+        "en": "Nothing intrudes into the selected region at the board plane; features outside the selected region are allowed.",
+        "ar": "لا يتداخل أي شيء مع المنطقة المختارة عند مستوى اللوحة؛ ويُسمح بوجود عناصر خارج المنطقة المختارة."},
+    "UI_PCC_DECL_centered_axis_aligned": {
+        "en": "The board sits centered in the selected region, board X along region X and board Y along region Y, with no rotation.",
+        "ar": "تستقر اللوحة في منتصف المنطقة المختارة، والمحور X للوحة على امتداد المحور X للمنطقة، والمحور Y للوحة على امتداد المحور Y للمنطقة، دون تدوير."},
+    "UI_PCC_DECL_same_plane": {
+        "en": "The board and region dimensions are taken in the same plane, the board plane.",
+        "ar": "أُخذت أبعاد اللوحة وأبعاد المنطقة في المستوى نفسه، وهو مستوى اللوحة."},
+    "UI_PCC_DECL_not_guide_mounted": {
+        "en": "The board is not held by card guides, rails or slots.",
+        "ar": "لا تُثبَّت اللوحة بموجّهات بطاقات أو قضبان أو مجارٍ."},
+    "UI_PCC_DECL_uniform_clearance": {
+        "en": "c is the clear distance required on each of the four sides of the board.",
+        "ar": "c هي المسافة الخالية المطلوبة على كل جانب من جوانب اللوحة الأربعة."},
+    "UI_PCC_DECL_nominal_values": {
+        "en": "The values are nominal; tolerances are not part of this comparison.",
+        "ar": "القيم اسمية؛ والتفاوتات المسموح بها ليست جزءًا من هذه المقارنة."},
+    "UI_PCC_DISCLOSURE_1": {
+        "en": "These are nominal values you declared.",
+        "ar": "هذه قيم اسمية صرّحت بها أنت."},
+    "UI_PCC_DISCLOSURE_2": {
+        "en": "InventorAI has not verified any input.",
+        "ar": "لم يتحقق InventorAI من أي مُدخل."},
+    "UI_PCC_DISCLOSURE_3": {
+        "en": "No tolerance assessment is made.",
+        "ar": "لا يُجرى أي تقييم للتفاوتات."},
+    "UI_PCC_DISCLOSURE_4": {
+        "en": "Only planar geometry at the board plane is compared.",
+        "ar": "تُقارَن الهندسة المستوية عند مستوى اللوحة فقط."},
+    "UI_PCC_DISCLOSURE_5": {
+        "en": "Height, connectors, insertion path, mounting, electrical clearance, thermal behaviour, strength, safety and manufacturing are not assessed.",
+        "ar": "لا يُقيَّم الارتفاع، ولا الموصلات، ولا مسار الإدخال، ولا التثبيت، ولا الخلوص الكهربائي، ولا السلوك الحراري، ولا المتانة، ولا السلامة، ولا التصنيع."},
+    "UI_PCC_DISCLOSURE_6": {
+        "en": "This does not show that the parts fit, that the system is compatible, or that anything is verified, ready or certified.",
+        "ar": "لا يُبيّن هذا أن الأجزاء تُركَّب معًا فعليًا، ولا أن النظام متوافق، ولا أن أي شيء مُتحقَّق منه أو جاهز أو معتمد."},
+    "UI_PCC_DISCLOSURE_7": {
+        "en": "A not-met result for this placement does not show that no placement or design could work.",
+        "ar": "نتيجة «غير متحقق» لطريقة الوضع هذه لا تُثبت أنه لا يمكن لأي وضع أو تصميم أن ينجح."},
 }
 
 

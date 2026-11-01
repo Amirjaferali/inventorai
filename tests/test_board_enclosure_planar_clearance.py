@@ -582,7 +582,11 @@ def _margin_cells(body):
 
 
 def _digests(body):
-    return re.findall(r"Snapshot ([0-9a-f]{16})", _html.unescape(body))
+    return re.findall(r"data-pcc-digest>([0-9a-f]{16})<", body)
+
+
+def _revisions(body):
+    return re.findall(r"data-pcc-revision>(\d+)<", body)
 
 
 def test_w01_the_end_to_end_journey_page_report_and_pdf_agree(client, monkeypatch):
@@ -596,7 +600,7 @@ def test_w01_the_end_to_end_journey_page_report_and_pdf_agree(client, monkeypatc
     body = r.get_data(as_text=True)
     assert r.status_code == 200 and "Saved." in body
     assert _outcome(body) == ["NOT_MET"] and _margin_cells(body) == ["-1 mm", "1 mm"]
-    assert "short by 1 mm" in _html.unescape(body) and "data-pcc-diagram" in body
+    assert "not met: short by 1 mm" in " ".join(_text(r).split()) and "data-pcc-diagram" in body
     old_digest = _digests(body)[0]
     report_old = client.get("/session/%s/deliverable" % sid).get_data(as_text=True)
     assert _outcome(report_old) == ["NOT_MET"] and _digests(report_old) == [old_digest]
@@ -610,7 +614,7 @@ def test_w01_the_end_to_end_journey_page_report_and_pdf_agree(client, monkeypatc
     report_new = client.get("/session/%s/deliverable" % sid).get_data(as_text=True)
     assert _outcome(report_new) == ["MET"] and _digests(report_new) == [new_digest]
     # the earlier render is a fixed, self-describing snapshot naming its own revision
-    assert "revision 0" in _html.unescape(report_old) and "revision 1" in _html.unescape(report_new)
+    assert _revisions(report_old) == ["0"] and _revisions(report_new) == ["1"]
     assert "does not update" in _html.unescape(report_old)
 
 
@@ -806,14 +810,17 @@ def test_w09_unreadable_reads_unavailable(client, monkeypatch):
     assert "data-pcc-report-unavailable" in report and "data-pcc-outcome" not in report
 
 
-def test_w10_arabic_interface_shows_the_localized_english_only_notice(client):
+def test_w10_arabic_interface_renders_the_journey_in_arabic(client):
+    """BOARD-ENCLOSURE-ARABIC-QUALIFICATION-01 replaces the former English-only
+    notice: on the Arabic interface the journey itself is Arabic and RTL (its
+    full qualification is pinned in test_board_enclosure_arabic_qualification)."""
     sid, ifc, ids = _web(client)
     body = _page(client, sid, ifc, lang="ar").get_data(as_text=True)
-    assert ui_text.text("UI_PCC_ENGLISH_ONLY", "ar") in body
-    assert 'lang="en" dir="ltr" data-pcc-page' in body
-    assert ui_text.text("UI_PCC_TITLE", "en") in body
+    assert 'lang="ar" dir="rtl" data-pcc-page' in body
+    assert ui_text.text("UI_PCC_TITLE", "ar") in body
+    assert "UI_PCC_ENGLISH_ONLY" not in body and not ui_text.has_string("UI_PCC_ENGLISH_ONLY")
     prep = client.get("/session/%s/interface-preparation" % sid)
-    assert prep.status_code == 200 and 'dir="rtl"' in prep.get_data(as_text=True)
+    assert prep.status_code == 200 and ui_text.text("UI_PCC_LINK", "ar") in prep.get_data(as_text=True)
 
 
 def _stable(body):

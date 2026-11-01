@@ -500,6 +500,21 @@ release and paid activation stay NOT AUTHORIZED. Next qualification step after a
 qualification of this SAME journey (it is shown in English with a localized English-only notice until then);
 no second English engineering relationship is selected automatically.
 
+**BOARD-ENCLOSURE-ARABIC-QUALIFICATION-01 (Owner-authorized bounded localization / qualification, 2026-11-01;
+continuity record, not a second contract).** Current authorized action: ONE PR qualifying the SAME journey
+(delivered by PR #913, merge `155721f`) in Arabic — the page in the interface language, the report / PDF in the
+document's language, every clearance string in Modern Standard Arabic through the existing UI-copy catalogue (English
+statements and disclosures pinned word for word to the governed artifact), RTL with numbers and identifiers
+LTR-isolated, the former English-only notice removed (method contract §14 amended). No calculation, method,
+numerical-grammar, persistence, revision, authorization, question-serving, progression, readiness, SafetySignal,
+Validation Plan or Stage-35 change. Delivered evidence scope: synthetic MSA, Kuwaiti / Gulf and Egyptian fixtures
+show text preservation and explicit structured choices only. Still deferred, NOT delivered: native-digit
+(Arabic-Indic) numeric entry; any automatic interpretation of free or dialect text; other dialects; a separate
+report output-language request; a human usability study. Applicability: effective on the verified merge of that
+PR; merge, deployment and release stay NOT AUTHORIZED. After acceptance: return to the existing G1 automation
+obligations and their recorded triggers; no second relationship, AI activation or Proof B rerun is selected
+automatically.
+
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),
 [Zoo editable CAD](https://zoo.dev/docs/zoo-design-studio/zookeeper),

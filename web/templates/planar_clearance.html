@@ -30,8 +30,10 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 </style>
 {% endblock %}
 {% block content %}
-{% if ui_lang == 'ar' %}<div class="notice" role="note" data-pcc-english-only>{{ t('UI_PCC_ENGLISH_ONLY') }}</div>{% endif %}
-<div lang="en" dir="ltr" data-pcc-page>
+{#- BOARD-ENCLOSURE-ARABIC-QUALIFICATION-01: the page renders in the interface
+    language (``pcc_lang``), English or Arabic, right to left in Arabic; numbers,
+    units, axis letters and identifiers stay LTR-isolated. -#}
+<div lang="{{ pcc_lang }}" dir="{{ 'rtl' if pcc_lang == 'ar' else 'ltr' }}" data-pcc-page>
 <h1>{{ pcc_t('UI_PCC_TITLE') }}</h1>
 <p><a href="{{ url_for('interface_preparation', sid=sid) }}">{{ pcc_t('UI_PCC_BACK') }}</a></p>
 <p class="intro">{{ pcc_t('UI_PCC_INTRO') }}</p>
@@ -74,9 +76,10 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <textarea id="pcc-region" name="region_description" rows="2" maxlength="{{ text_max }}">{{ m.region_description or '' }}</textarea>
   <p class="pcc-small">{{ pcc_t('UI_PCC_REGION_HELP') }}</p>
   <p class="pcc-small">{{ pcc_t('UI_PCC_VALUE_HELP') }}</p>
+  <p class="pcc-small" data-pcc-digits-help>{{ pcc_t('UI_PCC_DIGITS_HELP') }}</p>
   {% for role in value_roles %}
   <label for="pcc-v-{{ role }}">{{ pcc_t('UI_PCC_VALUE_' ~ role) }}</label>
-  <input type="text" id="pcc-v-{{ role }}" name="value_{{ role }}" inputmode="decimal" autocomplete="off" maxlength="{{ value_max }}" value="{{ m['values'][role] or '' }}">
+  <input type="text" id="pcc-v-{{ role }}" name="value_{{ role }}" inputmode="decimal" autocomplete="off" dir="ltr" lang="en" maxlength="{{ value_max }}" value="{{ m['values'][role] or '' }}">
   <label class="inline"><input type="checkbox" name="unknown_{{ role }}" value="1"{% if m.unknown[role] %} checked{% endif %}> {{ pcc_t('UI_PCC_UNKNOWN_BOX') }}</label>
   {% if role == 'c' %}<p class="pcc-small">{{ pcc_t('UI_PCC_CLEARANCE_HELP') }}</p>{% endif %}
   {% endfor %}
@@ -88,7 +91,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   {% endfor %}
   <h3>{{ pcc_t('UI_PCC_APPLICABILITY_HEADING') }}</h3>
   {% for d, ref in declarations %}
-  <fieldset data-pcc-decl="{{ d }}"><legend>{{ ref }} — {{ pcc_statement(d) }}</legend>
+  <fieldset data-pcc-decl="{{ d }}"><legend><bdi dir="ltr">{{ ref }}</bdi> — {{ pcc_statement(d) }}</legend>
     {% for answer in answers %}<label class="inline"><input type="radio" name="decl_{{ d }}" value="{{ answer }}"{% if m.applicability[d] == answer %} checked{% endif %}> {{ pcc_t('UI_PCC_ANSWER_' ~ answer) }}</label>{% endfor %}
   </fieldset>
   {% endfor %}
@@ -110,7 +113,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 </form>
 <h2>{{ pcc_t('UI_PCC_HISTORY_HEADING') }}</h2>
 <ul class="pcc-small" data-pcc-history>
-  {% for h in v.history %}<li data-pcc-history-item="{{ h.revision_no }}">{{ pcc_t('UI_PCC_REVISION_LINE') }} {{ h.revision_no }} — {{ pcc_t('UI_PCC_KIND_' ~ h.kind) }}{% if h["values"] %}: {% for item in h["values"] %}{{ item.role }} = {{ item.text if item.text is not none else pcc_t('UI_PCC_VALUE_NOT_ENTERED') }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</li>{% endfor %}
+  {% for h in v.history %}<li data-pcc-history-item="{{ h.revision_no }}">{{ pcc_t('UI_PCC_REVISION_LINE') }} <bdi dir="ltr">{{ h.revision_no }}</bdi> — {{ pcc_t('UI_PCC_KIND_' ~ h.kind) }}{% if h["values"] %}: {% for item in h["values"] %}<bdi dir="ltr" data-pcc-history-value="{{ item.role }}">{% set shown = pcc_value(item.text) %}{{ item.role }} = {% if shown == item.text %}{{ shown }}{% else %}<bdi dir="auto">{{ shown }}</bdi>{% endif %}</bdi>{% if not loop.last %}{{ '، ' if pcc_lang == 'ar' else ', ' }}{% endif %}{% endfor %}{% endif %}</li>{% endfor %}
 </ul>
 {% endif %}
 <p class="pcc-small">{{ pcc_t('UI_PCC_HISTORICAL_NOTE') }}</p>

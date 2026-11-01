@@ -421,6 +421,7 @@ from web import cap01_guidance  # Stage 18 / CAP-01: bounded presentation-profil
 from engine import mechanical_planar_clearance as _pcc
 from engine import mechanical_planar_clearance_method as _pcc_method
 from web import planar_clearance as _pcc_view
+from jinja2 import pass_context as _jinja_pass_context
 
 # --- G-SC0 Bounded Security Containment: runtime security configuration -------
 # Runtime debug, host, and the Flask secret are environment-controlled with safe
@@ -7706,6 +7707,9 @@ def show_deliverable(sid):
         # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the declared planar clearance
         # (ONE store snapshot; the SAME presentation model as the page).
         planar_clearance_report=_planar_clearance_report_view(sid, state),
+        # BOARD-ENCLOSURE-ARABIC-QUALIFICATION-01: the section's language is the
+        # report document's own language (the existing deliverable language).
+        pcc_lang=_deliverable_document_lang(),
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
@@ -7905,6 +7909,7 @@ def download_deliverable_pdf(sid):
             # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the SAME planar clearance
             # presentation model as the HTML report and the page.
             planar_clearance_report=_planar_clearance_report_view(sid, state),
+            pcc_lang=_deliverable_document_lang(),   # the PDF document's language
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),
@@ -11501,48 +11506,73 @@ _PCC_HEAD_RE = re.compile(r"^(none|0|[1-9][0-9]?)$")
 _PCC_COUNT_RE = re.compile(r"^(0|[1-9][0-9]{0,8})$")
 
 
-def _pcc_text(key):
-    """English-first copy of this journey (method contract §14)."""
-    return ui_text.text(key, "en")
+def _pcc_lang_of(context):
+    """The presentation language of ONE clearance rendering: the explicit
+    ``pcc_lang`` the caller passed (the page passes the interface language, the
+    report / PDF their own document language), else the interface language.
+    Presentation only: no stored value, outcome or identity depends on it."""
+    lang = context.get("pcc_lang") if context is not None else None
+    return ui_text.normalize(lang or _current_ui_lang())
 
 
-def _pcc_artifact_or_none():
-    try:
-        return _pcc.load_artifact()
-    except _pcc.PlanarClearanceKnowledgeError:
-        return None
+@_jinja_pass_context
+def _pcc_text(context, key):
+    """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 copy in the rendering's language
+    (BOARD-ENCLOSURE-ARABIC-QUALIFICATION-01: English and Arabic)."""
+    return ui_text.text(key, _pcc_lang_of(context))
 
 
-def _pcc_statement(declaration_id):
-    artifact = _pcc_artifact_or_none()
-    if artifact is None:
+@_jinja_pass_context
+def _pcc_statement(context, declaration_id):
+    """One applicability statement. Its English variant is the governed
+    artifact's statement word for word (pinned by a test); the Arabic variant
+    translates that one meaning. An unknown id renders as the id itself."""
+    key = "UI_PCC_DECL_" + str(declaration_id)
+    if not ui_text.has_string(key):
         return declaration_id
-    for entry in artifact["declarations"]:
-        if entry["declaration_id"] == declaration_id:
-            return entry["statement"]
-    return declaration_id
+    return ui_text.text(key, _pcc_lang_of(context))
 
 
-def _pcc_disclosure():
-    artifact = _pcc_artifact_or_none()
-    if artifact is None:
-        # the fixed meaning stays visible even when the artifact cannot be read
-        return [_pcc_text("UI_PCC_OUTCOME_COULD_NOT_BE_COMPUTED")]
-    return list(artifact["disclosure"])
+@_jinja_pass_context
+def _pcc_disclosure(context):
+    """The seven fixed disclosure lines (governed artifact order)."""
+    lang = _pcc_lang_of(context)
+    lines = []
+    n = 1
+    while ui_text.has_string("UI_PCC_DISCLOSURE_%d" % n):
+        lines.append(ui_text.text("UI_PCC_DISCLOSURE_%d" % n, lang))
+        n += 1
+    return lines
 
 
-def _pcc_missing(item):
+@_jinja_pass_context
+def _pcc_missing(context, item):
+    lang = _pcc_lang_of(context)
     if item in _pcc.VALUE_ROLES:
-        return _pcc_text("UI_PCC_VALUE_" + item)
+        return ui_text.text("UI_PCC_VALUE_" + item, lang)
     if item == _pcc.MISSING_REGION_DESCRIPTION:
-        return _pcc_text("UI_PCC_REGION_DESCRIPTION")
-    return "%s (%s)" % (_pcc_statement(item), _pcc_text("UI_PCC_ANSWER_NONE"))
+        return ui_text.text("UI_PCC_REGION_DESCRIPTION", lang)
+    return "%s (%s)" % (_pcc_statement(context, item), ui_text.text("UI_PCC_ANSWER_NONE", lang))
+
+
+@_jinja_pass_context
+def _pcc_value(context, text):
+    """A stored value as displayed: the exact decimal text unchanged, or the
+    localized word for the explicit ``unknown`` token / a value not entered.
+    The stored token itself is never rewritten."""
+    lang = _pcc_lang_of(context)
+    if text is None or text == "":
+        return ui_text.text("UI_PCC_VALUE_NOT_ENTERED", lang)
+    if text == _pcc.VALUE_UNKNOWN:
+        return ui_text.text("UI_PCC_VALUE_UNKNOWN", lang)
+    return text
 
 
 app.jinja_env.globals["pcc_t"] = _pcc_text
 app.jinja_env.globals["pcc_statement"] = _pcc_statement
 app.jinja_env.globals["pcc_disclosure"] = _pcc_disclosure
 app.jinja_env.globals["pcc_missing"] = _pcc_missing
+app.jinja_env.globals["pcc_value"] = _pcc_value
 
 
 def _pcc_submission_key(sid, nonce, action):
@@ -11591,7 +11621,7 @@ def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=No
         view["raw_material"] if view else None)
     response = make_response(render_template(
         "planar_clearance.html", sid=sid, v=view, form=form, error=error,
-        notice=notice,
+        notice=notice, pcc_lang=_current_ui_lang(),
         submission=_fresh_submission_identity(sid, _PCC_SAVE_DOMAIN),
         withdraw_submission=_fresh_submission_identity(sid, _PCC_WITHDRAW_DOMAIN),
         value_roles=_pcc.VALUE_ROLES, value_max=_pcc.MAX_VALUE_CHARS,
@@ -11883,6 +11913,15 @@ def planar_clearance_withdraw(sid, interface_id):
                 and stored.revision_no == int(raw_head) + 1)
 
     return _pcc_write(sid, interface_id, "withdraw", build, same)
+
+
+def _deliverable_document_lang():
+    """The language of the report / PDF document being rendered. The existing
+    deliverable has no separate output-language request: the whole document is
+    rendered in the interface language through ``t``. The planar clearance
+    section follows the DOCUMENT's language through this one seam rather than
+    reading the interface language on its own."""
+    return _current_ui_lang()
 
 
 def _planar_clearance_report_view(sid, state):
