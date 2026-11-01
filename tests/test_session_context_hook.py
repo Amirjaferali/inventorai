@@ -452,6 +452,10 @@ def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
             "no English wording may be hard-coded as engineering semantics",
             "multilingual human review is PAUSED and incomplete", "one-run restriction",
             "not copied here", "not a campaign verdict", "resuming that scoring is not the current instruction",
+            # the earlier dated Proof B ordering is reconciled, not left contradictory
+            "On ordering only, this sequencing supersedes the earlier dated §9.5 statements",
+            "Proof B is paused, not completed or cancelled",
+            "a CAD demonstration does not replace the current qualification work",
             # insights: candidates with owners, evidence limits and blockers
             "candidates, not a roadmap", "not an engine, ontology, store or owner",
             "No new planner or question engine", "No automatic sourcing, component selection or assumed values",

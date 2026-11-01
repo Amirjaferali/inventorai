@@ -418,7 +418,12 @@ multilingual human review is PAUSED and incomplete: its frozen pack, campaign 01
 Owner's prior ratings and the unresolved scoring disagreements (held outside this repository and
 not copied here) are preserved. English diagnostic analysis is not a campaign verdict, independent
 human qualification or a production PASS. Earlier handovers that name G04-ar-msa as the next
-scoring step are historical; resuming that scoring is not the current instruction.
+scoring step are historical; resuming that scoring is not the current instruction. On ordering
+only, this sequencing supersedes the earlier dated §9.5 statements that Proof B "is the current
+evaluation" (G1 table), that "the authorized Proof B work completes first" (G1-3/4 note) and the
+"current Proof B task" (Continuation and holds): Proof B is paused, not completed or cancelled;
+PR #890 HOLD, D4 BLOCKED and the rule that a CAD demonstration does not replace the current
+qualification work are unchanged.
 
 **G1 research insights (candidates, not a roadmap; none is a prerequisite of the first journey
 unless an authorized slice needs it).**
