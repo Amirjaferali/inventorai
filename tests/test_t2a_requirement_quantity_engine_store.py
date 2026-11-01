@@ -614,6 +614,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "engine_version_adoptions", "evidence_references",
                       "integration_evidence_anchors",   # Stage 15 closure
                       "need_routing_revisions",
+                      "planar_clearance_revisions",   # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01
                       "project_component_revisions",   # COMPONENT-INVENTORY-CORRECT-WITHDRAW-01
                       "project_components",   # COMPONENT-INVENTORY-DECLARE-LIST-01
                       "project_subsystems",   # Stage 15 Slice 1 sidecar
@@ -627,6 +628,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "subsystem_interface_components",   # COMPONENT-INTERFACE-PARTICIPATION-01
                       "subsystem_interface_dependencies",   # Stage 15 closure
                       "subsystem_interface_observations",   # Stage 15 Slice 4
+                      "subsystem_interface_participation_epochs",   # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01
                       "subsystem_interface_preparations",   # Stage 15 Slice 3
                       "subsystem_interfaces",   # Stage 15 Slice 2 sidecar
                       "subsystem_part_answers",   # Stage 28 Optional Part Slice 2
