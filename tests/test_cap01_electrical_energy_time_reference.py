@@ -402,7 +402,8 @@ def test_t11_the_shared_calculation_and_unit_inventory_is_unchanged():
         "electrical:dc_constant_current_charge",
         "electrical:pwm_average_voltage",
         "mechanical:spring_mass_natural_frequency",
-        "mechanical:free_linear_thermal_expansion"}
+        "mechanical:free_linear_thermal_expansion",
+        "mechanical:planar_centered_rectangular_clearance"}
 
 
 def test_t12_no_input_control_numeric_result_or_state_change(client, monkeypatch):

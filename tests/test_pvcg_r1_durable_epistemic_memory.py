@@ -536,6 +536,11 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       # Integration evidence row (no payload) — not a ledger.
                       "integration_evidence_anchors",
                       "need_routing_revisions",
+                      # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the inventor's
+                      # append-only planar clearance INPUTS (typed columns, no
+                      # payload, no disposition, never replayed; no result is
+                      # stored) — not a ledger.
+                      "planar_clearance_revisions",
                       # COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the append-only
                       # correction / withdrawal history of declared components
                       # (component-local, no disposition) — not a ledger.
@@ -564,6 +569,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       # Stage 15 Slice 4 append-only interface observations
                       # (no payload, no disposition) — not a ledger either.
                       "subsystem_interface_observations",
+                      # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the participation
+                      # removal generation per (interface, component) — a
+                      # counter, no payload, no disposition — not a ledger.
+                      "subsystem_interface_participation_epochs",
                       # Stage 15 Slice 3 current-value sidecar (preparation
                       # inputs per interface) — not a second ledger either.
                       "subsystem_interface_preparations",

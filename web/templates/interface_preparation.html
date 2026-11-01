@@ -178,6 +178,9 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
   {% else %}
   <p class="guidance" data-icp-no-components>{{ t('UI_ICP_NO_COMPONENTS') }} <a href="{{ url_for('show_session', sid=sid) }}#component-inventory">{{ t('UI_ICP_LINK_COMPONENTS') }}</a></p>
   {% endif %}
+  {#- BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the optional planar clearance check
+      of THIS interaction (its own page; English-first). -#}
+  <p class="guidance" data-pcc-link><a href="{{ url_for('planar_clearance_page', sid=sid, interface_id=ifc.interface_id) }}" lang="en" dir="ltr">{{ pcc_t('UI_PCC_LINK') }}</a> <span lang="en" dir="ltr">{{ pcc_t('UI_PCC_LINK_NOTE') }}</span></p>
 </div>
 {% endfor %}
 {% endif %}

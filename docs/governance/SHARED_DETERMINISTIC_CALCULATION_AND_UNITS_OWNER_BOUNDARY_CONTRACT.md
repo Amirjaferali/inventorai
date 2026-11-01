@@ -146,6 +146,16 @@ token (`linear_thermal_expansion_coefficient` / `1/K`) and nothing more — no c
 `µm/(m·K)` or `10⁻⁶/K`, no property framework, and no second meaning for the existing `length` / `mm` or
 `temperature_difference` / `K` records; §13K and every earlier section and clause — including §§7–10, §12 and §14 — are
 unchanged. No result is transferred between this method and any other, THERM-01 included.
+CORRECTION 14: `CORRECTION 14 — BOUNDED FOURTEENTH ADMISSION (MECHANICAL PLANAR CENTERED RECTANGULAR CLEARANCE) —
+OWNER-AUTHORIZED WITH ITS IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment
+`BOARD-ENCLOSURE-PLANAR-CLEARANCE-01`, which implements it in the same pull request under the
+[planar centered rectangular clearance method contract](MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md).
+Applicability: it takes effect only on the verified merge of that pull request into
+`feature/atomic-json-session-persistence`; on its proposal branch it is an Owner-authorized proposed amendment. It ADDS
+§13M and one bullet to §16. It admits exactly one further method on the EXISTING `length` / `mm` kind and token and nothing
+more — no new kind, token, unit record, source-use record, alias or conversion; §13L and every earlier section and clause —
+including §§7–10, §12 and §14 — are unchanged. Its exclusion of "clearance adequacy" in §13L is narrowed for this ONE
+declared nominal planar comparison only.
 
 ---
 
@@ -1029,6 +1039,43 @@ to EXACTLY the following and nothing more.
   coefficient; any result transfer between calculations; a materials framework or generic property owner; persistence
   (§12); provider, AI, external-tool or external-library execution; and every other §13 / §13A–§13K exclusion.
 
+## 13M. Bounded fourteenth admission — Mechanical planar centered rectangular clearance (Correction 14)
+
+The delivered thirteenth admission (§13L) is expanded, by the Owner-authorized increment named in the CORRECTION 14 header,
+to EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner, unchanged in role: no geometry library, solver, placement search, CAD or
+  compatibility engine, unit registry or persistence is created, and the owner acquires no scientific authority.
+- **Methods — exactly fourteen:** the thirteen of §13L plus `mechanical:planar_centered_rectangular_clearance` 1.0, whose
+  technical authority stays outside this owner (§3), in its own Mechanical method-authority artifact
+  `mechanical_planar_centered_rectangular_clearance` version 1: for ONE rectangular board placed centered and axis-aligned
+  in ONE rectangular unobstructed usable region at the board plane, `margin_x = (region_x − board_x)/2 − c` and
+  `margin_y = (region_y − board_y)/2 − c`, InventorAI's original derivation. The geometric decision (met exactly when both
+  margins are nonnegative) is made by the method consumer on the exact entered decimals, never by this owner.
+- **Consumers — exactly fourteen:** the existing thirteen and one planar clearance consumer, whose inputs are the
+  inventor's stored, revisioned declaration (method contract §8), read by the web layer and passed as typed numbers. No
+  consumer imports another, and no method-authority artifact loads another at execution.
+- **Quantity kinds and exact unit tokens: none added.** Every role uses the existing `length` / `mm` record (`dcu:U002`)
+  unchanged; no conversion, alias or second token.
+- **Condition vocabulary.** Unchanged. The method declares the existing `greater_than_zero` on the four dimensions and no
+  result range (margins are signed); `c ≥ 0` is method-authority content checked by the consumer before the owner and by
+  the adapter as an integrity failure.
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; no registry or discovery.
+- **Versions.** The shared-owner artifact moves to content version `14` and the implementation to `1.13.0`. No new unit
+  or source-use record; every content-version-13 record is unchanged.
+- **Numerical policy.** §10 applies unchanged: typed binary64 numbers only. The method's decimal grammar, exact-decimal
+  decision, binary acceptance (one correct rounding of the exact margin of the binary inputs; `+0.0` for an exact zero),
+  its bridge acceptance (an absolute / mixed bound derived from the inputs, never a relative test against zero) and its
+  exact display are method-authority content (method contract §6), not a generic owner policy.
+- **Persistence.** §12 unchanged: no numerical result is stored; the inventor's INPUTS are stored by the Stage-15
+  declaration owner, not by this owner.
+- **Existing methods preserved.** All thirteen earlier methods, their artifacts, pins and behaviour stay unchanged;
+  bounded updates to assertions on the owner content version, the implementation version, the closed inventory and the
+  binding count, caused only by this admission, are expected and allowed.
+- **Still excluded:** a fifteenth method; rotation or placement search; tolerances; any other fit, insertion, height,
+  connector, mounting, electrical-clearance, thermal, strength or safety evaluation; general compatibility evaluation;
+  result persistence; external-library, provider or AI execution; and every other §13 / §13A–§13L exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -1089,6 +1136,8 @@ to EXACTLY the following and nothing more.
   risk-appropriate verification.
 - Correction 13 (§13L) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
+- Correction 14 (§13M) is Owner-authorized together with its bounded implementation (BOARD-ENCLOSURE-PLANAR-CLEARANCE-01),
+  under the same proportionate, risk-appropriate verification.
 
 ## 17. Non-authorization (restated)
 

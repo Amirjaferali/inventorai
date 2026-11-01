@@ -189,6 +189,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from engine import domain_activation
+from engine import mechanical_planar_clearance as _pcc
 from engine.idea_state import OWNER_STATED, UNVALIDATED
 
 
@@ -1776,3 +1777,491 @@ def participation_preparation_target(inventory, interfaces, participations,
         return None
     return ParticipationPreparation(interface_id=interface_id, component_id=component_id,
                                     **values)
+
+
+# --- BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the board-enclosure planar clearance
+# declaration ------------------------------------------------------------------
+# For ONE existing declared interaction of a valid integrated composition the
+# inventor may declare which of TWO DISTINCT current participants is the board
+# and which the enclosure, describe the board plane / selected usable region,
+# and enter the nominal dimensions, the required clearance per side, optional
+# basis notes and the eight applicability answers of the method contract
+# (MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md §5).
+# These are INPUTS only - OWNER_STATED / UNVALIDATED by construction; no result
+# is stored (calc/units §12): the comparison is derived on every read.
+#
+# Lifecycle: revision 0 declares an identity (``pcd-``); corrections append the
+# COMPLETE new material (at most 20); ONE terminal withdrawal is reserved and
+# available whatever the corrections used. History is never rewritten and a
+# withdrawal is not erasure. At most ONE active declaration per interaction and
+# at most 50 lifetime identities per project (resource limits only).
+#
+# Binding: every material revision records the board and enclosure component
+# revision positions and each one's participation removal generation (the
+# counter the participation writer increments when it removes that
+# participation). A component correction or withdrawal, a lost participation,
+# or a removal followed by re-addition therefore leaves the declaration
+# NEEDS RECONFIRMATION - never silently revived - until the inventor rebinds
+# it explicitly with a new correction. Rendering never writes.
+PLANAR_CLEARANCE_DECLARED = "DECLARED"
+PLANAR_CLEARANCE_CORRECTED = "CORRECTED"
+PLANAR_CLEARANCE_WITHDRAWN = "WITHDRAWN"
+PLANAR_CLEARANCE_KINDS = (PLANAR_CLEARANCE_DECLARED, PLANAR_CLEARANCE_CORRECTED,
+                          PLANAR_CLEARANCE_WITHDRAWN)
+MAX_PLANAR_CLEARANCE_IDENTITIES_PER_PROJECT = 50
+MAX_PLANAR_CLEARANCE_CORRECTIONS = 20
+# revision 0 + 20 corrections + one reserved terminal withdrawal
+MAX_PLANAR_CLEARANCE_REVISION_NO = MAX_PLANAR_CLEARANCE_CORRECTIONS + 1
+MAX_PLANAR_CLEARANCE_TEXT_LENGTH = 300
+MAX_PLANAR_CLEARANCE_VERSION_TEXT = 80
+PLANAR_CLEARANCE_BASIS_FIELDS = ("basis_board", "basis_region", "basis_clearance")
+_PLANAR_CLEARANCE_ID_RE = re.compile(r"^pcd-[0-9a-f]{32}$")
+_PLANAR_CLEARANCE_REVISION_ID_RE = re.compile(r"^pcr-[0-9a-f]{32}$")
+
+# Binding issues (why a declaration needs reconfirmation), with the role.
+PCC_ISSUE_COMPONENT_WITHDRAWN = "COMPONENT_WITHDRAWN"
+PCC_ISSUE_COMPONENT_CHANGED = "COMPONENT_CHANGED"
+PCC_ISSUE_NOT_PARTICIPATING = "NOT_PARTICIPATING"
+PCC_ISSUE_PARTICIPATION_CHANGED = "PARTICIPATION_CHANGED"
+PCC_ISSUE_METHOD_CHANGED = "METHOD_CHANGED"
+PCC_ROLE_BOARD = "board"
+PCC_ROLE_ENCLOSURE = "enclosure"
+
+
+class PlanarClearanceError(ValueError):
+    """A submitted or stored planar clearance declaration violates the bounded
+    contract. Structural message only - never user text."""
+
+
+class PlanarClearanceUnknown(PlanarClearanceError):
+    """The revision names no declaration of this project."""
+
+
+class PlanarClearanceStale(PlanarClearanceError):
+    """The declaration, a component or a participation changed since the
+    form was shown."""
+
+
+class PlanarClearanceAlreadyWithdrawn(PlanarClearanceError):
+    """The declaration is withdrawn: withdrawal is terminal."""
+
+
+class PlanarClearanceCorrectionLimit(PlanarClearanceError):
+    """The declaration holds the maximum number of corrections."""
+
+
+class PlanarClearanceIdentityLimit(PlanarClearanceError):
+    """The project holds the maximum number of declaration identities."""
+
+
+class PlanarClearanceActiveExists(PlanarClearanceError):
+    """The interaction already has an active declaration (correct it)."""
+
+
+class PlanarClearanceUnchanged(PlanarClearanceError):
+    """A correction that restates the current material and bindings exactly."""
+
+
+class PlanarClearanceNotEligible(PlanarClearanceError):
+    """The named components are not two distinct current participants of the
+    interaction (or are not active components of this project)."""
+
+
+@dataclass(frozen=True)
+class PlanarClearanceMaterial:
+    """The COMPLETE inventor material of one revision. ``values`` follows
+    ``_pcc.VALUE_ROLES`` (exact decimal text, ``"unknown"`` or ``None``);
+    ``basis`` follows ``PLANAR_CLEARANCE_BASIS_FIELDS``; ``applicability``
+    follows ``_pcc.DECLARATION_IDS`` (answer or ``None``)."""
+    interface_id: str
+    board_component_id: str
+    enclosure_component_id: str
+    board_component_revision: int
+    enclosure_component_revision: int
+    board_participation_epoch: int
+    enclosure_participation_epoch: int
+    axis_pairing: str
+    region_description: Optional[str]
+    values: tuple
+    basis: tuple
+    applicability: tuple
+    method_id: str
+    method_version: str
+    declaration_version: str
+
+    def values_map(self):
+        return dict(zip(_pcc.VALUE_ROLES, self.values))
+
+    def basis_map(self):
+        return dict(zip(PLANAR_CLEARANCE_BASIS_FIELDS, self.basis))
+
+    def applicability_map(self):
+        return dict(zip(_pcc.DECLARATION_IDS, self.applicability))
+
+    def evaluation_input(self):
+        """The material the method consumer evaluates (§7)."""
+        return {"values": self.values_map(),
+                "region_description": self.region_description,
+                "applicability": self.applicability_map()}
+
+
+@dataclass(frozen=True)
+class PlanarClearanceRevision:
+    """ONE append-only revision. A WITHDRAWN revision carries no material."""
+    revision_id: str
+    declaration_id: str
+    revision_no: int
+    kind: str
+    interface_id: str
+    material: Optional[PlanarClearanceMaterial]
+    provenance: str = OWNER_STATED
+    validation_state: str = UNVALIDATED
+
+
+@dataclass(frozen=True)
+class PlanarClearanceRecord:
+    """ONE declaration identity with its validated history, oldest first.
+    ``current`` is the latest material revision (``None`` never: revision 0
+    always carries material); ``head_revision_no`` the latest position."""
+    declaration_id: str
+    interface_id: str
+    revisions: tuple
+    withdrawn: bool
+
+    @property
+    def head(self):
+        return self.revisions[-1]
+
+    @property
+    def head_revision_no(self):
+        return self.revisions[-1].revision_no
+
+    @property
+    def current_revision(self):
+        return [r for r in self.revisions if r.material is not None][-1]
+
+    @property
+    def current(self):
+        return self.current_revision.material
+
+    @property
+    def corrections(self):
+        return len([r for r in self.revisions if r.kind == PLANAR_CLEARANCE_CORRECTED])
+
+
+@dataclass(frozen=True)
+class PlanarClearanceLedger:
+    """The ONE authoritative projection of a project's declarations, in order
+    of first declaration."""
+    records: tuple
+
+    def record_for(self, declaration_id):
+        for record in self.records:
+            if record.declaration_id == declaration_id:
+                return record
+        return None
+
+    def active_for(self, interface_id):
+        for record in self.records:
+            if record.interface_id == interface_id and not record.withdrawn:
+                return record
+        return None
+
+    def history_for(self, interface_id):
+        return tuple(r for r in self.records if r.interface_id == interface_id)
+
+
+def new_planar_clearance_id():
+    return "pcd-" + uuid.uuid4().hex
+
+
+def new_planar_clearance_revision_id():
+    return "pcr-" + uuid.uuid4().hex
+
+
+def is_valid_planar_clearance_id(value):
+    return isinstance(value, str) and bool(_PLANAR_CLEARANCE_ID_RE.match(value))
+
+
+def is_valid_planar_clearance_revision_id(value):
+    return isinstance(value, str) and bool(_PLANAR_CLEARANCE_REVISION_ID_RE.match(value))
+
+
+def valid_planar_clearance_text(value):
+    """A stored description or basis note: non-empty, already trimmed, at most
+    300 characters, free of NUL."""
+    return valid_subsystem_text(value, MAX_PLANAR_CLEARANCE_TEXT_LENGTH)
+
+
+def valid_planar_clearance_value(role, value):
+    """``None`` (not entered), ``"unknown"`` or an admitted exact decimal."""
+    return value is None or value == _pcc.VALUE_UNKNOWN \
+        or _pcc.is_admitted_value(role, value)
+
+
+def _is_count(value, upper=None):
+    return (isinstance(value, int) and not isinstance(value, bool) and value >= 0
+            and (upper is None or value <= upper))
+
+
+def check_planar_clearance_material(material, interfaces, inventory):
+    """Shape-validate ONE stored or proposed material against the project's
+    interactions and DECLARED components (active or withdrawn: a stored
+    binding to a later-withdrawn component is valid history). Raises
+    ``PlanarClearanceError``."""
+    if not isinstance(material, PlanarClearanceMaterial):
+        raise PlanarClearanceError("not a planar clearance material")
+    if not isinstance(inventory, ComponentInventory):
+        raise PlanarClearanceError("no validated inventory")
+    if material.interface_id not in {i.interface_id for i in interfaces or ()}:
+        raise PlanarClearanceError("the material names no interaction of this project")
+    for component_id in (material.board_component_id, material.enclosure_component_id):
+        if not is_valid_component_id(component_id) \
+                or inventory.record_for(component_id) is None:
+            raise PlanarClearanceError("the material names no component of this project")
+    if material.board_component_id == material.enclosure_component_id:
+        raise PlanarClearanceError("board and enclosure are the same component")
+    for count in (material.board_component_revision, material.enclosure_component_revision):
+        if not _is_count(count, MAX_REVISIONS_PER_COMPONENT):
+            raise PlanarClearanceError("component revision position out of range")
+    for count in (material.board_participation_epoch, material.enclosure_participation_epoch):
+        if not _is_count(count):
+            raise PlanarClearanceError("participation generation malformed")
+    if material.axis_pairing != _pcc.AXIS_PAIRING:
+        raise PlanarClearanceError("unknown axis pairing")
+    if material.region_description is not None \
+            and not valid_planar_clearance_text(material.region_description):
+        raise PlanarClearanceError("region description invalid")
+    if not isinstance(material.values, tuple) \
+            or len(material.values) != len(_pcc.VALUE_ROLES) \
+            or not all(valid_planar_clearance_value(role, value)
+                       for role, value in zip(_pcc.VALUE_ROLES, material.values)):
+        raise PlanarClearanceError("values malformed")
+    if not isinstance(material.basis, tuple) \
+            or len(material.basis) != len(PLANAR_CLEARANCE_BASIS_FIELDS) \
+            or not all(v is None or valid_planar_clearance_text(v) for v in material.basis):
+        raise PlanarClearanceError("basis notes malformed")
+    if not isinstance(material.applicability, tuple) \
+            or len(material.applicability) != len(_pcc.DECLARATION_IDS) \
+            or not all(v is None or v in _pcc.ANSWERS for v in material.applicability):
+        raise PlanarClearanceError("applicability answers malformed")
+    for text in (material.method_id, material.method_version, material.declaration_version):
+        if not valid_subsystem_text(text, MAX_PLANAR_CLEARANCE_VERSION_TEXT):
+            raise PlanarClearanceError("version identity malformed")
+    return material
+
+
+def project_planar_clearance(revisions, interfaces, inventory):
+    """Validate a project's COMPLETE declaration history WHOLE and return the
+    ``PlanarClearanceLedger``, or raise ``PlanarClearanceError`` (nothing
+    partial). Each identity: positions exactly 0..k; revision 0 DECLARED,
+    then CORRECTED (at most 20), then at most one terminal WITHDRAWN; one
+    interaction for life; distinct revision ids; at most one active identity
+    per interaction and at most 50 identities per project."""
+    by_id, order, seen = {}, [], set()
+    for rev in tuple(revisions or ()):
+        if not isinstance(rev, PlanarClearanceRevision):
+            raise PlanarClearanceError("history entry is not a revision")
+        if not is_valid_planar_clearance_id(rev.declaration_id) \
+                or not is_valid_planar_clearance_revision_id(rev.revision_id):
+            raise PlanarClearanceError("identity malformed")
+        if rev.revision_id in seen:
+            raise PlanarClearanceError("revision identity duplicated")
+        seen.add(rev.revision_id)
+        if rev.provenance != OWNER_STATED or rev.validation_state != UNVALIDATED:
+            raise PlanarClearanceError("provenance / validation state invalid")
+        if not _is_count(rev.revision_no, MAX_PLANAR_CLEARANCE_REVISION_NO) \
+                or rev.kind not in PLANAR_CLEARANCE_KINDS:
+            raise PlanarClearanceError("revision position or kind invalid")
+        if rev.kind == PLANAR_CLEARANCE_WITHDRAWN:
+            if rev.material is not None:
+                raise PlanarClearanceError("a withdrawal carries material")
+            if rev.interface_id not in {i.interface_id for i in interfaces or ()}:
+                raise PlanarClearanceError("withdrawal names no interaction")
+        else:
+            check_planar_clearance_material(rev.material, interfaces, inventory)
+            if rev.material.interface_id != rev.interface_id:
+                raise PlanarClearanceError("material interaction mismatch")
+        if rev.declaration_id not in by_id:
+            by_id[rev.declaration_id] = []
+            order.append(rev.declaration_id)
+        by_id[rev.declaration_id].append(rev)
+    if len(order) > MAX_PLANAR_CLEARANCE_IDENTITIES_PER_PROJECT:
+        raise PlanarClearanceError("too many declaration identities")
+    records, active = [], set()
+    for declaration_id in order:
+        history = sorted(by_id[declaration_id], key=lambda r: r.revision_no)
+        if [r.revision_no for r in history] != list(range(len(history))):
+            raise PlanarClearanceError("history is not one contiguous chain")
+        kinds = [r.kind for r in history]
+        if kinds[0] != PLANAR_CLEARANCE_DECLARED \
+                or any(k != PLANAR_CLEARANCE_CORRECTED for k in kinds[1:-1]) \
+                or (len(kinds) > 1 and kinds[-1] == PLANAR_CLEARANCE_DECLARED):
+            raise PlanarClearanceError("history kinds out of order")
+        corrections = kinds.count(PLANAR_CLEARANCE_CORRECTED)
+        if corrections > MAX_PLANAR_CLEARANCE_CORRECTIONS:
+            raise PlanarClearanceError("too many corrections")
+        if len({r.interface_id for r in history}) != 1:
+            raise PlanarClearanceError("declaration changed interaction")
+        withdrawn = kinds[-1] == PLANAR_CLEARANCE_WITHDRAWN
+        interface_id = history[0].interface_id
+        if not withdrawn:
+            if interface_id in active:
+                raise PlanarClearanceError("two active declarations for one interaction")
+            active.add(interface_id)
+        records.append(PlanarClearanceRecord(
+            declaration_id=declaration_id, interface_id=interface_id,
+            revisions=tuple(history), withdrawn=withdrawn))
+    return PlanarClearanceLedger(records=tuple(records))
+
+
+def planar_clearance_binding_issues(material, inventory, participations, epochs):
+    """Why a CURRENT material needs reconfirmation, as a tuple of
+    ``(issue, role)`` in a fixed order; empty when every binding still holds.
+    ``participations`` must already be validated; ``epochs`` maps
+    ``(interface_id, component_id)`` to the removal generation (absent = 0)."""
+    issues = []
+    current = current_interface_participants(participations, inventory.active)
+    participants = current.get(material.interface_id, ())
+    for role, component_id, revision, epoch in (
+            (PCC_ROLE_BOARD, material.board_component_id,
+             material.board_component_revision, material.board_participation_epoch),
+            (PCC_ROLE_ENCLOSURE, material.enclosure_component_id,
+             material.enclosure_component_revision,
+             material.enclosure_participation_epoch)):
+        record = inventory.record_for(component_id)
+        if record is None or record.withdrawn:
+            issues.append((PCC_ISSUE_COMPONENT_WITHDRAWN, role))
+            continue
+        if record.head_revision_no != revision:
+            issues.append((PCC_ISSUE_COMPONENT_CHANGED, role))
+        if component_id not in participants:
+            issues.append((PCC_ISSUE_NOT_PARTICIPATING, role))
+        elif epochs.get((material.interface_id, component_id), 0) != epoch:
+            issues.append((PCC_ISSUE_PARTICIPATION_CHANGED, role))
+    if (material.method_id, material.method_version, material.declaration_version) != (
+            _pcc.METHOD_ID, _pcc.METHOD_VERSION, _pcc.DECLARATION_VERSION):
+        issues.append((PCC_ISSUE_METHOD_CHANGED, None))
+    return tuple(issues)
+
+
+def planar_clearance_material(inventory, interfaces, participations, epochs,
+                              interface_id, board_component_id,
+                              enclosure_component_id, expected_board_revision,
+                              expected_enclosure_revision, expected_board_epoch,
+                              expected_enclosure_epoch, region_description,
+                              values, basis, applicability):
+    """Build the COMPLETE material of a new revision against CURRENT durable
+    truth: the interaction is this project's; the board and enclosure are two
+    distinct ACTIVE components that currently take part in it
+    (``PlanarClearanceNotEligible``); their revision positions and removal
+    generations equal what the form showed (``PlanarClearanceStale``); every
+    value, note and answer is admissible (``PlanarClearanceError``). The
+    bindings are stamped from durable truth, never from the client."""
+    if not isinstance(inventory, ComponentInventory):
+        raise PlanarClearanceError("no validated inventory")
+    if interface_id not in {i.interface_id for i in interfaces or ()}:
+        raise PlanarClearanceError("the id names no interaction of this project")
+    if board_component_id == enclosure_component_id:
+        raise PlanarClearanceNotEligible("board and enclosure must be different")
+    participants = current_interface_participants(
+        participations, inventory.active).get(interface_id, ())
+    stamped = []
+    for component_id, expected_revision, expected_epoch in (
+            (board_component_id, expected_board_revision, expected_board_epoch),
+            (enclosure_component_id, expected_enclosure_revision,
+             expected_enclosure_epoch)):
+        record = inventory.record_for(component_id) \
+            if is_valid_component_id(component_id) else None
+        if record is None or record.withdrawn or component_id not in participants:
+            raise PlanarClearanceNotEligible(
+                "the component is not a current participant of this interaction")
+        epoch = epochs.get((interface_id, component_id), 0)
+        if expected_revision != record.head_revision_no or expected_epoch != epoch:
+            raise PlanarClearanceStale("the component or participation changed")
+        stamped.append((record.head_revision_no, epoch))
+    material = PlanarClearanceMaterial(
+        interface_id=interface_id, board_component_id=board_component_id,
+        enclosure_component_id=enclosure_component_id,
+        board_component_revision=stamped[0][0],
+        enclosure_component_revision=stamped[1][0],
+        board_participation_epoch=stamped[0][1],
+        enclosure_participation_epoch=stamped[1][1],
+        axis_pairing=_pcc.AXIS_PAIRING, region_description=region_description,
+        values=tuple(values), basis=tuple(basis), applicability=tuple(applicability),
+        method_id=_pcc.METHOD_ID, method_version=_pcc.METHOD_VERSION,
+        declaration_version=_pcc.DECLARATION_VERSION)
+    return check_planar_clearance_material(material, interfaces, inventory)
+
+
+def declared_planar_clearance(ledger, material):
+    """Revision 0 of a NEW identity: no active declaration exists for the
+    interaction and an identity is left."""
+    if not isinstance(ledger, PlanarClearanceLedger):
+        raise PlanarClearanceError("no validated ledger")
+    if ledger.active_for(material.interface_id) is not None:
+        raise PlanarClearanceActiveExists("an active declaration exists")
+    if len(ledger.records) >= MAX_PLANAR_CLEARANCE_IDENTITIES_PER_PROJECT:
+        raise PlanarClearanceIdentityLimit("the identity limit is reached")
+    return PlanarClearanceRevision(
+        revision_id=new_planar_clearance_revision_id(),
+        declaration_id=new_planar_clearance_id(), revision_no=0,
+        kind=PLANAR_CLEARANCE_DECLARED, interface_id=material.interface_id,
+        material=material)
+
+
+def _revisable(ledger, declaration_id, expected_head):
+    if not isinstance(ledger, PlanarClearanceLedger):
+        raise PlanarClearanceError("no validated ledger")
+    record = ledger.record_for(declaration_id) \
+        if is_valid_planar_clearance_id(declaration_id) else None
+    if record is None:
+        raise PlanarClearanceUnknown("no such declaration")
+    if record.withdrawn:
+        raise PlanarClearanceAlreadyWithdrawn("the declaration is withdrawn")
+    if expected_head != record.head_revision_no:
+        raise PlanarClearanceStale("the declaration changed")
+    return record
+
+
+def corrected_planar_clearance(ledger, declaration_id, expected_head, material):
+    """The next CORRECTED revision with the COMPLETE new material (which may
+    rebind the board / enclosure); refuses an exact restatement."""
+    record = _revisable(ledger, declaration_id, expected_head)
+    if material.interface_id != record.interface_id:
+        raise PlanarClearanceError("a correction cannot change the interaction")
+    if record.corrections >= MAX_PLANAR_CLEARANCE_CORRECTIONS:
+        raise PlanarClearanceCorrectionLimit("the correction limit is reached")
+    if material == record.current:
+        raise PlanarClearanceUnchanged("the correction changes nothing")
+    return PlanarClearanceRevision(
+        revision_id=new_planar_clearance_revision_id(),
+        declaration_id=declaration_id, revision_no=record.head_revision_no + 1,
+        kind=PLANAR_CLEARANCE_CORRECTED, interface_id=record.interface_id,
+        material=material)
+
+
+def withdrawn_planar_clearance(ledger, declaration_id, expected_head):
+    """The ONE reserved terminal withdrawal (available whatever corrections
+    were used)."""
+    record = _revisable(ledger, declaration_id, expected_head)
+    return PlanarClearanceRevision(
+        revision_id=new_planar_clearance_revision_id(),
+        declaration_id=declaration_id, revision_no=record.head_revision_no + 1,
+        kind=PLANAR_CLEARANCE_WITHDRAWN, interface_id=record.interface_id,
+        material=None)
+
+
+def same_planar_clearance_action(stored, revision):
+    """True when ``revision`` restates the action ``stored`` committed: the
+    same kind, interaction and material, and - except for a first declaration,
+    whose identity is generated afresh on each attempt - the same identity and
+    position (the revision id, provenance and validation state are not
+    material)."""
+    if (stored.kind, stored.interface_id, stored.material) != (
+            revision.kind, revision.interface_id, revision.material):
+        return False
+    if stored.kind == PLANAR_CLEARANCE_DECLARED:
+        return revision.revision_no == 0
+    return (stored.declaration_id, stored.revision_no) == (
+        revision.declaration_id, revision.revision_no)

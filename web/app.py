@@ -188,6 +188,10 @@ from engine.record_store import (
     InterfaceParticipationStale as _InterfaceParticipationStale,
     InterfaceParticipationWithdrawn as _InterfaceParticipationWithdrawn,
     InterfaceParticipationsCorrupt as _InterfaceParticipationsCorrupt,
+    PlanarClearanceRejected as _PlanarClearanceRejected,
+    PlanarClearanceConflict as _PlanarClearanceConflict,
+    PlanarClearanceCorrupt as _PlanarClearanceCorrupt,
+    PLANAR_CLEARANCE_INSERTED as PLANAR_CLEARANCE_INSERTED_OUTCOME,
     INTERFACE_PARTICIPATION_UNCHANGED as _ICP_UNCHANGED,
     ParticipationPreparationRejected as _ParticipationPreparationRejected,
     ParticipationPreparationStale as _ParticipationPreparationStale,
@@ -412,6 +416,11 @@ from web.uncertainty_guidance import get_uncertainty_guidance  # GUS: display-on
 from web.result_feedback import get_result_feedback  # PLRF: display-only plain-language result feedback
 from web.domain_label import public_domain_label as _public_domain_label  # P6-1: central public label resolver (display-only)
 from web import cap01_guidance  # Stage 18 / CAP-01: bounded presentation-profile resolver (display-only)
+# BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the method consumer, its adapter (bound
+# once below) and the ONE shared presentation model of the page / report / PDF.
+from engine import mechanical_planar_clearance as _pcc
+from engine import mechanical_planar_clearance_method as _pcc_method
+from web import planar_clearance as _pcc_view
 
 # --- G-SC0 Bounded Security Containment: runtime security configuration -------
 # Runtime debug, host, and the Flask secret are environment-controlled with safe
@@ -7694,6 +7703,9 @@ def show_deliverable(sid):
         # COMPONENT-INTERFACE-PARTICIPATION-01: the components the inventor
         # said take part in each interaction (the SAME one store snapshot).
         participation_report=_participation_report_view(sid, state, pci_read),
+        # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the declared planar clearance
+        # (ONE store snapshot; the SAME presentation model as the page).
+        planar_clearance_report=_planar_clearance_report_view(sid, state),
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
@@ -7890,6 +7902,9 @@ def download_deliverable_pdf(sid):
             # COMPONENT-INTERFACE-PARTICIPATION-01: the SAME participation view
             # as the HTML report.
             participation_report=_participation_report_view(sid, state, pci_read),
+            # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the SAME planar clearance
+            # presentation model as the HTML report and the page.
+            planar_clearance_report=_planar_clearance_report_view(sid, state),
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),
@@ -11466,6 +11481,440 @@ def interface_participation(sid):
         return _icp_render(sid, notice=ICP_UNCHANGED_MESSAGE)
     # COMMITTED, or the requested set is confirmed durably present.
     return _icp_render(sid, notice=saved)
+
+
+# --- BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: board-enclosure planar clearance ----
+# ONE optional, nominal planar comparison for ONE declared interaction of a
+# valid integrated composition: the inventor names which of two current
+# participants is the board and which the enclosure, describes the board plane
+# and usable region and declares the nominal values and the eight applicability
+# answers (OWNER_STATED / UNVALIDATED inputs, revisioned in the record store).
+# The result is derived on every read from ONE coherent snapshot through the ONE
+# shared presentation model (``web/planar_clearance.py``); no result is stored.
+# English-first: the copy is English on both interfaces, with one localized
+# notice on the Arabic interface.
+_PCC_BINDING = _dcalc.bind_method(
+    _pcc_method.METHOD_ID, _pcc_method.METHOD_VERSION, _pcc_method.evaluate)
+_PCC_SAVE_DOMAIN = "pcc-save-submission-v1"
+_PCC_WITHDRAW_DOMAIN = "pcc-withdraw-submission-v1"
+_PCC_HEAD_RE = re.compile(r"^(none|0|[1-9][0-9]?)$")
+_PCC_COUNT_RE = re.compile(r"^(0|[1-9][0-9]{0,8})$")
+
+
+def _pcc_text(key):
+    """English-first copy of this journey (method contract §14)."""
+    return ui_text.text(key, "en")
+
+
+def _pcc_artifact_or_none():
+    try:
+        return _pcc.load_artifact()
+    except _pcc.PlanarClearanceKnowledgeError:
+        return None
+
+
+def _pcc_statement(declaration_id):
+    artifact = _pcc_artifact_or_none()
+    if artifact is None:
+        return declaration_id
+    for entry in artifact["declarations"]:
+        if entry["declaration_id"] == declaration_id:
+            return entry["statement"]
+    return declaration_id
+
+
+def _pcc_disclosure():
+    artifact = _pcc_artifact_or_none()
+    if artifact is None:
+        # the fixed meaning stays visible even when the artifact cannot be read
+        return [_pcc_text("UI_PCC_OUTCOME_COULD_NOT_BE_COMPUTED")]
+    return list(artifact["disclosure"])
+
+
+def _pcc_missing(item):
+    if item in _pcc.VALUE_ROLES:
+        return _pcc_text("UI_PCC_VALUE_" + item)
+    if item == _pcc.MISSING_REGION_DESCRIPTION:
+        return _pcc_text("UI_PCC_REGION_DESCRIPTION")
+    return "%s (%s)" % (_pcc_statement(item), _pcc_text("UI_PCC_ANSWER_NONE"))
+
+
+app.jinja_env.globals["pcc_t"] = _pcc_text
+app.jinja_env.globals["pcc_statement"] = _pcc_statement
+app.jinja_env.globals["pcc_disclosure"] = _pcc_disclosure
+app.jinja_env.globals["pcc_missing"] = _pcc_missing
+
+
+def _pcc_submission_key(sid, nonce, action):
+    """The durable submission identity of ONE action: HMAC over (action,
+    project, nonce) ONLY - never over the material."""
+    msg = _canonical_message("pcc-%s-action-v1" % action, sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _pcc_form_from_material(material):
+    values, unknown = {}, {}
+    for role, text in (material.values_map().items() if material else ()):
+        unknown[role] = text == _pcc.VALUE_UNKNOWN
+        values[role] = None if text in (None, _pcc.VALUE_UNKNOWN) else text
+    return {
+        "board": material.board_component_id if material else None,
+        "enclosure": material.enclosure_component_id if material else None,
+        "region_description": material.region_description if material else None,
+        "values": {r: values.get(r) for r in _pcc.VALUE_ROLES},
+        "unknown": {r: unknown.get(r, False) for r in _pcc.VALUE_ROLES},
+        "basis": dict(material.basis_map()) if material else
+                 {f: None for f in _subsystem_model.PLANAR_CLEARANCE_BASIS_FIELDS},
+        "applicability": dict(material.applicability_map()) if material else
+                         {d: None for d in _pcc.DECLARATION_IDS},
+    }
+
+
+def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=None):
+    """Render the page from CURRENT durable truth (ONE snapshot). An
+    unreadable snapshot renders UNAVAILABLE, never "nothing recorded"."""
+    view = None
+    try:
+        snapshot = _get_store().load_planar_clearance(sid)
+        view = _pcc_view.clearance_view(snapshot, interface_id, _PCC_BINDING)
+    except _ProjectNotFound:
+        return _deny_project()
+    except Exception:
+        snapshot = None
+        status = 503 if status == 200 else status
+    if snapshot is not None and view is None:
+        # an interaction that is not this project's: the same non-enumerating
+        # denial as any other foreign identity
+        return _deny_project()
+    form = draft if draft is not None else _pcc_form_from_material(
+        view["raw_material"] if view else None)
+    response = make_response(render_template(
+        "planar_clearance.html", sid=sid, v=view, form=form, error=error,
+        notice=notice,
+        submission=_fresh_submission_identity(sid, _PCC_SAVE_DOMAIN),
+        withdraw_submission=_fresh_submission_identity(sid, _PCC_WITHDRAW_DOMAIN),
+        value_roles=_pcc.VALUE_ROLES, value_max=_pcc.MAX_VALUE_CHARS,
+        basis_fields=_subsystem_model.PLANAR_CLEARANCE_BASIS_FIELDS,
+        text_max=_subsystem_model.MAX_PLANAR_CLEARANCE_TEXT_LENGTH,
+        declarations=_pcc.DECLARATIONS, answers=_pcc.ANSWERS), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/interface-clearance/<interface_id>", methods=["GET"])
+def planar_clearance_page(sid, interface_id):
+    """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 - the interaction's planar
+    clearance page. Read-only: rendering never writes."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _subsystem_model.is_valid_interface_id(interface_id):
+        return _deny_project()
+    return _pcc_render(sid, interface_id)
+
+
+def _pcc_single(name):
+    values = request.form.getlist(name)
+    if len(values) > 1:
+        raise ValueError(name)
+    return values[0] if values else ""
+
+
+def _pcc_capture():
+    """Strict capture of the save form: ``(fields, draft)`` or raise
+    ``ValueError`` for a malformed or inadmissible submission (nothing is
+    written). Values: decimal text, ``"unknown"`` (box ticked, text empty) or
+    ``None`` (not entered); ticking the box AND typing a number is refused."""
+    board = _pcc_single("board_component_id")
+    enclosure = _pcc_single("enclosure_component_id")
+    region = _pcc_single("region_description").replace("\r\n", "\n").strip()
+    values, draft_values, draft_unknown = [], {}, {}
+    for role in _pcc.VALUE_ROLES:
+        text = _pcc_single("value_" + role).strip()
+        unknown = _pcc_single("unknown_" + role)
+        if unknown not in ("", "1"):
+            raise ValueError("unknown box")
+        draft_values[role] = text or None
+        draft_unknown[role] = unknown == "1"
+        if unknown == "1":
+            if text:
+                raise ValueError("unknown and value")
+            values.append(_pcc.VALUE_UNKNOWN)
+        elif not text:
+            values.append(None)
+        elif _pcc.is_admitted_value(role, text):
+            values.append(text)
+        else:
+            raise ValueError("inadmissible value")
+    basis = []
+    draft_basis = {}
+    for field in _subsystem_model.PLANAR_CLEARANCE_BASIS_FIELDS:
+        text = _pcc_single(field).strip()
+        draft_basis[field] = text or None
+        if text and not _subsystem_model.valid_planar_clearance_text(text):
+            raise ValueError("basis text")
+        basis.append(text or None)
+    answers = []
+    for d in _pcc.DECLARATION_IDS:
+        answer = _pcc_single("decl_" + d)
+        if answer not in ("",) + _pcc.ANSWERS:
+            raise ValueError("answer")
+        answers.append(answer or None)
+    if region and not _subsystem_model.valid_planar_clearance_text(region):
+        raise ValueError("region text")
+    expected = {}
+    for component_id in (board, enclosure):
+        if not _subsystem_model.is_valid_component_id(component_id):
+            raise ValueError("component")
+        rev = _pcc_single("rev_" + component_id)
+        epoch = _pcc_single("epoch_" + component_id)
+        if not _PCC_COUNT_RE.match(rev) or not _PCC_COUNT_RE.match(epoch):
+            raise ValueError("binding")
+        expected[component_id] = (int(rev), int(epoch))
+    return ({"board": board, "enclosure": enclosure, "region": region or None,
+             "values": tuple(values), "basis": tuple(basis),
+             "answers": tuple(answers), "expected": expected})
+
+
+def _pcc_draft():
+    """The submitted form, request-local, for re-display after a refusal."""
+    form = {"board": None, "enclosure": None, "region_description": None,
+            "values": {}, "unknown": {}, "basis": {}, "applicability": {}}
+    try:
+        form["board"] = request.form.get("board_component_id") or None
+        form["enclosure"] = request.form.get("enclosure_component_id") or None
+        form["region_description"] = (request.form.get("region_description") or "").replace("\x00", "") or None
+        for role in _pcc.VALUE_ROLES:
+            form["values"][role] = (request.form.get("value_" + role) or "").replace("\x00", "") or None
+            form["unknown"][role] = request.form.get("unknown_" + role) == "1"
+        for field in _subsystem_model.PLANAR_CLEARANCE_BASIS_FIELDS:
+            form["basis"][field] = (request.form.get(field) or "").replace("\x00", "") or None
+        for d in _pcc.DECLARATION_IDS:
+            answer = request.form.get("decl_" + d)
+            form["applicability"][d] = answer if answer in _pcc.ANSWERS else None
+    except Exception:
+        pass
+    return form
+
+
+_PCC_REFUSAL_MESSAGES = (
+    (_subsystem_model.PlanarClearanceStale, "UI_PCC_MSG_STALE"),
+    (_subsystem_model.PlanarClearanceNotEligible, "UI_PCC_MSG_NOT_ELIGIBLE"),
+    (_subsystem_model.PlanarClearanceActiveExists, "UI_PCC_MSG_ACTIVE_EXISTS"),
+    (_subsystem_model.PlanarClearanceCorrectionLimit, "UI_PCC_MSG_CORRECTION_LIMIT"),
+    (_subsystem_model.PlanarClearanceIdentityLimit, "UI_PCC_MSG_IDENTITY_LIMIT"),
+    (_subsystem_model.PlanarClearanceAlreadyWithdrawn, "UI_PCC_MSG_ALREADY_WITHDRAWN"),
+    (_subsystem_model.PlanarClearanceUnchanged, "UI_PCC_MSG_UNCHANGED"),
+    (_subsystem_model.PlanarClearanceUnknown, "UI_PCC_MSG_STALE"),
+)
+
+
+def _pcc_refusal_key(exc):
+    cause = getattr(exc, "cause", exc)
+    for kind, key in _PCC_REFUSAL_MESSAGES:
+        if isinstance(cause, kind):
+            return key
+    return "UI_PCC_MSG_REJECTED"
+
+
+def _pcc_write(sid, interface_id, action, build, same):
+    """The shared confirm-by-reload write path of the save and withdraw
+    POSTs. ``build(snapshot)`` stages ONE revision against durable truth;
+    ``same(stored)`` says whether a committed revision is exactly this
+    action. Order: committed retry first -> stage -> ONE serialized append
+    (every binding re-validated inside it) -> committed-truth resolution."""
+    domain = _PCC_SAVE_DOMAIN if action == "save" else _PCC_WITHDRAW_DOMAIN
+    nonce = _verified_submission_identity(sid, request.form.get("pcc_submission", ""),
+                                          domain)
+    if nonce is None:
+        return _pcc_render(sid, interface_id, status=400, error="UI_PCC_MSG_NOT_SAVED")
+    key = _pcc_submission_key(sid, nonce, action)
+    store = _get_store()
+    ack = "UI_PCC_MSG_SAVED" if action == "save" else "UI_PCC_MSG_WITHDRAWN"
+
+    def settle(stored, fresh=False):
+        if not same(stored):
+            return _pcc_render(sid, interface_id, status=409, error="UI_PCC_MSG_NOT_SAVED")
+        if fresh:
+            # this very request committed it inside the serialized write
+            return _pcc_render(sid, interface_id, notice=ack)
+        # A committed action found by its submission identity (a retry, or the
+        # resolution of an uncertain write). That it was committed is
+        # established; whether it is still the LATEST state is a separate
+        # read. Only a successful read that finds it at the head acknowledges
+        # it as the current save; a later state reads "recorded earlier"; an
+        # unreadable currency reads "recorded, currency unconfirmed" - never a
+        # fresh / current save and never "not saved".
+        try:
+            record = store.load_planar_clearance(sid)["ledger"].record_for(
+                stored.declaration_id)
+        except Exception:
+            return _pcc_render(sid, interface_id,
+                               notice="UI_PCC_MSG_RECORDED_CURRENCY_UNKNOWN")
+        current = record is not None and record.head.revision_id == stored.revision_id
+        return _pcc_render(sid, interface_id,
+                           notice=ack if current else "UI_PCC_MSG_RECORDED_EARLIER")
+
+    try:
+        prior = store.committed_planar_clearance_for_submission(sid, key)
+    except (_ProjectNotFound, _PlanarClearanceCorrupt, _ProjectSubsystemsCorrupt,
+            _SubsystemInterfacesCorrupt, _ProjectComponentsCorrupt,
+            _InterfaceParticipationsCorrupt):
+        return _pcc_render(sid, interface_id, status=503, error="UI_PCC_MSG_NOT_SAVED")
+    except Exception:
+        return _pcc_render(sid, interface_id, status=503, error="UI_PCC_MSG_UNKNOWN")
+    if prior is not None:
+        return settle(prior)
+    try:
+        revision = build(store.load_planar_clearance(sid))
+    except _subsystem_model.PlanarClearanceError as exc:
+        return _pcc_render(sid, interface_id, status=409, error=_pcc_refusal_key(exc),
+                           draft=_pcc_draft() if action == "save" else None)
+    except Exception:
+        return _pcc_render(sid, interface_id, status=503, error="UI_PCC_MSG_NOT_SAVED")
+    try:
+        _outcome, stored = store.append_planar_clearance_revision(sid, revision, key)
+    except _PlanarClearanceRejected as exc:
+        return _pcc_render(sid, interface_id, status=409, error=_pcc_refusal_key(exc),
+                           draft=_pcc_draft() if action == "save" else None)
+    except _PlanarClearanceConflict:
+        return _pcc_render(sid, interface_id, status=409, error="UI_PCC_MSG_NOT_SAVED")
+    except (_ProjectNotFound, _PlanarClearanceCorrupt, _ProjectSubsystemsCorrupt,
+            _SubsystemInterfacesCorrupt, _ProjectComponentsCorrupt,
+            _InterfaceParticipationsCorrupt):
+        return _pcc_render(sid, interface_id, status=503, error="UI_PCC_MSG_NOT_SAVED")
+    except Exception:
+        try:
+            prior = store.committed_planar_clearance_for_submission(sid, key)
+        except Exception:
+            return _pcc_render(sid, interface_id, status=503, error="UI_PCC_MSG_UNKNOWN")
+        if prior is None:
+            return _pcc_render(sid, interface_id, status=503, error="UI_PCC_MSG_NOT_SAVED")
+        return settle(prior)
+    return settle(stored, fresh=_outcome == PLANAR_CLEARANCE_INSERTED_OUTCOME)
+
+
+@app.route("/session/<sid>/interface-clearance/<interface_id>", methods=["POST"])
+def planar_clearance_save(sid, interface_id):
+    """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 - declare, correct or rebind the
+    planar clearance declaration of ONE interaction. Order: request integrity
+    (global CSRF guard) -> central authorization -> strict capture -> the
+    shared confirm-by-reload write. Inputs are the inventor's own statements;
+    saving verifies nothing."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _subsystem_model.is_valid_interface_id(interface_id):
+        return _deny_project()
+    raw_head = request.form.get("expected_head", "")
+    declaration_id = request.form.get("declaration_id", "")
+    if not isinstance(raw_head, str) or not _PCC_HEAD_RE.match(raw_head) \
+            or (raw_head == "none") != (declaration_id == ""):
+        return _pcc_render(sid, interface_id, status=400, error="UI_PCC_MSG_REJECTED",
+                           draft=_pcc_draft())
+    try:
+        fields = _pcc_capture()
+    except ValueError:
+        return _pcc_render(sid, interface_id, status=400, error="UI_PCC_MSG_REJECTED",
+                           draft=_pcc_draft())
+
+    def material_from(snapshot):
+        board, enclosure = fields["board"], fields["enclosure"]
+        (brev, bep), (erev, eep) = fields["expected"][board], fields["expected"][enclosure]
+        return _subsystem_model.planar_clearance_material(
+            snapshot["inventory"], snapshot["interfaces"], snapshot["participations"],
+            snapshot["epochs"], interface_id, board, enclosure, brev, erev, bep, eep,
+            fields["region"], fields["values"], fields["basis"], fields["answers"])
+
+    def build(snapshot):
+        material = material_from(snapshot)
+        if raw_head == "none":
+            return _subsystem_model.declared_planar_clearance(snapshot["ledger"], material)
+        return _subsystem_model.corrected_planar_clearance(
+            snapshot["ledger"], declaration_id, int(raw_head), material)
+
+    def same(stored):
+        m = stored.material
+        return (m is not None and stored.interface_id == interface_id
+                and m.board_component_id == fields["board"]
+                and m.enclosure_component_id == fields["enclosure"]
+                and m.region_description == fields["region"]
+                and m.values == fields["values"] and m.basis == fields["basis"]
+                and m.applicability == fields["answers"]
+                and (stored.kind == _subsystem_model.PLANAR_CLEARANCE_DECLARED
+                     if raw_head == "none" else
+                     (stored.declaration_id == declaration_id
+                      and stored.revision_no == int(raw_head) + 1)))
+
+    return _pcc_write(sid, interface_id, "save", build, same)
+
+
+@app.route("/session/<sid>/interface-clearance/<interface_id>/withdraw", methods=["POST"])
+def planar_clearance_withdraw(sid, interface_id):
+    """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 - withdraw the interaction's
+    declaration after an explicit confirmation: ONE terminal revision; the
+    history stays (withdrawal is not erasure)."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _subsystem_model.is_valid_interface_id(interface_id):
+        return _deny_project()
+    raw_head = request.form.get("expected_head", "")
+    declaration_id = request.form.get("declaration_id", "")
+    if not isinstance(raw_head, str) or not _PCC_HEAD_RE.match(raw_head) \
+            or raw_head == "none" \
+            or not _subsystem_model.is_valid_planar_clearance_id(declaration_id):
+        return _pcc_render(sid, interface_id, status=400, error="UI_PCC_MSG_REJECTED")
+    if request.form.get("withdraw_confirm") != "yes":
+        return _pcc_render(sid, interface_id, status=400,
+                           error="UI_PCC_MSG_CONFIRM_WITHDRAW")
+
+    def build(snapshot):
+        # the withdrawal is bound to THIS page's interaction: a declaration of
+        # another interaction is refused like an unknown one
+        record = snapshot["ledger"].record_for(declaration_id)
+        if record is None or record.interface_id != interface_id:
+            raise _subsystem_model.PlanarClearanceUnknown("not this interaction's declaration")
+        return _subsystem_model.withdrawn_planar_clearance(
+            snapshot["ledger"], declaration_id, int(raw_head))
+
+    def same(stored):
+        return (stored.kind == _subsystem_model.PLANAR_CLEARANCE_WITHDRAWN
+                and stored.interface_id == interface_id
+                and stored.declaration_id == declaration_id
+                and stored.revision_no == int(raw_head) + 1)
+
+    return _pcc_write(sid, interface_id, "withdraw", build, same)
+
+
+def _planar_clearance_report_view(sid, state):
+    """The report / PDF view: ``None`` when the report's integrated scope
+    shows no interaction or no declaration was ever made; otherwise ONE store snapshot read ONCE, used only
+    when its composition and interactions are exactly the report's, with the
+    SAME presentation model as the page for every interaction that has a
+    declaration (active or withdrawn). Anything unreadable or inconsistent ->
+    ``{"available": False}`` (UNAVAILABLE, never "not recorded")."""
+    scope = _integrated_scope_context(state)
+    if not scope or not scope.get("interfaces"):
+        return None
+    unavailable = {"available": False}
+    try:
+        focus = getattr(state, "domain", None) or getattr(state, "domain_signal", None)
+        composition = _subsystem_model.validate_composition(
+            getattr(state, "subsystems", None) or (), focus)
+        interfaces = _subsystem_model.validate_interfaces(
+            getattr(state, "subsystem_interfaces", None) or (), composition)
+        snapshot = _get_store().load_planar_clearance(sid)
+        if (tuple(snapshot["subsystems"]) != tuple(composition)
+                or tuple(snapshot["interfaces"]) != tuple(interfaces)):
+            return unavailable
+        items = []
+        for item in interfaces:
+            view = _pcc_view.clearance_view(snapshot, item.interface_id, _PCC_BINDING)
+            if view is not None and view["state"] != _pcc_view.STATE_NONE:
+                items.append(view)
+        # no declaration was ever made: no section (the report is unchanged)
+        return {"available": True, "items": items} if items else None
+    except Exception:
+        return unavailable
 
 
 # --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 ----------------------

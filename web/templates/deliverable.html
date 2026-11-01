@@ -335,6 +335,30 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   </div>
 </section>
 {% endif %}
+{#- BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 — the declared board-enclosure planar
+    clearance of each interaction that has one, rendered from the SAME shared
+    presentation model and partial as the interaction page (one store snapshot
+    per render). English-first; a downloaded copy is a fixed snapshot naming
+    its declaration revision and generation time. Unreadable -> unavailable. -#}
+{% set pccr = planar_clearance_report if planar_clearance_report is defined else none %}
+{% if pccr %}
+{% from "_planar_clearance_result.html" import pcc_result with context %}
+<section class="group" data-pcc-report lang="en" dir="ltr">
+  <h2>{{ pcc_t('UI_PCC_REPORT_HEADING') }}</h2>
+  {% if ui_lang == 'ar' %}<p data-pcc-english-only dir="rtl" lang="ar">{{ t('UI_PCC_ENGLISH_ONLY') }}</p>{% endif %}
+  {% if not pccr.available %}
+  <p style="color:#555" data-pcc-report-unavailable>{{ pcc_t('UI_PCC_REPORT_UNAVAILABLE') }}</p>
+  {% else %}
+  {% for v in pccr["items"] %}
+  <div class="pcc-report-item" data-pcc-report-item style="border:1px solid #e2e6ea;border-radius:4px;padding:8px 12px;margin:8px 0;font-size:13px;overflow-wrap:anywhere">
+    <p style="margin:0"><strong>{{ pcc_t('UI_PCC_BETWEEN') }} <bdi dir="auto">{{ v.part_a }}</bdi> {{ pcc_t('UI_PCC_AND') }} <bdi dir="auto">{{ v.part_b }}</bdi></strong> — <bdi dir="auto">{{ v.interface_description }}</bdi></p>
+    {% if v.state == 'WITHDRAWN' %}<p data-pcc-withdrawn-only>{{ pcc_t('UI_PCC_STATE_WITHDRAWN') }}</p>{% else %}{{ pcc_result(v) }}{% endif %}
+  </div>
+  {% endfor %}
+  <p style="font-size:12px;color:#555" data-pcc-report-generated>{{ pcc_t('UI_PCC_GENERATED') }}: {{ package.generated_at }}. {{ pcc_t('UI_PCC_HISTORICAL_NOTE') }}</p>
+  {% endif %}
+</section>
+{% endif %}
 {#- COMPONENT-DELIVERABLE-VALUE-01 — COMPONENTS YOU HAVE DECLARED: the
     inventor's CURRENT components only (latest corrected wording, original
     declaration order; name, function and part links verbatim, escaped and

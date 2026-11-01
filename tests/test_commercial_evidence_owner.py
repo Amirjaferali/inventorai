@@ -1392,6 +1392,11 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       # Stage 15 Slice 4: append-only interface observations
                       # (not a commercial owner).
                       "subsystem_interface_observations",
+                      # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the inventor's
+                      # planar clearance inputs and the participation removal
+                      # generation (not a commercial owner).
+                      "planar_clearance_revisions",
+                      "subsystem_interface_participation_epochs",
                       # Stage 15 closure: the current-value dependency per
                       # interface and the INSERT-only interface anchor of each
                       # Integration evidence row (neither stores evidence
