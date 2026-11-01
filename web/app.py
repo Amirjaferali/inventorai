@@ -191,6 +191,7 @@ from engine.record_store import (
     PlanarClearanceRejected as _PlanarClearanceRejected,
     PlanarClearanceConflict as _PlanarClearanceConflict,
     PlanarClearanceCorrupt as _PlanarClearanceCorrupt,
+    PLANAR_CLEARANCE_INSERTED as PLANAR_CLEARANCE_INSERTED_OUTCOME,
     INTERFACE_PARTICIPATION_UNCHANGED as _ICP_UNCHANGED,
     ParticipationPreparationRejected as _ParticipationPreparationRejected,
     ParticipationPreparationStale as _ParticipationPreparationStale,
@@ -11731,17 +11732,26 @@ def _pcc_write(sid, interface_id, action, build, same):
     store = _get_store()
     ack = "UI_PCC_MSG_SAVED" if action == "save" else "UI_PCC_MSG_WITHDRAWN"
 
-    def settle(stored):
+    def settle(stored, fresh=False):
         if not same(stored):
             return _pcc_render(sid, interface_id, status=409, error="UI_PCC_MSG_NOT_SAVED")
+        if fresh:
+            # this very request committed it inside the serialized write
+            return _pcc_render(sid, interface_id, notice=ack)
+        # A committed action found by its submission identity (a retry, or the
+        # resolution of an uncertain write). That it was committed is
+        # established; whether it is still the LATEST state is a separate
+        # read. Only a successful read that finds it at the head acknowledges
+        # it as the current save; a later state reads "recorded earlier"; an
+        # unreadable currency reads "recorded, currency unconfirmed" - never a
+        # fresh / current save and never "not saved".
         try:
             record = store.load_planar_clearance(sid)["ledger"].record_for(
                 stored.declaration_id)
-            current = record is not None and record.head.revision_id == stored.revision_id
         except Exception:
-            current = True          # the page itself reports what can be read
-        # a retry of an action committed earlier that is no longer the latest
-        # state: acknowledged as recorded earlier, never as a fresh save
+            return _pcc_render(sid, interface_id,
+                               notice="UI_PCC_MSG_RECORDED_CURRENCY_UNKNOWN")
+        current = record is not None and record.head.revision_id == stored.revision_id
         return _pcc_render(sid, interface_id,
                            notice=ack if current else "UI_PCC_MSG_RECORDED_EARLIER")
 
@@ -11781,7 +11791,7 @@ def _pcc_write(sid, interface_id, action, build, same):
         if prior is None:
             return _pcc_render(sid, interface_id, status=503, error="UI_PCC_MSG_NOT_SAVED")
         return settle(prior)
-    return settle(stored)
+    return settle(stored, fresh=_outcome == PLANAR_CLEARANCE_INSERTED_OUTCOME)
 
 
 @app.route("/session/<sid>/interface-clearance/<interface_id>", methods=["POST"])

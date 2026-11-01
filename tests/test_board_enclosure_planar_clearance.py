@@ -633,6 +633,52 @@ def test_w04_retry_stale_and_withdraw(client):
     assert "data-pcc-withdrawn-only" in _page(client, sid, ifc).get_data(as_text=True)
 
 
+@pytest.mark.parametrize("recovers", [False, True])
+@pytest.mark.parametrize("supersede", ["correction", "withdrawal"])
+def test_w04b_an_old_retry_with_unreadable_currency_is_never_a_current_save(
+        client, monkeypatch, supersede, recovers):
+    """Acknowledgement currency: the committed lookup of an earlier submission
+    succeeds, the current-state read then fails (persistently, or once and then
+    recovers for the page render). The response says the submission was
+    recorded and that its currency is unconfirmed - never a fresh / current save
+    ("Saved."), never "not saved"."""
+    sid, ifc, ids = _web(client)
+    page = _page(client, sid, ifc)
+    assert "Saved." in _save(client, sid, ifc, ids, page=page).get_data(as_text=True)
+    if supersede == "correction":
+        _save(client, sid, ifc, ids, values=("84", "50", "90", "56", "2"))
+    else:
+        data = _fields(_page(client, sid, ifc).get_data(as_text=True),
+                       form="data-pcc-withdraw-form")
+        data["withdraw_confirm"] = "yes"
+        client.post("/session/%s/interface-clearance/%s/withdraw" % (sid, ifc), data=data)
+    store_type = type(appmod._get_store())
+    real = store_type.load_planar_clearance
+    calls = []
+
+    def failing(self, project_id):
+        calls.append(project_id)
+        if not recovers or len(calls) == 1:
+            raise sqlite3.OperationalError("database is locked")
+        return real(self, project_id)
+    monkeypatch.setattr(store_type, "load_planar_clearance", failing)
+    r = _save(client, sid, ifc, ids, page=page)              # the FIRST submission, retried
+    body = _html.unescape(r.get_data(as_text=True))
+    assert calls, "the currency read was attempted"
+    assert "This submission was recorded." in body
+    assert "cannot be confirmed right now" in body
+    assert "Saved." not in body and "Not saved." not in body
+    assert "already recorded earlier" not in body             # no currency was established
+    if recovers:
+        assert r.status_code == 200 and "data-pcc-unavailable" not in body   # current state renders
+        assert ("data-pcc-identity" in body) == (supersede == "correction")
+    else:
+        assert r.status_code == 503 and "data-pcc-unavailable" in body
+    monkeypatch.setattr(store_type, "load_planar_clearance", real)
+    ledger = appmod._get_store().load_planar_clearance(sid)["ledger"]
+    assert len(ledger.records) == 1 and len(ledger.records[0].revisions) == 2   # nothing written
+
+
 def test_w05b_withdrawal_is_bound_to_the_pages_interaction(client):
     sid, ifc, ids = _web(client)
     _save(client, sid, ifc, ids)
