@@ -11910,7 +11910,7 @@ UI_STRINGS = {
         "ar": "لا توجد مقارنة: ذكرتَ أن ما يلي لا ينطبق، لذلك لا يناسب هذا الفحص تهيئتك:"},
     "UI_PCC_OUTCOME_COULD_NOT_BE_COMPUTED": {
         "en": "The comparison could not be computed. This is not a geometric result in either direction.",
-        "ar": "تعذّر حساب المقارنة. وهذه ليست نتيجة هندسية في أي من الاتجاهين."},
+        "ar": "تعذّر حساب المقارنة. وهذا لا يعني أن الخلوص متحقق ولا أنه غير متحقق."},
     "UI_PCC_MISSING_LABEL": {
         "en": "Missing:",
         "ar": "الناقص:"},
@@ -12012,7 +12012,7 @@ UI_STRINGS = {
         "ar": "التصريح"},
     "UI_PCC_REVISION_LINE": {
         "en": "revision",
-        "ar": "المراجعة"},
+        "ar": "رقم المراجعة"},
     "UI_PCC_SNAPSHOT_LINE": {
         "en": "Snapshot",
         "ar": "اللقطة"},
@@ -12129,7 +12129,7 @@ UI_STRINGS = {
         "ar": "تداخل: الخلوص غير متوفر"},
     "UI_PCC_HISTORICAL_NOTE": {
         "en": "A downloaded report or PDF is a fixed snapshot of the declaration revision named here, generated at the time shown. It does not update, cannot be refreshed or revoked, and may no longer match the current state.",
-        "ar": "التقرير أو ملف PDF الذي يُنزَّل لقطة ثابتة لمراجعة التصريح المذكورة هنا، أُنشئت في الوقت المبيَّن. لا تتحدّث، ولا يمكن تحديثها أو إلغاؤها، وقد لا تطابق الحالة الحالية."},
+        "ar": "التقرير أو ملف PDF الذي يُنزَّل لقطة ثابتة لمراجعة التصريح المذكورة هنا، أُنشئت في الوقت المبيَّن. لا تُحدَّث تلقائيًا، ولا يمكن تحديثها أو إلغاؤها، وقد لا تطابق الحالة الحالية."},
     "UI_PCC_REPORT_HEADING": {
         "en": "Board and enclosure planar clearance (declared)",
         "ar": "الخلوص المستوي بين اللوحة والحاوية (المصرَّح به)"},
@@ -12192,7 +12192,7 @@ UI_STRINGS = {
         "ar": "لا يُقيَّم الارتفاع، ولا الموصلات، ولا مسار الإدخال، ولا التثبيت، ولا الخلوص الكهربائي، ولا السلوك الحراري، ولا المتانة، ولا السلامة، ولا التصنيع."},
     "UI_PCC_DISCLOSURE_6": {
         "en": "This does not show that the parts fit, that the system is compatible, or that anything is verified, ready or certified.",
-        "ar": "لا يُبيّن هذا أن الأجزاء تتلاءم، ولا أن النظام متوافق، ولا أن أي شيء مُتحقَّق منه أو جاهز أو معتمد."},
+        "ar": "لا يُبيّن هذا أن الأجزاء تُركَّب معًا فعليًا، ولا أن النظام متوافق، ولا أن أي شيء مُتحقَّق منه أو جاهز أو معتمد."},
     "UI_PCC_DISCLOSURE_7": {
         "en": "A not-met result for this placement does not show that no placement or design could work.",
         "ar": "نتيجة «غير متحقق» لطريقة الوضع هذه لا تُثبت أنه لا يمكن لأي وضع أو تصميم أن ينجح."},

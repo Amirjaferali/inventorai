@@ -113,7 +113,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 </form>
 <h2>{{ pcc_t('UI_PCC_HISTORY_HEADING') }}</h2>
 <ul class="pcc-small" data-pcc-history>
-  {% for h in v.history %}<li data-pcc-history-item="{{ h.revision_no }}">{{ pcc_t('UI_PCC_REVISION_LINE') }} <bdi dir="ltr">{{ h.revision_no }}</bdi> — {{ pcc_t('UI_PCC_KIND_' ~ h.kind) }}{% if h["values"] %}: {% for item in h["values"] %}<bdi dir="ltr" data-pcc-history-value="{{ item.role }}">{{ item.role }} = {% if item.text and item.text != 'unknown' %}{{ item.text }}{% else %}<bdi dir="auto">{{ pcc_value(item.text) }}</bdi>{% endif %}</bdi>{% if not loop.last %}{{ '، ' if pcc_lang == 'ar' else ', ' }}{% endif %}{% endfor %}{% endif %}</li>{% endfor %}
+  {% for h in v.history %}<li data-pcc-history-item="{{ h.revision_no }}">{{ pcc_t('UI_PCC_REVISION_LINE') }} <bdi dir="ltr">{{ h.revision_no }}</bdi> — {{ pcc_t('UI_PCC_KIND_' ~ h.kind) }}{% if h["values"] %}: {% for item in h["values"] %}<bdi dir="ltr" data-pcc-history-value="{{ item.role }}">{% set shown = pcc_value(item.text) %}{{ item.role }} = {% if shown == item.text %}{{ shown }}{% else %}<bdi dir="auto">{{ shown }}</bdi>{% endif %}</bdi>{% if not loop.last %}{{ '، ' if pcc_lang == 'ar' else ', ' }}{% endif %}{% endfor %}{% endif %}</li>{% endfor %}
 </ul>
 {% endif %}
 <p class="pcc-small">{{ pcc_t('UI_PCC_HISTORICAL_NOTE') }}</p>
