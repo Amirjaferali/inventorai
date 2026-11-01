@@ -438,8 +438,11 @@ def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
     # the quoted opening paragraph points a successor to all three blocks
     opening = " ".join(checkpoint.split("\n\n", 1)[0].split())
     for phrase in ("English-first sequencing (Arabic/dialects next, mandatory)",
-                   "G1 research insights", "G1-1/2 admission checkpoint with its pending ACE question"):
+                   "G1 research insights",
+                   "G1-1/2 admission checkpoint: narrow Owner retention ruling and scoped product "
+                   "authorization pending"):
         assert phrase in opening, phrase
+    assert "pending ACE question" not in opening             # the consultation is complete
     assert len(CHECKPOINT_LABEL + opening) <= 700           # survives the hook's per-item cap
     for label in ("**Owner qualification sequencing", "**G1 research insights",
                   "**G1-1/2 admission and provenance checkpoint"):
@@ -459,14 +462,29 @@ def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
             # insights: candidates with owners, evidence limits and blockers
             "candidates, not a roadmap", "not an engine, ontology, store or owner",
             "No new planner or question engine", "No automatic sourcing, component selection or assumed values",
-            "never proves the physical interpretation", "no clone, install, run or import",
+            "never proves the physical interpretation",
+            "no clone, install, run or import in this continuity task, which is not a permanent bar "
+            "on separately authorized and qualified future reuse",
             "no simulator, provider or stack selected", "tuning on old cases is not independent qualification",
-            # completed assessment: findings, candidates and the narrowed ACE question
+            # completed assessment: findings, candidates; the ACE consultation is complete and
+            # the narrowed question survives as history; the Lead's candidate is a recommendation
             "a review record, not a decision", "PARTIAL: provisional functional readings",
             "is a CANDIDATE, not an accepted schema", "not calculation-input binding",
             "OD-2 applies as currently written", "only a recommendation",
             "temporary dismissal is not durable rejection",
             "does not make system-derived content inventor-originated",
-            "Pending ACE question (narrowed)", "one option, not the answer",
+            "Architecture recommendations on the ACE question have been received and reviewed",
+            "that consultation is complete and is not to be repeated",
+            "Current pending decision: narrow Owner retention ruling and scoped product authorization pending",
+            "NOT an approved record contract, schema, writer, consumer change or implementation",
+            "ONE existing SCREEN_SUPPORT reading", "with source-bound confirmation, correction and withdrawal",
+            "feeding ONE distinct verification-PREPARATION item in the existing Validation Plan",
+            "content origin, inventor action and engineering validity separate",
+            "OD-2 still requires the narrow Owner ruling",
+            "supplies no calculation input, creates no experiment, retains no engineering result and "
+            "does not complete the checked-artifact journey",
+            "non-duplication check is part of scoping that implementation candidate",
+            "Historical context only, not an instruction to repeat the consultation",
+            "the ACE question as asked (narrowed)", "one option, not the answer",
             "blocks dependent implementation only"):
         assert phrase in flat, phrase

@@ -289,8 +289,8 @@ evidence requiring correction. No repository-recording step delays a received pa
 CLAUDE.md G1; recover the current mandate from its existing owner. Reuse research on Flux/tool
 execution, Zoo/editable engineering source and CELUS/typed interfaces; CadQuery/tray is a CANDIDATE,
 not an approved product step. Below: English-first sequencing (Arabic/dialects next, mandatory), G1
-research insights and the G1-1/2 admission checkpoint with its pending ACE question. An approved
-next action is not a candidate recommendation.
+research insights and the G1-1/2 admission checkpoint: narrow Owner retention ruling and scoped
+product authorization pending. An approved next action is not a candidate recommendation.
 No new product increment, provider call, merge or deployment is authorized here.
 
 **Execution Efficiency Correction — durable retrieval, not chat memory.** This bounded note
@@ -434,7 +434,7 @@ unless an authorized slice needs it).**
 | Bidirectional clarification | Forward: inventor information -> possible continuation; backward: a method's own applicability conditions and inputs -> the information still missing, so clarification removes a real blocker | Method owners (conditions); question selection stays with its owner | Lead synthesis; no planner exists | A slice that names one method's missing inputs | No new planner or question engine; decision 3 in `CLAUDE.md` stays open |
 | Obtaining missing information | Route each unknown: goals and decisions -> inventor; selected-component properties -> component-specific evidence; derivable quantities -> admitted methods; general properties -> qualified sources with permitted use; assembly and real behavior -> measurement, test or specialist; open design choices -> keep the unknown | NeedRouting, method gates, source/IP boundary | Operating principle only | When an unknown blocks a dependent operation | No automatic sourcing, component selection or assumed values |
 | Traceable semantic binding | Trace source statement -> attribution/confirmation -> part and revision -> method role, quantity kind, unit, applicability | Existing owners and references; no new truth store | Lead synthesis | A slice binding confirmed input to one method | A matching quote, schema, name or unit never proves the physical interpretation |
-| Research-code reuse: <https://github.com/alessandrostefanone-polimi/ontology-req-pipeline> | Ideas for structured extraction, lineage, quantity representation, review handling, error classes | Discovery pointer only | README and license notices inspected by the Lead; not run, not qualified; third-party material not uniformly under the top-level license | A slice needing one of these lessons | Exact revision, code, dependencies, rights, applicability and performance must be inspected first; formal-requirement results do not transfer to free-form ideas; no clone, install, run or import |
+| Research-code reuse: <https://github.com/alessandrostefanone-polimi/ontology-req-pipeline> | Ideas for structured extraction, lineage, quantity representation, review handling, error classes | Discovery pointer only | README and license notices inspected by the Lead; not run, not qualified; third-party material not uniformly under the top-level license | A slice needing one of these lessons | Exact revision, code, dependencies, rights, applicability and performance must be inspected first; formal-requirement results do not transfer to free-form ideas; no clone, install, run or import in this continuity task, which is not a permanent bar on separately authorized and qualified future reuse |
 | Model reuse and interoperability (Modelica, SSP) | Reuse qualified connected models instead of rebuilding physics and interfaces | Specialist and external-tool owners (G1-3/4) | Candidate lesson | A qualified relation that needs a simulated model | Parameters, applicability, runtime, licensing, numerical credibility, integration; no simulator, provider or stack selected |
 | Evidence that a connection is useful | Show that an inventor correction changes what a real downstream consumer uses, or why an operation cannot proceed and what it needs | G1-5 product proof | Acceptance principle | Any authorized G1-1/2 or G1-3 slice | Controls: negation, missing inputs, withdrawal, unsupported relations, changed revisions; tuning on old cases is not independent qualification |
 
@@ -445,13 +445,13 @@ their consumers (#855, #857); Stage-15 parts, components, interactions and prepa
 method-owned applicability checks, declarations and input forms. PARTIAL: provisional functional
 readings and their navigation exist (`engine/functional_need_handoff.py`,
 `engine/cap13_functional_configuration.py`), but no confirmation or adoption carrier and no consumer
-of a confirmed interpretation is established. PENDING (architecture / Owner): the carrier and
-provenance semantics for confirmed system-origin interpretations and adopted proposals, and the
+of a confirmed interpretation is established. PENDING (Owner; architecture recommendations
+received and reviewed): the carrier and provenance semantics for confirmed system-origin interpretations and adopted proposals, and the
 exact retention/adoption boundary. SEPARATE method-contract question: whether a given method may
 consume or prefill confirmed project information. SEPARATE retention obligation: persisted results
 with truthful revision-bound validity under the calculation and TR evidence owners. The proposed
 append-only adoption record on the constraint pattern is a CANDIDATE, not an accepted schema,
-record kind, writer or provenance amendment; the proposed functional-confirmation slice reaches
+record kind, writer or provenance amendment; the earlier proposed functional-confirmation slice reaches
 only a capability-handoff/navigation consumer, not calculation-input binding, result retention or
 the completed journey. Review corrections (open boundaries, not rules): (A) do not make existing
 navigation depend on confirmation without a justified product effect; (B) temporary dismissal is
@@ -463,14 +463,26 @@ and a deterministic reading may still carry an inferred claim; (D) OD-2 applies 
 written; narrowing it to adopted AI-proposal text is only a recommendation; (E) any accepted design
 must identify the selected content, its source context and revision, with correction, withdrawal
 and stale behavior for that path; a digest or quote alone is neither semantic proof nor the scope
-of acceptance. Pending ACE question (narrowed): for ONE existing provisional functional
+of acceptance. Architecture recommendations on the ACE question have been received and reviewed;
+that consultation is complete and is not to be repeated. Current pending decision: narrow Owner
+retention ruling and scoped product authorization pending. Lead's preferred candidate (a
+recommendation, NOT an approved record contract, schema, writer, consumer change or
+implementation): ONE existing SCREEN_SUPPORT reading (`engine/functional_need_handoff.py`), with
+source-bound confirmation, correction and withdrawal, feeding ONE distinct verification-PREPARATION
+item in the existing Validation Plan (`engine/validation_plan.py`). It keeps content origin,
+inventor action and engineering validity separate, and OD-2 still requires the narrow Owner
+ruling. It supplies no calculation input, creates no experiment, retains no engineering result and
+does not complete the checked-artifact journey. The concrete-project non-duplication check is part
+of scoping that implementation candidate, not another audit in this continuity record. Historical
+context only, not an instruction to repeat the consultation — the ACE question as asked (narrowed):
+for ONE existing provisional functional
 interpretation, what is the minimum permissible carrier and provenance model for the inventor's
 confirmation, correction, rejection or dismissal and withdrawal, and what may the existing consumer
 use without changing progression or bypassing a method contract, distinguishing the deterministic
 reading from future AI-origin adoption, the retention/admission conditions that actually apply, and
 navigation from engineering-data consumption? The ledger/constraint pattern is one option, not the
-answer, and a yes to it approves no UI, retention, provider or consumer change. This decision blocks
-dependent implementation only; NEXT-LOOP applies to independent eligible work.
+answer, and a yes to it approves no UI, retention, provider or consumer change. The pending Owner
+decision blocks dependent implementation only; NEXT-LOOP applies to independent eligible work.
 
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),
