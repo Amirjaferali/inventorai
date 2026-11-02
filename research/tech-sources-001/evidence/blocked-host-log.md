@@ -36,3 +36,5 @@ Append-only. Never bypassed.
 | 2026-10-30 (run 19) | www.nrs.fs.usda.gov | CONNECT 403 (proxy policy), not retried | USDA RP NC-73 (cylinder sizing and flow) for R-10 | None |
 | 2026-10-30 (run 19) | nvlpubs.nist.gov (NIST.TN.1951.pdf only) | HTTP 404 for the DOI target; host otherwise reachable | NIST TN 1951 (path loss in industrial sites) for R-08 | None |
 | 2026-10-30 (run 20) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
+| 2026-11-02 (MP-01 review) | openmodelica.org | CONNECT 403 (proxy policy), not retried | OSMC Bylaws v1.9 §1.5 | Recorded as LEAD-SUPPLIED (SRC-064) |
+| 2026-11-02 (MP-01 review) | opensource.org | CONNECT 403 (proxy policy), not retried; MP-01 fetch ceiling (15) then reached | AGPL v3 text, §§2, 4–6, 13 | AGPL reading marked not inspected at source |

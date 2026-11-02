@@ -521,3 +521,50 @@ DcPermanentMagnetData.mo dd335b6f6680052331c3351530e1d246f53b8bc9c07f1bb549031bf
 0839c8f6294b5082f6d04374e8d67f54a94f91db0dd1d97a1f81339b7283ab76; OSMC-Runtime-License.txt
 43735d6c2648f9020e809d295e4197289ab7cf66fdd2ec100e2de5178c78d61a; simulation_runtime.cpp 179edf14fc0eca6866a8ea8adf53beeea85b08ac713c7570abdde373abea02fa.
 The licence readings above restate the licence texts; they are not legal advice.
+
+### MP-01 review disposition (Owner / Lead, 2026-11-02) — ACCEPTED WITH NARROW CORRECTIONS
+Reviewed research commit `8e5e4c9213aebd97023ec3ab775ece2fe9b18825`. The MP-01 text above stays as history; where it differs, this section governs.
+Fetches: 2 attempted (openmodelica.org, opensource.org), both refused by the proxy — MP-01 total 15 / 15; 0 discovery queries. Nothing
+installed, compiled or simulated; SRC-062 reference trajectories not used.
+
+1. Readiness separated by intended use (supersedes "Blocker list for a proof"):
+   - Local, isolated proof (next, if separately authorized): the only open question is whether the pinned tool / library pair loads, translates and
+     simulates. Reference results are not needed: checks are independently specified (below), and no upstream regression equivalence or physical
+     validation is claimed. Reference-result rights (SRC-062) stay IP-UNRESOLVED and simply excluded.
+   - Giving a source model / parameter package to a user (b): BSD-3 notice and disclaimer for any MSL code included (SRC-061).
+   - Distributing an executable / FMU or hosting execution (c): needs, before that use only, the runtime-file and third-party-library inventory of the
+     exact built artifact, its notices, and the AGPL obligations of any AGPL component that is conveyed or offered (modified) over a network.
+2. Licence corrections:
+   - Translated model code: per the LEAD-SUPPLIED OSMC Bylaws v1.9 §1.5 (SRC-064, not directly inspected), code translated by OpenModelica keeps
+     the rights of its originating source with no added OpenModelica restriction; for MSL code that is BSD-3. This does not settle runtime files or
+     third-party libraries linked into a built artifact — that inventory is still required for use (c).
+   - AGPL v3 (text not inspected at source in MP-01): it does not forbid commercial use, distribution or modified network deployment; it attaches
+     obligations — the licence permits running unmodified copies (§2), conveying verbatim copies with notices (§4), conveying modified versions under
+     the same licence with notices (§5), providing Corresponding Source with object code (§6), and offering Corresponding Source to remote network
+     users of a modified version (§13). MP-01's "(c) … confirmation that no AGPL-only compiler component is included or offered over a network"
+     is corrected to: whether any AGPL-licensed compiler component ends up in the artifact or a hosted service is an open integration question;
+     if one does, its obligations apply; avoiding it is a conservative product choice, not a licence prohibition.
+   - No blanket legal clearance; model, compiler, runtime, dependencies, reference data, patents / FTO and trademarks stay separate.
+3. Technical corrections:
+   - Losses: the defaults set friction, core, stray-load and brush losses to zero, but electrical dissipation remains in the armature resistance
+     (Ra 0.05 Ω) and the source resistance (0.06 Ω). What is absent is dynamic thermal modelling (operating temperature fixed, alpha20a = 0).
+   - Load inertia and controller tuning: DriveDataDCPM derives kpw = (JL + Jr)/(2·Tsub) and aMax = tauMax/(JL + Jr), so changing JL through the
+     record also retunes the speed controller and the acceleration limit. A future comparison must state its semantics — fixed controller
+     (gains held at a declared set while JL changes) or retuned controller (record rules applied) — and predeclare the criterion and measure it;
+     no failure is presumed from JL or tauMax alone. MP-01's synthetic "not met" case is withdrawn in that form.
+   - Inputs (supersedes "every parameter must be declared"): each value is classified and traceably resolved as (i) a required independent
+     input, (ii) an explicitly accepted synthetic assumption, or (iii) a model-derived parameter computed by the record from (i) / (ii). A missing
+     required input refuses the evaluation; no silent fallback to a record default. The unchanged-example smoke test (all record defaults, run only to
+     check the tool / library pair) stays distinct from any project-specific evaluation.
+   - Numerics: the example annotation sets only StopTime = 1 s and Interval = 1e-4 s (output interval). It sets no solver or tolerance; Interval
+     is not a fixed integration step. A run must record the resolved solver, tolerance, output interval and horizon, and a completed run is not
+     evidence of numerical credibility (a tolerance-sensitivity check would be needed).
+4. Corrected local-only proof outline (unexecuted; needs separate authorization): pin MSL v4.1.0 (8ae3d35) and OpenModelica v1.27.2 (4f2b2b1)
+   with hashes; (A) smoke test of the unchanged example, recording solver, tolerance, interval and horizon; (B) one wrapper model that sets
+   driveData from inputs classified (i) / (ii) / (iii), with the controller semantics declared; predeclared synthetic criterion (e.g. speed
+   returns within a declared band of the reference within a declared time after the load step), measured from the run, outcome met or not met as
+   observed; (C) a missing required input refuses before translation; (D) any change of input, assumption, controller semantics, tool or library
+   creates a new result identity. Synthetic criteria are not thresholds; a real claim needs the motor's documented or measured parameters, the
+   mechanism's load profile, the actual controller and validation against measurement.
+Status: QUALIFIED-CANDIDATE (model structure and model-code rights) unchanged; local proof readiness — one open question (tool / library
+execution); use (b) conditions known; use (c) WAITING (artifact inventory). No method or product admission.
