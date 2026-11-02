@@ -67,6 +67,37 @@
 </figure>
 {% endmacro %}
 
+{#- BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01 (contract §3A): the governed
+    derived consequence, rendered from the method consumer's exact values only
+    (no formula here). Shown only beside a MET / NOT MET result. A satisfied
+    axis needs no increase and is never offered as a size to shrink to. -#}
+{% macro pcc_region_bound(e) %}
+<div class="pcc-bound" data-pcc-region-bound>
+  <h3>{{ pcc_t('UI_PCC_BOUND_HEADING') }}</h3>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_BOUND_INTRO') }}</p>
+  {#- the table holds numbers only; a very long exact bound scrolls inside its
+      own container, never the page -#}
+  <div style="overflow-x:auto;max-width:100%" data-pcc-bound-scroll>
+  <table class="pcc-table" data-pcc-bound-table>
+    <tr><th scope="col" style="white-space:nowrap">{{ pcc_t('UI_PCC_AXIS') }}</th><th scope="col" style="white-space:nowrap">{{ pcc_t('UI_PCC_BOUND_COL_CURRENT') }}</th><th scope="col">{{ pcc_t('UI_PCC_BOUND_COL_MIN') }}</th><th scope="col">{{ pcc_t('UI_PCC_BOUND_COL_ADDITIONAL') }}</th></tr>
+    {% for a in e.axes %}
+    <tr data-pcc-bound-axis="{{ a.axis }}"><td><bdi dir="ltr">{{ a.axis|upper }}</bdi></td>
+      <td style="white-space:nowrap"><bdi dir="ltr" data-pcc-bound-current>{{ a.region_text }} mm</bdi></td>
+      <td style="white-space:nowrap"><bdi dir="ltr" data-pcc-bound-min>{{ a.region_min_text }} mm</bdi></td>
+      <td style="white-space:nowrap"><bdi dir="ltr" data-pcc-bound-additional>{{ a.additional_text }} mm</bdi></td></tr>
+    {% endfor %}
+  </table>
+  </div>
+  <ul class="pcc-small" data-pcc-bound-notes>
+    {% for a in e.axes %}
+    <li><bdi dir="ltr">{{ a.axis|upper }}</bdi>: <span data-pcc-bound-note="{{ 'increase' if a.increase_needed else 'none' }}">{% if a.increase_needed %}{{ pcc_t('UI_PCC_BOUND_INCREASE') }}{% else %}{{ pcc_t('UI_PCC_BOUND_NO_INCREASE') }}{% endif %}</span>{% if not a.region_min_enterable %} <span data-pcc-bound-beyond-range>{{ pcc_t('UI_PCC_BOUND_BEYOND_RANGE') }}</span>{% endif %}</li>
+    {% endfor %}
+  </ul>
+  <ul class="pcc-small" data-pcc-bound-meaning>{% for line in pcc_bound_statements() %}<li>{{ line }}</li>{% endfor %}</ul>
+  <p class="pcc-small" data-pcc-bound-identity>{{ pcc_t('UI_PCC_BOUND_VERSION_LINE') }}: <bdi dir="ltr">{{ e.region_bound.consequence_id }} {{ e.region_bound.consequence_version }}</bdi></p>
+</div>
+{% endmacro %}
+
 {% macro pcc_result(v) %}
 <div class="pcc-result" data-pcc-state="{{ v.state }}">
   {% if v.state == 'NEEDS_RECONFIRMATION' %}
@@ -95,6 +126,7 @@
   </table>
   <p class="pcc-small">{{ pcc_t('UI_PCC_MARGIN_EXPLAINED') }}</p>
   {% if e.outcome == 'NOT_MET' %}<p class="pcc-small" data-pcc-not-met-note>{{ pcc_t('UI_PCC_NOT_MET_NOTE') }}</p>{% endif %}
+  {% if e.region_bound %}{{ pcc_region_bound(e) }}{% endif %}
   {% if v.diagram %}{{ pcc_diagram(v.diagram) }}{% endif %}
   {% endif %}
   {% if e.outcome == 'COULD_NOT_BE_COMPUTED' and e.owner_state %}<p class="pcc-small" data-pcc-owner-state><bdi dir="ltr">{{ e.owner_state }} / {{ e.owner_reason }}</bdi></p>{% endif %}

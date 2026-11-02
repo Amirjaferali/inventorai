@@ -14,7 +14,12 @@ What this module owns (method authority, Mechanical)
   * the geometric decision on the exact ENTERED decimals (met exactly when both
     margins are nonnegative; equality meets), the bridge acceptance of the shared
     owner's binary result against that exact reference, and the exact display;
-  * the §7 outcome order, preserving the shared owner's state and reason token.
+  * the §7 outcome order, preserving the shared owner's state and reason token;
+  * the §3A derived consequence (BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01):
+    for a MET or NOT MET evaluation only, the per-axis minimum usable-region
+    dimension ``board + 2c`` and the additional region dimension
+    ``max(0, minimum - region)``, exact on the entered decimals and
+    cross-checked against the margin (``minimum - region == -2 x margin``).
 
 What it does not own: execution, unit validation and packaging (the shared
 owner, ``engine/deterministic_calculation.py``); the relation's binary
@@ -44,6 +49,11 @@ DECLARATION_VERSION = "planar-clearance-declaration/1"
 
 ARTIFACT_ID = "mechanical_planar_centered_rectangular_clearance"
 ARTIFACT_SCHEMA_VERSION = "1.0"
+# §3A: the governed derived consequence and its own version. Adding it changes
+# neither METHOD_VERSION nor DECLARATION_VERSION, so no stored declaration is
+# relabelled or reads NEEDS RECONFIRMATION because of it.
+REGION_BOUND_ID = "mechanical:planar_centered_rectangular_clearance/region_bound"
+REGION_BOUND_VERSION = "1"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
                  / "mechanical_content_config"
                  / "planar_centered_rectangular_clearance_v1.json")
@@ -105,7 +115,10 @@ _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _TOP_KEYS = frozenset({
     "artifact_id", "schema_version", "artifact_version", "owner", "slice",
     "governance_note", "method", "numeric_domain", "declarations",
-    "limitations", "disclosure", "sources"})
+    "limitations", "disclosure", "sources", "region_bound"})
+_REGION_BOUND_KEYS = frozenset({"consequence_id", "consequence_version", "contract",
+                                "executed_form", "eligibility", "statements"})
+_REGION_BOUND_STATEMENTS = 6
 _METHOD_KEYS = frozenset({"method_id", "method_version", "declaration_version",
                           "contract", "model", "executed_form", "derivation"})
 _DOMAIN_KEYS = frozenset({"roles", "rules"})
@@ -129,8 +142,10 @@ _SEMANTIC_DIGESTS = {
     "limitations": "01b2c7163c2a4c28fd7a761a2528b775b2e7f31a310ef746c3780daf5e321ecb",
     "disclosure": "054eb2f44421d06aff16835a310f0402fcac621dd1d585103b9973a888540857",
     "sources": "64d83b2ef55909ea1d2db2dc275190f00c486d5c0f532e4d5de03d50f2801b8a",
+    # artifact version 2 (§3A); every version-1 digest above is unchanged
+    "region_bound": "52ee265bde74501db806983bb0150caaad26d3c0a652287f08ab56cb48b0d396",
 }
-_PINNED_ARTIFACT_VERSION = "1"
+_PINNED_ARTIFACT_VERSION = "2"
 
 
 def _section_digest(value):
@@ -203,6 +218,19 @@ def validate_artifact(data):
             raise PlanarClearanceKnowledgeError("%s: malformed" % section)
         for entry in items:
             _text(entry, section)
+    bound = data["region_bound"]
+    if not isinstance(bound, dict) or set(bound) != _REGION_BOUND_KEYS:
+        raise PlanarClearanceKnowledgeError("region_bound: unexpected or missing field")
+    for field in _REGION_BOUND_KEYS - {"statements"}:
+        _text(bound[field], field)
+    if (bound["consequence_id"], bound["consequence_version"]) != (
+            REGION_BOUND_ID, REGION_BOUND_VERSION):
+        raise PlanarClearanceKnowledgeError("region_bound: unknown identity or version")
+    statements = bound["statements"]
+    if not isinstance(statements, list) or len(statements) != _REGION_BOUND_STATEMENTS:
+        raise PlanarClearanceKnowledgeError("region_bound: statements malformed")
+    for entry in statements:
+        _text(entry, "statement")
     sources = data["sources"]
     if not isinstance(sources, list) or not sources:
         raise PlanarClearanceKnowledgeError("sources: missing")
@@ -274,6 +302,25 @@ def exact_margins(values):
             for _axis, board, region, margin in AXES}
 
 
+def region_bound(values, exact):
+    """§3A: per axis, the exact minimum usable-region dimension that satisfies
+    the declared condition with the declared board dimension, clearance,
+    centered placement and applicability held fixed, and the additional region
+    dimension needed for it (zero when the axis already satisfies it). Exact
+    ``Fraction`` arithmetic on the entered decimals; each pair is cross-checked
+    against the §3 margin (``minimum - region == -2 x margin``) and a mismatch
+    raises ``ArithmeticError`` (never reachable for consistent inputs)."""
+    c = values[CLEARANCE_ROLE]
+    bounds = {}
+    for axis, board, region, margin in AXES:
+        minimum = values[board] + 2 * c
+        if minimum - values[region] != -2 * exact[margin]:
+            raise ArithmeticError("region bound disagrees with the margin")
+        additional = max(Fraction(0), minimum - values[region])
+        bounds[axis] = {"minimum": minimum, "additional": additional}
+    return bounds
+
+
 def bridge_bound(region, board, c, exact):
     """The §6 absolute / mixed bound on |binary - exact decimal| for one axis:
     ``e + (|m| + e)·u`` with ``e = ((R + B)/2 + c)·u``."""
@@ -318,7 +365,7 @@ def format_exact(value):
 def _outcome(outcome, **extra):
     result = {"outcome": outcome, "missing": [], "inapplicable": [],
               "owner_state": None, "owner_reason": None, "result_identity": None,
-              "margins": None, "axes": None}
+              "margins": None, "axes": None, "region_bound": None}
     result.update(extra)
     return result
 
@@ -386,8 +433,29 @@ def evaluate(material, binding, artifact=None, owner_artifact_path=None):
     except (KeyError, TypeError):
         return _outcome(OUTCOME_NOT_COMPUTED, owner_state=state,
                         owner_reason=_dc.EXECUTION_INTEGRITY_FAILURE)
+    try:
+        bounds = region_bound(values, exact)
+    except ArithmeticError:
+        return _outcome(OUTCOME_NOT_COMPUTED, owner_state=state,
+                        owner_reason=_dc.EXECUTION_INTEGRITY_FAILURE)
+    for item, (_axis, _board, region, _margin) in zip(axes, AXES):
+        bound = bounds[item["axis"]]
+        minimum_text = format_exact(bound["minimum"])
+        item.update({
+            "region_text": format_exact(values[region]),
+            "region_min": bound["minimum"],
+            "region_min_text": minimum_text,
+            # within the §6 entry grammar, so it could be entered as a region
+            # value here; a larger exact bound is shown untruncated and flagged
+            "region_min_enterable": parse_value(minimum_text) is not None,
+            "additional": bound["additional"],
+            "additional_text": format_exact(bound["additional"]),
+            "increase_needed": bound["additional"] > 0,
+        })
     met = all(item["met"] for item in axes)
     return _outcome(OUTCOME_MET if met else OUTCOME_NOT_MET, owner_state=state,
                     owner_reason=reason,
                     result_identity=owner.get("result_identity"),
-                    margins=copy.deepcopy(exact), axes=axes)
+                    margins=copy.deepcopy(exact), axes=axes,
+                    region_bound={"consequence_id": REGION_BOUND_ID,
+                                  "consequence_version": REGION_BOUND_VERSION})

@@ -12196,6 +12196,55 @@ UI_STRINGS = {
     "UI_PCC_DISCLOSURE_7": {
         "en": "A not-met result for this placement does not show that no placement or design could work.",
         "ar": "نتيجة «غير متحقق» لطريقة الوضع هذه لا تُثبت أنه لا يمكن لأي وضع أو تصميم أن ينجح."},
+    # BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01 (method contract §3A): the
+    # derived minimum usable-region dimension. The six UI_PCC_BOUND_MEANING_n
+    # English lines are the governed artifact's region_bound statements word
+    # for word (pinned by a test).
+    "UI_PCC_BOUND_HEADING": {
+        "en": "Minimum usable-region size for this condition",
+        "ar": "أصغر مقاس للمنطقة القابلة للاستخدام لهذا الشرط"},
+    "UI_PCC_BOUND_INTRO": {
+        "en": "Keeping your declared board size, clearance, centered placement and applicability answers as they are, this is the smallest selected internal region at the board plane, on each axis, that meets the declared nominal clearance condition.",
+        "ar": "مع إبقاء مقاس اللوحة والخلوص والوضع في المنتصف وإجابات الانطباق كما صرّحتَ بها، هذا هو أصغر مقاس للمنطقة الداخلية المختارة عند مستوى اللوحة، على كل محور، يحقق شرط الخلوص الاسمي المصرَّح به."},
+    "UI_PCC_BOUND_COL_CURRENT": {
+        "en": "Your region",
+        "ar": "منطقتك"},
+    "UI_PCC_BOUND_COL_MIN": {
+        "en": "Minimum region for this condition",
+        "ar": "أصغر منطقة لهذا الشرط"},
+    "UI_PCC_BOUND_COL_ADDITIONAL": {
+        "en": "Additional region dimension",
+        "ar": "الزيادة في مقاس المنطقة"},
+    "UI_PCC_BOUND_INCREASE": {
+        "en": "The total amount the region dimension would need to grow for this condition: with the board centered, half of it on each side. The per-side shortfall shown above is half of this total.",
+        "ar": "المقدار الكلي الذي يلزم أن يزيده مقاس المنطقة لتحقيق هذا الشرط: ومع وضع اللوحة في المنتصف يكون نصفه على كل جانب. والعجز لكل جانب المبيَّن أعلاه هو نصف هذا المقدار الكلي."},
+    "UI_PCC_BOUND_NO_INCREASE": {
+        "en": "No increase is needed for this condition. This is not a suggestion to make the region smaller.",
+        "ar": "لا تلزم أي زيادة لهذا الشرط. وهذا ليس اقتراحًا بتصغير المنطقة."},
+    "UI_PCC_BOUND_BEYOND_RANGE": {
+        "en": "This minimum is larger than this tool's current entry range (up to six digits before the decimal point), so it could not be entered here as a region value. It is shown exactly; this does not mean it is physically impossible.",
+        "ar": "هذا الحد الأدنى أكبر من نطاق الإدخال الحالي في هذه الأداة (حتى ست خانات قبل الفاصلة العشرية)، فلا يمكن إدخاله هنا قيمةً للمنطقة. وهو معروض بدقة؛ ولا يعني ذلك أنه مستحيل فيزيائيًا."},
+    "UI_PCC_BOUND_VERSION_LINE": {
+        "en": "Derived consequence",
+        "ar": "النتيجة المشتقة"},
+    "UI_PCC_BOUND_MEANING_1": {
+        "en": "This concerns the selected unobstructed internal region at the board plane, not the enclosure's outer dimensions.",
+        "ar": "يخص هذا المنطقة الداخلية المختارة الخالية من العوائق عند مستوى اللوحة، لا الأبعاد الخارجية للعلبة."},
+    "UI_PCC_BOUND_MEANING_2": {
+        "en": "It assumes your declared board size, clearance, centered placement and applicability answers stay as declared.",
+        "ar": "يفترض هذا أن مقاس اللوحة والخلوص والوضع في المنتصف وإجابات الانطباق تبقى كما صرّحتَ بها."},
+    "UI_PCC_BOUND_MEANING_3": {
+        "en": "If you change the physical configuration, you need to make sure your declarations still describe it.",
+        "ar": "إذا غيّرتَ الترتيب الفيزيائي، فعليك التأكد من أن تصريحاتك ما زالت تصفه."},
+    "UI_PCC_BOUND_MEANING_4": {
+        "en": "A region exactly equal to the minimum meets this nominal condition only; tolerances and physical fit are not assessed.",
+        "ar": "المنطقة التي تساوي الحد الأدنى تمامًا تحقق هذا الشرط الاسمي فقط؛ ولا تُقيَّم التفاوتات ولا التركيب الفعلي."},
+    "UI_PCC_BOUND_MEANING_5": {
+        "en": "It is a nominal geometric consequence of your declaration, not a selected component, a manufacturing dimension or a verified requirement.",
+        "ar": "هذه نتيجة هندسية اسمية لتصريحك، وليست مكوّنًا مختارًا ولا بُعدًا للتصنيع ولا متطلبًا متحققًا منه."},
+    "UI_PCC_BOUND_MEANING_6": {
+        "en": "Nothing is changed automatically: your declared values, the result above and the sketch stay as they are.",
+        "ar": "لا يتغيّر شيء تلقائيًا: تبقى القيم التي صرّحتَ بها والنتيجة أعلاه والرسم كما هي."},
 }
 
 

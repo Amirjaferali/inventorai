@@ -5,7 +5,7 @@ Synthetic invention data only. The whole journey runs through the real forms, in
 Mechanical + Electrical / Electronics project, one declared interaction, two declared components taking part in it,
 then the planar clearance page — board and enclosure chosen explicitly (nothing pre-selected), the region
 described, the nominal values typed, every applicability answer given. 84 x 50 board in an 86 x 56 region with
-c = 2 reads NOT MET (margins -1 / 1 mm) with the overlap sketch; correcting region_x to 90 reads MET (1 / 1 mm)
+c = 2 reads NOT MET (margins -1 / 1 mm) with the overlap sketch and a minimum region of 88 x 54 mm (2 / 0 mm more); correcting region_x to 88 reads MET (0 / 1 mm)
 on the NEW revision while the earlier report render keeps its own, clearly historical identity; an unknown
 clearance reads MISSING INFORMATION with no comparison; an Arabic-Indic digit is refused, never read as a number.
 The Arabic page is RTL with every number LTR-isolated; at phone width nothing overflows. Set
@@ -118,6 +118,16 @@ def test_planar_clearance_journey(server, page, lang):
     expect(page.locator("[data-pcc-shortfall]")).to_have_text(
         text("UI_PCC_AXIS_NOT_MET", lang) + " 1 mm")
     expect(page.locator("[data-pcc-diagram] [data-pcc-dg-overlap]")).to_be_visible()
+    # BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01: the minimum region for this condition
+    expect(page.locator("[data-pcc-bound-min]")).to_have_text(["88 mm", "54 mm"])
+    expect(page.locator("[data-pcc-bound-additional]")).to_have_text(["2 mm", "0 mm"])
+    expect(page.locator("[data-pcc-bound-current]")).to_have_text(["86 mm", "56 mm"])
+    expect(page.locator('[data-pcc-bound-note="none"]')).to_have_text(
+        text("UI_PCC_BOUND_NO_INCREASE", lang))
+    expect(page.locator("[data-pcc-region-bound] h3")).to_have_text(
+        text("UI_PCC_BOUND_HEADING", lang))
+    assert page.locator("[data-pcc-bound-min]").first.evaluate(
+        "e => getComputedStyle(e).direction") == "ltr"
     expect(page.locator("[data-pcc-disclosure] li")).to_have_count(7)
     expect(page.locator("[data-pcc-disclosure] li").nth(6)).to_have_text(
         text("UI_PCC_DISCLOSURE_7", lang))
@@ -143,12 +153,13 @@ def test_planar_clearance_journey(server, page, lang):
     page.goto(clearance_url)
     page.wait_for_load_state()
 
-    page.fill("#pcc-v-region_x", "90")
+    page.fill("#pcc-v-region_x", "88")      # the inventor's own explicit correction
     page.locator("[data-pcc-form] button[type=submit]").click()
     page.wait_for_load_state()
     expect(page.locator("[data-pcc-outcome]")).to_have_attribute("data-pcc-outcome", "MET")
     expect(page.locator("[data-pcc-outcome]")).to_have_text(text("UI_PCC_OUTCOME_MET", lang))
-    expect(page.locator("[data-pcc-margin]")).to_have_text(["1 mm", "1 mm"])
+    expect(page.locator("[data-pcc-margin]")).to_have_text(["0 mm", "1 mm"])
+    expect(page.locator("[data-pcc-bound-additional]")).to_have_text(["0 mm", "0 mm"])
     assert page.locator("[data-pcc-revision]").inner_text() == "1"
     assert page.locator("[data-pcc-digest]").inner_text() != old_digest
     expect(page.locator("[data-pcc-history-item]")).to_have_count(2)
@@ -168,10 +179,11 @@ def test_planar_clearance_journey(server, page, lang):
     page.goto(clearance_url)
     page.wait_for_load_state()
 
-    _fill(page, lang, ("84", "50", "90", "56", ""), unknown=("c",))
+    _fill(page, lang, ("84", "50", "88", "56", ""), unknown=("c",))
     expect(page.locator("[data-pcc-outcome]")).to_have_attribute(
         "data-pcc-outcome", "MISSING_INFORMATION")
     expect(page.locator("[data-pcc-margin]")).to_have_count(0)
+    expect(page.locator("[data-pcc-region-bound]")).to_have_count(0)
     expect(page.locator("[data-pcc-missing-item=c]")).to_have_text(text("UI_PCC_VALUE_c", lang))
     expect(page.locator("[data-pcc-value=c] [data-pcc-value-state]")).to_have_text(
         text("UI_PCC_VALUE_UNKNOWN", lang))

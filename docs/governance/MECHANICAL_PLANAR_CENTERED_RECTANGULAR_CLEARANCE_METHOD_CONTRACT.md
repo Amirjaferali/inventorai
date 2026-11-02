@@ -21,10 +21,12 @@ declared nominal planar condition only. Merge, deployment, release and paid acti
 ## 2. Identity
 
 Method `mechanical:planar_centered_rectangular_clearance`, version `1.0`. Method-authority artifact
-`mechanical_planar_centered_rectangular_clearance`, artifact version `1`
-(`docs/governance/mechanical_content_config/planar_centered_rectangular_clearance_v1.json`). Declaration contract
+`mechanical_planar_centered_rectangular_clearance`, artifact version `2`
+(`docs/governance/mechanical_content_config/planar_centered_rectangular_clearance_v1.json`; version `1` sections
+unchanged, version `2` adds the §3A `region_bound` section). Declaration contract
 version `planar-clearance-declaration/1` (the inventor-input shape of §5 and §8). A stored declaration names the
-method and declaration-contract versions it was made under; a mismatch is never silently substituted (§7).
+method and declaration-contract versions it was made under; a mismatch is never silently substituted (§7). Derived
+consequence `mechanical:planar_centered_rectangular_clearance/region_bound`, consequence version `1` (§3A).
 
 ## 3. Method definition and original derivation
 
@@ -50,6 +52,42 @@ The declared condition is **met** exactly when both margins are nonnegative; equ
 than the region is a valid NOT MET case (a negative margin), not malformed input. A NOT MET result for the
 declared placement does not show that every placement, orientation or a redesigned enclosure is impossible, and a
 MET result does not show that the parts fit (§9).
+
+## 3A. Derived consequence: minimum usable-region dimension
+
+AMENDMENT (BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01, Owner-authorized 2026-11-02). The §3 equivalence
+`R ≥ B + 2c` gives, per axis and holding the declared board dimension `B`, the clearance `c`, the centered,
+axis-aligned placement and the applicability answers fixed:
+
+    region_min = B + 2c          additional = max(0, region_min − R)
+
+- **Meaning.** `region_min` is the smallest selected unobstructed INTERNAL region dimension at the board plane that
+  meets the declared nominal condition on that axis; it is not an enclosure outer dimension, a selected component, a
+  manufacturing dimension or a verified requirement. Equality meets the nominal condition only; tolerances and
+  physical fit stay unassessed. A changed physical configuration still needs declarations that describe it.
+- **Per side versus total.** With the board centered, a negative per-side margin `m` means a TOTAL additional region
+  dimension of `−2m` (half on each side): a margin of −1 mm means 2 mm more region, not 1 mm. An axis that already
+  meets the condition shows an additional dimension of 0 and "no increase needed for this condition"; it is never
+  offered as a size to reduce to.
+- **Eligibility.** Derived only after the evaluation reached MET or NOT MET through every §7 gate (artifact,
+  applicability, completeness, grammar, owner, bridge) and only for a current binding (§8). NEEDS RECONFIRMATION,
+  INAPPLICABLE, MISSING INFORMATION, COULD NOT BE COMPUTED, UNAVAILABLE and a withdrawn declaration show no bound.
+- **Numerics and ownership.** Computed by the method consumer (`engine/mechanical_planar_clearance.py`) in exact
+  rational arithmetic on the entered decimals, after the shared owner's success and the bridge acceptance for that
+  same request; cross-checked against the §3 margin (`region_min − R = −2 × margin` exactly; a mismatch is an
+  execution-integrity failure with no verdict). It adds no owner output, no adapter change and no formula outside
+  the consumer. Shown exactly (at most four fractional digits), never rounded. A `region_min` above the §6 entry
+  grammar is shown exactly with an "outside this tool's current entry range" note — never truncated and never
+  called physically impossible.
+- **No automatic change.** The outcome, margins, sketch, stored values and revision identity are unchanged by the
+  bound; nothing is prefilled, corrected, reduced, resized, rotated, searched or recommended.
+- **Versioning.** The consequence is a separately pinned section of the artifact with its own version; the method
+  version `1.0` and the declaration-contract version are unchanged, so no stored declaration is relabelled,
+  migrated or asked to be reconfirmed because of it, and an existing method / declaration version mismatch still
+  reads NEEDS RECONFIRMATION. The output names the consequence id and version; an earlier downloaded report or PDF
+  is not retroactively given a bound it did not carry.
+- **Language.** English and Modern Standard Arabic through the existing catalogue (§14); the English meaning lines
+  are the artifact's `region_bound.statements` word for word.
 
 ## 4. Roles and units
 
@@ -112,7 +150,7 @@ All values and notes are OWNER_STATED / UNVALIDATED.
 Order: method artifact → applicability (any `does not apply` → **INAPPLICABLE**) → completeness (any value not
 entered or unknown, a missing region description or an unanswered declaration → **MISSING INFORMATION**, listing
 what is missing) → grammar → shared owner → bridge → **MET** / **NOT MET** (naming each axis that falls short and
-its shortfall). Separately: a declaration whose bound component, participation or versions changed reads
+its shortfall, and — amended by §3A — the derived minimum usable-region dimension of each axis). Separately: a declaration whose bound component, participation or versions changed reads
 **NEEDS RECONFIRMATION** (§8) and is not evaluated; unreadable or corrupt data reads **UNAVAILABLE**; an owner or
 bridge failure reads **COULD NOT BE COMPUTED**. The shared owner's state and reason token are preserved.
 
@@ -152,7 +190,7 @@ certification follows. A failed declared placement does not prove that no placem
 ## 10. Output boundary
 
 Results are derived on every read from the validated current input snapshot; no numerical result, result history
-or artifact is stored (calc/units §12 unchanged). The interaction page, the report and the PDF consume ONE shared
+or artifact is stored (calc/units §12 unchanged; the §3A bound is likewise derived on read and never stored). The interaction page, the report and the PDF consume ONE shared
 presentation model built from ONE snapshot, with a simple explanatory 2D diagram (not to scale, not a drawing; a
 NOT MET case shows the overlap, never a fit). A downloaded report or PDF is a historical snapshot naming its
 declaration revision and generation time; it cannot be refreshed, revoked or kept current.

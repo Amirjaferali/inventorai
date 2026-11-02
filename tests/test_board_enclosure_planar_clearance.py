@@ -763,7 +763,11 @@ def _negations():
     artifact = pcc.load_artifact()
     keys = ("UI_PCC_OWNER_STATED", "UI_PCC_BASIS_NOTE", "UI_PCC_NOT_MET_NOTE",
             "UI_PCC_DIAGRAM_NOTE", "UI_PCC_OUTCOME_INAPPLICABLE", "UI_PCC_INTRO")
-    return artifact["disclosure"] + artifact["limitations"] + [ui_text.text(k, "en") for k in keys]
+    # BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01: the derived consequence's
+    # governed meaning lines deny fit and verification in the same way.
+    return (artifact["disclosure"] + artifact["limitations"]
+            + artifact["region_bound"]["statements"]
+            + [ui_text.text(k, "en") for k in keys])
 
 
 def test_w07_prohibited_affirmative_claims_never_appear(client, monkeypatch):

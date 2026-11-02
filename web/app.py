@@ -11546,6 +11546,20 @@ def _pcc_disclosure(context):
 
 
 @_jinja_pass_context
+def _pcc_bound_statements(context):
+    """BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01: the six fixed meaning
+    lines of the derived consequence (governed artifact ``region_bound``
+    order; the English text is that artifact's text word for word)."""
+    lang = _pcc_lang_of(context)
+    lines = []
+    n = 1
+    while ui_text.has_string("UI_PCC_BOUND_MEANING_%d" % n):
+        lines.append(ui_text.text("UI_PCC_BOUND_MEANING_%d" % n, lang))
+        n += 1
+    return lines
+
+
+@_jinja_pass_context
 def _pcc_missing(context, item):
     lang = _pcc_lang_of(context)
     if item in _pcc.VALUE_ROLES:
@@ -11571,6 +11585,7 @@ def _pcc_value(context, text):
 app.jinja_env.globals["pcc_t"] = _pcc_text
 app.jinja_env.globals["pcc_statement"] = _pcc_statement
 app.jinja_env.globals["pcc_disclosure"] = _pcc_disclosure
+app.jinja_env.globals["pcc_bound_statements"] = _pcc_bound_statements
 app.jinja_env.globals["pcc_missing"] = _pcc_missing
 app.jinja_env.globals["pcc_value"] = _pcc_value
 
