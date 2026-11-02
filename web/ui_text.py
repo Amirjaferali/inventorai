@@ -12214,7 +12214,7 @@ UI_STRINGS = {
         "ar": "أصغر منطقة لهذا الشرط"},
     "UI_PCC_BOUND_COL_ADDITIONAL": {
         "en": "Additional region dimension",
-        "ar": "الزيادة المطلوبة في مقاس المنطقة"},
+        "ar": "الزيادة في مقاس المنطقة"},
     "UI_PCC_BOUND_INCREASE": {
         "en": "The total amount the region dimension would need to grow for this condition: with the board centered, half of it on each side. The per-side shortfall shown above is half of this total.",
         "ar": "المقدار الكلي الذي يلزم أن يزيده مقاس المنطقة لتحقيق هذا الشرط: ومع وضع اللوحة في المنتصف يكون نصفه على كل جانب. والعجز لكل جانب المبيَّن أعلاه هو نصف هذا المقدار الكلي."},
