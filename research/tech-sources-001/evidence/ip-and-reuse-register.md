@@ -194,3 +194,10 @@ NISTIR 8259D lineage, consumer-labelling criteria, the NIST catalog) derives fro
 
 **Final audit totals after run 20 (60 sources):** 31 `CALCULATION-GRADE` (24 unconditional, including SRC-060; 7 conditional: SRC-011, 016,
 017, 044, 046, 050, 057 — SRC-038's Annex V.2 claim conditional as noted), 3 `REFERENCE-ONLY`, 24 `IP-UNRESOLVED`, 2 `EXCLUDED`.
+
+### Manual assignment MP-01 (Owner 2026-11-02; separate from the closed campaign)
+| SRC | Authorship type | Origin of the relied-on statement | Commercial-use basis | IP fitness | Note |
+|---|---|---|---|---|---|
+| SRC-061 | consortium + contributors (Modelica Association) | own library code and records | clear: BSD 3-Clause (commercial use, modification and redistribution permitted; notice and disclaimer retained in source and binary redistributions; no endorsement by name) | `CALCULATION-GRADE` | model structure and parameter meaning only; default values are teaching values; referenced tutorial PDF not inspected and not covered by this classification; Modelica is a registered trademark of the Modelica Association (separate from copyright) |
+| SRC-062 | Modelica Association repository | regression reference data | unknown (no LICENSE at inspected commit) | `IP-UNRESOLVED` | the signal list is recorded as a fact; reference result files are not reused |
+| SRC-063 | OSMC | tool licence texts | compiler: AGPL v3 or OSMC-PL; runtime-header files: BSD New or AGPL v3 or OSMC-PL | n/a (tool licence record, no technical claim) | generated-code status and linked third-party libraries unresolved; no legal clearance verdict |

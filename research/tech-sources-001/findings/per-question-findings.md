@@ -451,3 +451,73 @@ has no changed search path, so no budget was spent on them (README step 6: never
 ## Campaign end — budget exhausted (20 / 20 runs)
 STOPPED after run 20 by the fixed run budget. No wake-up is pending. Restored claims (R-02 partial, R-05, R-06 partial, R-07, R-08 partial,
 R-09, R-10 partial, R-12 partial, R-13) go to the Execution Lead before any product use; nothing is admitted.
+
+## Manual assignment MP-01 (Owner 2026-11-02) — Modelica model-reuse packet; NOT a campaign run
+
+The TECH-SOURCES-001 campaign stays STOPPED (20 / 20 runs); this one-shot mandate does not reset or extend it. Identities verified: research
+`4001c807b61efc14740a0b8118bf95eb2dd2ca81`, product `3d259e7c6d0337e94df39999661e5a6a24ef42c1` (ACTIVE CONTRACT: NONE). Reused: product
+MODELICA-S1 (PR #862 contract §11: MSL v4.1.0, commit 8ae3d35, BSD 3-Clause, LinearSpeedDependentTorque relation only). Discovery queries 0;
+direct primary-source fetches 13 (+ git ls-remote tag resolutions). Nothing installed, compiled or simulated.
+
+Candidate: `Modelica.Electrical.Machines.Examples.ControlledDCDrives.SpeedControlledDCPM`, MSL v4.1.0 (SRC-061). Status for the question "can a
+separately authorized bounded proof use this model to evaluate the effect of a declared mechanical load on a requested speed response without
+rebuilding the physics": QUALIFIED-CANDIDATE (model structure and rights for the model code); executable proof readiness PARTIAL — WAITING
+(tool-chain pairing and generated-artifact rights not verified).
+
+Q1 — what the model is (from code). Extends `PartialControlledDCPM`: `DC_PermanentMagnet` machine (armature R–L, back-EMF / torque constant,
+rotor and stator inertia, loss records) on a `loadInertia` (J = JL); `DcdcInverter` H-bridge, ideal averaging by default
+(`useIdealInverter=true`; switching variant selectable); supply = `ConstantVoltage` V = VBat (= VaMax = 1.2·VaNominal) in series with a
+resistor R = 0.05·VBat/IaNominal. This is NOT a battery model: no capacity, state of charge, chemistry, voltage–SOC curve or temperature.
+Control: PI current loop (absolute optimum, feed-forward kPhi·w) inside a PI speed loop (symmetrical optimum, torque limit
+tauMax = kPhi·IaMax, IaMax = 1.5·IaNominal) with a first-order prefilter (T = Tiw); slew-rate limiter present but unused for control.
+Stimuli: speed reference step to wNominal at 0.2 s; load `TorqueStep` of −tauNominal (the motor's own nominal torque) at 0.8 s, constant,
+speed-independent. Experiment: StopTime 1 s, Interval 1e-4 s. Initial conditions: shaft angle, speed and armature current fixed (start 0);
+controllers initialised to their output.
+Defaults (DcPermanentMagnetData — teaching values only): VaNominal 100 V, IaNominal 100 A, wNominal 1425 rpm (≈149.2 rad/s), Ra 0.05 Ω at
+TaRef 20 °C with alpha20a = 0, La 1.5 mH, Jr = Js = 0.15 kg·m², all friction / core / stray / brush losses zero; JL defaults to Jr. Derived by
+the records (computed here from the record formulas, not simulated): ViNominal 95 V, PNominal 9.5 kW, tauNominal ≈ 63.7 N·m,
+kPhi ≈ 0.637 V·s/rad, tauMax ≈ 95.5 N·m, VBat 120 V, supply resistance 0.06 Ω, inverter fS 2 kHz.
+Omissions: thermal behaviour (fixed operating temperature), losses (zeroed), gearbox / compliance / backlash, speed-dependent or
+position-dependent loads, sensor noise and quantisation, supply depletion, protection. Inputs that need component evidence or measurement
+for any real claim: motor VaNominal, IaNominal, wNominal, Ra (+ temperature coefficient), La, Jr and losses; load inertia JL and the load torque
+profile; supply voltage and source resistance; controller structure, gains and current limit (the record derives these from textbook tuning
+rules, which a real controller may not follow). A declared speed-dependent load could replace the torque step with
+`LinearSpeedDependentTorque` — the relation admitted by PR #862, reused only within that claim; this is a model modification needing its own
+scope. Q-02 (load characteristics; SRC-004 / SRC-005 IP-UNRESOLVED) is NOT resolved by this model.
+Published tests: the library regression set (SRC-062) lists 14 comparison signals for this example — regression of the library against
+itself, not physical validation; its result files carry no licence at the inspected commit and are not reused. No simulation was run here.
+
+Q2 — rights (no blanket clearance; patents / FTO and contracts not assessed). Model code and parameter records: BSD 3-Clause (SRC-061).
+Referenced tutorial PDF: not inspected, not needed for a proof. Reference results: unknown rights (SRC-062). Compiler OpenModelica v1.27.2:
+AGPL v3 or OSMC-PL 1.8 (SRC-063). Runtime files bearing the Run-Time System header: BSD New or AGPL v3 or OSMC-PL (verified on one file).
+Generated C / executables / FMUs: status not stated by the licence text; they combine generated code from BSD model code, runtime files and
+third-party libraries whose licences were not inspected — UNRESOLVED.
+By use: (a) isolated local evaluation — model BSD; running the AGPL compiler internally without distributing it or offering it over a network
+creates no distribution obligation (AGPL network clause applies only to modified versions offered to users over a network); (b) giving a
+source-model / parameter package to a user — BSD notice and disclaimer must accompany any MSL code included; an InventorAI-written model that
+only references MSL by name carries no MSL code; (c) distributing an executable / FMU or hosting execution — needs the runtime-file and
+third-party-library inventory of the exact build, retention of notices, and confirmation that no AGPL-only compiler component is included or
+offered over a network; UNRESOLVED until that inventory exists. Modelica and OpenModelica names: trademark / endorsement limits apply.
+
+Q3 — proposed pairing and proof outline (NOT executed; for separate authorization). Pairing: MSL v4.1.0 (commit 8ae3d35) with OpenModelica
+v1.27.2 (commit 4f2b2b1); that v1.27.2 loads and simulates MSL 4.1.0 and this example without errors is UNVERIFIED and is the first proof step.
+Outline: pin both identities and hashes; load MSL 4.1.0 explicitly by version; simulate the unmodified example with its annotation settings
+(StopTime 1, Interval 1e-4, default solver of the pinned tool) as a smoke test against the library's own regression signals only if their
+rights are resolved; then simulate a wrapper model that redeclares `driveData` and sets every parameter explicitly from a declared input set,
+recording tool identity, model hash, parameter set hash and outputs together as one result identity.
+Synthetic cases (synthetic criteria, not thresholds): (1) criterion met — e.g. declared JL and load step such that a declared target
+"speed recovers to within a declared band of the reference within a declared time after the load step" holds; (2) criterion not met — same
+target with a larger declared load inertia or load torque above tauMax so recovery fails; (3) missing essential parameter — e.g. no declared
+Ra or JL: the proof must refuse rather than fall back to the record defaults (JL defaults to Jr and every motor value has a default, so
+"no silent default" requires the wrapper to declare every parameter explicitly and fail when one is absent); (4) changed input — any change to
+a parameter, the load profile, the tool or the library version produces a new result identity. A real claim would need the motor's measured or
+documented parameters, the load profile from the mechanism, the actual controller, and validation against measurement.
+Blocker list for a proof: tool / library compatibility run, reference-result rights, generated-artifact inventory for mode (c).
+File hashes (sha256) of SRC-061: SpeedControlledDCPM.mo 15f7b12131c16544615426ebdd3fdc4618163f833cc07ac5c3fbdd3c70b86054;
+PartialControlledDCPM.mo f5a619e43ce13b40eea90a7af891add9e32375f3888b9596c9fe3b15f993a8f0; DriveDataDCPM.mo
+ac24081f424a20c132d1ecc30388db61069d3f94b5cd5dc8c71028da662e20e0; DcdcInverter.mo 540ec26d119f3ecf254295230e9a5d08ce071665c3f987c320c1582d286fbc2e;
+DcPermanentMagnetData.mo dd335b6f6680052331c3351530e1d246f53b8bc9c07f1bb549031bfcfdf36234; LICENSE
+4f708e2d4bdebaeb13896d3796ebf9f4eac0ddc31dc6cd391dff4aa76c63e2eb. SRC-063: OSMC-License.txt
+0839c8f6294b5082f6d04374e8d67f54a94f91db0dd1d97a1f81339b7283ab76; OSMC-Runtime-License.txt
+43735d6c2648f9020e809d295e4197289ab7cf66fdd2ec100e2de5178c78d61a; simulation_runtime.cpp 179edf14fc0eca6866a8ea8adf53beeea85b08ac713c7570abdde373abea02fa.
+The licence readings above restate the licence texts; they are not legal advice.
