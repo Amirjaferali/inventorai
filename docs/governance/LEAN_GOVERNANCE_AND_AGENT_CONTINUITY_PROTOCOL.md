@@ -285,12 +285,12 @@ identity. A paused/revoked/completed/expired mandate does not resume or renew au
 explicit Owner instruction is required. Accepted work remains accepted absent new material
 evidence requiring correction. No repository-recording step delays a received pause.
 
-**9.5 Research-to-execution checkpoint.** Navigation only (2026-10-30; updated 2026-11-01): preserve
+**9.5 Research-to-execution checkpoint.** Navigation only (2026-10-30; updated 2026-11-02): preserve
 CLAUDE.md G1; recover the current mandate from its existing owner. Reuse research on Flux/tool
 execution, Zoo/editable engineering source and CELUS/typed interfaces; CadQuery/tray is a CANDIDATE,
 not an approved product step. Below: English-first sequencing (Arabic/dialects next, mandatory), G1
-research insights and the G1-1/2 admission checkpoint: narrow Owner retention ruling and scoped
-product authorization pending. An approved next action is not a candidate recommendation.
+research insights and the G1-1/2 admission checkpoint: its SCREEN_SUPPORT → Validation Plan candidate is
+STOPPED (no OD-2 ruling requested). An approved next action is not a candidate recommendation.
 No new product increment, provider call, merge or deployment is authorized here.
 
 **Execution Efficiency Correction — durable retrieval, not chat memory.** This bounded note
@@ -464,9 +464,19 @@ written; narrowing it to adopted AI-proposal text is only a recommendation; (E) 
 must identify the selected content, its source context and revision, with correction, withdrawal
 and stale behavior for that path; a digest or quote alone is neither semantic proof nor the scope
 of acceptance. Architecture recommendations on the ACE question have been received and reviewed;
-that consultation is complete and is not to be repeated. Current pending decision: narrow Owner
-retention ruling and scoped product authorization pending. Lead's preferred candidate (a
-recommendation, NOT an approved record contract, schema, writer, consumer change or
+that consultation is complete and is not to be repeated. **STOPPED (2026-11-02, Lead disposition after a
+read-only consumer-value check at `0ec2f0c`, synthetic fixture `en-screen-01`):** the former preferred
+candidate below showed NO DISTINCT ENGINEERING / PREPARATION VALUE sufficient to justify this adoption
+extension — its step would restate the verification-preparation step an inventor-declared mandatory constraint
+already yields, and the only role-specific content (the related CAP-13 owner) would be a new relationship.
+Qualifications: reduced re-entry may have UX value that was not measured; confirmation and provenance are not
+shown valueless in general; a mandatory constraint is a valid path only when the inventor intends an obligation
+(intent is never strengthened and system-origin content never relabelled); the absent seed-edit path is a
+separate lifecycle limitation. Observed residuals, not solved: the idea's purpose reaches the tested plan only
+when restated; no seed correction / withdrawal route was found; a contradicting answer and an active mandatory
+constraint can coexist. No OD-2 ruling is requested for it. Reopen only for a named consumer with a demonstrated,
+non-duplicative consequence that existing admitted paths cannot provide. Former candidate, kept as history (a
+recommendation, never an approved record contract, schema, writer, consumer change or
 implementation): ONE existing SCREEN_SUPPORT reading (`engine/functional_need_handoff.py`), with
 source-bound confirmation, correction and withdrawal, feeding ONE distinct verification-PREPARATION
 item in the existing Validation Plan (`engine/validation_plan.py`). It keeps content origin,
@@ -492,8 +502,8 @@ answers → the admitted `mechanical:planar_centered_rectangular_clearance` 1.0 
 14, §13M; method contract `MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md`) → page, report
 and PDF from ONE presentation model → correction or withdrawal changing or suppressing the current result. It
 is a direct-inventor-input slice: no SCREEN_SUPPORT adoption, OD-2 ruling or question-serving change was a
-prerequisite, and the pending Owner decision above (retention ruling and scoped authorization for the
-SCREEN_SUPPORT candidate) is unchanged by it. Bounded D4 exception for this one declared nominal planar
+prerequisite, and the Owner decision then pending above for the SCREEN_SUPPORT candidate (since STOPPED)
+was unchanged by it. Bounded D4 exception for this one declared nominal planar
 comparison only; broader D4, T6 / Technical Realization and Stage 35 stay unactivated; PR #890 stays HOLD and
 Proof B paused. Applicability: delivery takes effect only on the verified merge of that PR; merge, deployment,
 release and paid activation stay NOT AUTHORIZED. Next qualification step after acceptance: Arabic and dialect
@@ -514,6 +524,18 @@ report output-language request; a human usability study. Applicability: effectiv
 PR; merge, deployment and release stay NOT AUTHORIZED. After acceptance: return to the existing G1 automation
 obligations and their recorded triggers; no second relationship, AI activation or Proof B rerun is selected
 automatically.
+
+**BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01 (Owner-authorized bounded extension, 2026-11-02; continuity
+record, not a second contract).** Current authorized action: ONE PR extending the SAME relationship (PRs #913,
+#914) with ONE derived consequence (method contract §3A): for a MET or NOT MET result only, per axis, the minimum
+usable-region dimension `B + 2c` and the additional region dimension `max(0, B + 2c − R)` — exact on the entered
+decimals in the Mechanical method consumer, cross-checked against the margin, a separately pinned and versioned
+artifact section (`region_bound` 1; artifact version 2) with method `1.0` and the declaration-contract version
+unchanged, so no stored declaration is relabelled or asked to be reconfirmed; page, report and PDF from the one
+shared presentation model, EN / AR. Internal region at the board plane only; nominal; equality meets the nominal
+condition only; no tolerance, fit, component selection, prefill, resizing, rotation or recommendation; nothing
+stored; no second relationship. Applicability: effective on the verified merge of that PR; merge, deployment
+and release stay NOT AUTHORIZED; no further increment is selected automatically.
 
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),

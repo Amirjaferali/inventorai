@@ -1,10 +1,10 @@
 {
   "artifact_id": "mechanical_planar_centered_rectangular_clearance",
   "schema_version": "1.0",
-  "artifact_version": "1",
+  "artifact_version": "2",
   "owner": "Mechanical - Technical Deepening (method authority for this one method only)",
   "slice": "BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 - Board-Enclosure Planar Clearance - Slice 1",
-  "governance_note": "The Mechanical-owned governed artifact of the planar centered rectangular clearance method, under MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md. It carries the method authority (identity, version, declaration-contract version, model, executed form and original derivation), the applicability declarations, the numeric domain, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it is separate from every other method artifact and never loads one. Calculation execution belongs to the shared deterministic calculation and units owner; the inventor's inputs belong to the Stage-15 declaration owner. Nothing here is evidence, a fit, compatibility, verification, safety, manufacturing or readiness statement, or a progression or validation input.",
+  "governance_note": "The Mechanical-owned governed artifact of the planar centered rectangular clearance method, under MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md. It carries the method authority (identity, version, declaration-contract version, model, executed form and original derivation), the applicability declarations, the numeric domain, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it is separate from every other method artifact and never loads one. Calculation execution belongs to the shared deterministic calculation and units owner; the inventor's inputs belong to the Stage-15 declaration owner. Nothing here is evidence, a fit, compatibility, verification, safety, manufacturing or readiness statement, or a progression or validation input. Artifact version 2 (BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01) adds ONE governed derived consequence, region_bound, with its own consequence version; every version-1 section, the method version and the declaration-contract version are unchanged, so no stored declaration is relabelled or asked to be reconfirmed.",
   "method": {
     "method_id": "mechanical:planar_centered_rectangular_clearance",
     "method_version": "1.0",
@@ -185,5 +185,20 @@
       "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
       "no_endorsement_limitation": "No NIST endorsement of InventorAI, this method or any result is stated or implied."
     }
-  ]
+  ],
+  "region_bound": {
+    "consequence_id": "mechanical:planar_centered_rectangular_clearance/region_bound",
+    "consequence_version": "1",
+    "contract": "docs/governance/MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md §3A",
+    "executed_form": "Per axis, on the exact entered decimals and holding the declared board dimension B and clearance c fixed: region_min = B + 2c and additional = max(0, region_min - R), where R is the declared region dimension. Cross-check: region_min - R equals -2 x margin exactly, so a negative per-side margin m means a total additional region dimension of -2m. No rounding; shown exactly.",
+    "eligibility": "Derived only for a current declaration whose evaluation reached MET or NOT MET after every binding, applicability, completeness, grammar, owner and bridge gate; never for NEEDS RECONFIRMATION, INAPPLICABLE, MISSING INFORMATION, COULD NOT BE COMPUTED, UNAVAILABLE or a withdrawn declaration.",
+    "statements": [
+      "This concerns the selected unobstructed internal region at the board plane, not the enclosure's outer dimensions.",
+      "It assumes your declared board size, clearance, centered placement and applicability answers stay as declared.",
+      "If you change the physical configuration, you need to make sure your declarations still describe it.",
+      "A region exactly equal to the minimum meets this nominal condition only; tolerances and physical fit are not assessed.",
+      "It is a nominal geometric consequence of your declaration, not a selected component, a manufacturing dimension or a verified requirement.",
+      "Nothing is changed automatically: your declared values, the result above and the sketch stay as they are."
+    ]
+  }
 }
