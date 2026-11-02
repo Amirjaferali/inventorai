@@ -491,8 +491,9 @@ confirmation, correction, rejection or dismissal and withdrawal, and what may th
 use without changing progression or bypassing a method contract, distinguishing the deterministic
 reading from future AI-origin adoption, the retention/admission conditions that actually apply, and
 navigation from engineering-data consumption? The ledger/constraint pattern is one option, not the
-answer, and a yes to it approves no UI, retention, provider or consumer change. The pending Owner
-decision blocks dependent implementation only; NEXT-LOOP applies to independent eligible work.
+answer, and a yes to it approves no UI, retention, provider or consumer change. The former pending decision blocked
+dependent implementation only; that candidate is now STOPPED (above), no decision on it is pending, and
+NEXT-LOOP applies to independent eligible work.
 
 **BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 (Owner-authorized bounded implementation, 2026-11-01; continuity
 record, not a second contract).** Current authorized action: ONE implementation PR delivering the first connected

@@ -439,8 +439,9 @@ def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
     opening = " ".join(checkpoint.split("\n\n", 1)[0].split())
     for phrase in ("English-first sequencing (Arabic/dialects next, mandatory)",
                    "G1 research insights",
-                   "G1-1/2 admission checkpoint: narrow Owner retention ruling and scoped product "
-                   "authorization pending"):
+                   # BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01: the candidate is now STOPPED
+                   "G1-1/2 admission checkpoint: its SCREEN_SUPPORT → Validation Plan candidate is "
+                   "STOPPED (no OD-2 ruling requested)"):
         assert phrase in opening, phrase
     assert "pending ACE question" not in opening             # the consultation is complete
     assert len(CHECKPOINT_LABEL + opening) <= 700           # survives the hook's per-item cap
@@ -475,8 +476,18 @@ def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
             "does not make system-derived content inventor-originated",
             "Architecture recommendations on the ACE question have been received and reviewed",
             "that consultation is complete and is not to be repeated",
-            "Current pending decision: narrow Owner retention ruling and scoped product authorization pending",
-            "NOT an approved record contract, schema, writer, consumer change or implementation",
+            # the Lead's 2026-11-02 disposition supersedes the pending status: STOPPED, with its
+            # narrow finding, qualifications, residuals and reopen trigger; no OD-2 ruling requested
+            "STOPPED (2026-11-02, Lead disposition after a read-only consumer-value check",
+            "NO DISTINCT ENGINEERING / PREPARATION VALUE sufficient to justify this adoption extension",
+            "reduced re-entry may have UX value that was not measured",
+            "confirmation and provenance are not shown valueless in general",
+            "intent is never strengthened and system-origin content never relabelled",
+            "the absent seed-edit path is a separate lifecycle limitation",
+            "a contradicting answer and an active mandatory constraint can coexist",
+            "No OD-2 ruling is requested for it",
+            "Reopen only for a named consumer with a demonstrated, non-duplicative consequence",
+            "never an approved record contract, schema, writer, consumer change or implementation",
             "ONE existing SCREEN_SUPPORT reading", "with source-bound confirmation, correction and withdrawal",
             "feeding ONE distinct verification-PREPARATION item in the existing Validation Plan",
             "content origin, inventor action and engineering validity separate",
@@ -486,5 +497,5 @@ def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
             "non-duplication check is part of scoping that implementation candidate",
             "Historical context only, not an instruction to repeat the consultation",
             "the ACE question as asked (narrowed)", "one option, not the answer",
-            "blocks dependent implementation only"):
+            "blocked dependent implementation only", "that candidate is now STOPPED"):
         assert phrase in flat, phrase
