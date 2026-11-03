@@ -22,4 +22,8 @@ four closed straight edges at z = 0, centred, on their own layers; transfer erro
 5.7e-15 mm (C) against the declared decimals, within the reported 1e-9 mm measurement tolerance — a property
 of the receiving tool, not of the method, whose exact-decimal verdict is unchanged.
 
+These bundles were produced at product commit `d28a915`; their `README.txt` carries the guide wording
+of that commit (the later correction of guide line 6, which says the SHA-256 identifies `geometry.dxf`
+and that the companion records the same value, is not regenerated here).
+
 FreeCAD and ezdxf are not vendored here. `SHA256SUMS` binds every file in this folder.

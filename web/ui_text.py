@@ -12280,8 +12280,8 @@ UI_STRINGS = {
         "en": "Edits you make in a CAD program are not assessed by InventorAI and never synchronise back. To change the declaration, correct it in InventorAI and download a new reference.",
         "ar": "التعديلات التي تجريها في برنامج CAD لا يقيّمها InventorAI ولا تُزامَن معه أبدًا. لتغيير التصريح، صحّحه في InventorAI ثم نزّل مرجعًا جديدًا."},
     "UI_PCC_CAD_GUIDE_6": {
-        "en": "The SHA-256 below binds these delivered files to each other. It is not a physical verification of anything.",
-        "ar": "يربط رمز SHA-256 أدناه هذه الملفات المسلَّمة بعضها ببعض. وهو ليس تحققًا فيزيائيًا من أي شيء."},
+        "en": "The SHA-256 below identifies this geometry.dxf; companion.json records the same value, which ties the two together. Each download writes a new DXF, so the value differs between downloads of the same revision. It is not a physical verification of anything.",
+        "ar": "يحدّد رمز SHA-256 أدناه ملف geometry.dxf هذا؛ ويسجّل companion.json القيمة نفسها، وهذا ما يربط الملفين معًا. وكل تنزيل يكتب ملف DXF جديدًا، فتختلف القيمة بين تنزيلات المراجعة نفسها. وهو ليس تحققًا فيزيائيًا من أي شيء."},
     "UI_PCC_CAD_GUIDE_7": {
         "en": "A CAD program measures with its own numerical precision; that is a property of the program, not part of InventorAI's exact comparison.",
         "ar": "يقيس برنامج CAD بدقته العددية الخاصة؛ وهذه خاصية للبرنامج، وليست جزءًا من المقارنة الدقيقة في InventorAI."},

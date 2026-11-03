@@ -1,12 +1,16 @@
 """BOARD-ENCLOSURE-CAD-DOWNLOAD-01 — the outbound CAD reference adapter (method contract §10A).
 
-ONE pure, deterministic-in-content mapping from ONE validated handoff model (built by the shared
+ONE pure mapping (deterministic in geometry and fields) from ONE validated handoff model (built by the shared
 presentation model, ``web/planar_clearance.py`` ``cad_handoff_model``) to ONE in-memory ZIP:
 
     geometry.dxf    the DECLARED board and usable internal region, true scale, mm (DXF R2013)
     companion.json  the binding, original decimal inputs, existing evaluation and conditional
                     bound, bound to that exact DXF by SHA-256
     README.txt      a UTF-8 guide in English and Arabic, with the notices
+
+The DXF writer stamps fresh file metadata (GUIDs, creation time) on every write, so the bytes of
+geometry.dxf, and therefore its SHA-256, differ between downloads of the same revision; the stable
+identity is the declaration revision id plus the snapshot digest the companion carries.
 
 What it does: coordinate and format mapping only. Origin at the centre of the declared region
 (a drawing convention), +X along ``region_x``, +Y along ``region_y``; each outline is ONE closed
