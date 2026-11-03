@@ -526,6 +526,8 @@ PR; merge, deployment and release stay NOT AUTHORIZED. After acceptance: return 
 obligations and their recorded triggers; no second relationship, AI activation or Proof B rerun is selected
 automatically.
 
+**G1-PRECREATION-LLM-ACTIVATION-PREP-01 (Owner continuation direction, 2026-11-04; continuation only).** ONE bounded activation-preparation PR on the existing PR #921 runner: set the evaluation-only gate open and record a verified 2026-11-04 official OpenAI model-specific Standard price of $2 per 1M input and $10 per 1M output tokens for `gpt-6-sol` (https://developers.openai.com/api/docs/models/gpt-6-sol). No live account-access, actual billing-tier or credential validity is asserted. **No request is authorized by this change.** The Owner must separately name the SHA-256 of the manifest generated on the exact clean merged activation commit; absent that digest, the runner refuses before any adapter/transport. Frozen pack, original evaluator, budget, one-run policy, owner authority, provider restrictions and production code remain unchanged. This note adds no mandate, boot step or approval round. Applicable only after an Owner-authorized merge; merge, model request and deployment remain separately reserved.
+
 **G1-PRECREATION-LLM-RUNNER-01 (Owner instruction after PR #920, 2026-11-03; continuity record, not a second
 contract).** Included action: ONE runner-preparation PR, `scripts/run_g1_precreation_campaign.py`, for a single
 synthetic run of the frozen PR #920 pack (pre-registration revision 4, unchanged), reusing the MSNL evaluation
