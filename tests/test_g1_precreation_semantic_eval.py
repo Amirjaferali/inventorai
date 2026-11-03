@@ -15,7 +15,7 @@ from scripts import run_g1_precreation_semantic_eval as ev
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "run_g1_precreation_semantic_eval.py"
-PREREGISTRATION_SHA256 = "fb5c96dcf981b91fde517fc4404c4e3d3f7bb90a23124b0793960d73b54a2a82"
+PREREGISTRATION_SHA256 = "22389804aa27ea5f81c3704d28f17b44b8cd58a0161993e5daa672a3ba83563b"
 
 
 @pytest.fixture(scope="module")
@@ -54,7 +54,7 @@ def _oracle(case, ref):
     parts = [{"text": p["any_of"][0], "source_quote": _span(t, p["any_of"][0]),
               "candidate_concept": p["concept"]} for p in ref["required_parts"]]
     return _reply(stated_parts=parts, negated_or_excluded=negs,
-                  unknowns=list(ref["expected_unknowns"]),
+                  unknowns=[u["meaning"] for u in ref["expected_unknowns"]],
                   composition_suggestion=ref["allowed_composition"][0])
 
 
@@ -67,6 +67,16 @@ def test_pack_is_frozen_synthetic_english_and_pinned(pack):
     assert sum(len(r["required_parts"]) for r in refs.values()) == 25
     assert sum(len(r["required_negations"]) for r in refs.values()) == 3
     assert sum(bool(r["expected_unknowns"]) for r in refs.values()) == 5
+    assert sum(len(r["expected_unknowns"]) for r in refs.values()) == 7
+
+
+def test_preregistration_revision_2_supersedes_an_unevaluated_revision_1():
+    pre = ev.preregistration()
+    assert pre["revision"] == 2
+    assert pre["supersedes"] == {
+        "sha256": "fb5c96dcf981b91fde517fc4404c4e3d3f7bb90a23124b0793960d73b54a2a82",
+        "evaluated": False, "reason": pre["supersedes"]["reason"]}
+    assert ev.preregistration_digest() != pre["supersedes"]["sha256"]
 
 
 def test_preregistration_is_pinned():
@@ -176,13 +186,27 @@ def test_forbidden_part_and_negation_are_critical(pack):
     assert "K5" in ev.score_case(neg, t16, refs["P16"])["critical"]
 
 
+def _all_recognized(refs):
+    return {u["unknown_id"]: ev.G5_RECOGNIZED
+            for r in refs.values() for u in r["expected_unknowns"]}
+
+
+CLEAR = {"status": ev.K6_CLEAR, "failed_cases": []}
+
+
+def _oracle_scores(pack):
+    cases, refs = pack
+    return [ev.score_case(_oracle(c, refs[c["case_id"]]), c["idea_text"], refs[c["case_id"]])
+            for c in cases]
+
+
 def test_handcrafted_oracle_passes_and_one_false_suggestion_fails(pack):
     cases, refs = pack
-    scored = [ev.score_case(_oracle(c, refs[c["case_id"]]), c["idea_text"], refs[c["case_id"]])
-              for c in cases]
+    scored = _oracle_scores(pack)
     assert all(not s["critical"] for s in scored)
     base = ev.baseline()["integrated_recall"]
-    assert ev.decide(scored, refs, base)["verdict"] == "PRELIMINARY_GO"
+    full = {"k6": CLEAR, "g5": _all_recognized(refs)}
+    assert ev.decide(scored, refs, base, full)["verdict"] == "PRELIMINARY_GO"
     by_id = {c["case_id"]: c for c in cases}
     t7 = by_id["P07"]["idea_text"]
     false_int = _reply(
@@ -194,8 +218,105 @@ def test_handcrafted_oracle_passes_and_one_false_suggestion_fails(pack):
     s7 = ev.score_case(false_int, t7, refs["P07"])
     assert {"K3", "K4", "K5"} <= set(s7["critical"])
     worse = [s7 if s["case_id"] == "P07" else s for s in scored]
-    assert ev.decide(worse, refs, base)["verdict"] == "NO_GO"
-    assert ev.decide(scored[:-1], refs, base)["verdict"] == "INCOMPLETE"
+    assert ev.decide(worse, refs, base, full)["verdict"] == "NO_GO"
+    assert ev.decide(scored[:-1], refs, base, full)["verdict"] == "INCOMPLETE"
+
+
+# ── K6: no record is NOT_ASSESSED, never clear ──────────────────────────────
+def test_omitted_k6_review_can_never_give_a_go(pack):
+    _cases, refs = pack
+    scored, base = _oracle_scores(pack), ev.baseline()["integrated_recall"]
+    g5 = _all_recognized(refs)
+    for assessment in (None, {"g5": g5}, {"k6": None, "g5": g5}):
+        d = ev.decide(scored, refs, base, assessment)
+        assert (d["verdict"], d["k6"]) == ("INCOMPLETE_REVIEW", ev.K6_NOT_ASSESSED)
+    failed = {"k6": {"status": ev.K6_FAILURE, "failed_cases": ["P04"]}, "g5": g5}
+    d = ev.decide(scored, refs, base, failed)
+    assert d["verdict"] == "NO_GO" and "K6" in d["critical"]
+
+
+@pytest.mark.parametrize("k6", [
+    {"status": ev.K6_CLEAR, "failed_cases": ["P04"]},
+    {"status": ev.K6_FAILURE, "failed_cases": []},
+    {"status": ev.K6_FAILURE, "failed_cases": ["P99"]},
+    {"status": "PASS", "failed_cases": []},
+    {"status": ev.K6_CLEAR},
+    {"status": ev.K6_CLEAR, "failed_cases": None},
+    {"status": ev.K6_FAILURE, "failed_cases": [["P04"]]},
+    "ASSESSED_CLEAR",
+])
+def test_inconsistent_k6_record_is_refused(k6, pack):
+    _cases, refs = pack
+    with pytest.raises(ev.PackError):
+        ev.decide(_oracle_scores(pack), refs, 0.0, {"k6": k6, "g5": _all_recognized(refs)})
+
+
+@pytest.mark.parametrize("assessment", [[], "clear", {"k6": CLEAR, "g5": []},
+                                        {"k6": CLEAR, "g5": {"P01-U1": True}}])
+def test_malformed_assessment_is_refused_not_crashed(assessment, pack):
+    _cases, refs = pack
+    with pytest.raises(ev.PackError):
+        ev.decide(_oracle_scores(pack), refs, 0.0, assessment)
+
+
+def test_k6_failure_may_name_only_a_reviewed_reply(pack):
+    cases, refs = pack
+    by_id = {c["case_id"]: c for c in cases}
+    scored = [ev.score_case(None, by_id["P05"]["idea_text"], refs["P05"])
+              if x["case_id"] == "P05" else x for x in _oracle_scores(pack)]
+    with pytest.raises(ev.PackError):
+        ev.decide(scored, refs, 0.0, {"k6": {"status": ev.K6_FAILURE, "failed_cases": ["P05"]}})
+
+
+def test_k6_flags_are_advisory_and_every_answered_reply_is_reviewed(pack):
+    cases, refs = pack
+    scored = _oracle_scores(pack)
+    items = ev.review_items(scored, pack, {c["case_id"]: _oracle(c, refs[c["case_id"]])
+                                           for c in cases})
+    assert len(items["k6"]) == 20 and all(i["advisory_flags"] == [] for i in items["k6"])
+    assert all(i["reply"] is not None for i in items["k6"])
+
+
+# ── G5: only the frozen unknown, judged by a human, earns credit ─────────────
+def test_irrelevant_unknown_earns_no_g5_credit(pack):
+    cases, refs = pack
+    by_id = {c["case_id"]: c for c in cases}
+    irrelevant = dict(_oracle(by_id["P01"], refs["P01"]),
+                      unknowns=["what colour the logo should be"], clarification_questions=[])
+    s = ev.score_case(irrelevant, by_id["P01"]["idea_text"], refs["P01"])
+    assert set(s["unknowns"].values()) == {ev.G5_NOT_ASSESSED}
+    assert s["unknown_screen_hits"] == {"P01-U1": False, "P01-U2": False}
+    scored = [s if x["case_id"] == "P01" else x for x in _oracle_scores(pack)]
+    base = ev.baseline()["integrated_recall"]
+    assert ev.decide(scored, refs, base, {"k6": CLEAR})["verdict"] == "INCOMPLETE_REVIEW"
+    judged = dict(_all_recognized(refs), **{"P01-U1": ev.G5_NOT_RECOGNIZED,
+                                           "P01-U2": ev.G5_NOT_RECOGNIZED})
+    d = ev.decide(scored, refs, base, {"k6": CLEAR, "g5": judged})
+    assert d["verdict"] == "NO_GO" and d["graded"]["G5"] is False
+
+
+def test_abstention_is_safe_but_earns_no_g5_credit(pack):
+    cases, refs = pack
+    by_id = {c["case_id"]: c for c in cases}
+    for reply in (_reply(outcome="ABSTAIN"), None, {"outcome": "RESPONDED"}):
+        s = ev.score_case(reply, by_id["P10"]["idea_text"], refs["P10"])
+        assert set(s["unknowns"].values()) == {ev.G5_NOT_RECOGNIZED}
+    s = ev.score_case(_reply(outcome="ABSTAIN"), by_id["P10"]["idea_text"], refs["P10"])
+    assert s["critical"] == [] and s["effective"] == ev.CLARIFY_FIRST
+    scored = [s if x["case_id"] == "P10" else x for x in _oracle_scores(pack)]
+    g5 = {k: v for k, v in _all_recognized(refs).items() if not k.startswith("P10-")}
+    d = ev.decide(scored, refs, ev.baseline()["integrated_recall"], {"k6": CLEAR, "g5": g5})
+    assert d["verdict"] == "NO_GO" and d["g5"]["recognized"] == 5
+    with pytest.raises(ev.PackError):         # an automatic NOT_RECOGNIZED cannot be overruled
+        ev.decide(scored, refs, 0.0, {"k6": CLEAR, "g5": _all_recognized(refs)})
+
+
+def test_g5_review_items_carry_the_frozen_meaning(pack):
+    cases, refs = pack
+    replies = {c["case_id"]: _oracle(c, refs[c["case_id"]]) for c in cases}
+    items = ev.review_items(_oracle_scores(pack), pack, replies)["g5"]
+    assert sorted(i["unknown_id"] for i in items) == sorted(_all_recognized(refs))
+    assert all(i["meaning"] for i in items)
 
 
 def test_deterministic_baseline_is_measured_and_matches_start(pack):

@@ -1,6 +1,9 @@
 {
   "pack_id": "inventorai-g1-precreation-semantic-01",
   "status": "FROZEN",
+  "reference_revision": 2,
+  "supersedes_reference_sha256": "8ef8754fee758889d19dcafa1d1626224ba972231c7d2e07fd8cda08fcb2748b",
+  "revision_note": "Revision 2, made before any model run: each expected unknown is now an explicit item with an id and its meaning for the human G5 assessment; screen_stems are an advisory pre-screen only and never award credit. After a non-authoring label review, P16 also accepts the stated part as \"grinder\" or \"crank\"; its proposed P12 handlebar exclusion is referred to the Owner unapplied. No idea text, allowed outcome, negation or forbidden-part label changed.",
   "cases": [
     {
       "case_id": "P01",
@@ -25,8 +28,20 @@
       "forbidden_stated_parts": [],
       "required_negations": [],
       "expected_unknowns": [
-        "components",
-        "dimensions"
+        {
+          "unknown_id": "P01-U1",
+          "meaning": "which components the device will use",
+          "screen_stems": [
+            "component"
+          ]
+        },
+        {
+          "unknown_id": "P01-U2",
+          "meaning": "the size of the device or its enclosure",
+          "screen_stems": [
+            "dimension"
+          ]
+        }
       ]
     },
     {
@@ -56,7 +71,13 @@
       ],
       "required_negations": [],
       "expected_unknowns": [
-        "components"
+        {
+          "unknown_id": "P02-U1",
+          "meaning": "which components the device will use",
+          "screen_stems": [
+            "component"
+          ]
+        }
       ]
     },
     {
@@ -81,7 +102,13 @@
       ],
       "required_negations": [],
       "expected_unknowns": [
-        "box"
+        {
+          "unknown_id": "P03-U1",
+          "meaning": "whether the board will be housed in a box or enclosure at all",
+          "screen_stems": [
+            "box"
+          ]
+        }
       ]
     },
     {
@@ -256,7 +283,13 @@
       ],
       "required_negations": [],
       "expected_unknowns": [
-        "inside"
+        {
+          "unknown_id": "P09-U1",
+          "meaning": "what should go inside the gadget (its internal parts)",
+          "screen_stems": [
+            "inside"
+          ]
+        }
       ]
     },
     {
@@ -283,8 +316,20 @@
       "forbidden_stated_parts": [],
       "required_negations": [],
       "expected_unknowns": [
-        "size",
-        "mount"
+        {
+          "unknown_id": "P10-U1",
+          "meaning": "the size of the existing sensor board",
+          "screen_stems": [
+            "size"
+          ]
+        },
+        {
+          "unknown_id": "P10-U2",
+          "meaning": "how the board should be mounted in the housing",
+          "screen_stems": [
+            "mount"
+          ]
+        }
       ]
     },
     {
@@ -417,7 +462,9 @@
       "required_parts": [
         {
           "any_of": [
-            "coffee grinder"
+            "coffee grinder",
+            "grinder",
+            "crank"
           ],
           "concept": "mechanical"
         }

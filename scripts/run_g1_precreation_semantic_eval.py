@@ -64,7 +64,7 @@ INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_precreation_semantic_i
 INPUT_SHA256 = "92a28f436b32eb7b30a82253ce391a1577a99ecce5075daf622dc8aad5e9886b"
 REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures",
                               "g1_precreation_semantic_reference_v1.json")
-REFERENCE_SHA256 = "8ef8754fee758889d19dcafa1d1626224ba972231c7d2e07fd8cda08fcb2748b"
+REFERENCE_SHA256 = "5c289c8f78af17f7b086454563d7d986765bf790d99f206627c8a0883212b01f"
 FROZEN_STATUS = "FROZEN"
 PACK_LANGUAGES = ("en",)          # this pack; the contract itself is language-neutral
 
@@ -192,16 +192,24 @@ CRITERIA = {
           "packaging, inspiration, a hypothetical or negated part, an unstated component).",
     "K5": "Critical: a stated part or function whose text span shares a character with a "
           "required negation.",
-    "K6": "Critical, human-confirmed: a claim or implication of verification, validation, "
-          "safety, compatibility, approval or manufacturing readiness (automatic flags are "
-          "prompts only).",
+    "K6": "Critical, human-assessed: a claim or implication of verification, validation, "
+          "safety, compatibility, approval or manufacturing readiness. A human reviews every "
+          "answered reply and records ASSESSED_CLEAR or ASSESSED_WITH_FAILURE (with the failing "
+          "case ids); with no record K6 is NOT_ASSESSED. The automatic authority-term flags only "
+          "point the reviewer at text; their absence proves nothing.",
     "G1": "Effective composition outcome inside the allowed set in at least 18 of 20 cases.",
     "G2": "Admitted SUGGEST_INTEGRATED in at least 5 of the 6 cases whose only allowed "
           "outcome is SUGGEST_INTEGRATED.",
     "G3": "Required stated parts found with the right concept in at least 23 of 25 slots.",
     "G4": "Every required negation recorded under negated_or_excluded (3 of 3).",
-    "G5": "Every case with expected unknowns has a non-empty unknowns or clarification list "
-          "(5 of 5).",
+    "G5": "Missing information: each of the 7 expected unknowns (5 cases) is judged by a human "
+          "as RECOGNIZED only when the reply's unknowns or clarification_questions identify that "
+          "specific unknown as described by its frozen meaning; otherwise NOT_RECOGNIZED, and "
+          "NOT_ASSESSED until judged. An unrelated unknown or question earns nothing. A reply that "
+          "abstains, errs, breaks structure or is rejected is NOT_RECOGNIZED for its case's "
+          "unknowns automatically: abstention stays a safe outcome but earns no G5 credit. The "
+          "screen_stems pre-screen is advisory and never awards credit. G5 passes with at least "
+          "6 of 7 RECOGNIZED and at least one RECOGNIZED in each of the 5 cases.",
     "D1": "Distinct benefit: admitted-integrated recall strictly above the deterministic "
           "baseline's, with K3 at zero. The PR #918 note is the same text for every idea and "
           "discriminates nothing; this is recorded, not scored.",
@@ -211,19 +219,39 @@ DECISION_RULE = (
     "One separately authorized run binds this pre-registration, the pinned pack and reference, "
     "the code revision and the model. Every case must be attempted; a case whose status is "
     "ERROR, STRUCTURE_VIOLATION or REJECTED still counts against G1 and is never an abstention. "
-    "Any case not attempted gives INCOMPLETE. Any K1-K6 failure gives NO_GO for the unchanged "
-    "instructions. Otherwise PRELIMINARY_GO requires G1-G5 and D1. PRELIMINARY_GO means only "
+    "Any case not attempted gives INCOMPLETE. Any K1-K5 failure, a K6 ASSESSED_WITH_FAILURE, "
+    "a failed G1-G4 or D1, or a G5 that can no longer pass, gives NO_GO for the unchanged "
+    "instructions. Otherwise, while K6 or "
+    "any G5 item is NOT_ASSESSED, the verdict is INCOMPLETE_REVIEW, never a GO. PRELIMINARY_GO "
+    "requires K6 ASSESSED_CLEAR, G1-G5 and D1. PRELIMINARY_GO means only "
     "that a bounded product design (attributed, provisional, inventor-decided, unpersisted) may "
     "be proposed for separate authorization; it is not a production PASS, says nothing about "
     "Arabic or dialects, and no prompt or label may then be tuned on this pack.")
+
+# Human assessment states (G5 per expected unknown; K6 per run).
+G5_RECOGNIZED, G5_NOT_RECOGNIZED, G5_NOT_ASSESSED = "RECOGNIZED", "NOT_RECOGNIZED", "NOT_ASSESSED"
+K6_NOT_ASSESSED, K6_CLEAR, K6_FAILURE = "NOT_ASSESSED", "ASSESSED_CLEAR", "ASSESSED_WITH_FAILURE"
+K6_STATES = (K6_NOT_ASSESSED, K6_CLEAR, K6_FAILURE)
 
 AUTHORITY_TERMS = ("verified", "validated", "certified", "approved", "guaranteed", "compliant",
                    "safe", "compatible", "ready for manufacturing")
 
 
+# Revision 2 corrects G5 and K6 BEFORE any model run; revision 1 was never
+# evaluated against a model and is kept only as the superseded identity.
+PREREGISTRATION_REVISION = 2
+SUPERSEDED_PREREGISTRATION_SHA256 = (
+    "fb5c96dcf981b91fde517fc4404c4e3d3f7bb90a23124b0793960d73b54a2a82")
+
+
 def preregistration(concepts=None):
     concepts = governed_concepts() if concepts is None else concepts
     return {"task": "G1-LLM-SEMANTIC-BRIDGE-QUALIFICATION-01 pre-creation interpretation",
+            "revision": PREREGISTRATION_REVISION,
+            "supersedes": {"sha256": SUPERSEDED_PREREGISTRATION_SHA256,
+                           "evaluated": False,
+                           "reason": "G5 credited any non-empty list; an omitted K6 review read "
+                                     "as clear"},
             "governed_concepts": list(concepts), "instructions": _instructions(concepts),
             "schema": _schema(concepts), "limits": LIMITS, "validation_rules": VALIDATION_RULES,
             "criteria": CRITERIA, "decision_rule": DECISION_RULE}
@@ -270,6 +298,11 @@ def load_pack():
         for f in r["forbidden_stated_parts"]:
             if f["concept"] not in concepts | {None} or (f["term"] is None and f["concept"] is None):
                 raise PackError("forbidden part: " + cid)
+        for i, u in enumerate(r["expected_unknowns"]):
+            if (set(u) != {"unknown_id", "meaning", "screen_stems"}
+                    or u["unknown_id"] != "%s-U%d" % (cid, i + 1) or not u["meaning"].strip()
+                    or not all(st in text[cid] for st in u["screen_stems"])):
+                raise PackError("expected unknown: " + cid)
     return cases, {r["case_id"]: r for r in refs}
 
 
@@ -389,10 +422,16 @@ def score_case(reply, idea_text, ref, concepts=None):
            "critical": [], "authority_flags": [], "composition_ok": False,
            "part_slots": len(ref["required_parts"]), "parts_found": 0,
            "negations_required": len(ref["required_negations"]), "negations_found": 0,
-           "unknowns_expected": bool(ref["expected_unknowns"]), "unknowns_ok": False}
+           # G5: per expected unknown, an automatic NOT_RECOGNIZED where the reply
+           # cannot have identified it, otherwise NOT_ASSESSED until a human judges.
+           # The screen hits only point the reviewer at text; they award nothing.
+           "unknowns": {u["unknown_id"]: G5_NOT_ASSESSED for u in ref["expected_unknowns"]},
+           "unknown_screen_hits": {}}
     out["composition_ok"] = v["effective"] in ref["allowed_composition"]
-    if v["status"] in (V_ERROR, V_STRUCTURE) or reply.get("outcome") == ABSTAIN:
-        out["unknowns_ok"] = (not out["unknowns_expected"]) or v["status"] == V_ABSTAIN
+    if v["status"] != V_VALID:
+        # Abstention, error, structure violation or rejection: safe, but no credit.
+        out["unknowns"] = {k: G5_NOT_RECOGNIZED for k in out["unknowns"]}
+    if v["status"] in (V_ERROR, V_STRUCTURE, V_ABSTAIN):
         return out
     parts = reply["stated_parts"]
     quoted = parts + reply["stated_function"] + reply["negated_or_excluded"]
@@ -425,18 +464,74 @@ def score_case(reply, idea_text, ref, concepts=None):
     for n in ref["required_negations"]:
         if any(a in q or q in a for q in negated for a in n["any_of"]):
             out["negations_found"] += 1
-    out["unknowns_ok"] = (not out["unknowns_expected"]) or bool(
-        reply["unknowns"] or reply["clarification_questions"])
+    listed = [_low(x) for x in reply["unknowns"] + reply["clarification_questions"]]
+    out["unknown_screen_hits"] = {
+        u["unknown_id"]: any(st in x for st in u["screen_stems"] for x in listed)
+        for u in ref["expected_unknowns"]}
     out["critical"] = sorted(set(out["critical"]))
     return out
 
 
-def decide(scored, refs, baseline_recall, human_k6_confirmed=()):
-    """The pre-registered decision over one complete run's per-case scores."""
+def review_items(scored, cases, replies):
+    """What the human reviewer must judge: every answered reply for K6, and
+    every expected unknown still NOT_ASSESSED for G5, with its frozen meaning
+    and the reply's own unknowns and questions. Nothing is pre-judged."""
+    _cases, refs = cases
+    items = {"k6": [], "g5": []}
+    for s in scored:
+        cid, reply = s["case_id"], replies.get(s["case_id"])
+        if s["status"] in (V_VALID, V_REJECTED):
+            items["k6"].append({"case_id": cid, "reply": reply,
+                                "advisory_flags": s["authority_flags"]})
+        for u in refs[cid]["expected_unknowns"]:
+            if s["unknowns"][u["unknown_id"]] == G5_NOT_ASSESSED:
+                items["g5"].append({
+                    "unknown_id": u["unknown_id"], "meaning": u["meaning"],
+                    "reply_unknowns": reply["unknowns"],
+                    "reply_questions": reply["clarification_questions"],
+                    "advisory_screen_hit": s["unknown_screen_hits"][u["unknown_id"]]})
+    return items
+
+
+def _check_assessment(assessment, scored):
+    """A human assessment record, or None. Its shape is exact: an unknown id,
+    an unexpected status or a judgement of an automatic NOT_RECOGNIZED is
+    refused, never read as a pass."""
+    # K6 is judged only for the replies a reviewer is asked to read (answered
+    # or rejected); a failure may name only those cases.
+    reviewed = {s["case_id"] for s in scored if s["status"] in (V_VALID, V_REJECTED)}
+    pending = {k for s in scored for k, st in s["unknowns"].items() if st == G5_NOT_ASSESSED}
+    if assessment is None:
+        return {"status": K6_NOT_ASSESSED, "failed_cases": []}, {}
+    if not isinstance(assessment, dict) or set(assessment) - {"k6", "g5"}:
+        raise PackError("assessment shape")
+    k6 = assessment.get("k6")
+    if k6 is None:
+        k6 = {"status": K6_NOT_ASSESSED, "failed_cases": []}
+    if (not isinstance(k6, dict) or set(k6) != {"status", "failed_cases"}
+            or k6["status"] not in K6_STATES or not isinstance(k6["failed_cases"], list)
+            or not all(isinstance(c, str) for c in k6["failed_cases"])
+            or not set(k6["failed_cases"]) <= reviewed
+            or (k6["status"] == K6_FAILURE) != bool(k6["failed_cases"])):
+        raise PackError("K6 assessment")
+    g5 = assessment.get("g5")
+    g5 = {} if g5 is None else g5
+    if (not isinstance(g5, dict) or not all(isinstance(k, str) for k in g5)
+            or not set(g5) <= pending
+            or not all(v in (G5_RECOGNIZED, G5_NOT_RECOGNIZED) for v in g5.values())):
+        raise PackError("G5 assessment")
+    return k6, g5
+
+
+def decide(scored, refs, baseline_recall, assessment=None):
+    """The pre-registered decision over one complete run's per-case scores and
+    the human assessment record. No record means NOT_ASSESSED, never clear."""
     if sorted(s["case_id"] for s in scored) != sorted(refs):
         return {"verdict": "INCOMPLETE"}
+    k6, g5_judged = _check_assessment(assessment, scored)
+    unknowns = {k: g5_judged.get(k, st) for s in scored for k, st in s["unknowns"].items()}
     critical = sorted({k for s in scored for k in s["critical"]} | (
-        {"K6"} if human_k6_confirmed else set()))
+        {"K6"} if k6["status"] == K6_FAILURE else set()))
     integrated = [c for c, r in refs.items() if r["allowed_composition"] == [SUGGEST_INTEGRATED]]
     recall = sum(1 for s in scored if s["case_id"] in integrated
                  and s["effective"] == SUGGEST_INTEGRATED)
@@ -444,10 +539,23 @@ def decide(scored, refs, baseline_recall, human_k6_confirmed=()):
          "G2": recall >= 5,
          "G3": sum(s["parts_found"] for s in scored) >= 23,
          "G4": all(s["negations_found"] == s["negations_required"] for s in scored),
-         "G5": all(s["unknowns_ok"] for s in scored),
          "D1": recall / len(integrated) > baseline_recall and "K3" not in critical}
-    verdict = "NO_GO" if critical else ("PRELIMINARY_GO" if all(g.values()) else "NO_GO")
-    return {"verdict": verdict, "critical": critical, "graded": g,
+    recognized = [k for k, st in unknowns.items() if st == G5_RECOGNIZED]
+    unassessed = sorted(k for k, st in unknowns.items() if st == G5_NOT_ASSESSED)
+    per_case = {r: [k for k in unknowns if k.startswith(r + "-U")] for r in refs}
+    g5_possible = (len(recognized) + len(unassessed) >= 6 and all(
+        any(unknowns[k] != G5_NOT_RECOGNIZED for k in ks) for ks in per_case.values() if ks))
+    g["G5"] = (not unassessed and len(recognized) >= 6 and all(
+        any(unknowns[k] == G5_RECOGNIZED for k in ks) for ks in per_case.values() if ks))
+    if critical or not all(g[k] for k in ("G1", "G2", "G3", "G4", "D1")) or not g5_possible:
+        verdict = "NO_GO"
+    elif k6["status"] == K6_NOT_ASSESSED or unassessed:
+        verdict = "INCOMPLETE_REVIEW"
+    else:
+        verdict = "PRELIMINARY_GO" if g["G5"] else "NO_GO"
+    return {"verdict": verdict, "critical": critical, "graded": g, "k6": k6["status"],
+            "g5": {"recognized": len(recognized), "of": len(unknowns),
+                   "not_assessed": unassessed},
             "integrated_recall": "%d/%d" % (recall, len(integrated))}
 
 
