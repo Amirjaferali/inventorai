@@ -539,7 +539,11 @@ ideas auto-offered) in `scripts/run_g1_precreation_semantic_eval.py`. Pre-regist
 before any model run; revision 1 was never evaluated) credits G5 only for a human judgement of each frozen
 expected unknown, gives an abstaining or failed reply no G5 credit, and keeps K6 NOT_ASSESSED until a human
 records ASSESSED_CLEAR or ASSESSED_WITH_FAILURE, so no GO is possible without both reviews; one non-authoring
-label review was applied (P16), with its P12 proposal referred to the Owner. It has NO provider path: no model was
+label review was applied (P16). Revision 3 applies the Owner's P12 ruling: the bike handlebar is external
+mounting context, not a designed part; every stated part naming it (or "bike") goes to the human K4 context
+review, which keeps a faithful casing quote valid and counts a claim of the handlebar itself as K4, never an
+automatic pass or failure. It has NO
+provider path: no model was
 run and no model result exists; a run needs its own Owner authorization of an exact run, as for Proof B. No
 product, `/start`, question-serving, persistence, provenance, OD-2 / OD-3 / OD-4, Stage-15 or engineering-owner
 change; English only, and no Arabic or dialect qualification is claimed. Applicability: effective on the

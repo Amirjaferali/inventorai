@@ -1,9 +1,12 @@
 {
   "pack_id": "inventorai-g1-precreation-semantic-01",
   "status": "FROZEN",
-  "reference_revision": 2,
-  "supersedes_reference_sha256": "8ef8754fee758889d19dcafa1d1626224ba972231c7d2e07fd8cda08fcb2748b",
-  "revision_note": "Revision 2, made before any model run: each expected unknown is now an explicit item with an id and its meaning for the human G5 assessment; screen_stems are an advisory pre-screen only and never award credit. After a non-authoring label review, P16 also accepts the stated part as \"grinder\" or \"crank\"; its proposed P12 handlebar exclusion is referred to the Owner unapplied. No idea text, allowed outcome, negation or forbidden-part label changed.",
+  "reference_revision": 3,
+  "supersedes_reference_sha256": [
+    "8ef8754fee758889d19dcafa1d1626224ba972231c7d2e07fd8cda08fcb2748b",
+    "5c289c8f78af17f7b086454563d7d986765bf790d99f206627c8a0883212b01f"
+  ],
+  "revision_note": "Revision 2, made before any model run: each expected unknown is now an explicit item with an id and its meaning for the human G5 assessment; screen_stems are an advisory pre-screen only and never award credit. After a non-authoring label review, P16 also accepts the stated part as \"grinder\" or \"crank\"; its proposed P12 handlebar exclusion was referred to the Owner unapplied. Revision 3, also before any model run, applies the Owner P12 ruling: the bike handlebar is external mounting context, not a designed part (role EXTERNAL_CONTEXT, terms \"handlebar\" and \"bike\"); every stated part whose quote or wording names either term goes to the human K4 context review: a designed part that only quotes it (the casing that clips onto it) is judged clear, a claim of the handlebar itself as a designed part is judged a failure and counts as K4, so it is never an automatic pass or failure. No idea text, allowed outcome or negation changed.",
   "cases": [
     {
       "case_id": "P01",
@@ -377,7 +380,18 @@
           "concept": "mechanical"
         }
       ],
-      "forbidden_stated_parts": [],
+      "forbidden_stated_parts": [
+        {
+          "term": "handlebar",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        },
+        {
+          "term": "bike",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        }
+      ],
       "required_negations": [],
       "expected_unknowns": []
     },

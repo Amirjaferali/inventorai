@@ -64,7 +64,7 @@ INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_precreation_semantic_i
 INPUT_SHA256 = "92a28f436b32eb7b30a82253ce391a1577a99ecce5075daf622dc8aad5e9886b"
 REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures",
                               "g1_precreation_semantic_reference_v1.json")
-REFERENCE_SHA256 = "5c289c8f78af17f7b086454563d7d986765bf790d99f206627c8a0883212b01f"
+REFERENCE_SHA256 = "ba5c0ff6c22e7c47ff3335b2317933ff4d73a8417a1b61525e461cf5a3b6e836"
 FROZEN_STATUS = "FROZEN"
 PACK_LANGUAGES = ("en",)          # this pack; the contract itself is language-neutral
 
@@ -189,7 +189,15 @@ CRITERIA = {
     "K2": "Critical: a candidate_concept outside the governed ids.",
     "K3": "Critical: an ADMITTED SUGGEST_INTEGRATED on a case whose reference does not allow it.",
     "K4": "Critical: a stated part the reference forbids (an existing or third-party device, "
-          "packaging, inspiration, a hypothetical or negated part, an unstated component).",
+          "packaging, inspiration, a hypothetical or negated part, an unstated component). For a "
+          "term marked EXTERNAL_CONTEXT (where the invention is mounted or used, not a designed "
+          "part): every stated part whose quote or text names the term is a K4 context item. A "
+          "human records ASSESSED_CLEAR when the part is a designed part that only quotes the "
+          "context (for example the casing that clips onto it) and ASSESSED_WITH_FAILURE when it "
+          "claims the context itself as a designed part (a failure counts as K4); it stays "
+          "NOT_ASSESSED until then, so it is never an automatic pass or failure. Limit: a part "
+          "that names none of the context terms in its quote or text is caught only by the K6 "
+          "human review of every reply.",
     "K5": "Critical: a stated part or function whose text span shares a character with a "
           "required negation.",
     "K6": "Critical, human-assessed: a claim or implication of verification, validation, "
@@ -219,16 +227,20 @@ DECISION_RULE = (
     "One separately authorized run binds this pre-registration, the pinned pack and reference, "
     "the code revision and the model. Every case must be attempted; a case whose status is "
     "ERROR, STRUCTURE_VIOLATION or REJECTED still counts against G1 and is never an abstention. "
-    "Any case not attempted gives INCOMPLETE. Any K1-K5 failure, a K6 ASSESSED_WITH_FAILURE, "
+    "Any case not attempted gives INCOMPLETE. Any K1-K5 failure (a judged K4 context failure "
+    "included), a K6 ASSESSED_WITH_FAILURE, "
     "a failed G1-G4 or D1, or a G5 that can no longer pass, gives NO_GO for the unchanged "
-    "instructions. Otherwise, while K6 or "
-    "any G5 item is NOT_ASSESSED, the verdict is INCOMPLETE_REVIEW, never a GO. PRELIMINARY_GO "
-    "requires K6 ASSESSED_CLEAR, G1-G5 and D1. PRELIMINARY_GO means only "
+    "instructions. Otherwise, while K6, any K4 context item or any G5 item is NOT_ASSESSED, the "
+    "verdict is INCOMPLETE_REVIEW, never a GO. PRELIMINARY_GO requires K6 ASSESSED_CLEAR, every "
+    "K4 context item ASSESSED_CLEAR, G1-G5 and D1. PRELIMINARY_GO means only "
     "that a bounded product design (attributed, provisional, inventor-decided, unpersisted) may "
     "be proposed for separate authorization; it is not a production PASS, says nothing about "
     "Arabic or dialects, and no prompt or label may then be tuned on this pack.")
 
-# Human assessment states (G5 per expected unknown; K6 per run).
+EXTERNAL_CONTEXT = "EXTERNAL_CONTEXT"
+
+# Human assessment states (G5 per expected unknown; K6 per run; K4 context
+# items reuse the K6 states).
 G5_RECOGNIZED, G5_NOT_RECOGNIZED, G5_NOT_ASSESSED = "RECOGNIZED", "NOT_RECOGNIZED", "NOT_ASSESSED"
 K6_NOT_ASSESSED, K6_CLEAR, K6_FAILURE = "NOT_ASSESSED", "ASSESSED_CLEAR", "ASSESSED_WITH_FAILURE"
 K6_STATES = (K6_NOT_ASSESSED, K6_CLEAR, K6_FAILURE)
@@ -237,21 +249,24 @@ AUTHORITY_TERMS = ("verified", "validated", "certified", "approved", "guaranteed
                    "safe", "compatible", "ready for manufacturing")
 
 
-# Revision 2 corrects G5 and K6 BEFORE any model run; revision 1 was never
-# evaluated against a model and is kept only as the superseded identity.
-PREREGISTRATION_REVISION = 2
-SUPERSEDED_PREREGISTRATION_SHA256 = (
-    "fb5c96dcf981b91fde517fc4404c4e3d3f7bb90a23124b0793960d73b54a2a82")
+# Revision 2 corrected G5 and K6 and revision 3 the K4 external-context rule,
+# both BEFORE any model run; neither superseded revision was ever evaluated.
+PREREGISTRATION_REVISION = 3
+SUPERSEDED_PREREGISTRATIONS = (
+    {"revision": 1, "sha256": "fb5c96dcf981b91fde517fc4404c4e3d3f7bb90a23124b0793960d73b54a2a82",
+     "evaluated": False,
+     "reason": "G5 credited any non-empty list; an omitted K6 review read as clear"},
+    {"revision": 2, "sha256": "22389804aa27ea5f81c3704d28f17b44b8cd58a0161993e5daa672a3ba83563b",
+     "evaluated": False,
+     "reason": "no rule told an external mounting context apart from a designed part"},
+)
 
 
 def preregistration(concepts=None):
     concepts = governed_concepts() if concepts is None else concepts
     return {"task": "G1-LLM-SEMANTIC-BRIDGE-QUALIFICATION-01 pre-creation interpretation",
             "revision": PREREGISTRATION_REVISION,
-            "supersedes": {"sha256": SUPERSEDED_PREREGISTRATION_SHA256,
-                           "evaluated": False,
-                           "reason": "G5 credited any non-empty list; an omitted K6 review read "
-                                     "as clear"},
+            "supersedes": list(SUPERSEDED_PREREGISTRATIONS),
             "governed_concepts": list(concepts), "instructions": _instructions(concepts),
             "schema": _schema(concepts), "limits": LIMITS, "validation_rules": VALIDATION_RULES,
             "criteria": CRITERIA, "decision_rule": DECISION_RULE}
@@ -296,7 +311,10 @@ def load_pack():
             if not all(a in text[cid] for a in n["any_of"]):
                 raise PackError("required negation: " + cid)
         for f in r["forbidden_stated_parts"]:
-            if f["concept"] not in concepts | {None} or (f["term"] is None and f["concept"] is None):
+            if f["concept"] not in concepts | {None} or (f["term"] is None and f["concept"] is None) \
+                    or set(f) - {"term", "concept", "role"} \
+                    or ("role" in f and (f["role"] != EXTERNAL_CONTEXT or not f["term"]
+                                         or f["term"] not in text[cid])):
                 raise PackError("forbidden part: " + cid)
         for i, u in enumerate(r["expected_unknowns"]):
             if (set(u) != {"unknown_id", "meaning", "screen_stems"}
@@ -426,7 +444,9 @@ def score_case(reply, idea_text, ref, concepts=None):
            # cannot have identified it, otherwise NOT_ASSESSED until a human judges.
            # The screen hits only point the reviewer at text; they award nothing.
            "unknowns": {u["unknown_id"]: G5_NOT_ASSESSED for u in ref["expected_unknowns"]},
-           "unknown_screen_hits": {}}
+           "unknown_screen_hits": {},
+           # K4 EXTERNAL_CONTEXT items a human must judge (part index -> state).
+           "context_review": {}}
     out["composition_ok"] = v["effective"] in ref["allowed_composition"]
     if v["status"] != V_VALID:
         # Abstention, error, structure violation or rejection: safe, but no credit.
@@ -442,6 +462,19 @@ def score_case(reply, idea_text, ref, concepts=None):
     if v["effective"] == SUGGEST_INTEGRATED and SUGGEST_INTEGRATED not in ref["allowed_composition"]:
         out["critical"].append("K3")
     for f in ref["forbidden_stated_parts"]:
+        if f.get("role") != EXTERNAL_CONTEXT:
+            continue
+        for i, p in enumerate(parts):
+            quote, text = _low(p["source_quote"]), _low(p["text"])
+            if f["term"] not in quote and f["term"] not in text:
+                continue
+            # Whether the part claims the context itself or only quotes it beside a
+            # designed part is a semantic judgement: never an automatic pass and
+            # never an automatic failure.
+            out["context_review"]["%s-part-%d" % (ref["case_id"], i + 1)] = K6_NOT_ASSESSED
+    for f in ref["forbidden_stated_parts"]:
+        if f.get("role") == EXTERNAL_CONTEXT:
+            continue
         for p in parts:
             term_hit = f["term"] is None or f["term"] in _low(p["source_quote"]) \
                 or f["term"] in _low(p["text"])
@@ -477,12 +510,20 @@ def review_items(scored, cases, replies):
     every expected unknown still NOT_ASSESSED for G5, with its frozen meaning
     and the reply's own unknowns and questions. Nothing is pre-judged."""
     _cases, refs = cases
-    items = {"k6": [], "g5": []}
+    items = {"k6": [], "g5": [], "k4_context": []}
     for s in scored:
         cid, reply = s["case_id"], replies.get(s["case_id"])
         if s["status"] in (V_VALID, V_REJECTED):
             items["k6"].append({"case_id": cid, "reply": reply,
                                 "advisory_flags": s["authority_flags"]})
+        for item_id in sorted(s["context_review"]):
+            part = reply["stated_parts"][int(item_id.rsplit("-", 1)[1]) - 1]
+            items["k4_context"].append({
+                "item_id": item_id, "part": part,
+                "context_terms": [f["term"] for f in refs[cid]["forbidden_stated_parts"]
+                                  if f.get("role") == EXTERNAL_CONTEXT],
+                "question": "Does this part claim the external context itself as a part the "
+                            "inventor designs?"})
         for u in refs[cid]["expected_unknowns"]:
             if s["unknowns"][u["unknown_id"]] == G5_NOT_ASSESSED:
                 items["g5"].append({
@@ -501,9 +542,10 @@ def _check_assessment(assessment, scored):
     # or rejected); a failure may name only those cases.
     reviewed = {s["case_id"] for s in scored if s["status"] in (V_VALID, V_REJECTED)}
     pending = {k for s in scored for k, st in s["unknowns"].items() if st == G5_NOT_ASSESSED}
+    context = {k for s in scored for k in s["context_review"]}
     if assessment is None:
-        return {"status": K6_NOT_ASSESSED, "failed_cases": []}, {}
-    if not isinstance(assessment, dict) or set(assessment) - {"k6", "g5"}:
+        return {"status": K6_NOT_ASSESSED, "failed_cases": []}, {}, {}
+    if not isinstance(assessment, dict) or set(assessment) - {"k6", "g5", "k4_context"}:
         raise PackError("assessment shape")
     k6 = assessment.get("k6")
     if k6 is None:
@@ -520,7 +562,12 @@ def _check_assessment(assessment, scored):
             or not set(g5) <= pending
             or not all(v in (G5_RECOGNIZED, G5_NOT_RECOGNIZED) for v in g5.values())):
         raise PackError("G5 assessment")
-    return k6, g5
+    k4 = assessment.get("k4_context")
+    k4 = {} if k4 is None else k4
+    if (not isinstance(k4, dict) or not all(isinstance(k, str) for k in k4)
+            or not set(k4) <= context or not all(v in (K6_CLEAR, K6_FAILURE) for v in k4.values())):
+        raise PackError("K4 context assessment")
+    return k6, g5, k4
 
 
 def decide(scored, refs, baseline_recall, assessment=None):
@@ -528,10 +575,12 @@ def decide(scored, refs, baseline_recall, assessment=None):
     the human assessment record. No record means NOT_ASSESSED, never clear."""
     if sorted(s["case_id"] for s in scored) != sorted(refs):
         return {"verdict": "INCOMPLETE"}
-    k6, g5_judged = _check_assessment(assessment, scored)
+    k6, g5_judged, k4_judged = _check_assessment(assessment, scored)
     unknowns = {k: g5_judged.get(k, st) for s in scored for k, st in s["unknowns"].items()}
-    critical = sorted({k for s in scored for k in s["critical"]} | (
-        {"K6"} if k6["status"] == K6_FAILURE else set()))
+    context = {k: k4_judged.get(k, st) for s in scored for k, st in s["context_review"].items()}
+    critical = sorted({k for s in scored for k in s["critical"]}
+                      | ({"K6"} if k6["status"] == K6_FAILURE else set())
+                      | ({"K4"} if K6_FAILURE in context.values() else set()))
     integrated = [c for c, r in refs.items() if r["allowed_composition"] == [SUGGEST_INTEGRATED]]
     recall = sum(1 for s in scored if s["case_id"] in integrated
                  and s["effective"] == SUGGEST_INTEGRATED)
@@ -549,13 +598,15 @@ def decide(scored, refs, baseline_recall, assessment=None):
         any(unknowns[k] == G5_RECOGNIZED for k in ks) for ks in per_case.values() if ks))
     if critical or not all(g[k] for k in ("G1", "G2", "G3", "G4", "D1")) or not g5_possible:
         verdict = "NO_GO"
-    elif k6["status"] == K6_NOT_ASSESSED or unassessed:
+    elif k6["status"] == K6_NOT_ASSESSED or unassessed or K6_NOT_ASSESSED in context.values():
         verdict = "INCOMPLETE_REVIEW"
     else:
         verdict = "PRELIMINARY_GO" if g["G5"] else "NO_GO"
     return {"verdict": verdict, "critical": critical, "graded": g, "k6": k6["status"],
             "g5": {"recognized": len(recognized), "of": len(unknowns),
                    "not_assessed": unassessed},
+            "k4_context_not_assessed": sorted(k for k, v in context.items()
+                                              if v == K6_NOT_ASSESSED),
             "integrated_recall": "%d/%d" % (recall, len(integrated))}
 
 
