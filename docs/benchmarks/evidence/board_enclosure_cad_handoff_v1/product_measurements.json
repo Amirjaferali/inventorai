@@ -1,0 +1,198 @@
+{
+  "freecad": "1.0.2.39319 (Git)",
+  "gui": 1,
+  "settings": {
+    "dxfUseLegacyImporter": false,
+    "dxfShowDialog": false,
+    "dxfUseDraftVisGroups": true,
+    "dxfCreatePart": true,
+    "dxfCreateDraft": false,
+    "dxfCreateSketch": false,
+    "joingeometry": false,
+    "groupLayers": false,
+    "dxfScaling": 1.0
+  },
+  "tolerance_mm": 1e-09,
+  "bundles": {
+    "A_rev0_not_met": {
+      "members": [
+        "geometry.dxf",
+        "companion.json",
+        "README.txt"
+      ],
+      "sha256_ok": true,
+      "revision": 0,
+      "snapshot_digest": "6595de6847152eef",
+      "outcome": "NOT_MET",
+      "margins": [
+        "-1",
+        "1"
+      ],
+      "measured": {
+        "IAI_DECLARED_USABLE_REGION": {
+          "declared_mm": [
+            "86",
+            "56"
+          ],
+          "width_mm": 86.0,
+          "height_mm": 56.0,
+          "centre_mm": [
+            0.0,
+            0.0
+          ],
+          "z_mm": [
+            0.0,
+            0.0
+          ],
+          "edges": 4,
+          "closed": true,
+          "line_edges": true,
+          "max_abs_transfer_error_mm": 0.0,
+          "pass": true
+        },
+        "IAI_DECLARED_BOARD_OUTLINE": {
+          "declared_mm": [
+            "84",
+            "50"
+          ],
+          "width_mm": 84.0,
+          "height_mm": 50.0,
+          "centre_mm": [
+            0.0,
+            0.0
+          ],
+          "z_mm": [
+            0.0,
+            0.0
+          ],
+          "edges": 4,
+          "closed": true,
+          "line_edges": true,
+          "max_abs_transfer_error_mm": 0.0,
+          "pass": true
+        }
+      },
+      "pass": true
+    },
+    "B_rev1_met": {
+      "members": [
+        "geometry.dxf",
+        "companion.json",
+        "README.txt"
+      ],
+      "sha256_ok": true,
+      "revision": 1,
+      "snapshot_digest": "4293b7dc80d40e11",
+      "outcome": "MET",
+      "margins": [
+        "0",
+        "1"
+      ],
+      "measured": {
+        "IAI_DECLARED_USABLE_REGION": {
+          "declared_mm": [
+            "88",
+            "56"
+          ],
+          "width_mm": 88.0,
+          "height_mm": 56.0,
+          "centre_mm": [
+            0.0,
+            0.0
+          ],
+          "z_mm": [
+            0.0,
+            0.0
+          ],
+          "edges": 4,
+          "closed": true,
+          "line_edges": true,
+          "max_abs_transfer_error_mm": 0.0,
+          "pass": true
+        },
+        "IAI_DECLARED_BOARD_OUTLINE": {
+          "declared_mm": [
+            "84",
+            "50"
+          ],
+          "width_mm": 84.0,
+          "height_mm": 50.0,
+          "centre_mm": [
+            0.0,
+            0.0
+          ],
+          "z_mm": [
+            0.0,
+            0.0
+          ],
+          "edges": 4,
+          "closed": true,
+          "line_edges": true,
+          "max_abs_transfer_error_mm": 0.0,
+          "pass": true
+        }
+      },
+      "pass": true
+    },
+    "C_precision_met": {
+      "members": [
+        "geometry.dxf",
+        "companion.json",
+        "README.txt"
+      ],
+      "sha256_ok": true,
+      "revision": 0,
+      "snapshot_digest": "3f217fc306808b81",
+      "outcome": "MET",
+      "margins": [
+        "0",
+        "2.9"
+      ],
+      "measured": {
+        "IAI_DECLARED_USABLE_REGION": {
+          "declared_mm": [
+            "100.1",
+            "56"
+          ],
+          "width_mm": 100.1,
+          "height_mm": 56.0,
+          "centre_mm": [
+            0.0,
+            0.0
+          ],
+          "z_mm": [
+            0.0,
+            0.0
+          ],
+          "edges": 4,
+          "closed": true,
+          "line_edges": true,
+          "max_abs_transfer_error_mm": 5.684341886080802e-15,
+          "pass": true
+        },
+        "IAI_DECLARED_BOARD_OUTLINE": {
+          "declared_mm": [
+            "99.9",
+            "50"
+          ],
+          "width_mm": 99.9,
+          "height_mm": 50.0,
+          "centre_mm": [
+            0.0,
+            0.0
+          ],
+          "z_mm": [
+            0.0,
+            0.0
+          ],
+          "edges": 4,
+          "closed": true,
+          "line_edges": true,
+          "max_abs_transfer_error_mm": 5.684341886080802e-15,
+          "pass": true
+        }
+      },
+      "pass": true
+    }
+  }
+}

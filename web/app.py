@@ -421,6 +421,7 @@ from web import cap01_guidance  # Stage 18 / CAP-01: bounded presentation-profil
 from engine import mechanical_planar_clearance as _pcc
 from engine import mechanical_planar_clearance_method as _pcc_method
 from web import planar_clearance as _pcc_view
+from engine import planar_clearance_cad_export as _pcc_cad  # BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (outbound only)
 from jinja2 import pass_context as _jinja_pass_context
 
 # --- G-SC0 Bounded Security Containment: runtime security configuration -------
@@ -11636,7 +11637,7 @@ def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=No
         view["raw_material"] if view else None)
     response = make_response(render_template(
         "planar_clearance.html", sid=sid, v=view, form=form, error=error,
-        notice=notice, pcc_lang=_current_ui_lang(),
+        notice=notice, pcc_lang=_current_ui_lang(), cad_ready=_pcc_view.cad_eligible(view),
         submission=_fresh_submission_identity(sid, _PCC_SAVE_DOMAIN),
         withdraw_submission=_fresh_submission_identity(sid, _PCC_WITHDRAW_DOMAIN),
         value_roles=_pcc.VALUE_ROLES, value_max=_pcc.MAX_VALUE_CHARS,
@@ -11656,6 +11657,45 @@ def planar_clearance_page(sid, interface_id):
     if not _subsystem_model.is_valid_interface_id(interface_id):
         return _deny_project()
     return _pcc_render(sid, interface_id)
+
+
+@app.route("/session/<sid>/interface-clearance/<interface_id>/cad.zip", methods=["GET"])
+def planar_clearance_cad_download(sid, interface_id):
+    """BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (method contract §10A) - ONE ZIP (geometry.dxf,
+    companion.json, README.txt) for the CURRENT, evaluated declaration named by the request's
+    revision id AND snapshot digest. Read-only and transient: ONE snapshot builds the view,
+    the eligibility check and every file; a stale, ineligible or unreadable request gets the
+    page with a notice and no file; nothing is stored or retained."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _subsystem_model.is_valid_interface_id(interface_id):
+        return _deny_project()
+    revision = request.args.get("revision", "")
+    digest = request.args.get("digest", "")
+    if len(request.args.getlist("revision")) != 1 or len(request.args.getlist("digest")) != 1:
+        return _pcc_render(sid, interface_id, status=409, error="UI_PCC_CAD_MSG_STALE")
+    try:
+        snapshot = _get_store().load_planar_clearance(sid)
+        view = _pcc_view.clearance_view(snapshot, interface_id, _PCC_BINDING)
+    except _ProjectNotFound:
+        return _deny_project()
+    except Exception:
+        return _pcc_render(sid, interface_id, status=503, error="UI_PCC_CAD_MSG_FAILED")
+    if view is None:
+        return _deny_project()
+    if not _pcc_view.cad_eligible(view):
+        return _pcc_render(sid, interface_id, status=409,
+                           error="UI_PCC_CAD_MSG_NOT_AVAILABLE")
+    if (view["record"]["revision_id"], view["record"]["digest"]) != (revision, digest):
+        # never a different revision under the requested name
+        return _pcc_render(sid, interface_id, status=409, error="UI_PCC_CAD_MSG_STALE")
+    try:
+        model = _pcc_view.cad_handoff_model(sid, view, ui_text.text)
+        bundle = _pcc_cad.build_bundle(model, _quantity_recorded_at())
+        filename = _pcc_view.cad_bundle_filename(model)
+    except Exception:
+        return _pcc_render(sid, interface_id, status=503, error="UI_PCC_CAD_MSG_FAILED")
+    return _disclosure_attachment(bundle, "application/zip", filename)
 
 
 def _pcc_single(name):

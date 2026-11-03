@@ -11,8 +11,11 @@ clearance reads MISSING INFORMATION with no comparison; an Arabic-Indic digit is
 The Arabic page is RTL with every number LTR-isolated; at phone width nothing overflows. Set
 ``PCC_SCREENSHOT_DIR`` to keep screenshots.
 """
+import io
+import json
 import os
 import re
+import zipfile
 
 import pytest
 from playwright.sync_api import expect
@@ -137,6 +140,20 @@ def test_planar_clearance_journey(server, page, lang):
     first_margin = page.locator("[data-pcc-margin]").first
     assert first_margin.get_attribute("dir") == "ltr"
     assert first_margin.evaluate("e => getComputedStyle(e).direction") == "ltr"
+    # BOARD-ENCLOSURE-CAD-DOWNLOAD-01: the CAD reference download, from the real link
+    expect(page.locator("[data-pcc-cad-link]")).to_have_text(text("UI_PCC_CAD_DOWNLOAD", lang))
+    with page.expect_download() as caught:
+        page.locator("[data-pcc-cad-link]").click()
+    download = caught.value
+    assert re.fullmatch(r"inventorai-planar-clearance-[0-9a-f]{8}-rev0-[0-9a-f]{16}\.zip",
+                        download.suggested_filename)
+    bundle = zipfile.ZipFile(io.BytesIO(open(download.path(), "rb").read()))
+    assert bundle.namelist() == ["geometry.dxf", "companion.json", "README.txt"]
+    companion = json.loads(bundle.read("companion.json"))
+    assert companion["evaluation"]["outcome"] == "NOT_MET"
+    assert companion["declared_values"]["region_x"] == "86"
+    if SHOTS:
+        download.save_as(os.path.join(SHOTS, "%s_cad_rev0.zip" % lang))
     old_revision = page.locator("[data-pcc-revision]").inner_text()
     old_digest = page.locator("[data-pcc-digest]").inner_text()
     assert old_revision == "0"

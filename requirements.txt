@@ -28,6 +28,16 @@
 # are resolved by pip; add a constraints.txt only if stricter transitive pinning is
 # later shown to be genuinely required.
 #
+# BOARD-ENCLOSURE-CAD-DOWNLOAD-01 adds ONE further pinned package, imported LAZILY by
+# `engine/planar_clearance_cad_export.py` inside the CAD reference download only:
+#   ezdxf — writes the outbound DXF (R2013, millimetres) of the inventor's DECLARED
+#           board and usable-region outlines, in memory; it reads no file, fetches
+#           nothing and retains nothing. MIT licence (copyright Manfred Moitzi); its
+#           transitive packages (numpy BSD-3-Clause and compatible permissive terms,
+#           fonttools MIT, pyparsing MIT, typing_extensions PSF-2.0) are resolved
+#           by pip. Version 1.4.2 is the one qualified in the DXF -> FreeCAD 1.0.2
+#           handoff proof.
+#
 # `weasyprint` needs the system Pango/HarfBuzz/Fontconfig stack and a font that
 # covers the rendered scripts (DejaVu Sans is used for Latin and Arabic). Those
 # are OS packages, not pip packages, and are therefore not pinned here.
@@ -35,3 +45,4 @@ Flask==3.1.3
 gunicorn==26.1.0
 pytest==9.1.1
 weasyprint==70.0
+ezdxf==1.4.2

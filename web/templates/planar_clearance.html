@@ -49,6 +49,17 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   {% if v.state == 'WITHDRAWN' %}<p data-pcc-withdrawn-only>{{ pcc_t('UI_PCC_STATE_WITHDRAWN') }}</p>{% endif %}
   {% if v.record %}{{ pcc_result(v) }}{% endif %}
 </div>
+{#- BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (method contract §10A): ONE outbound CAD reference download,
+    only for a CURRENT MET / NOT MET evaluation; the link names the exact revision and snapshot,
+    so a stale page can never download a different one. -#}
+{% if cad_ready %}
+<div class="pcc-box" data-pcc-cad>
+  <h2>{{ pcc_t('UI_PCC_CAD_HEADING') }}</h2>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_CAD_NOTE') }}</p>
+  <p><a href="{{ url_for('planar_clearance_cad_download', sid=sid, interface_id=v.interface_id, revision=v.record.revision_id, digest=v.record.digest) }}" data-pcc-cad-link download>{{ pcc_t('UI_PCC_CAD_DOWNLOAD') }}</a>
+    <span class="pcc-small">(<bdi dir="ltr">DXF · mm</bdi> · {{ pcc_t('UI_PCC_REVISION_LINE') }} <bdi dir="ltr">{{ v.record.head_revision_no }}</bdi> · <bdi dir="ltr" data-pcc-cad-digest>{{ v.record.digest }}</bdi>)</span></p>
+</div>
+{% endif %}
 
 {% if v.eligible %}
 {% set m = form %}
