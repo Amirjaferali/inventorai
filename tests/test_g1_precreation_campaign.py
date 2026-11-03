@@ -207,7 +207,7 @@ def test_any_configuration_change_changes_the_digest(monkeypatch):
     assert rc._digest(rc.run_manifest(REVISION, rc.MODEL)) != base
     monkeypatch.undo()
     assert rc._digest(rc.run_manifest("1" * 40, rc.MODEL)) != base
-    monkeypatch.setattr(rc, "PRICE_VERIFICATION", dict(VERIFIED))
+    monkeypatch.setattr(rc, "PRICE_VERIFICATION", dict(VERIFIED, verified_on="2026-11-05"))
     assert rc._digest(rc.run_manifest(REVISION, rc.MODEL)) != base
 
 
@@ -426,7 +426,8 @@ def test_offline_plan_sends_nothing(monkeypatch, capsys):
                         lambda *a, **k: (_ for _ in ()).throw(AssertionError("network")))
     assert rc.main([]) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out["campaign_authorized"] is False and out["price_verified"] is False
+    assert out["campaign_authorized"] is True and out["price_verified"] is True
+    assert rc.AUTHORIZED_RUN_MANIFEST_SHA256 is None
     assert out["cases"] == 20 and out["budget"]["within_ceiling"] is True
 
 
