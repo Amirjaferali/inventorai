@@ -127,9 +127,11 @@
 {#- Stage 15 Slice 1: the optional integrated-invention declaration. It is NOT
     a domain selector; it only leads to the bounded clarification. -#}
 <label style="display:block;margin-top:12px;font-size:14px">
-<input type="checkbox" name="integrated_invention" value="yes">
+<input type="checkbox" name="integrated_invention" value="yes" aria-describedby="integrated-offer-note">
 {{ t('UI_S15_OFFER_LABEL') }}
 </label>
+{#- G1-START-PATH-LOCKOUT-01: the static decision note (same text for every idea). -#}
+<p id="integrated-offer-note" class="integrated-offer-note" data-integrated-offer-note style="font-size:13px;color:#555;margin:2px 0 8px 0;margin-inline-start:24px">{{ t('UI_S15_OFFER_NOTE') }}</p>
 {% endif %}
 <button type="submit">{{ t('UI_B_INDEX_008') }}</button>
 </form>

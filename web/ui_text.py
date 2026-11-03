@@ -629,6 +629,11 @@ UI_STRINGS = {
     # Plain user-facing language only: no Domain Pack, D4, IRL, subsystem
     # architecture or classification wording. The Owner's own part text is
     # never in this catalogue (it is rendered verbatim, escaped).
+    # G1-START-PATH-LOCKOUT-01: the static note beside the integrated-invention box (the
+    # same text for every idea; nothing is recognised, preselected or inferred).
+    "UI_S15_OFFER_NOTE": {
+        "en": "Mechanical parts can be fixed, such as an enclosure, housing, frame, bracket or mounting; nothing has to move. For example, a circuit board inside an enclosure can be an electronic part and a mechanical part that work together. Tick this only if it genuinely describes your invention. You can declare this only when you start the project: it cannot be added to the same project later, which would need a new project. Some part-specific engineering steps are available only in projects started this way, and each has its own requirements.",
+        "ar": "يمكن أن تكون الأجزاء الميكانيكية ثابتة، مثل العلبة أو الغلاف أو الإطار أو الحامل أو قاعدة التثبيت؛ ولا يلزم أن يتحرك أي شيء. فمثلًا، يمكن أن تكون لوحة دارة داخل علبة جزءًا إلكترونيًا وجزءًا ميكانيكيًا يعملان معًا. اختر هذا فقط إذا كان يصف اختراعك فعلًا. لا يمكنك التصريح بذلك إلا عند بدء المشروع؛ ولا يمكن إضافته إلى المشروع نفسه لاحقًا، إذ يتطلب ذلك مشروعًا جديدًا. وبعض الخطوات الهندسية الخاصة بالأجزاء متاحة فقط في المشاريع التي بدأت بهذه الطريقة، ولكلٍّ منها متطلباته الخاصة."},
     "UI_S15_OFFER_LABEL": {
         "en": "My invention includes mechanical and electrical/electronic parts that work together.",
         "ar": "يتضمن اختراعي أجزاءً ميكانيكية وأجزاءً كهربائية / إلكترونية تعمل معًا.",
@@ -701,8 +706,8 @@ UI_STRINGS = {
         "ar": "لم يُحفظ أي شيء ولم يُنشأ أي مشروع. يُرجى تعديل وصفك ليوضّح ما يفعله اختراعك وكيف يعمل، ثم أعد إرساله.",
     },
     "UI_S15_GUIDE_NOT_SURE": {
-        "en": "Nothing was saved and no project was created. That is fine - please add a sentence describing the main parts of your invention and how they work together (for example, which part moves and which part uses electricity), then submit it again.",
-        "ar": "لم يُحفظ أي شيء ولم يُنشأ أي مشروع. لا بأس بذلك — يُرجى إضافة جملة تصف الأجزاء الرئيسية لاختراعك وكيف تعمل معًا (مثلًا: أيّ جزء يتحرك وأيّ جزء يستخدم الكهرباء)، ثم أعد إرساله.",
+        "en": "Nothing was saved and no project was created. That is fine - please add a sentence describing the main parts of your invention and how they work together (for example, which part uses electricity and which part holds, protects or moves it, such as an enclosure, a mounting or a moving mechanism), then submit it again.",
+        "ar": "لم يُحفظ أي شيء ولم يُنشأ أي مشروع. لا بأس بذلك — يُرجى إضافة جملة تصف الأجزاء الرئيسية لاختراعك وكيف تعمل معًا (مثلًا: أيّ جزء يستخدم الكهرباء، وأيّ جزء يحمله أو يحميه أو يحرّكه، كعلبة أو قاعدة تثبيت أو آلية متحركة)، ثم أعد إرساله.",
     },
     "UI_S15_SCOPE_TITLE": {"en": "Integrated invention scope", "ar": "نطاق الاختراع المتكامل"},
     "UI_S15_SCOPE_MECH": {"en": "Mechanical part", "ar": "الجزء الميكانيكي"},
