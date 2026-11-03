@@ -8,12 +8,13 @@ File-creation contract:
     per case, per-request reservation accounting, an fsynced journal, the run
     report, the human review items and the pre-registered verdict over a
     COMPLETED human assessment. It is not a pytest test and never runs in CI.
-  Authority: Owner instruction G1-PRECREATION-LLM-RUNNER-01 (2026-11-03):
-    runner PREPARATION ONLY. The gate below is CLOSED and the price basis is
-    UNVERIFIED, so no provider request is possible from this revision. A run
-    needs a separately reviewed change that opens the gate and records a
-    current price verification, then the Owner naming the digest of the
-    manifest of that exact clean commit (the Proof B activation pattern).
+  Authority: the Owner's 2026-11-04 bounded continuation authorizes only
+    preparation of the activation change, NOT an actual provider request.
+    The gate and official published Standard rates are recorded below; a run
+    is still refused without the Owner-named SHA-256 of the exact CLEAN
+    commit's manifest (the Proof B activation pattern). Merge, provider
+    request and deployment remain separate Owner decisions. Published
+    rates do not establish account access, chosen billing tier or invoice.
   Reuse (all unchanged): the frozen evaluation, validator, scorer and review
     contracts of `scripts/run_g1_precreation_semantic_eval.py`; the reviewed
     evaluation adapter, endpoint lock, managed-proxy credential mode, measured
@@ -29,10 +30,9 @@ File-creation contract:
     `--provider openai --allow-network --managed-credential
      --authorized-manifest SHA256`
                     the campaign path: REFUSED, before any adapter or transport
-                    is built, while the gate is closed, the price basis is not
-                    verified, the checkout is dirty or not the manifest's
-                    revision, the digest is not this manifest's, or campaign
-                    evidence for this pack exists anywhere (one run only);
+                    is built, without the Owner-named manifest digest for this
+                    clean code revision, or if any price, authorization,
+                    fixture, budget or prior-evidence boundary fails;
     `--review-items REPORT [--journal JOURNAL]`
                     offline: what the human reviewer must judge (K6 every reply,
                     K4 every P12 stated part, G5 every expected unknown), with the
@@ -72,10 +72,10 @@ from scripts.run_proof_b_eval import (  # noqa: E402  (reused, unchanged)
 )
 from engine import msnl_shadow as ms  # noqa: E402
 
-# ── The ONE gate: CLOSED in this revision. Opening it authorizes no request by
-# itself; a request also needs a verified price basis and the Owner-named
-# digest of the manifest of the exact clean commit that runs. ──
-G1_PRECREATION_CAMPAIGN_AUTHORIZED = False
+# ── The ONE gate: open for a future EXACT-MANIFEST Owner-authorized run,
+# NOT permission to send a request from this change. The manifest SHA-256
+# must be named by the Owner after this activation change is merged. ──
+G1_PRECREATION_CAMPAIGN_AUTHORIZED = True
 AUTHORIZED_RUN_MANIFEST_SHA256 = None      # never committed: named at run time
 
 MODEL = toa.MODEL                          # "gpt-6-sol", D3 synthetic evaluation only
@@ -83,16 +83,21 @@ MAX_PROVIDER_REQUESTS = 20                 # one per case, no repeats
 MAX_OUTPUT_TOKENS = 1200
 RETRIES = 0
 CAMPAIGN_CEILING_USD = 5.0
-# The last recorded rate, NOT a current verification. It must be re-verified
-# against the provider's current published price before activation.
+# Official model-specific Standard text-token pricing, checked 2026-11-04.
+# Not a live account access, billing tier or final invoice verification.
 PRICING = {
     "model": MODEL, "tier": "Standard", "input_usd_per_1m": 2.0, "output_usd_per_1m": 10.0,
-    "basis": ("Rate recorded for the 2026-10-27 MSNL campaign and reused by Proof B "
-              "(scripts/run_proof_b_eval.py PRICING). Historical only: not verified as "
-              "current by this revision.")}
-# Set only by the activation change: {"verified_on": "YYYY-MM-DD", "source": "...",
-# "input_usd_per_1m": x, "output_usd_per_1m": y}, equal to PRICING's rates.
-PRICE_VERIFICATION = None
+    "basis": ("OpenAI official GPT-6 Sol model page, checked 2026-11-04; Standard "
+              "text-token prices per million, under the model's short-context "
+              "tier (this frozen pack is well below the long-context threshold). "
+              "Other tiers/regions/account routing may differ; the 6x reservation "
+              "remains a conservative ceiling, not proof of account billing.")}
+PRICE_VERIFICATION = {
+    "verified_on": "2026-11-04",
+    "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+    "input_usd_per_1m": 2.0,
+    "output_usd_per_1m": 10.0,
+}
 RESERVATION = {
     "multiplier": 6, "input_usd_per_1m": 12.0, "output_usd_per_1m": 60.0,
     "overhead_input_tokens": 1000,
