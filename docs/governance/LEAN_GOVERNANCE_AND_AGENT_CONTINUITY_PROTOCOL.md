@@ -526,6 +526,19 @@ PR; merge, deployment and release stay NOT AUTHORIZED. After acceptance: return 
 obligations and their recorded triggers; no second relationship, AI activation or Proof B rerun is selected
 automatically.
 
+**G1-INTEGRATED-ENGINEERING-CONTINUATION-01 (Owner continuation instruction after PR #918, 2026-11-03;
+continuity record, not a second contract).** Current authorized action: ONE product PR extending the EXISTING
+Compass owner `_integrated_journey_guidance` (`web/app.py`) for a valid integrated composition: after the unchanged
+other-part step it guides, one optional primary action at a time, to the EXISTING interaction declaration (none
+declared), Component Inventory (fewer than two current components) and participation form (no interaction with two
+current participants), each only while its own form is on the page; the unchanged preparation step follows, and
+each interaction the EXISTING planar-clearance gate admits with no declaration yet is listed as a SECONDARY link,
+never primary and never a claim that the check applies. Read from ONE `load_planar_clearance` snapshot; unreadable
+or disagreeing input keeps the earlier behaviour. No inference, creation, prefilling, method execution, DXF,
+persistence, progression, readiness, AI / MSNL or OD-2 / D4 / T6 change. Applicability: effective on the verified
+merge of that PR; merge, deployment and release stay NOT AUTHORIZED. NEXT-LOOP (recommendation only): the separate
+G1-1 semantic-understanding priority stays open.
+
 **G1-START-PATH-LOCKOUT-01 (Owner continuation instruction applied by the Execution Lead, 2026-11-03;
 continuity record, not a second contract).** Current authorized action: ONE bounded copy correction on the start
 page — ONE static note beside the existing optional, unticked integrated-invention box (the same text for every

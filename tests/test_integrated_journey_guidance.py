@@ -21,6 +21,12 @@ Synthetic data only.
 AMENDED at EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 (Owner-approved): past both integrated steps the chain
 now reaches the optional experiment-planning step while a proposed experiment is unplanned, and only then
 the handoff; the integrated steps, their order and their conditions are unchanged (``_after_ijg``).
+
+AMENDED at G1-INTEGRATED-ENGINEERING-CONTINUATION-01 (Owner-authorized): between the two steps above the chain
+now guides to the EXISTING interaction declaration (none declared), Component Inventory (fewer than two
+current components) and participation form (no interaction with two current participants), each optional;
+the part step is unchanged and the preparation step follows them (tests 03 and 04 amended; the new journey
+and its controls are in tests/test_g1_integrated_engineering_continuation.py).
 """
 import html as _html
 import os
@@ -38,6 +44,8 @@ from tests.test_28t5_nonfocused_required_part_questions import _ids, _part, _sav
 from tests.test_stage15_subsystem_interface_declaration import _declare
 from tests.test_stage15_interface_preparation import _save as _save_prep, COND, ACCEPT, EVID
 from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, PF_STRONG, BA_1, BA_2, _start
+from tests.test_component_inventory_declare_list import _declare as _declare_component
+from tests.test_component_interface_participation import _form as _icp_form, _post as _icp_post
 from web import ui_text
 
 KEYS = ("UI_IJG_PART_NOTE_MECH", "UI_IJG_PART_NOTE_ELEC", "UI_IJG_PART_CTA_MECH",
@@ -128,17 +136,30 @@ def test_02_some_answers_keep_the_other_part_step(client):
 
 
 def test_03_no_declared_interaction_is_never_invented_the_handoff_returns(client):
+    # AMENDED at G1-INTEGRATED-ENGINEERING-CONTINUATION-01: no interaction is invented, but the
+    # Compass now points at the EXISTING declaration form (optional), with the handoff one click away.
     sid = _finished_focus(client)
     _answer_all_part_questions(client, sid)
     page = _raw(client, sid)
-    _after_ijg(page, sid)
-    assert "data-ijg-handoff" not in page and "data-ijg-note" not in page
+    primary = _primary(page)
+    assert 'data-ijg-action="declare_interaction"' in primary and 'href="#interface_description"' in primary
+    assert 'id="interface_description"' in page
+    assert "data-ijg-handoff" in page
+    assert not tuple(appmod._get_store().load_subsystem_interfaces(sid))
 
 
 def test_04_a_declared_interaction_offers_its_optional_preparation_then_the_handoff(client):
+    # AMENDED at G1-INTEGRATED-ENGINEERING-CONTINUATION-01: the Component Inventory and the
+    # participation steps now come before the (unchanged) preparation step.
     sid = _finished_focus(client)
     _answer_all_part_questions(client, sid)
     assert _declare(client, sid, "The motor turns the hinge arm.").status_code == 302
+    assert 'data-ijg-action="component_inventory"' in _primary(_raw(client, sid))
+    for name in ("Hinge motor", "Driver board"):
+        assert _declare_component(client, sid, name=name, function="Does its job").status_code in (200, 302)
+    assert 'data-ijg-action="participation"' in _primary(_raw(client, sid))
+    form = _icp_form(client, sid)
+    assert _icp_post(client, sid, form, [o[0] for o in form["options"]]).status_code in (200, 302)
     page = _raw(client, sid)
     primary = _primary(page)
     assert 'data-ijg-action="interface_preparation"' in primary
@@ -187,7 +208,10 @@ def test_07_the_branch_sits_after_every_existing_branch_and_before_the_fallback(
     part = do.index("{% elif integrated_guidance and integrated_guidance.kind == 'part_questions' %}")
     prep = do.index("{% elif integrated_guidance and integrated_guidance.kind == 'interface_preparation' %}")
     fallback = do.index("{% else %}", prep)
-    assert crit < part < prep < fallback
+    # AMENDED at G1-INTEGRATED-ENGINEERING-CONTINUATION-01: the three new steps sit between them
+    new = [do.index("integrated_guidance.kind == '%s'" % k)
+           for k in ("declare_interaction", "component_inventory", "participation")]
+    assert crit < part < new[0] < new[1] < new[2] < prep < fallback
     assert "UI_A1_REVIEW_HANDOFF" in do[fallback:]
 
 
