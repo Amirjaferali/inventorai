@@ -4,9 +4,10 @@ Synthetic ideas only. What is pinned:
   * ONE static note sits immediately after the existing, optional, unticked box wherever it is offered — for
     an idea the classifier reads as a single domain, for a no-match idea and for an unrelated idea — with the
     SAME text in every case (no recognition, highlighting, preselection or inference from the idea);
-  * the note says that fixed mechanical parts count, gives the board-in-enclosure example, asks the inventor to
-    tick only if it fits, discloses that the declaration cannot be added to the same project later (a new
-    project would be needed), and promises no tool, CAD output, component selection or compatibility;
+  * the note says that fixed mechanical parts count, pairs the board (electronic) with its enclosure
+    (mechanical), asks the inventor to tick only if both really work together, discloses that the declaration
+    is available only at project creation (adding it later needs a new project), and promises no tool, CAD
+    output, component selection or compatibility;
   * EN / AR rendering, escaping, RTL-safe indentation and the accessible description;
   * the existing "Not sure" guidance no longer implies that a mechanical part must move;
   * nothing is created by viewing the page or declining the box; ticking it alone creates parts only, never a
@@ -85,17 +86,19 @@ def test_l03_the_note_is_static_and_implies_no_reading_of_the_idea(client):
 
 def test_l04_the_note_discloses_the_irreversible_choice_and_promises_no_tool():
     en = ui_text.text("UI_S15_OFFER_NOTE", "en")
-    for phrase in ("Mechanical parts can be fixed", "enclosure", "nothing has to move",
-                   "a circuit board inside an enclosure", "Tick this only if it genuinely describes your invention",
-                   "only when you start the project", "cannot be added to the same project later",
-                   "would need a new project", "each has its own requirements"):
+    for phrase in ("Fixed mechanical parts, such as an enclosure or mount, count too",
+                   "a circuit board can be the electronic part and its enclosure the mechanical part",
+                   "Tick this only if both types of parts really work together in your invention",
+                   "available only at project creation", "adding it later currently requires a new project",
+                   "require this declaration and further information"):
         assert phrase in en, phrase
     lowered = en.lower()
     for word in ("cad", "dxf", "verified", "compatib", "automatic", "select", "guarantee", "fit"):
         assert word not in lowered, word
     ar = ui_text.text("UI_S15_OFFER_NOTE", "ar")
-    for phrase in ("ثابتة", "علبة", "لا يلزم أن يتحرك", "لوحة دارة داخل علبة", "فقط إذا كان يصف اختراعك فعلًا",
-                   "إلا عند بدء المشروع", "لا يمكن إضافته إلى المشروع نفسه لاحقًا", "مشروعًا جديدًا"):
+    for phrase in ("ولو كانت ثابتة", "لوحة الدارة الجزء الإلكتروني", "العلبة المحيطة بها الجزء الميكانيكي",
+                   "ضع علامة في هذا المربع فقط", "إلا عند إنشاء المشروع", "تتطلب مشروعًا جديدًا",
+                   "تتطلب هذا التصريح ومعلومات إضافية"):
         assert phrase in ar, phrase
 
 
