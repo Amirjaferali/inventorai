@@ -1146,9 +1146,12 @@ def test_focus_is_immutable_and_no_focus_route_exists(client):
     # participation POST (the components taking part in one interaction).
     # AMENDED at BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: exactly one planar
     # clearance page (GET + declare / correct POST) and one withdrawal POST.
+    # AMENDED at BOARD-ENCLOSURE-CAD-DOWNLOAD-01: exactly one read-only GET, the
+    # outbound CAD reference download of that clearance (method contract §10A).
     assert sorted({r for r in rules if "interface" in r}) == [
         "/session/<sid>/declare-interface",
         "/session/<sid>/interface-clearance/<interface_id>",
+        "/session/<sid>/interface-clearance/<interface_id>/cad.zip",
         "/session/<sid>/interface-clearance/<interface_id>/withdraw",
         "/session/<sid>/interface-observation",
         "/session/<sid>/interface-observation/withdraw",

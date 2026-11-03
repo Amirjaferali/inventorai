@@ -195,6 +195,35 @@ presentation model built from ONE snapshot, with a simple explanatory 2D diagram
 NOT MET case shows the overlap, never a fit). A downloaded report or PDF is a historical snapshot naming its
 declaration revision and generation time; it cannot be refreshed, revoked or kept current.
 
+## 10A. CAD reference download (outbound only)
+
+AMENDMENT (BOARD-ENCLOSURE-CAD-DOWNLOAD-01, Owner-authorized 2026-11-03). ONE download on the interaction page
+returns ONE ZIP for a CURRENT declaration whose evaluation is MET or NOT MET: `geometry.dxf`, `companion.json`
+bound to that exact DXF by SHA-256, and a UTF-8 `README.txt` guide in English and Arabic with the notices.
+
+- **Content.** The DECLARED board and usable internal region at the board plane, centred and axis-aligned, as two
+  closed polylines on two layers (`IAI_DECLARED_USABLE_REGION`, `IAI_DECLARED_BOARD_OUTLINE`); DXF R2013,
+  `$INSUNITS` millimetres; origin at the region centre (a drawing convention, not a physical feature). A NOT MET
+  declaration is exported as declared; the §3A bound is NEVER geometry and never replaces or resizes a declared
+  value — it travels only in the companion, labelled conditional. The companion carries the project, interaction,
+  component and revision references, the declaration revision, the snapshot digest, the original decimal inputs,
+  the method / consequence versions, the outcome, margins, bound, the handoff format version and the limitations.
+- **Ownership and boundary (ACE disposition).** The method consumer still owns every verdict, margin and bound; the
+  Stage-15 owners still own the declaration; the shared presentation model builds the handoff from ONE validated
+  snapshot; a separate adapter (`engine/planar_clearance_cad_export.py`) maps coordinates and formats only and
+  recomputes nothing. It is an OUTBOUND, target-neutral reference export under the external engineering-tool
+  boundary of the Technical Realization companion (§9.11) and the Phase-7 adapter pattern: NOT a Technical
+  Realization lane, NOT a T6 / §0 activation, NOT CAD generation or design, NOT a D4 widening, no tool result is
+  admitted (TOOL RESULT RECEIVED ≠ EVIDENCE ADMITTED), and no CAD tool or provider is selected or called.
+- **Lifecycle.** Eligibility and the requested revision and digest are re-checked at download time against the ONE
+  snapshot the response is built from; a stale, withdrawn, reconfirmation-needing, missing, inapplicable,
+  unavailable or failed-evaluation state returns the page with a notice and no file; nothing is partially returned.
+  Generated transiently in memory; nothing is stored or retained server-side (`Cache-Control: no-store`).
+- **Meaning.** A planar reference snapshot of declared values — not an enclosure design, manufacturing approval,
+  parametric model or whole-product verification. External CAD edits are unassessed and never synchronise back.
+  The hash binds the delivered files; it is not physical verification. Any CAD measurement tolerance is a property
+  of the receiving tool, never part of the §6 exact-decimal decision.
+
 ## 11. Source and IP qualification
 
 - Claim: the margin relation of §3 for the configuration of §3 and §5. Authority: InventorAI's original derivation
@@ -217,7 +246,9 @@ relationship and activates no T6 / Technical Realization lane or Stage 35 change
 Rotation or placement search; non-rectangular outlines or regions; per-side or per-axis clearance; tolerances or
 stack-ups; height, insertion, connectors, mounting hardware, guides or slots; electrical clearance or creepage;
 thermal, strength, vibration, safety, manufacturing or assembly assessment; CAD, simulation or external geometry
-libraries; component suggestions or a "safe" clearance; result persistence; external AI / provider calls.
+libraries; component suggestions or a "safe" clearance; result persistence; external AI / provider calls. AMENDED by
+§10A: the outbound DXF reference download of declared values is admitted; CAD design, CAD generation, upload,
+round-trip, simulation and any CAD tool or library at runtime other than the DXF writer stay excluded.
 
 ## 14. Language availability
 

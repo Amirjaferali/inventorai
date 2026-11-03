@@ -526,6 +526,20 @@ PR; merge, deployment and release stay NOT AUTHORIZED. After acceptance: return 
 obligations and their recorded triggers; no second relationship, AI activation or Proof B rerun is selected
 automatically.
 
+**BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (Owner-authorized product implementation, 2026-11-03, "اعتمد الشريحة
+الإنتاجية"; continuity record, not a second contract).** Current authorized action: ONE product PR adding ONE
+outbound CAD reference download to the planar-clearance page — a ZIP of `geometry.dxf` (DECLARED board and usable
+region, mm, two layers), `companion.json` bound to it by SHA-256, and an EN / AR guide with notices — for a CURRENT
+MET / NOT MET declaration only, re-checked against the requested revision and snapshot at download time, built from
+ONE snapshot and generated transiently (method contract §10A, the ACE disposition: outbound-only, Phase-7 adapter
+pattern, not a Technical Realization lane, T6, D4 widening or CAD generation; §13 amended). One pinned dependency,
+`ezdxf==1.4.2` (MIT). Evidence kept separate: the executor-reported handoff proof (PR #916's record); the product
+route's own bundles imported in FreeCAD 1.0.2 and measured, preserved with checksums in
+`docs/benchmarks/evidence/board_enclosure_cad_handoff_v1/`. No upload, round-trip, simulation, stored result, CAD
+runtime or provider call; calculations, storage, progression, readiness, SafetySignal, Validation Plan and Stage 35
+unchanged; MP-01 stays research-only and no Modelica proof follows automatically. Applicability: effective on the
+verified merge of that PR; merge, deployment and release stay NOT AUTHORIZED.
+
 **BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01 (Owner-authorized bounded extension, 2026-11-02; continuity
 record, not a second contract).** Current authorized action: ONE PR extending the SAME relationship (PRs #913,
 #914) with ONE derived consequence (method contract §3A): for a MET or NOT MET result only, per axis, the minimum

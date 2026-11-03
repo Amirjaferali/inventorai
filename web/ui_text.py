@@ -12245,6 +12245,49 @@ UI_STRINGS = {
     "UI_PCC_BOUND_MEANING_6": {
         "en": "Nothing is changed automatically: your declared values, the result above and the sketch stay as they are.",
         "ar": "لا يتغيّر شيء تلقائيًا: تبقى القيم التي صرّحتَ بها والنتيجة أعلاه والرسم كما هي."},
+    # BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (method contract §10A): the outbound CAD reference download.
+    "UI_PCC_CAD_HEADING": {
+        "en": "CAD reference download",
+        "ar": "تنزيل مرجع للتصميم بالحاسوب (CAD)"},
+    "UI_PCC_CAD_NOTE": {
+        "en": "A ZIP with a DXF drawing of your declared board and usable region in millimetres, a companion file that records which declaration revision it came from, and a short guide. It is a planar reference snapshot of the values you declared, not an enclosure design or a manufacturing approval.",
+        "ar": "ملف ZIP يضم رسمًا بصيغة DXF للوحة والمنطقة القابلة للاستخدام كما صرّحتَ بهما بالمليمتر، وملفًا مرافقًا يسجّل مراجعة التصريح التي أُخذ منها، ودليلًا قصيرًا. إنه لقطة مرجعية مستوية للقيم التي صرّحتَ بها، وليس تصميمًا للعلبة ولا موافقة على التصنيع."},
+    "UI_PCC_CAD_DOWNLOAD": {
+        "en": "Download the CAD reference (ZIP)",
+        "ar": "تنزيل مرجع CAD (ملف ZIP)"},
+    "UI_PCC_CAD_MSG_STALE": {
+        "en": "This download was for an earlier version of the declaration, so no file was produced. The page now shows the current version; download again from here.",
+        "ar": "كان هذا التنزيل لنسخة سابقة من التصريح، فلم يُنشأ أي ملف. تعرض الصفحة الآن النسخة الحالية؛ نزّل الملف مجددًا من هنا."},
+    "UI_PCC_CAD_MSG_NOT_AVAILABLE": {
+        "en": "A CAD reference is available only for a current declaration whose comparison reads met or not met. No file was produced.",
+        "ar": "لا يتوفر مرجع CAD إلا لتصريح حالي نتيجة مقارنته «متحقق» أو «غير متحقق». لم يُنشأ أي ملف."},
+    "UI_PCC_CAD_MSG_FAILED": {
+        "en": "The CAD reference could not be produced, so no file was returned. Nothing about your declaration has changed.",
+        "ar": "تعذّر إنشاء مرجع CAD، فلم يُرجَع أي ملف. ولم يتغيّر شيء في تصريحك."},
+    "UI_PCC_CAD_GUIDE_1": {
+        "en": "InventorAI planar clearance — CAD reference snapshot.",
+        "ar": "InventorAI — الخلوص المستوي — لقطة مرجعية للتصميم بالحاسوب (CAD)."},
+    "UI_PCC_CAD_GUIDE_2": {
+        "en": "geometry.dxf holds two closed outlines in millimetres: the usable internal region you declared (layer IAI_DECLARED_USABLE_REGION) and the board you declared (layer IAI_DECLARED_BOARD_OUTLINE), centred and axis-aligned. The origin is the centre of the region; it is a drawing convention, not a physical feature.",
+        "ar": "يضم geometry.dxf محيطين مغلقين بالمليمتر: المنطقة الداخلية القابلة للاستخدام كما صرّحتَ بها (الطبقة IAI_DECLARED_USABLE_REGION) واللوحة كما صرّحتَ بها (الطبقة IAI_DECLARED_BOARD_OUTLINE)، في المنتصف وبمحاور متوازية. نقطة الأصل هي مركز المنطقة؛ وهي اصطلاح رسم، لا عنصر فيزيائي."},
+    "UI_PCC_CAD_GUIDE_3": {
+        "en": "companion.json records the declaration revision, its snapshot identity, the decimal values you entered, the method and versions, the result, the margins and the conditional minimum region. That minimum is not drawn in the DXF and holds only while your declarations stay as they are.",
+        "ar": "يسجّل companion.json مراجعة التصريح وهوية لقطتها والقيم العشرية التي أدخلتها والطريقة وإصداراتها والنتيجة والهوامش وأصغر منطقة مشروطة. ولا يُرسم هذا الحد الأدنى في ملف DXF، ولا يصح إلا ما دامت تصريحاتك كما هي."},
+    "UI_PCC_CAD_GUIDE_4": {
+        "en": "This is a planar reference snapshot of declared values. It is not an enclosure design, a manufacturing approval, a parametric model or a verification of the whole product. Height, thickness, holes, connectors, mounting and tolerances are not included.",
+        "ar": "هذه لقطة مرجعية مستوية لقيم مصرَّح بها. وليست تصميمًا للعلبة ولا موافقة على التصنيع ولا نموذجًا بارامتريًا ولا تحققًا من المنتج كله. ولا يتضمن الارتفاع ولا السماكة ولا الثقوب ولا الموصلات ولا التثبيت ولا التفاوتات."},
+    "UI_PCC_CAD_GUIDE_5": {
+        "en": "Edits you make in a CAD program are not assessed by InventorAI and never synchronise back. To change the declaration, correct it in InventorAI and download a new reference.",
+        "ar": "التعديلات التي تجريها في برنامج CAD لا يقيّمها InventorAI ولا تُزامَن معه أبدًا. لتغيير التصريح، صحّحه في InventorAI ثم نزّل مرجعًا جديدًا."},
+    "UI_PCC_CAD_GUIDE_6": {
+        "en": "The SHA-256 below identifies this geometry.dxf; companion.json records the same value, which ties the two together. Each download writes a new DXF, so the value differs between downloads of the same revision. It is not a physical verification of anything.",
+        "ar": "يحدّد رمز SHA-256 أدناه ملف geometry.dxf هذا؛ ويسجّل companion.json القيمة نفسها، وهذا ما يربط الملفين معًا. وكل تنزيل يكتب ملف DXF جديدًا، فتختلف القيمة بين تنزيلات المراجعة نفسها. وهو ليس تحققًا فيزيائيًا من أي شيء."},
+    "UI_PCC_CAD_GUIDE_7": {
+        "en": "A CAD program measures with its own numerical precision; that is a property of the program, not part of InventorAI's exact comparison.",
+        "ar": "يقيس برنامج CAD بدقته العددية الخاصة؛ وهذه خاصية للبرنامج، وليست جزءًا من المقارنة الدقيقة في InventorAI."},
+    "UI_PCC_CAD_GUIDE_8": {
+        "en": "Notice: geometry.dxf was written with ezdxf (MIT Licence, copyright Manfred Moitzi).",
+        "ar": "تنويه: كُتب geometry.dxf باستخدام ezdxf (ترخيص MIT، حقوق النشر لـ Manfred Moitzi)."},
 }
 
 

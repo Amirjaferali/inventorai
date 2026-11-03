@@ -113,6 +113,68 @@ def diagram(material, evaluation):
     }
 
 
+# BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (method contract §10A): the ONE handoff model the outbound
+# CAD adapter (engine/planar_clearance_cad_export.py) maps. Built from a validated view only.
+CAD_HANDOFF_FORMAT = "inventorai-planar-clearance-cad-handoff/1"
+CAD_GUIDE_KEYS = tuple("UI_PCC_CAD_GUIDE_%d" % n for n in range(1, 9))
+
+
+def cad_eligible(view):
+    """True only for a CURRENT declaration whose existing evaluation reached MET or NOT MET."""
+    return bool(view) and view.get("state") == STATE_CURRENT \
+        and view.get("evaluation") is not None \
+        and view["evaluation"]["outcome"] in (_pcc.OUTCOME_MET, _pcc.OUTCOME_NOT_MET)
+
+
+def cad_handoff_model(project_id, view, text):
+    """The handoff model for ONE eligible view, or ``None``. ``text(key, lang)`` is the UI
+    catalogue. Geometry inputs are the declared decimal text; the outcome, margins and bound
+    are copied from the method consumer's result, never recomputed. Never writes."""
+    if not cad_eligible(view):
+        return None
+    m, ev, rec = view["material"], view["evaluation"], view["record"]
+    artifact = _pcc.load_artifact()
+    return {
+        "eligible": True, "handoff_format": CAD_HANDOFF_FORMAT,
+        "binding": {
+            "project_id": project_id,
+            "interface_id": view["interface_id"],
+            "board": {"component_id": m["board"]["id"], "revision": m["board_revision"]},
+            "enclosure": {"component_id": m["enclosure"]["id"],
+                          "revision": m["enclosure_revision"]},
+            "declaration_id": rec["declaration_id"],
+            "declaration_revision_no": rec["head_revision_no"],
+            "declaration_revision_id": rec["revision_id"],
+            "snapshot_digest": rec["digest"],
+            "method": {"id": m["method_id"], "version": m["method_version"]},
+            "declaration_version": m["declaration_version"],
+            "region_bound": {"id": ev["region_bound"]["consequence_id"],
+                             "version": ev["region_bound"]["consequence_version"]},
+            "axis_pairing": m["axis_pairing"],
+            "unit": _pcc.UNIT,
+        },
+        "declared_values": {item["role"]: item["text"] for item in m["values"]},
+        "region_description": m["region_description"],
+        "evaluation": {
+            "outcome": ev["outcome"],
+            "axes": [{"axis": a["axis"], "margin_mm": a["margin_text"], "met": a["met"],
+                      "conditional_min_region_mm": a["region_min_text"],
+                      "conditional_additional_mm": a["additional_text"],
+                      "conditional_min_region_enterable": a["region_min_enterable"]}
+                     for a in ev["axes"]]},
+        "limitations": list(artifact["limitations"]),
+        "region_bound_statements": list(artifact["region_bound"]["statements"]),
+        "guide": {lang: [text(key, lang) for key in CAD_GUIDE_KEYS] for lang in ("en", "ar")},
+    }
+
+
+def cad_bundle_filename(model):
+    """A fixed-shape attachment name from identifiers only (hex / digits)."""
+    b = model["binding"]
+    return "inventorai-planar-clearance-%s-rev%d-%s.zip" % (
+        b["declaration_id"][-8:], int(b["declaration_revision_no"]), b["snapshot_digest"])
+
+
 def clearance_view(snapshot, interface_id, binding):
     """The presentation model for ONE interaction, or ``None`` when the
     interaction is not one of the snapshot's. Never writes."""
