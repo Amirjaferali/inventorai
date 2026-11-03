@@ -15,7 +15,7 @@ from scripts import run_g1_precreation_semantic_eval as ev
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "run_g1_precreation_semantic_eval.py"
-PREREGISTRATION_SHA256 = "cfefe654fcf37d895db42047f68eb68d3a1eb9702b9dbfbe1f136e901db101b7"
+PREREGISTRATION_SHA256 = "aae4a9af41d84616409badfcc77b9a313bae40dcc0919b69851de6b231285e1f"
 
 
 @pytest.fixture(scope="module")
@@ -70,12 +70,13 @@ def test_pack_is_frozen_synthetic_english_and_pinned(pack):
     assert sum(len(r["expected_unknowns"]) for r in refs.values()) == 7
 
 
-def test_preregistration_revision_3_supersedes_two_unevaluated_revisions():
+def test_preregistration_revision_4_supersedes_three_unevaluated_revisions():
     pre = ev.preregistration()
-    assert pre["revision"] == 3
+    assert pre["revision"] == 4
     assert [(x["revision"], x["sha256"], x["evaluated"]) for x in pre["supersedes"]] == [
         (1, "fb5c96dcf981b91fde517fc4404c4e3d3f7bb90a23124b0793960d73b54a2a82", False),
-        (2, "22389804aa27ea5f81c3704d28f17b44b8cd58a0161993e5daa672a3ba83563b", False)]
+        (2, "22389804aa27ea5f81c3704d28f17b44b8cd58a0161993e5daa672a3ba83563b", False),
+        (3, "cfefe654fcf37d895db42047f68eb68d3a1eb9702b9dbfbe1f136e901db101b7", False)]
     assert ev.preregistration_digest() not in {x["sha256"] for x in pre["supersedes"]}
 
 
@@ -194,6 +195,14 @@ def _all_recognized(refs):
 CLEAR = {"status": ev.K6_CLEAR, "failed_cases": []}
 
 
+def _full(scored, refs, **k4):
+    """Every human review complete: K6 clear, every G5 unknown recognized and
+    every K4 context item clear unless overridden."""
+    items = {k: ev.K6_CLEAR for x in scored for k in x["context_review"]}
+    items.update(k4)
+    return {"k6": CLEAR, "g5": _all_recognized(refs), "k4_context": items}
+
+
 def _oracle_scores(pack):
     cases, refs = pack
     return [ev.score_case(_oracle(c, refs[c["case_id"]]), c["idea_text"], refs[c["case_id"]])
@@ -205,7 +214,7 @@ def test_handcrafted_oracle_passes_and_one_false_suggestion_fails(pack):
     scored = _oracle_scores(pack)
     assert all(not s["critical"] for s in scored)
     base = ev.baseline()["integrated_recall"]
-    full = {"k6": CLEAR, "g5": _all_recognized(refs)}
+    full = _full(scored, refs)
     assert ev.decide(scored, refs, base, full)["verdict"] == "PRELIMINARY_GO"
     by_id = {c["case_id"]: c for c in cases}
     t7 = by_id["P07"]["idea_text"]
@@ -373,74 +382,73 @@ def _p12_scores(pack, reply):
     return s12, [s12 if x["case_id"] == "P12" else x for x in _oracle_scores(pack)]
 
 
-def test_p12_faithful_quote_naming_the_handlebar_stays_valid(pack):
+def test_p12_every_stated_part_is_reviewed_whatever_its_wording(pack):
+    casing = {"text": "casing", "source_quote": "3D-printed casing", "candidate_concept":
+              "mechanical"}
+    s12, _scored = _p12_scores(pack, _p12(casing))
+    assert s12["critical"] == [] and s12["context_review"] == {
+        "P12-part-1": ev.K6_NOT_ASSESSED, "P12-part-2": ev.K6_NOT_ASSESSED}
+    other, _ = _p12_scores(pack, _reply(stated_parts=[P12_PCB]))
+    assert other["context_review"] == {"P12-part-1": ev.K6_NOT_ASSESSED}
+    nothing, _ = _p12_scores(pack, _reply())
+    assert nothing["context_review"] == {}
+
+
+def test_p12_faithful_pcb_and_casing_are_judged_clear_and_stay_valid(pack):
     _cases, refs = pack
     casing = {"text": "a 3D-printed casing", "candidate_concept": "mechanical",
               "source_quote": "casing that clips onto a bike handlebar"}
     s12, scored = _p12_scores(pack, _p12(casing))
     assert s12["critical"] == [] and s12["effective"] == ev.SUGGEST_INTEGRATED
     assert s12["parts_found"] == 2
-    assert s12["context_review"] == {"P12-part-2": ev.K6_NOT_ASSESSED}   # judged, not assumed
-    base, g5 = ev.baseline()["integrated_recall"], _all_recognized(refs)
-    clear = {"k6": CLEAR, "g5": g5, "k4_context": {"P12-part-2": ev.K6_CLEAR}}
-    assert ev.decide(scored, refs, base, clear)["verdict"] == "PRELIMINARY_GO"
+    base = ev.baseline()["integrated_recall"]
+    assert ev.decide(scored, refs, base, _full(scored, refs))["verdict"] == "PRELIMINARY_GO"
 
 
-def test_p12_quote_without_the_handlebar_needs_no_review(pack):
-    casing = {"text": "casing", "source_quote": "3D-printed casing", "candidate_concept":
-              "mechanical"}
-    s12, _scored = _p12_scores(pack, _p12(casing))
-    assert s12["context_review"] == {} and s12["critical"] == []
-
-
-@pytest.mark.parametrize("handlebar", [
+@pytest.mark.parametrize("external", [
+    {"text": "bicycle handle", "source_quote": "3D-printed casing"},   # no context word at all
     {"text": "the bike handlebar", "source_quote": "a bike handlebar"},
-    {"text": "handlebar clip", "source_quote": "clips onto a bike handlebar"},
-    {"text": "a clip", "source_quote": "clips onto a bike handlebar"},
-    {"text": "the bike handle bar", "source_quote": "casing that clips onto a bike handlebar"},
-    {"text": "bike handle-bar", "source_quote": "casing that clips onto a bike handlebar"},
-    {"text": "casing", "source_quote": "a bike handlebar"},
     {"text": "the bar the casing clips onto",
      "source_quote": "casing that clips onto a bike handlebar"},
-    {"text": "bike bar", "source_quote": "onto a bike"},
 ])
-def test_p12_other_handlebar_parts_go_to_human_review_and_a_failure_is_k4(handlebar, pack):
+def test_p12_external_part_is_never_clean_unjudged_and_a_failure_is_k4(external, pack):
     _cases, refs = pack
     casing = {"text": "casing", "source_quote": "3D-printed casing", "candidate_concept":
               "mechanical"}
-    s12, scored = _p12_scores(pack, _p12(casing, dict(handlebar, candidate_concept="mechanical")))
-    assert s12["critical"] == [] and s12["context_review"] == {"P12-part-3": ev.K6_NOT_ASSESSED}
-    base, g5 = ev.baseline()["integrated_recall"], _all_recognized(refs)
-    assert ev.decide(scored, refs, base, {"k6": CLEAR, "g5": g5})["verdict"] \
-        == "INCOMPLETE_REVIEW"
-    d = ev.decide(scored, refs, base,
-                  {"k6": CLEAR, "g5": g5, "k4_context": {"P12-part-3": ev.K6_FAILURE}})
+    s12, scored = _p12_scores(pack, _p12(casing, dict(external, candidate_concept="mechanical")))
+    assert s12["critical"] == [] and s12["context_review"]["P12-part-3"] == ev.K6_NOT_ASSESSED
+    base = ev.baseline()["integrated_recall"]
+    pending = _full(scored, refs)
+    del pending["k4_context"]["P12-part-3"]
+    d = ev.decide(scored, refs, base, pending)
+    assert d["verdict"] == "INCOMPLETE_REVIEW" and d["k4_context_not_assessed"] == ["P12-part-3"]
+    d = ev.decide(scored, refs, base, _full(scored, refs, **{"P12-part-3": ev.K6_FAILURE}))
     assert d["verdict"] == "NO_GO" and "K4" in d["critical"]
 
 
-def test_p12_part_whose_own_wording_names_the_handlebar_is_never_silently_clean(pack):
+def test_p12_review_items_name_each_part_and_the_context(pack):
     cases, refs = pack
-    mixed = {"text": "casing and the handlebar it clips onto", "candidate_concept": "mechanical",
-             "source_quote": "casing that clips onto a bike handlebar"}
-    reply = _p12(mixed)
+    bicycle = {"text": "bicycle handle", "source_quote": "3D-printed casing",
+               "candidate_concept": "mechanical"}
+    reply = _p12(bicycle)
     s12, scored = _p12_scores(pack, reply)
-    assert s12["critical"] == [] and s12["context_review"] == {"P12-part-2": ev.K6_NOT_ASSESSED}
-    base, g5 = ev.baseline()["integrated_recall"], _all_recognized(refs)
-    d = ev.decide(scored, refs, base, {"k6": CLEAR, "g5": g5})
-    assert d["verdict"] == "INCOMPLETE_REVIEW" and d["k4_context_not_assessed"] == ["P12-part-2"]
     replies = {c["case_id"]: _oracle(c, refs[c["case_id"]]) for c in cases}
     replies["P12"] = reply
     items = ev.review_items(scored, pack, replies)["k4_context"]
     assert [(i["item_id"], i["part"], i["context_terms"]) for i in items] == [
-        ("P12-part-2", mixed, ["handlebar", "bike"])]
-    clear = {"k6": CLEAR, "g5": g5, "k4_context": {"P12-part-2": ev.K6_CLEAR}}
-    assert ev.decide(scored, refs, base, clear)["verdict"] == "PRELIMINARY_GO"
-    failed = {"k6": CLEAR, "g5": g5, "k4_context": {"P12-part-2": ev.K6_FAILURE}}
-    d = ev.decide(scored, refs, base, failed)
-    assert d["verdict"] == "NO_GO" and "K4" in d["critical"]
+        ("P12-part-1", P12_PCB, ["handlebar", "bike"]),
+        ("P12-part-2", bicycle, ["handlebar", "bike"])]
+    base = ev.baseline()["integrated_recall"]
     for bad in ({"P12-part-9": ev.K6_CLEAR}, {"P12-part-2": "PASS"}, ["P12-part-2"]):
+        record = _full(scored, refs)
+        record["k4_context"] = bad
         with pytest.raises(ev.PackError):
-            ev.decide(scored, refs, base, {"k6": CLEAR, "g5": g5, "k4_context": bad})
+            ev.decide(scored, refs, base, record)
+
+
+def test_no_other_case_gets_a_context_review(pack):
+    assert {k for x in _oracle_scores(pack) for k in x["context_review"]} == {
+        "P12-part-1", "P12-part-2"}
 
 
 def test_external_context_role_is_only_on_p12(pack):

@@ -64,7 +64,7 @@ INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_precreation_semantic_i
 INPUT_SHA256 = "92a28f436b32eb7b30a82253ce391a1577a99ecce5075daf622dc8aad5e9886b"
 REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures",
                               "g1_precreation_semantic_reference_v1.json")
-REFERENCE_SHA256 = "ba5c0ff6c22e7c47ff3335b2317933ff4d73a8417a1b61525e461cf5a3b6e836"
+REFERENCE_SHA256 = "9229f4ebc572e51c07346884c4b7d54e8f8a5df0c7b1118afb7375a60cb52938"
 FROZEN_STATUS = "FROZEN"
 PACK_LANGUAGES = ("en",)          # this pack; the contract itself is language-neutral
 
@@ -189,15 +189,14 @@ CRITERIA = {
     "K2": "Critical: a candidate_concept outside the governed ids.",
     "K3": "Critical: an ADMITTED SUGGEST_INTEGRATED on a case whose reference does not allow it.",
     "K4": "Critical: a stated part the reference forbids (an existing or third-party device, "
-          "packaging, inspiration, a hypothetical or negated part, an unstated component). For a "
-          "term marked EXTERNAL_CONTEXT (where the invention is mounted or used, not a designed "
-          "part): every stated part whose quote or text names the term is a K4 context item. A "
-          "human records ASSESSED_CLEAR when the part is a designed part that only quotes the "
-          "context (for example the casing that clips onto it) and ASSESSED_WITH_FAILURE when it "
-          "claims the context itself as a designed part (a failure counts as K4); it stays "
-          "NOT_ASSESSED until then, so it is never an automatic pass or failure. Limit: a part "
-          "that names none of the context terms in its quote or text is caught only by the K6 "
-          "human review of every reply.",
+          "packaging, inspiration, a hypothetical or negated part, an unstated component). In a "
+          "case whose reference names an EXTERNAL_CONTEXT (where the invention is mounted or "
+          "used, not a designed part), EVERY stated part is a K4 context item, whatever its "
+          "wording: a human records ASSESSED_CLEAR when it is part of the inventor's intended "
+          "design (for example the PCB, or the casing that clips onto the context) and "
+          "ASSESSED_WITH_FAILURE when it is the external context claimed as a designed part (a "
+          "failure counts as K4); it stays NOT_ASSESSED until then, so it is never an automatic "
+          "pass or failure. The context terms only describe the context to the reviewer.",
     "K5": "Critical: a stated part or function whose text span shares a character with a "
           "required negation.",
     "K6": "Critical, human-assessed: a claim or implication of verification, validation, "
@@ -249,9 +248,10 @@ AUTHORITY_TERMS = ("verified", "validated", "certified", "approved", "guaranteed
                    "safe", "compatible", "ready for manufacturing")
 
 
-# Revision 2 corrected G5 and K6 and revision 3 the K4 external-context rule,
-# both BEFORE any model run; neither superseded revision was ever evaluated.
-PREREGISTRATION_REVISION = 3
+# Revision 2 corrected G5 and K6, revision 3 added the K4 external-context
+# review and revision 4 made it cover every stated part of such a case, all
+# BEFORE any model run; no superseded revision was ever evaluated.
+PREREGISTRATION_REVISION = 4
 SUPERSEDED_PREREGISTRATIONS = (
     {"revision": 1, "sha256": "fb5c96dcf981b91fde517fc4404c4e3d3f7bb90a23124b0793960d73b54a2a82",
      "evaluated": False,
@@ -259,6 +259,10 @@ SUPERSEDED_PREREGISTRATIONS = (
     {"revision": 2, "sha256": "22389804aa27ea5f81c3704d28f17b44b8cd58a0161993e5daa672a3ba83563b",
      "evaluated": False,
      "reason": "no rule told an external mounting context apart from a designed part"},
+    {"revision": 3, "sha256": "cfefe654fcf37d895db42047f68eb68d3a1eb9702b9dbfbe1f136e901db101b7",
+     "evaluated": False,
+     "reason": "K4 context review depended on the context words; a part worded otherwise "
+               "escaped it"},
 )
 
 
@@ -461,16 +465,12 @@ def score_case(reply, idea_text, ref, concepts=None):
         out["critical"].append("K2")
     if v["effective"] == SUGGEST_INTEGRATED and SUGGEST_INTEGRATED not in ref["allowed_composition"]:
         out["critical"].append("K3")
-    for f in ref["forbidden_stated_parts"]:
-        if f.get("role") != EXTERNAL_CONTEXT:
-            continue
-        for i, p in enumerate(parts):
-            quote, text = _low(p["source_quote"]), _low(p["text"])
-            if f["term"] not in quote and f["term"] not in text:
-                continue
-            # Whether the part claims the context itself or only quotes it beside a
-            # designed part is a semantic judgement: never an automatic pass and
-            # never an automatic failure.
+    if any(f.get("role") == EXTERNAL_CONTEXT for f in ref["forbidden_stated_parts"]):
+        # A case with an external context: whether each stated part belongs to
+        # the inventor's design or is that context is a semantic judgement, so
+        # EVERY stated part is a human K4 item, whatever its wording. Never an
+        # automatic pass or failure, and no lexical trigger decides it.
+        for i, _p in enumerate(parts):
             out["context_review"]["%s-part-%d" % (ref["case_id"], i + 1)] = K6_NOT_ASSESSED
     for f in ref["forbidden_stated_parts"]:
         if f.get("role") == EXTERNAL_CONTEXT:
