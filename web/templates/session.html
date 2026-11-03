@@ -429,9 +429,26 @@ body{overflow-wrap:anywhere}
     <p class="journey-note" data-ijg-note>{{ t('UI_IJG_PART_NOTE_MECH' if integrated_guidance.part == 'mechanical' else 'UI_IJG_PART_NOTE_ELEC') }}</p>
     <a class="journey-primary" data-primary-action data-ijg-action="part_questions" href="{{ url_for('part_questions', sid=sid, part=integrated_guidance.part_id) }}">{{ t('UI_IJG_PART_CTA_MECH' if integrated_guidance.part == 'mechanical' else 'UI_IJG_PART_CTA_ELEC') }}</a>
     <p class="journey-note" data-ijg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
+  {#- G1-INTEGRATED-ENGINEERING-CONTINUATION-01: the next EXISTING engineering
+      declaration, each optional and offered only while its own form is on the
+      page: the interaction declaration, the Component Inventory, then the
+      participation form. Nothing is inferred, assessed or made mandatory. -#}
+  {% elif integrated_guidance and integrated_guidance.kind == 'declare_interaction' and ((interface_binding is defined and interface_binding) or (interface_pair_choices is defined and interface_pair_choices)) %}
+    <p class="journey-note" data-ijg-note>{{ t('UI_IJG_DECLARE_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action data-ijg-action="declare_interaction" href="#interface_description">{{ t('UI_IJG_DECLARE_CTA') }}</a>
+    <p class="journey-note" data-ijg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
+  {% elif integrated_guidance and integrated_guidance.kind == 'component_inventory' and component_inventory is defined and component_inventory and component_inventory.can_add %}
+    <p class="journey-note" data-ijg-note>{{ t('UI_IJG_COMPONENTS_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action data-ijg-action="component_inventory" href="#component_name">{{ t('UI_IJG_COMPONENTS_CTA') }}</a>
+    <p class="journey-note" data-ijg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
+  {% elif integrated_guidance and integrated_guidance.kind == 'participation' %}
+    <p class="journey-note" data-ijg-note>{{ t('UI_IJG_PARTICIPATION_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action data-ijg-action="participation" href="{{ url_for('interface_preparation', sid=sid) }}#participation-heading">{{ t('UI_IJG_PARTICIPATION_CTA') }}</a>
+    <p class="journey-note" data-ijg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
   {% elif integrated_guidance and integrated_guidance.kind == 'interface_preparation' %}
     <p class="journey-note" data-ijg-note>{{ t('UI_IJG_PREP_NOTE') }}</p>
     <a class="journey-primary" data-primary-action data-ijg-action="interface_preparation" href="{{ url_for('interface_preparation', sid=sid) }}">{{ t('UI_IJG_PREP_CTA') }}</a>
+    {% set ijg_tail = true %}
     <p class="journey-note" data-ijg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
   {#- EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: after every earlier primary action
       (the integrated steps included), ONE optional step to the EXISTING planning
@@ -441,10 +458,26 @@ body{overflow-wrap:anywhere}
   {% elif experiment_planning_step is defined and experiment_planning_step() %}
     <p class="journey-note" data-epg-note>{{ t('UI_EPG_NOTE') }}</p>
     <a class="journey-primary" data-primary-action data-epg-action href="{{ url_for('success_criteria', sid=sid) }}">{{ t('UI_EPG_CTA') }}</a>
+    {% set ijg_tail = true %}
     <p class="journey-note" data-epg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
   {% else %}
     <p class="journey-note">{{ t('UI_A1_HANDOFF_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a>
+    {% set ijg_tail = true %}
+  {% endif %}
+  {#- G1-INTEGRATED-ENGINEERING-CONTINUATION-01: once the earlier primary actions
+      are exhausted, each interaction the EXISTING planar-clearance gate admits
+      (two current participants, no declaration yet) is listed as an optional,
+      secondary link - never a primary action and never a claim that it applies. -#}
+  {% if ijg_tail and integrated_guidance and integrated_guidance.clearance %}
+    <div class="journey-note" data-ijg-clearance>
+      <p style="margin:0 0 4px 0">{{ t('UI_IJG_CLEARANCE_NOTE') }}</p>
+      <ul style="margin:0;padding-inline-start:20px">
+      {% for item in integrated_guidance.clearance %}
+        <li><a data-ijg-clearance-link href="{{ url_for('planar_clearance_page', sid=sid, interface_id=item.interface_id) }}">{{ t('UI_IJG_CLEARANCE_LINK') }} <bdi dir="auto">{{ item.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ item.b }}</bdi></a></li>
+      {% endfor %}
+      </ul>
+    </div>
   {% endif %}
   </div>
 </section>

@@ -2523,19 +2523,70 @@ def _control_loop_part_report_view(sid, state, read=None):
 #   1. the required part outside the initial analysis focus, while either of
 #      its governed question families is not fully recorded (recording
 #      presence, the same one the report and the parts view show);
-#   2. otherwise a DECLARED interaction whose optional verification-preparation
+#   2. (G1-INTEGRATED-ENGINEERING-CONTINUATION-01) no interaction declared yet
+#      -> the EXISTING interaction declaration on the session page;
+#   3. an interaction declared but fewer than two CURRENT components -> the
+#      EXISTING Component Inventory;
+#   4. at least two current components but no interaction with at least two
+#      CURRENT participants -> the EXISTING participation form;
+#   5. otherwise a DECLARED interaction whose optional verification-preparation
 #      inputs are not all recorded.
-# Nothing is inferred: no interaction is assumed to exist, nothing is assessed,
+# Past step 4, every interaction that the EXISTING planar-clearance gate
+# already admits (two current participants) and that holds no clearance
+# declaration yet is also listed as an optional, secondary link (never the
+# primary action): whether it is a board-and-enclosure relationship is the
+# inventor's choice on that page, never inferred here. Steps 2-4 and the
+# links read ONE durable snapshot (``load_planar_clearance``); when it is
+# unreadable or disagrees with the live scope they are skipped and the
+# earlier behaviour (step 5) stands. Nothing is inferred: no interaction,
+# component, participation or applicability is assumed, nothing is assessed,
 # validated or made mandatory, and the review handoff stays one click away.
 # Any unreadable, inconsistent or unavailable input shows nothing (the existing
 # handoff fallback stands). Read-only; never writes.
 _IJG_PART = "part_questions"
+_IJG_DECLARE = "declare_interaction"
+_IJG_COMPONENTS = "component_inventory"
+_IJG_PARTICIPATION = "participation"
 _IJG_PREPARATION = "interface_preparation"
+_IJG_MIN_COMPONENTS = 2      # the existing participation-based check's own floor
+
+
+def _ijg_connection(sid, integrated_scope):
+    """``(kind_or_None, clearance_links)`` for steps 2-4 and the clearance
+    links, or ``None`` when the durable snapshot cannot be read or does not
+    agree with the live scope (the caller then keeps the earlier behaviour)."""
+    try:
+        snapshot = _get_store().load_planar_clearance(sid)
+        interfaces = tuple(snapshot["interfaces"])
+        scope_interfaces = integrated_scope.get("interfaces") or ()
+        if [i.description for i in interfaces] != [i["description"] for i in scope_interfaces]:
+            return None
+        if not interfaces:
+            return _IJG_DECLARE, []
+        inventory = snapshot["inventory"]
+        active = tuple(inventory.active)
+        if len(active) < _IJG_MIN_COMPONENTS:
+            return _IJG_COMPONENTS, []
+        participants = _subsystem_model.current_interface_participants(
+            snapshot["participations"], active)
+        if not any(len(participants.get(i.interface_id, ())) >= 2 for i in interfaces):
+            return _IJG_PARTICIPATION, []
+        links = []
+        for item in interfaces:
+            view = _pcc_view.clearance_view(snapshot, item.interface_id, _PCC_BINDING)
+            if view is not None and view["eligible"] and view["state"] == _pcc_view.STATE_NONE:
+                links.append({"interface_id": item.interface_id,
+                              "a": view["part_a"], "b": view["part_b"]})
+        return None, links
+    except Exception:
+        return None
 
 
 def _integrated_journey_guidance(sid, integrated_scope):
     """``{"kind": "part_questions", "part": "mechanical" | "electrical",
-    "part_id"}`` or ``{"kind": "interface_preparation"}`` or ``None``."""
+    "part_id"}``, ``{"kind": "declare_interaction" | "component_inventory" |
+    "participation" | "interface_preparation" | None, "clearance": [...]}``
+    or ``None``."""
     if not integrated_scope:
         return None
     try:
@@ -2553,12 +2604,20 @@ def _integrated_journey_guidance(sid, integrated_scope):
                 if presence != _subsystem_model.PART_FAMILY_ALL_RECORDED:
                     return {"kind": _IJG_PART, "part": link["part"],
                             "part_id": link["part_id"]}
+        connection = _ijg_connection(sid, integrated_scope)
+        clearance = []
+        if connection is not None:
+            kind, clearance = connection
+            if kind is not None:
+                return {"kind": kind, "clearance": []}
         complete = _S15_PREP_PRESENCE_KEYS[_subsystem_model.PREPARATION_ALL_RECORDED]
         for interface in integrated_scope.get("interfaces") or ():
             preparation = interface.get("preparation")
             # An unattached preparation carrier tells nothing: never guessed.
             if preparation is not None and preparation["presence_key"] != complete:
-                return {"kind": _IJG_PREPARATION}
+                return {"kind": _IJG_PREPARATION, "clearance": clearance}
+        if clearance:
+            return {"kind": None, "clearance": clearance}
     except Exception:
         return None
     return None

@@ -10007,6 +10007,48 @@ UI_STRINGS = {
                         "ar": "سجّل كيف يمكن فحص التفاعل"},
     "UI_IJG_HANDOFF_NOTE": {"en": "You can also review your handoff now:",
                             "ar": "يمكنك أيضًا مراجعة حزمة التسليم الآن:"},
+    # G1-INTEGRATED-ENGINEERING-CONTINUATION-01: the next EXISTING engineering
+    # declaration of an integrated invention (optional; nothing inferred,
+    # checked or validated) and the secondary planar-clearance links.
+    "UI_IJG_DECLARE_NOTE": {
+        "en": ("You have not described yet how the parts of your invention interact. If they "
+               "really work together, you can describe that in your own words. This is optional; "
+               "InventorAI does not assume that they interact and does not check how they do."),
+        "ar": ("لم تصف بعدُ كيف تتفاعل أجزاء اختراعك. إذا كانت تعمل معًا فعلًا، يمكنك وصف ذلك "
+               "بكلماتك. هذا اختياري؛ ولا يفترض InventorAI أنها تتفاعل، ولا يفحص كيفية تفاعلها."),
+    },
+    "UI_IJG_DECLARE_CTA": {"en": "Describe how your parts interact",
+                           "ar": "صِف كيف تتفاعل أجزاء اختراعك"},
+    "UI_IJG_COMPONENTS_NOTE": {
+        "en": ("You described how your parts interact. You can now list the physical components "
+               "your invention includes and what each one does, in your own words. This is "
+               "optional; listing a component does not select, check or approve it."),
+        "ar": ("وصفتَ كيف تتفاعل أجزاء اختراعك. يمكنك الآن أن تذكر المكوّنات المادية التي يضمها "
+               "اختراعك وما يفعله كل منها، بكلماتك. هذا اختياري؛ وذكر مكوّن لا يعني اختياره أو "
+               "فحصه أو اعتماده."),
+    },
+    "UI_IJG_COMPONENTS_CTA": {"en": "List the physical components of your invention",
+                              "ar": "اذكر المكوّنات المادية لاختراعك"},
+    "UI_IJG_PARTICIPATION_NOTE": {
+        "en": ("You have listed components. You can now record which of them take part in each "
+               "interaction you described. This is optional and is your own statement; it does "
+               "not connect, assemble or check the components."),
+        "ar": ("ذكرتَ مكوّنات اختراعك. يمكنك الآن تسجيل أيّها يشارك في كل تفاعل وصفته. هذا "
+               "اختياري، وهو تصريحك أنت؛ ولا يعني توصيل المكوّنات أو تجميعها أو فحصها."),
+    },
+    "UI_IJG_PARTICIPATION_CTA": {"en": "Record which components take part in each interaction",
+                                 "ar": "سجّل المكوّنات المشاركة في كل تفاعل"},
+    "UI_IJG_CLEARANCE_NOTE": {
+        "en": ("If one of these interactions is a flat circuit board fitted inside an enclosure, "
+               "an optional planar clearance check is available for it. InventorAI does not know "
+               "whether it applies to your interaction; you decide that on its page, and it uses "
+               "only the values you enter."),
+        "ar": ("إذا كان أحد هذه التفاعلات لوحة دارة مسطّحة مركّبة داخل حاوية، فيتوفر له فحص "
+               "اختياري للخلوص المستوي. لا يعرف InventorAI ما إذا كان ينطبق على تفاعلك؛ أنت تقرّر "
+               "ذلك في صفحته، وهو يستخدم القيم التي تُدخلها فقط."),
+    },
+    "UI_IJG_CLEARANCE_LINK": {"en": "Optional planar clearance check: interaction between",
+                              "ar": "فحص اختياري للخلوص المستوي: التفاعل بين"},
     # EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: the Compass step to the existing
     # experiment-planning page (optional; nothing is checked or validated).
     "UI_EPG_NOTE": {

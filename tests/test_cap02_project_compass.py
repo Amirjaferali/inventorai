@@ -286,6 +286,18 @@ _BRANCHES = (
     # and its condition are unchanged.
     ("{% elif integrated_guidance and integrated_guidance.kind == 'part_questions' %}",
      'data-ijg-action="part_questions"'),
+    # AMENDED at G1-INTEGRATED-ENGINEERING-CONTINUATION-01: three integrated branches
+    # (interaction declaration, Component Inventory, participation) added between the
+    # two integrated branches above, each gated on its own existing form; every other
+    # branch, its order and its condition are unchanged.
+    ("{% elif integrated_guidance and integrated_guidance.kind == 'declare_interaction' and "
+     "((interface_binding is defined and interface_binding) or (interface_pair_choices is "
+     "defined and interface_pair_choices)) %}", 'data-ijg-action="declare_interaction"'),
+    ("{% elif integrated_guidance and integrated_guidance.kind == 'component_inventory' and "
+     "component_inventory is defined and component_inventory and component_inventory.can_add %}",
+     'data-ijg-action="component_inventory"'),
+    ("{% elif integrated_guidance and integrated_guidance.kind == 'participation' %}",
+     'data-ijg-action="participation"'),
     ("{% elif integrated_guidance and integrated_guidance.kind == 'interface_preparation' %}",
      'data-ijg-action="interface_preparation"'),
     # AMENDED at EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: one experiment-planning
