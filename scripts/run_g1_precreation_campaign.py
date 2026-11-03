@@ -33,11 +33,15 @@ File-creation contract:
                     verified, the checkout is dirty or not the manifest's
                     revision, the digest is not this manifest's, or campaign
                     evidence for this pack exists anywhere (one run only);
-    `--review-items REPORT`
+    `--review-items REPORT [--journal JOURNAL]`
                     offline: what the human reviewer must judge (K6 every reply,
-                    K4 every P12 stated part, G5 every expected unknown);
-    `--aggregate ASSESSMENT --report REPORT --authorized-manifest SHA256`
-                    offline: the pre-registered verdict of the one authorized run.
+                    K4 every P12 stated part, G5 every expected unknown), with the
+                    report digest the assessment must carry;
+    `--aggregate ASSESSMENT --report REPORT --authorized-manifest SHA256 [--journal J]`
+                    offline: the pre-registered verdict of the one authorized run;
+                    every attempted row must equal its journal record. This binds a
+                    report to its journal; it does not protect against someone who
+                    rewrites both files, so the evidence is committed after the run.
     There is no option for a project, account, database or free-form input.
   Output contract: JSON on stdout; exit 0 on success, 2 on a refused invocation.
   Prohibited behaviors: no real inventor / project / personal data; no product
@@ -349,7 +353,19 @@ def _run_cases(adapter, cases, manifest, journal):
 # ─────────────────────────────────────────────────────────────────────────────
 # After the run: human review items and the pre-registered verdict
 # ─────────────────────────────────────────────────────────────────────────────
-def _check_report(report, authorized_manifest_sha256):
+_ROW_KEYS = {"case_id", "provider_status", "error_kind", "reply"}
+_PROVIDER_STATUSES = (P_RESPONDED, P_REFUSAL, P_ERROR, P_AMBIGUOUS, P_NOT_ATTEMPTED)
+
+
+def _canonical(value):
+    return json.loads(json.dumps(value, ensure_ascii=False, sort_keys=True))
+
+
+def _check_report(report, authorized_manifest_sha256, journal_lines):
+    """The report must be the authorized run, well formed, and every attempted
+    row must equal its fsynced journal record exactly: a row cannot be added,
+    changed or turned into a reply after the run without the journal showing
+    it. Anything else is refused, never crashed on and never scored."""
     manifest = report.get("manifest") if isinstance(report, dict) else None
     if not isinstance(manifest, dict) or report.get("manifest_sha256") != _digest(manifest):
         raise PackError("report manifest does not match its digest")
@@ -359,8 +375,47 @@ def _check_report(report, authorized_manifest_sha256):
     if manifest != run_manifest(manifest.get("code_revision"), manifest.get("model")):
         raise PackError("report is not bound to this pack, reference and pre-registration")
     cases, _refs = ev.load_pack()
-    if [r.get("case_id") for r in report.get("rows", ())] != [c["case_id"] for c in cases]:
+    rows = report.get("rows")
+    if not isinstance(rows, list) or not all(isinstance(r, dict) for r in rows):
+        raise PackError("report rows are malformed")
+    if [r.get("case_id") for r in rows] != [c["case_id"] for c in cases]:
         raise PackError("report rows are not the pinned cases in order")
+    attempted = []
+    for r in rows:
+        status = r.get("provider_status")
+        if status not in _PROVIDER_STATUSES:
+            raise PackError("report row status is malformed")
+        if status == P_NOT_ATTEMPTED:
+            if set(r) != _ROW_KEYS or r["reply"] is not None:
+                raise PackError("report row is malformed")
+            continue
+        if set(r) != _ROW_KEYS | {"attempt"} or not isinstance(r["attempt"], dict):
+            raise PackError("report row is malformed")
+        if (r["reply"] is None) == (status == P_RESPONDED):
+            raise PackError("report row reply does not match its status")
+        attempted.append(_canonical({"event": "attempt", "case_id": r["case_id"],
+                                     "provider_status": status, "error_kind": r["error_kind"],
+                                     "reply": r["reply"], **r["attempt"]}))
+    if report.get("requests") != len(attempted):
+        raise PackError("report request count does not match its rows")
+    try:
+        if not all(isinstance(line, str) for line in journal_lines):
+            raise PackError("journal is unreadable")
+        records = [json.loads(line) for line in journal_lines if line.strip()]
+    except (TypeError, ValueError):
+        raise PackError("journal is unreadable")
+    if not all(isinstance(x, dict) for x in records):
+        raise PackError("journal is malformed")
+    journalled = [x for x in records if x.get("event") == "attempt"]
+    reserved = [x for x in records if x.get("event") == "reserved"]
+    if journalled != attempted or len(reserved) != len(attempted):
+        raise PackError("report rows do not match the run journal")
+
+
+def _run_incomplete(report):
+    """A provider stop or a case not attempted makes the run INCOMPLETE,
+    derived from the rows themselves (a stop on the last case included)."""
+    return any(r["provider_status"] in _STOPS + (P_NOT_ATTEMPTED,) for r in report["rows"])
 
 
 def score_report(report):
@@ -377,25 +432,33 @@ def score_report(report):
     return scored, replies
 
 
-def review_items(report, authorized_manifest_sha256):
-    _check_report(report, authorized_manifest_sha256)
+def review_items(report, authorized_manifest_sha256, journal_lines):
+    """What the human reviewer judges, bound to the report: the assessment
+    must carry this ``report_sha256``."""
+    _check_report(report, authorized_manifest_sha256, journal_lines)
     scored, replies = score_report(report)
-    return ev.review_items(scored, ev.load_pack(), replies)
+    return dict(ev.review_items(scored, ev.load_pack(), replies), report_sha256=_digest(report))
 
 
-def aggregate(report, assessment, authorized_manifest_sha256):
-    """The verdict of the one authorized run. Any case not attempted gives
-    INCOMPLETE; otherwise the frozen decision rule, which needs every K6, K4
-    context and G5 human assessment before any GO."""
-    _check_report(report, authorized_manifest_sha256)
-    if any(r["provider_status"] == P_NOT_ATTEMPTED for r in report["rows"]):
+def aggregate(report, assessment, authorized_manifest_sha256, journal_lines):
+    """The verdict of the one authorized run: INCOMPLETE for any provider stop
+    or case not attempted; otherwise the frozen decision rule over an
+    assessment bound to this exact report, which needs every K6, K4 context
+    and G5 human assessment before any GO."""
+    _check_report(report, authorized_manifest_sha256, journal_lines)
+    if _run_incomplete(report):
         return {"verdict": "INCOMPLETE", "stopped_on": report.get("stopped_on"),
                 "manifest_sha256": report["manifest_sha256"]}
+    judged = None
+    if assessment is not None:
+        if not isinstance(assessment, dict) or assessment.get("report_sha256") != _digest(report):
+            raise PackError("assessment is not bound to this report")
+        judged = {k: v for k, v in assessment.items() if k != "report_sha256"}
     scored, _replies = score_report(report)
     _cases, refs = ev.load_pack()
-    decision = ev.decide(scored, refs, ev.baseline()["integrated_recall"], assessment)
+    decision = ev.decide(scored, refs, ev.baseline()["integrated_recall"], judged)
     return dict(decision, manifest_sha256=report["manifest_sha256"],
-                spend=report.get("spend"))
+                report_sha256=_digest(report), spend=report.get("spend"))
 
 
 def plan():
@@ -416,6 +479,7 @@ def main(argv=None):
     p.add_argument("--review-items", metavar="REPORT")
     p.add_argument("--aggregate", metavar="ASSESSMENT")
     p.add_argument("--report", metavar="REPORT")
+    p.add_argument("--journal", metavar="JOURNAL", default=JOURNAL_PATH)
     p.add_argument("--authorized-manifest", metavar="SHA256",
                    default=AUTHORIZED_RUN_MANIFEST_SHA256)
     a = p.parse_args(argv)
@@ -427,7 +491,9 @@ def main(argv=None):
                    "price_verified": price_verified()}
         elif a.review_items:
             with open(a.review_items, encoding="utf-8") as fh:
-                out = review_items(json.load(fh), a.authorized_manifest)
+                report = json.load(fh)
+            with open(a.journal, encoding="utf-8") as fh:
+                out = review_items(report, a.authorized_manifest, fh.readlines())
         elif a.aggregate:
             if not a.report:
                 raise PackError("--aggregate needs --report")
@@ -435,7 +501,8 @@ def main(argv=None):
                 report = json.load(fh)
             with open(a.aggregate, encoding="utf-8") as fh:
                 assessment = json.load(fh)
-            out = aggregate(report, assessment, a.authorized_manifest)
+            with open(a.journal, encoding="utf-8") as fh:
+                out = aggregate(report, assessment, a.authorized_manifest, fh.readlines())
         elif a.provider == "openai":
             if not (a.allow_network and a.managed_credential):
                 raise PackError("network and managed credential required")

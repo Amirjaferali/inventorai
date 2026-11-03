@@ -3,6 +3,7 @@
 Every transport here is a local fake; nothing reaches a network. The replies
 are HANDCRAFTED test material, never evidence that a model understood anything.
 """
+import io
 import json
 from pathlib import Path
 
@@ -75,10 +76,17 @@ def _oracle_responses(pack):
     return [_body(_oracle(c, refs[c["case_id"]])) for c in cases]
 
 
-def _run(pack, responses):
-    fake = _Fake(responses)
+def _run(pack, responses, cases=None):
+    """A fake run with an in-memory journal; returns (report, fake, journal lines)."""
+    fake, journal = _Fake(responses), io.StringIO()
     adapter = _adapter(fake)
-    return rc.campaign(adapter, pack[0], rc.run_manifest(REVISION, adapter._model)), fake
+    report = rc.campaign(adapter, pack[0] if cases is None else cases,
+                         rc.run_manifest(REVISION, adapter._model), journal)
+    return report, fake, journal.getvalue().splitlines()
+
+
+def _bound(report, **judged):
+    return dict(judged, report_sha256=rc._digest(report))
 
 
 def _open(monkeypatch, revision=REVISION):
@@ -201,7 +209,7 @@ def test_budget_plan_reserves_every_exact_payload_within_the_ceiling(pack):
 
 def test_cost_ceiling_stops_before_send_and_the_rest_is_not_attempted(pack, monkeypatch):
     monkeypatch.setattr(rc, "CAMPAIGN_CEILING_USD", 0.2)
-    report, fake = _run(pack, _oracle_responses(pack))
+    report, fake, _j = _run(pack, _oracle_responses(pack))
     sent = [r for r in report["rows"] if r["provider_status"] != rc.P_NOT_ATTEMPTED]
     rest = report["rows"][len(sent):]
     assert 1 <= len(fake.calls) == len(sent) < 20 and report["stopped_on"] == rc.ERR_COST_CEILING
@@ -216,7 +224,7 @@ def test_missing_usage_is_charged_the_whole_reservation(pack):
     responses = _oracle_responses(pack)
     cases, refs = pack
     responses[0] = _body(_oracle(cases[0], refs[cases[0]["case_id"]]), usage=False)
-    report, _fake = _run(pack, responses)
+    report, _fake, _j = _run(pack, responses)
     first = report["rows"][0]["attempt"]
     assert first["bound_usd"] == first["reserved_usd"] and first["measured_cost_usd"] is None
     assert report["spend"]["measured_cost_complete"] is False
@@ -225,7 +233,7 @@ def test_missing_usage_is_charged_the_whole_reservation(pack):
 # ── Requests: one per case, nothing but the idea text ───────────────────────
 def test_one_request_per_case_and_no_reference_material_is_sent(pack):
     cases, refs = pack
-    report, fake = _run(pack, _oracle_responses(pack))
+    report, fake, _j = _run(pack, _oracle_responses(pack))
     assert len(fake.calls) == 20 and report["requests"] == 20
     for case, sent in zip(cases, fake.calls):
         assert set(sent) == {"model", "instructions", "input", "store", "max_output_tokens", "text"}
@@ -262,19 +270,39 @@ def test_provider_error_stops_and_the_run_is_incomplete(bad, kind, pack):
     good = _oracle(cases[2], refs[cases[2]["case_id"]])
     responses[2] = {"over_cap": _body(good, out_tokens=1201),
                     "other_model": _body(good, model="gpt-other")}.get(bad, bad)
-    report, fake = _run(pack, responses)
+    report, fake, lines = _run(pack, responses)
     assert len(fake.calls) == 3 and report["stopped_on"] == rc.P_ERROR
     assert report["rows"][2]["error_kind"] == kind
     assert all(r["provider_status"] == rc.P_NOT_ATTEMPTED for r in report["rows"][3:])
-    agg = rc.aggregate(report, {"k6": CLEAR, "g5": _all_recognized(refs)},
-                       report["manifest_sha256"])
+    agg = rc.aggregate(report, _bound(report, k6=CLEAR, g5=_all_recognized(refs)),
+                       report["manifest_sha256"], lines)
     assert agg["verdict"] == "INCOMPLETE"
+
+
+@pytest.mark.parametrize("last", [(500, b"{}"), "other_model", "bare_abstain"])
+def test_provider_stop_on_the_last_case_is_incomplete_not_a_verdict(last, pack):
+    cases, refs = pack
+    responses = _oracle_responses(pack)
+    good = _oracle(cases[-1], refs[cases[-1]["case_id"]])
+    responses[-1] = {"other_model": _body(good, model="gpt-other"),
+                     "bare_abstain": (200, json.dumps({
+                         "id": "r", "status": "completed", "model": toa.MODEL,
+                         "usage": {"input_tokens": 9, "output_tokens": 9},
+                         "output": [{"type": "message", "content": [
+                             {"type": "output_text", "text": toa.ABSTAIN}]}]}).encode())
+                     }.get(last, last)
+    report, _fake, lines = _run(pack, responses)
+    assert not any(r["provider_status"] == rc.P_NOT_ATTEMPTED for r in report["rows"])
+    full = _bound(report, k6=CLEAR, g5=_all_recognized(refs),
+                  k4_context={"P12-part-1": ev.K6_CLEAR, "P12-part-2": ev.K6_CLEAR})
+    assert rc.aggregate(report, full, report["manifest_sha256"], lines)["verdict"] \
+        == "INCOMPLETE"
 
 
 def test_refusal_does_not_stop_and_earns_nothing(pack):
     responses = _oracle_responses(pack)
     responses[0] = _body(None, refusal=True)
-    report, fake = _run(pack, responses)
+    report, fake, _j = _run(pack, responses)
     assert len(fake.calls) == 20 and report["rows"][0]["provider_status"] == rc.P_REFUSAL
     scored, _ = rc.score_report(report)
     assert scored[0]["status"] == ev.V_ERROR and scored[0]["effective"] == ev.FALLBACK
@@ -297,29 +325,89 @@ def test_interruption_leaves_the_journal_and_a_rerun_is_refused(pack, evidence, 
 
 
 # ── After the run: no verdict without the human reviews ─────────────────────
+def _full_assessment(report, refs, items):
+    return _bound(report, k6=CLEAR, g5=_all_recognized(refs),
+                  k4_context={i["item_id"]: ev.K6_CLEAR for i in items["k4_context"]})
+
+
 def test_no_go_without_every_human_assessment(pack):
     _cases, refs = pack
-    report, _fake = _run(pack, _oracle_responses(pack))
+    report, _fake, lines = _run(pack, _oracle_responses(pack))
     digest = report["manifest_sha256"]
-    assert rc.aggregate(report, None, digest)["verdict"] == "INCOMPLETE_REVIEW"
-    partial = {"k6": CLEAR, "g5": _all_recognized(refs)}       # K4 context items pending
-    assert rc.aggregate(report, partial, digest)["verdict"] == "INCOMPLETE_REVIEW"
-    items = rc.review_items(report, digest)
-    full = dict(partial, k4_context={i["item_id"]: ev.K6_CLEAR for i in items["k4_context"]})
+    assert rc.aggregate(report, None, digest, lines)["verdict"] == "INCOMPLETE_REVIEW"
+    partial = _bound(report, k6=CLEAR, g5=_all_recognized(refs))   # K4 context pending
+    assert rc.aggregate(report, partial, digest, lines)["verdict"] == "INCOMPLETE_REVIEW"
+    items = rc.review_items(report, digest, lines)
+    assert items["report_sha256"] == rc._digest(report)
     assert [i["item_id"] for i in items["k4_context"]] == ["P12-part-1", "P12-part-2"]
-    assert rc.aggregate(report, full, digest)["verdict"] == "PRELIMINARY_GO"
+    assert rc.aggregate(report, _full_assessment(report, refs, items), digest, lines)[
+        "verdict"] == "PRELIMINARY_GO"
+
+
+def test_assessment_must_be_bound_to_this_exact_report(pack):
+    _cases, refs = pack
+    report, _fake, lines = _run(pack, _oracle_responses(pack))
+    digest = report["manifest_sha256"]
+    full = _full_assessment(report, refs, rc.review_items(report, digest, lines))
+    for bad in (dict(full, report_sha256="f" * 64),
+                {k: v for k, v in full.items() if k != "report_sha256"}, []):
+        with pytest.raises(rc.PackError, match="not bound"):
+            rc.aggregate(report, bad, digest, lines)
+
+
+def test_fabricated_or_edited_rows_do_not_match_the_journal(pack):
+    """Reviewer probe: a run stopped by HTTP 500 at case 6, with rows 6-20 then
+    rewritten as fabricated replies, must be refused, never a GO."""
+    cases, refs = pack
+    responses = _oracle_responses(pack)
+    responses[5] = (500, b"{}")
+    report, _fake, lines = _run(pack, responses)
+    digest = report["manifest_sha256"]
+    forged = json.loads(json.dumps(report))
+    for case, row in zip(cases[5:], forged["rows"][5:]):
+        row.update(provider_status=rc.P_RESPONDED, error_kind=None,
+                   reply=_oracle(case, refs[case["case_id"]]),
+                   attempt=dict(forged["rows"][0]["attempt"]))
+    forged["stopped_on"], forged["requests"] = None, 20
+    with pytest.raises(rc.PackError, match="journal"):
+        rc.aggregate(forged, None, digest, lines)
+    good, _f, good_lines = _run(pack, _oracle_responses(pack))
+    edited = json.loads(json.dumps(good))
+    edited["rows"][0]["reply"]["composition_suggestion"] = ev.CLARIFY_FIRST
+    with pytest.raises(rc.PackError, match="journal"):
+        rc.aggregate(edited, None, good["manifest_sha256"], good_lines)
+    with pytest.raises(rc.PackError):
+        rc.aggregate(good, None, good["manifest_sha256"], good_lines[:-1])
+    for journal in ([1, 2], None, ["{"]):
+        with pytest.raises(rc.PackError):
+            rc.aggregate(good, None, good["manifest_sha256"], journal)
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda r: r.update(rows=[1] * 20),
+    lambda r: r["rows"][0].pop("reply"),
+    lambda r: r["rows"][0].update(provider_status="DONE"),
+    lambda r: r["rows"][0].update(reply=None),
+    lambda r: r.update(rows="x"),
+])
+def test_malformed_report_is_refused_not_crashed(mutate, pack):
+    report, _fake, lines = _run(pack, _oracle_responses(pack))
+    bad = json.loads(json.dumps(report))
+    mutate(bad)
+    with pytest.raises(rc.PackError):
+        rc.aggregate(bad, None, report["manifest_sha256"], lines)
 
 
 def test_report_must_be_the_authorized_untampered_run(pack):
-    report, _fake = _run(pack, _oracle_responses(pack))
+    report, _fake, lines = _run(pack, _oracle_responses(pack))
     with pytest.raises(rc.PackError):
-        rc.aggregate(report, None, "f" * 64)
+        rc.aggregate(report, None, "f" * 64, lines)
     tampered = dict(report, manifest=dict(report["manifest"], max_output_tokens=4000))
     with pytest.raises(rc.PackError):
-        rc.aggregate(tampered, None, report["manifest_sha256"])
+        rc.aggregate(tampered, None, report["manifest_sha256"], lines)
     shuffled = dict(report, rows=list(reversed(report["rows"])))
     with pytest.raises(rc.PackError):
-        rc.aggregate(shuffled, None, report["manifest_sha256"])
+        rc.aggregate(shuffled, None, report["manifest_sha256"], lines)
 
 
 # ── Offline surfaces and boundaries ─────────────────────────────────────────
