@@ -431,6 +431,58 @@ def test_g1_integration_direction_is_linked_through_each_g1_step():
         assert phrase in flat, phrase
 
 
+def test_g1_model_reuse_continuity_is_recoverable_and_authorizes_nothing():
+    """G1 MODEL-REUSE EXECUTION CONTINUITY (2026-11-03): the CAD proof's actual status, the
+    delivered MP-01 packet's bounded status, the stopped campaign, the recommendation-only
+    continuation, the future-use triggers and the qualification lessons stay recoverable
+    from §9.5, and the opening the hook quotes is not expanded for it."""
+    raw = (REPO / DOCS[3]).read_text(encoding="utf-8")
+    checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
+    assert checkpoint.count("**G1 MODEL-REUSE EXECUTION CONTINUITY") == 1
+    flat = " ".join(checkpoint.split())
+    assert "measured exactly" not in flat and "Evidence is scratch only" not in flat
+    for phrase in (
+            "continuity record, not a contract or authorization",
+            "a model licence is not compiler, runtime, dependency, reference-data or output clearance",
+            # A: executed and reported, never claimed accepted or admitted
+            "BOARD-ENCLOSURE-CAD-HANDOFF-PROOF-01 (DXF → FreeCAD)", "EXECUTED 2026-11-02",
+            "Executor's reported verdict: PROVEN FOR THE TESTED SCOPE",
+            "did not independently inspect the bundle or reproduce the execution",
+            "within the proof's declared 1e-9 mm measurement tolerance",
+            "does not change the exact-decimal method verdict and is not a manufacturing tolerance",
+            "repository preservation is not established", "Owner acceptance (PENDING)",
+            "no product export, dependency, provider or result retention is admitted",
+            "Model research does not interrupt this proof and is not a prerequisite for it",
+            # B: delivered packet, candidate only, residuals kept, campaign stopped
+            "manual assignment MP-01", "DELIVERED at `8e5e4c9`",
+            "ACCEPTED WITH NARROW CORRECTIONS at `d12f157`",
+            "QUALIFIED-CANDIDATE for model structure and model-code rights only",
+            "the initial tool / library smoke test has ONE open question",
+            "successful execution alone is not engineering qualification",
+            "No method or product admission",
+            "campaign stays STOPPED at 20 / 20 (`4001c80`); no schedule is restarted",
+            # C: recommendation only
+            "Conditional continuation (RECOMMENDATION ONLY)",
+            "Neither the product step nor the model proof is authorized by this record",
+            # D: triggers, not dependencies
+            "Future-use triggers, not stack dependencies",
+            "DCPM_Cooling only for an actual qualified thermal need",
+            "FMI / SSP / OMSimulator only for demonstrated multi-tool or model exchange",
+            "PyBaMM / CoolProp only for a concrete missing capability",
+            "do not replace InventorAI orchestration or require installing those projects",
+            # E: lessons
+            "No silent substitution of teaching or default parameters for inventor data",
+            "refusal on a missing required input",
+            "input, model, tool and settings identity with revision-bound outputs",
+            "executable files and measured values, not screenshots alone",
+            "SCREEN_SUPPORT → Validation Plan STOPPED, PR #890 HOLD, Proof B paused"):
+        assert phrase in flat, phrase
+    # the research detail is referenced by commit, not copied into the opening the hook quotes
+    opening = " ".join(checkpoint.split("\n\n", 1)[0].split())
+    assert "MP-01" not in opening and "Modelica" not in opening
+    assert len(CHECKPOINT_LABEL + opening) <= 700
+
+
 def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
     raw = (REPO / DOCS[3]).read_text(encoding="utf-8")
     checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]

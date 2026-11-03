@@ -435,7 +435,7 @@ unless an authorized slice needs it).**
 | Obtaining missing information | Route each unknown: goals and decisions -> inventor; selected-component properties -> component-specific evidence; derivable quantities -> admitted methods; general properties -> qualified sources with permitted use; assembly and real behavior -> measurement, test or specialist; open design choices -> keep the unknown | NeedRouting, method gates, source/IP boundary | Operating principle only | When an unknown blocks a dependent operation | No automatic sourcing, component selection or assumed values |
 | Traceable semantic binding | Trace source statement -> attribution/confirmation -> part and revision -> method role, quantity kind, unit, applicability | Existing owners and references; no new truth store | Lead synthesis | A slice binding confirmed input to one method | A matching quote, schema, name or unit never proves the physical interpretation |
 | Research-code reuse: <https://github.com/alessandrostefanone-polimi/ontology-req-pipeline> | Ideas for structured extraction, lineage, quantity representation, review handling, error classes | Discovery pointer only | README and license notices inspected by the Lead; not run, not qualified; third-party material not uniformly under the top-level license | A slice needing one of these lessons | Exact revision, code, dependencies, rights, applicability and performance must be inspected first; formal-requirement results do not transfer to free-form ideas; no clone, install, run or import in this continuity task, which is not a permanent bar on separately authorized and qualified future reuse |
-| Model reuse and interoperability (Modelica, SSP) | Reuse qualified connected models instead of rebuilding physics and interfaces | Specialist and external-tool owners (G1-3/4) | Candidate lesson | A qualified relation that needs a simulated model | Parameters, applicability, runtime, licensing, numerical credibility, integration; no simulator, provider or stack selected |
+| Model reuse and interoperability (Modelica, SSP) | Reuse qualified connected models instead of rebuilding physics and interfaces | Specialist and external-tool owners (G1-3/4) | Candidate lesson; MSL 4.1.0 `SpeedControlledDCPM` is a QUALIFIED-CANDIDATE for model structure and model-code rights only (TECH-SOURCES-001 MP-01, `research/tech-sources-001` @ `d12f157`; see the model-reuse continuity record below) | A qualified relation that needs a simulated model | Parameters, applicability, runtime, licensing, numerical credibility, integration; no simulator, provider or stack selected |
 | Evidence that a connection is useful | Show that an inventor correction changes what a real downstream consumer uses, or why an operation cannot proceed and what it needs | G1-5 product proof | Acceptance principle | Any authorized G1-1/2 or G1-3 slice | Controls: negation, missing inputs, withdrawal, unsupported relations, changed revisions; tuning on old cases is not independent qualification |
 
 **G1-1/2 admission and provenance checkpoint (completed read-only assessment, 2026-11-01; a
@@ -551,6 +551,54 @@ shared presentation model, EN / AR. Internal region at the board plane only; nom
 condition only; no tolerance, fit, component selection, prefill, resizing, rotation or recommendation; nothing
 stored; no second relationship. Applicability: effective on the verified merge of that PR; merge, deployment
 and release stay NOT AUTHORIZED; no further increment is selected automatically.
+
+**G1 MODEL-REUSE EXECUTION CONTINUITY (Owner-requested, 2026-11-03; continuity record, not a contract or
+authorization).** Research detail stays in the TECH-SOURCES-001 registers on `research/tech-sources-001`, cited
+by commit; it is not copied here. Scientific status and permissible use are separate: a model licence is not
+compiler, runtime, dependency, reference-data or output clearance.
+- **A. Immediate engineering proof — BOARD-ENCLOSURE-CAD-HANDOFF-PROOF-01 (DXF → FreeCAD).** Owner-authorized
+  isolated qualification, EXECUTED 2026-11-02 on product HEAD `3d259e7` with synthetic data only. Executor's
+  reported verdict: PROVEN FOR THE TESTED SCOPE; the Lead reviewed the submitted report and its limitations but
+  did not independently inspect the bundle or reproduce the execution. As reported, the current declared outlines
+  (86 × 56 region and 84 × 50 board, NOT MET; the corrected 88 × 56 revision, MET; 100.1 / 99.9 precision case)
+  were imported by FreeCAD 1.0.2's built-in C++ importer and agreed with the declared values within the proof's
+  declared 1e-9 mm measurement tolerance (precision case: about 5.7e-15 mm); that tolerance does not change the
+  exact-decimal method verdict and is not a manufacturing tolerance. Layers kept; mm read through `$INSUNITS`; the
+  four ineligible states (missing input, stale binding, withdrawn, unavailable) produced no file. DXF header
+  binding IDs do not survive import, so the binding lives in the file name and a hash-bound companion. Evidence
+  state: the executor reported delivering `proof_bundle.tar.gz` in the originating session
+  (`session_01UZzqpfjzUNb9gEdegwyTTR`, file id `d272a2cd-8bc7-4d6b-998a-c7ae507b3185`), with the files also in
+  that session's scratch directory; repository preservation is not established. The executor verdict, the Lead's
+  report review, Owner acceptance (PENDING) and any product authorization are separate; no product export,
+  dependency, provider or result retention is admitted. Model research does not interrupt this proof and is not
+  a prerequisite for it.
+- **B. Parallel evidence preparation — TECH-SOURCES-001 manual assignment MP-01** (MSL 4.1.0
+  `SpeedControlledDCPM`; the one bounded manual assignment). DELIVERED at `8e5e4c9`; review disposition ACCEPTED
+  WITH NARROW CORRECTIONS at `d12f157`: QUALIFIED-CANDIDATE for model structure and model-code rights only.
+  Residuals as recorded there: the initial tool / library smoke test has ONE open question (does the pinned
+  MSL v4.1.0 / OpenModelica v1.27.2 pair load, translate and simulate?); the subsequent engineering proof still
+  needs MP-01's corrected conditions — declared controller semantics, inputs and assumptions resolved and
+  classified, a predeclared criterion measured from the run, and numerical checks — and successful execution alone
+  is not engineering qualification; giving source to a user needs the BSD-3 notices;
+  distributing an executable / FMU or hosting execution is WAITING on the built artifact's runtime and
+  third-party inventory and any applicable AGPL obligations; reference trajectories (SRC-062) stay IP-UNRESOLVED
+  and excluded. No method or product admission. The 20-run TECH-SOURCES-001 campaign stays STOPPED at 20 / 20
+  (`4001c80`); no schedule is restarted, and further research needs a new Owner authorization.
+- **C. Conditional continuation (RECOMMENDATION ONLY).** After the Owner accepts the CAD proof, scope the smallest
+  useful inventor-facing handoff under G1. A separate one-model local simulation proof (MP-01's corrected outline)
+  may be proposed only when its inputs, applicable claims, execution route and rights are ready. Neither the
+  product step nor the model proof is authorized by this record.
+- **D. Future-use triggers, not stack dependencies.** DCPM_Cooling only for an actual qualified thermal need;
+  FMI / SSP / OMSimulator only for demonstrated multi-tool or model exchange; PyBaMM / CoolProp only for a concrete
+  missing capability. NASA / OpenMDAO lessons inform owner interfaces and tests; they do not replace InventorAI
+  orchestration or require installing those projects.
+- **E. Qualification lessons for any model or tool proof.** No silent substitution of teaching or default
+  parameters for inventor data; explicit applicability and refusal on a missing required input; input, model,
+  tool and settings identity with revision-bound outputs; executable files and measured values, not screenshots
+  alone.
+
+Unchanged: SCREEN_SUPPORT → Validation Plan STOPPED, PR #890 HOLD, Proof B paused, OD-2, the D4 / T6 boundaries,
+the Arabic obligations, every owner's responsibilities, the roadmap count and every capability status.
 
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),
