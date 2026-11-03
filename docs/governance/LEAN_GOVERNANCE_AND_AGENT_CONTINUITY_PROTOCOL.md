@@ -526,6 +526,19 @@ PR; merge, deployment and release stay NOT AUTHORIZED. After acceptance: return 
 obligations and their recorded triggers; no second relationship, AI activation or Proof B rerun is selected
 automatically.
 
+**G1-PRECREATION-LLM-RUNNER-01 (Owner instruction after PR #920, 2026-11-03; continuity record, not a second
+contract).** Included action: ONE runner-preparation PR, `scripts/run_g1_precreation_campaign.py`, for a single
+synthetic run of the frozen PR #920 pack (pre-registration revision 4, unchanged), reusing the MSNL evaluation
+adapter, measured call and price arithmetic and the Proof B recorder, refusal resolution, digest, clean-revision
+check and journal unchanged: manifest bound to the clean revision, pack and reference hashes, pre-registration,
+every exact payload, model, endpoint, limits (20 requests, no retry, 1,200 output tokens, US$5), price basis,
+Proof B's reservation rule, fixed evidence paths and a one-run policy. Its gate is CLOSED and its price basis
+UNVERIFIED (the recorded rate is historical), so no provider request is possible from that revision; every
+boundary is checked before any adapter or transport exists. Activation needs a separately reviewed change that
+opens the gate and records a current price verification, then the Owner naming the digest of that clean commit's
+manifest. No product, `/start`, persistence, provenance or engineering-owner change. Applicability: effective on
+the verified merge of that PR; merge, deployment and any provider request stay NOT AUTHORIZED.
+
 **G1-LLM-SEMANTIC-BRIDGE-QUALIFICATION-01 (Owner instruction, 2026-11-03; continuity record, not a
 second contract).** Included action: ONE offline evaluation-preparation PR for pre-creation interpretation
 of an ordinary idea before the EXISTING `/start` integrated-invention choice — a frozen, pinned synthetic
