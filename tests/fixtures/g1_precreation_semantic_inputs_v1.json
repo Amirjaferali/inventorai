@@ -1,0 +1,136 @@
+{
+  "pack_id": "inventorai-g1-precreation-semantic-01",
+  "status": "FROZEN",
+  "synthetic_only": true,
+  "language_scope": "en only (G1 English-first evaluation sequence); the case shape carries a language tag so later MSA, Kuwaiti / Gulf and Egyptian packs use the same contract",
+  "purpose": "Pre-creation interpretation of an ordinary-language idea for the existing /start integrated-invention choice; no project, account or real inventor data",
+  "matching_rule": "Reference substrings, terms and stems are matched case-insensitively against the registry-normalised, whitespace-collapsed reply text.",
+  "input_rule": "Only idea_text is ever sent to a separately authorised provider run; case_id, language, labels and reference annotations are never sent.",
+  "review_coverage": {
+    "authoring": "Lead-authored synthetic cases (Claude Code executor) on 2026-11-03, written before any instructions were run against a model; no case was used to develop or tune the instructions.",
+    "ai_review": "One fresh-context AI label check (Claude) before freezing; its corrections to P03, P09, P10, P11, P14, P15 and P19 were applied, and its P20 pump-term proposal was not (K5 already covers a negated pump). Not independent human review.",
+    "owner_approval": "NOT YET GIVEN: the Owner reviews these exact cases and labels before naming any provider run."
+  },
+  "cases": [
+    {
+      "case_id": "P01",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want to develop a small electronic device with a circuit board inside an enclosure, but I have not decided the components or dimensions."
+    },
+    {
+      "case_id": "P02",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want to develop a small electronic device built on a single circuit board that plugs straight into a laptop. I have not chosen the components yet."
+    },
+    {
+      "case_id": "P03",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want a small electronic gadget on a circuit board. It might end up in some kind of box, or it might not; I have not thought about that yet."
+    },
+    {
+      "case_id": "P04",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want a desk lamp that tilts its arm toward me by itself: a small motor moves the arm and a light sensor on a control board tells it when to move."
+    },
+    {
+      "case_id": "P05",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want a wooden stand that holds a tablet at a comfortable reading angle."
+    },
+    {
+      "case_id": "P06",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "Inspired by the way Arduino hobbyists organize their kits, I want a folding cardboard organizer for screws and small tools."
+    },
+    {
+      "case_id": "P07",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want a bare circuit board that monitors room temperature. I do not want any case, housing or cover around it."
+    },
+    {
+      "case_id": "P08",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want something that makes my mornings less stressful."
+    },
+    {
+      "case_id": "P09",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want a little gadget that beeps when my houseplant needs water. I have no idea what should go inside it."
+    },
+    {
+      "case_id": "P10",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I need a weatherproof housing for a sensor board I already have. I don't know the board's size yet or how it should be mounted."
+    },
+    {
+      "case_id": "P11",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I'd like to tuck the little green electronics card from my hobby project into a shell that snaps together."
+    },
+    {
+      "case_id": "P12",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "Picture a PCB living inside a 3D-printed casing that clips onto a bike handlebar."
+    },
+    {
+      "case_id": "P13",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A table lamp whose wiring and switch are hidden inside a hand-carved wooden base."
+    },
+    {
+      "case_id": "P14",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "For now it is only a circuit board that blinks a light. If I ever add a case later, that would be a separate idea."
+    },
+    {
+      "case_id": "P15",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "My neighbour's doorbell sits in a plastic case. I only want to design a new circuit that makes it play a tune."
+    },
+    {
+      "case_id": "P16",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A hand-cranked coffee grinder with nothing electric in it at all."
+    },
+    {
+      "case_id": "P17",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A cabinet door that unlocks itself when someone types the right code on a battery-powered keypad."
+    },
+    {
+      "case_id": "P18",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A phone app that reminds me to drink water every hour."
+    },
+    {
+      "case_id": "P19",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "An electronic kitchen timer on one circuit board, which I will sell packed in a cardboard box."
+    },
+    {
+      "case_id": "P20",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A plant pot that tips water into the soil on a timer; no pump, just a small electric valve and a timer circuit."
+    }
+  ]
+}

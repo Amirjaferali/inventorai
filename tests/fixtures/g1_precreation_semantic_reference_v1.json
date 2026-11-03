@@ -1,0 +1,543 @@
+{
+  "pack_id": "inventorai-g1-precreation-semantic-01",
+  "status": "FROZEN",
+  "cases": [
+    {
+      "case_id": "P01",
+      "category": "target_board_in_enclosure",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "circuit board"
+          ],
+          "concept": "electronics_electrical"
+        },
+        {
+          "any_of": [
+            "enclosure"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": [
+        "components",
+        "dimensions"
+      ]
+    },
+    {
+      "case_id": "P02",
+      "category": "board_without_enclosure",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "circuit board"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "mechanical"
+        },
+        {
+          "term": "laptop",
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        "components"
+      ]
+    },
+    {
+      "case_id": "P03",
+      "category": "enclosure_undecided",
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "circuit board"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "mechanical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        "box"
+      ]
+    },
+    {
+      "case_id": "P04",
+      "category": "integrated_moving",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "arm"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "control board",
+            "light sensor",
+            "small motor"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P05",
+      "category": "single_mechanical_existing_device",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "wooden stand",
+            "stand"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        },
+        {
+          "term": "tablet",
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P06",
+      "category": "technology_name_as_context",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "cardboard organizer",
+            "organizer"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        },
+        {
+          "term": "arduino",
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P07",
+      "category": "negated_enclosure",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "circuit board"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "mechanical"
+        }
+      ],
+      "required_negations": [
+        {
+          "any_of": [
+            "case, housing or cover",
+            "do not want any case"
+          ]
+        }
+      ],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P08",
+      "category": "ambiguous_needs_clarification",
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "mechanical"
+        },
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P09",
+      "category": "unstated_components",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [],
+      "forbidden_stated_parts": [
+        {
+          "term": "sensor",
+          "concept": null
+        },
+        {
+          "term": "microcontroller",
+          "concept": null
+        },
+        {
+          "term": "battery",
+          "concept": null
+        },
+        {
+          "term": "buzzer",
+          "concept": null
+        },
+        {
+          "term": "arduino",
+          "concept": null
+        },
+        {
+          "term": "esp32",
+          "concept": null
+        },
+        {
+          "term": "pump",
+          "concept": null
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        "inside"
+      ]
+    },
+    {
+      "case_id": "P10",
+      "category": "unknown_dimensions_and_mounting",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "housing"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "sensor board"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": [
+        "size",
+        "mount"
+      ]
+    },
+    {
+      "case_id": "P11",
+      "category": "paraphrase_electronics_card_shell",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "electronics card"
+          ],
+          "concept": "electronics_electrical"
+        },
+        {
+          "any_of": [
+            "shell"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P12",
+      "category": "paraphrase_pcb_casing",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "pcb"
+          ],
+          "concept": "electronics_electrical"
+        },
+        {
+          "any_of": [
+            "casing"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P13",
+      "category": "paraphrase_wiring_in_wooden_base",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "wiring",
+            "switch"
+          ],
+          "concept": "electronics_electrical"
+        },
+        {
+          "any_of": [
+            "wooden base"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P14",
+      "category": "hypothetical_case",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "circuit board"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "mechanical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P15",
+      "category": "third_party_enclosure",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "circuit"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "mechanical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P16",
+      "category": "negated_electrical",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "coffee grinder"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [
+        {
+          "any_of": [
+            "nothing electric"
+          ]
+        }
+      ],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P17",
+      "category": "integrated_lock",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "cabinet door",
+            "door"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "keypad"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P18",
+      "category": "software_only_outside_governed_parts",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [],
+      "forbidden_stated_parts": [
+        {
+          "term": "phone",
+          "concept": "electronics_electrical"
+        },
+        {
+          "term": null,
+          "concept": "mechanical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P19",
+      "category": "packaging_is_not_a_part",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "circuit board"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "mechanical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "P20",
+      "category": "integrated_with_negated_component",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "plant pot",
+            "pot"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "electric valve",
+            "timer circuit"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [
+        {
+          "any_of": [
+            "no pump"
+          ]
+        }
+      ],
+      "expected_unknowns": []
+    }
+  ]
+}

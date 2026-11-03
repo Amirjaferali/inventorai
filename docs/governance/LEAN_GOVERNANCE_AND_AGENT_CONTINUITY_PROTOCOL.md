@@ -526,6 +526,21 @@ PR; merge, deployment and release stay NOT AUTHORIZED. After acceptance: return 
 obligations and their recorded triggers; no second relationship, AI activation or Proof B rerun is selected
 automatically.
 
+**G1-LLM-SEMANTIC-BRIDGE-QUALIFICATION-01 (Owner instruction, 2026-11-03; continuity record, not a
+second contract).** Included action: ONE offline evaluation-preparation PR for pre-creation interpretation
+of an ordinary idea before the EXISTING `/start` integrated-invention choice — a frozen, pinned synthetic
+English pack (20 cases, `tests/fixtures/g1_precreation_semantic_*_v1.json`; Lead-authored, one fresh-context
+AI label check, Owner review of the cases still pending), the pre-registered instructions, schema, validation
+rules, criteria and decision rule, InventorAI's deterministic validator (grounded quotes; concept ids only from
+`subsystem_model.COMPOSITION_DOMAINS` filtered by the activation policy; SUGGEST_INTEGRATED admitted only with
+grounded, non-negated parts covering both composition domains; anything else falls back to the unchanged
+deterministic route) and the measured deterministic baseline (11 / 20 composition outcomes; 1 / 6 integrated
+ideas auto-offered) in `scripts/run_g1_precreation_semantic_eval.py`. It has NO provider path: no model was
+run and no model result exists; a run needs its own Owner authorization of an exact run, as for Proof B. No
+product, `/start`, question-serving, persistence, provenance, OD-2 / OD-3 / OD-4, Stage-15 or engineering-owner
+change; English only, and no Arabic or dialect qualification is claimed. Applicability: effective on the
+verified merge of that PR; merge, deployment and production AI activation stay NOT AUTHORIZED.
+
 **G1-INTEGRATED-ENGINEERING-CONTINUATION-01 (Owner continuation instruction after PR #918, 2026-11-03;
 continuity record, not a second contract).** Current authorized action: ONE product PR extending the EXISTING
 Compass owner `_integrated_journey_guidance` (`web/app.py`) for a valid integrated composition: after the unchanged
