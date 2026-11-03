@@ -97,32 +97,41 @@ def _open(monkeypatch, revision=REVISION):
     monkeypatch.setattr(rc, "current_revision", lambda: revision)
 
 
-# ── The gate is closed in this revision ─────────────────────────────────────
-def test_committed_gate_is_closed_and_price_unverified():
-    assert rc.G1_PRECREATION_CAMPAIGN_AUTHORIZED is False
+# ── Activation is manifest-bound, not a standing campaign authorization ──────
+def test_committed_activation_needs_owner_manifest():
+    assert rc.G1_PRECREATION_CAMPAIGN_AUTHORIZED is True
     assert rc.AUTHORIZED_RUN_MANIFEST_SHA256 is None
-    assert rc.PRICE_VERIFICATION is None and rc.price_verified() is False
+    assert rc.price_verified() is True
+    assert rc.PRICE_VERIFICATION == {
+        "verified_on": "2026-11-04",
+        "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+        "input_usd_per_1m": 2.0, "output_usd_per_1m": 10.0,
+    }
+    assert rc.PRICING["model"] == rc.MODEL == "gpt-6-sol"
+    assert rc.PRICING["tier"] == "Standard"
 
 
-def test_cli_campaign_refuses_before_any_adapter_or_transport(monkeypatch, evidence, capsys):
+@pytest.mark.parametrize("digest", [None, "f" * 64])
+def test_cli_campaign_refuses_before_any_adapter_or_transport(monkeypatch, evidence, capsys, digest):
     def boom(*a, **k):
         raise AssertionError("an adapter or transport was built")
     monkeypatch.setattr(rc, "OpenAIMsnlAdapter", boom)
     monkeypatch.setattr(toa, "_urllib_transport", boom)
     monkeypatch.setattr(rc, "current_revision", lambda: REVISION)
-    digest = rc._digest(rc.run_manifest(REVISION, rc.MODEL))
-    code = rc.main(["--provider", "openai", "--allow-network", "--managed-credential",
-                    "--authorized-manifest", digest])
-    assert code == 2 and "campaign gate is closed" in capsys.readouterr().out
+    args = ["--provider", "openai", "--allow-network", "--managed-credential"]
+    if digest is not None:
+        args += ["--authorized-manifest", digest]
+    code = rc.main(args)
+    assert code == 2 and "campaign not authorized for this manifest" in capsys.readouterr().out
     assert not evidence.exists()
 
 
-def test_campaign_with_a_real_transport_refuses_while_the_gate_is_closed(pack, evidence):
+def test_campaign_with_a_real_transport_refuses_without_owner_digest(pack, evidence):
     transport = _NotFake(_oracle_responses(pack))
     adapter = _adapter(transport)
     manifest = rc.run_manifest(REVISION, adapter._model)
-    with pytest.raises(rc.PackError, match="gate is closed"):
-        rc.campaign(adapter, pack[0], manifest, None, rc._digest(manifest))
+    with pytest.raises(rc.PackError, match="campaign not authorized"):
+        rc.campaign(adapter, pack[0], manifest, None, None)
     assert transport.calls == [] and not evidence.exists()
 
 
@@ -184,7 +193,8 @@ def test_manifest_binds_the_whole_run_configuration(pack):
     assert (m["model"], m["endpoint"], m["max_output_tokens"], m["max_provider_requests"],
             m["retries"], m["store"], m["tools"]) == (
         "gpt-6-sol", toa.ENDPOINT, 1200, 20, 0, False, "none")
-    assert m["budget"]["ceiling_usd"] == 5.0 and m["budget"]["price_verification"] is None
+    assert m["budget"]["ceiling_usd"] == 5.0 and m["budget"]["price_verification"] == rc.PRICE_VERIFICATION
+    assert rc._digest(m) != rc._digest(rc.run_manifest("1" * 40, rc.MODEL))
     assert m["evidence"] == {
         "journal": "docs/benchmarks/evidence/g1_precreation_semantic_v1/campaign_01_journal.jsonl",
         "report": "docs/benchmarks/evidence/g1_precreation_semantic_v1/campaign_01_report.json"}
