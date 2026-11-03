@@ -526,6 +526,22 @@ PR; merge, deployment and release stay NOT AUTHORIZED. After acceptance: return 
 obligations and their recorded triggers; no second relationship, AI activation or Proof B rerun is selected
 automatically.
 
+**G1-START-PATH-LOCKOUT-01 (Owner continuation instruction applied by the Execution Lead, 2026-11-03;
+continuity record, not a second contract).** Current authorized action: ONE bounded copy correction on the start
+page — ONE static note beside the existing optional, unticked integrated-invention box (the same text for every
+idea: fixed mechanical parts such as an enclosure count; a board inside an enclosure as an example; tick only if it
+fits; the declaration can be made only at project start and cannot be added to the same project later; some
+part-specific steps need such a project) and the existing "Not sure" example no longer implying that a mechanical
+part must move (EN / AR). Found by the read-only G1 idea-to-engineering trace: an inventor who confirms a single
+domain is permanently cut off from the delivered board-enclosure clearance and DXF journey. No classification,
+composition, immutability, question-selection, persistence, progression, method, DXF, AI / MSNL or OD-2 / D4 / T6
+change. Applicability: effective on the verified merge of that PR; merge, deployment and release stay NOT
+AUTHORIZED. NEXT-LOOP (recommendation only, never automatically authorized): the unrestricted inventor-meaning →
+provisional interpretation → confirmed engineering-owner handoff stays an unresolved G1 priority; any new
+semantic-adoption proposal must first name a concrete, non-duplicate downstream consumer within the existing
+provenance, authorization and retention boundaries (the SCREEN_SUPPORT → Validation Plan candidate stays STOPPED
+and the completed architecture consultation stands).
+
 **BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (Owner-authorized product implementation, 2026-11-03, "اعتمد الشريحة
 الإنتاجية"; continuity record, not a second contract).** Current authorized action: ONE product PR adding ONE
 outbound CAD reference download to the planar-clearance page — a ZIP of `geometry.dxf` (DECLARED board and usable

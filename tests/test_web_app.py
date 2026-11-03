@@ -735,6 +735,11 @@ def test_index_page_does_not_advertise_other_domains():
     offer = _ui_text.text("UI_S15_OFFER_LABEL", "en")
     assert body.count(offer) == 1
     body = body.replace(offer, "")
+    # G1-START-PATH-LOCKOUT-01: the static note beside that declaration is its
+    # explanation (fixed mechanical parts count), not a domain advertisement
+    note = _ui_text.text("UI_S15_OFFER_NOTE", "en")
+    assert body.count(note) == 1
+    body = body.replace(note, "")
     assert "mechanical" not in body
     assert "medical device" not in body
     assert "medical_device" not in body
