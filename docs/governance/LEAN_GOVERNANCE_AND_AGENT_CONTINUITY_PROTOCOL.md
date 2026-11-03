@@ -543,19 +543,29 @@ authorization).** Research detail stays in the TECH-SOURCES-001 registers on `re
 by commit; it is not copied here. Scientific status and permissible use are separate: a model licence is not
 compiler, runtime, dependency, reference-data or output clearance.
 - **A. Immediate engineering proof — BOARD-ENCLOSURE-CAD-HANDOFF-PROOF-01 (DXF → FreeCAD).** Owner-authorized
-  isolated qualification, EXECUTED 2026-11-02 on product HEAD `3d259e7` with synthetic data only. Lead-reported
-  result: PROVEN FOR THE TESTED SCOPE. The current declared outlines (86 × 56 region and 84 × 50 board, NOT MET;
-  the corrected 88 × 56 revision, MET; 100.1 / 99.9 precision case) were imported by FreeCAD 1.0.2's built-in C++
-  importer and measured exactly; layers kept; mm read through `$INSUNITS`; the four ineligible states (missing
-  input, stale binding, withdrawn, unavailable) produced no file. DXF header binding IDs do not survive import, so
-  the binding lives in the file name and a hash-bound companion. Evidence is scratch only, not in the repository;
-  Owner acceptance is PENDING; no product export, dependency, provider or result retention is admitted. Model
-  research does not interrupt this proof and is not a prerequisite for it.
+  isolated qualification, EXECUTED 2026-11-02 on product HEAD `3d259e7` with synthetic data only. Executor's
+  reported verdict: PROVEN FOR THE TESTED SCOPE; the Lead reviewed the submitted report and its limitations but
+  did not independently inspect the bundle or reproduce the execution. As reported, the current declared outlines
+  (86 × 56 region and 84 × 50 board, NOT MET; the corrected 88 × 56 revision, MET; 100.1 / 99.9 precision case)
+  were imported by FreeCAD 1.0.2's built-in C++ importer and agreed with the declared values within the proof's
+  declared 1e-9 mm measurement tolerance (precision case: about 5.7e-15 mm); that tolerance does not change the
+  exact-decimal method verdict and is not a manufacturing tolerance. Layers kept; mm read through `$INSUNITS`; the
+  four ineligible states (missing input, stale binding, withdrawn, unavailable) produced no file. DXF header
+  binding IDs do not survive import, so the binding lives in the file name and a hash-bound companion. Evidence
+  state: the executor reported delivering `proof_bundle.tar.gz` in the originating session
+  (`session_01UZzqpfjzUNb9gEdegwyTTR`, file id `d272a2cd-8bc7-4d6b-998a-c7ae507b3185`), with the files also in
+  that session's scratch directory; repository preservation is not established. The executor verdict, the Lead's
+  report review, Owner acceptance (PENDING) and any product authorization are separate; no product export,
+  dependency, provider or result retention is admitted. Model research does not interrupt this proof and is not
+  a prerequisite for it.
 - **B. Parallel evidence preparation — TECH-SOURCES-001 manual assignment MP-01** (MSL 4.1.0
   `SpeedControlledDCPM`; the one bounded manual assignment). DELIVERED at `8e5e4c9`; review disposition ACCEPTED
   WITH NARROW CORRECTIONS at `d12f157`: QUALIFIED-CANDIDATE for model structure and model-code rights only.
-  Residuals as recorded there: local proof readiness has ONE open question (does the pinned MSL v4.1.0 /
-  OpenModelica v1.27.2 pair load, translate and simulate?); giving source to a user needs the BSD-3 notices;
+  Residuals as recorded there: the initial tool / library smoke test has ONE open question (does the pinned
+  MSL v4.1.0 / OpenModelica v1.27.2 pair load, translate and simulate?); the subsequent engineering proof still
+  needs MP-01's corrected conditions — declared controller semantics, inputs and assumptions resolved and
+  classified, a predeclared criterion measured from the run, and numerical checks — and successful execution alone
+  is not engineering qualification; giving source to a user needs the BSD-3 notices;
   distributing an executable / FMU or hosting execution is WAITING on the built artifact's runtime and
   third-party inventory and any applicable AGPL obligations; reference trajectories (SRC-062) stay IP-UNRESOLVED
   and excluded. No method or product admission. The 20-run TECH-SOURCES-001 campaign stays STOPPED at 20 / 20

@@ -440,20 +440,26 @@ def test_g1_model_reuse_continuity_is_recoverable_and_authorizes_nothing():
     checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
     assert checkpoint.count("**G1 MODEL-REUSE EXECUTION CONTINUITY") == 1
     flat = " ".join(checkpoint.split())
+    assert "measured exactly" not in flat and "Evidence is scratch only" not in flat
     for phrase in (
             "continuity record, not a contract or authorization",
             "a model licence is not compiler, runtime, dependency, reference-data or output clearance",
             # A: executed and reported, never claimed accepted or admitted
             "BOARD-ENCLOSURE-CAD-HANDOFF-PROOF-01 (DXF → FreeCAD)", "EXECUTED 2026-11-02",
-            "Lead-reported result: PROVEN FOR THE TESTED SCOPE", "Owner acceptance is PENDING",
-            "Evidence is scratch only, not in the repository",
+            "Executor's reported verdict: PROVEN FOR THE TESTED SCOPE",
+            "did not independently inspect the bundle or reproduce the execution",
+            "within the proof's declared 1e-9 mm measurement tolerance",
+            "does not change the exact-decimal method verdict and is not a manufacturing tolerance",
+            "repository preservation is not established", "Owner acceptance (PENDING)",
             "no product export, dependency, provider or result retention is admitted",
             "Model research does not interrupt this proof and is not a prerequisite for it",
             # B: delivered packet, candidate only, residuals kept, campaign stopped
             "manual assignment MP-01", "DELIVERED at `8e5e4c9`",
             "ACCEPTED WITH NARROW CORRECTIONS at `d12f157`",
             "QUALIFIED-CANDIDATE for model structure and model-code rights only",
-            "ONE open question", "No method or product admission",
+            "the initial tool / library smoke test has ONE open question",
+            "successful execution alone is not engineering qualification",
+            "No method or product admission",
             "campaign stays STOPPED at 20 / 20 (`4001c80`); no schedule is restarted",
             # C: recommendation only
             "Conditional continuation (RECOMMENDATION ONLY)",
