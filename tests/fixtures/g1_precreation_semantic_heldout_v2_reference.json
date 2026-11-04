@@ -370,7 +370,8 @@
       "group": "C",
       "category": "future_maybe_light",
       "allowed_composition": [
-        "CLARIFY_FIRST"
+        "CLARIFY_FIRST",
+        "NO_INTEGRATED_SUGGESTION"
       ],
       "required_parts": [
         {
@@ -472,7 +473,8 @@
       "group": "C",
       "category": "unknown_kind_of_panel",
       "allowed_composition": [
-        "CLARIFY_FIRST"
+        "CLARIFY_FIRST",
+        "NO_INTEGRATED_SUGGESTION"
       ],
       "required_parts": [],
       "forbidden_stated_parts": [
@@ -816,5 +818,46 @@
         }
       ]
     }
-  ]
+  ],
+  "adjudication": {
+    "adjudicator_statement": "Adjudicated by an independent, prompt-blind label adjudicator, separate from the pack author; it read only the held-out inputs and reference, the v1 reference for format and score_case / load_pack, and made no model or API request.",
+    "cases_reviewed": [
+      "H13",
+      "H09",
+      "H12",
+      "H16",
+      "H18",
+      "H05"
+    ],
+    "unchanged": [
+      "H09",
+      "H12",
+      "H18",
+      "H05"
+    ],
+    "changes": {
+      "H13": {
+        "field": "allowed_composition",
+        "old": [
+          "CLARIFY_FIRST"
+        ],
+        "new": [
+          "CLARIFY_FIRST",
+          "NO_INTEGRATED_SUGGESTION"
+        ],
+        "reason": "The light is explicitly hypothetical and possibly outside the idea; treating it as not a part (NO_INTEGRATED_SUGGESTION) is as defensible as asking (CLARIFY_FIRST)."
+      },
+      "H16": {
+        "field": "allowed_composition",
+        "old": [
+          "CLARIFY_FIRST"
+        ],
+        "new": [
+          "CLARIFY_FIRST",
+          "NO_INTEGRATED_SUGGESTION"
+        ],
+        "reason": "No part kind is stated at all, so no second kind is in question; NO_INTEGRATED_SUGGESTION is as defensible as CLARIFY_FIRST."
+      }
+    }
+  }
 }
