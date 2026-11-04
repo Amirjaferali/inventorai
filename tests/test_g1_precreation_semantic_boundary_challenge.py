@@ -51,6 +51,10 @@ def test_concepts_source_terms_and_admission_cases_are_grounded():
         if case["scenario"] == "external":
             assert case["external_context"]
             assert case["allowed_composition"] == [frozen.NO_INTEGRATED_SUGGESTION]
+        if case["scenario"] in ("packaging", "single"):
+            assert case["allowed_composition"] == [frozen.NO_INTEGRATED_SUGGESTION]
+        if case["scenario"] == "packaging":
+            assert case["external_context"]
 
 
 def test_consumed_v1_campaign_remains_separate_and_no_new_run_is_claimed():
