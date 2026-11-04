@@ -14,7 +14,7 @@ from scripts import run_g1_precreation_semantic_eval as ev
 from tests.test_g1_precreation_semantic_eval import CLEAR, _oracle, _reply
 
 ROOT = Path(__file__).resolve().parent.parent
-PREREGISTRATION_SHA256 = "d4df1e33c9eefbecec4b7a381fbe2ff1f0de9a3f65f9ae25452ac0a82b7243d5"
+PREREGISTRATION_SHA256 = "b1a7c2c35f38f074c3343b97fd4be9f0d2dd5d98c741de86d27e02e3309e06d1"
 
 
 @pytest.fixture(scope="module")
@@ -46,8 +46,9 @@ def test_pack_is_pinned_frozen_and_balanced(pack):
     assert sum(r["allowed_composition"] == [ev.SUGGEST_INTEGRATED] for r in refs.values()) == 10
     assert sum(len(r["required_parts"]) for r in refs.values()) == 33
     assert sum(len(r["required_negations"]) for r in refs.values()) == 3
-    assert sum(len(r["expected_unknowns"]) for r in refs.values()) == 18
-    assert sum(bool(r["expected_unknowns"]) for r in refs.values()) == 13
+    assert sum(len(r["expected_unknowns"]) for r in refs.values()) == 17
+    assert sum(bool(r["expected_unknowns"]) for r in refs.values()) == 12
+    assert refs["H12"]["expected_unknowns"] == []
 
 
 def test_preregistration_is_pinned():
@@ -137,6 +138,24 @@ def test_group_floor_is_enforced(pack):
 def test_missing_case_is_incomplete(pack):
     _cases, refs = pack
     assert ho.decide(_scores(pack)[:-1], refs, 0.0, None)["verdict"] == "INCOMPLETE"
+
+
+def test_provider_error_on_any_case_is_incomplete_even_with_every_review_clear(pack):
+    """Review finding 1: one errored case (no reply) must not reach a verdict."""
+    _cases, refs = pack
+    scored = _scores(pack, {"H08": None})
+    d = ho.decide(scored, refs, ho.baseline()["integrated_recall"], _full(scored, refs))
+    assert d == {"verdict": "INCOMPLETE", "provider_errors": ["H08"]}
+
+
+def test_superseded_identity_is_recorded_and_never_evaluated():
+    pre = ho.preregistration()
+    assert pre["supersedes"] == [{
+        "preregistration_sha256": "d4df1e33c9eefbecec4b7a381fbe2ff1f0de9a3f65f9ae25452ac0a82b7243d5",
+        "reference_sha256": "6748366706acde0c36d1a9e89a0b01fb33da7257f19c6ee3e44afa5ddad7d31b",
+        "evaluated": False}]
+    reference = json.loads(Path(ho.REFERENCE_PATH).read_text(encoding="utf-8"))
+    assert set(reference["post_review_correction"]["changes"]) == {"H12"}
 
 
 # ── Boundaries ──────────────────────────────────────────────────────────────

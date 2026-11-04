@@ -1,7 +1,7 @@
 {
   "pack_id": "inventorai-g1-precreation-semantic-heldout-02",
   "status": "FROZEN",
-  "reference_revision": 1,
+  "reference_revision": 2,
   "revision_note": "Revision 1, authored blind together with the inputs before any model run. Groups: A incorporated existing component (counts as a part), B external device / installation / packaging context (not a part), C genuinely open composition, D clear composition with open engineering details. screen_stems are an advisory pre-screen only.",
   "cases": [
     {
@@ -355,15 +355,7 @@
         }
       ],
       "required_negations": [],
-      "expected_unknowns": [
-        {
-          "unknown_id": "H12-U1",
-          "meaning": "whether the sensor gets any housing or casing of its own",
-          "screen_stems": [
-            "sensor"
-          ]
-        }
-      ]
+      "expected_unknowns": []
     },
     {
       "case_id": "H13",
@@ -857,6 +849,27 @@
           "NO_INTEGRATED_SUGGESTION"
         ],
         "reason": "No part kind is stated at all, so no second kind is in question; NO_INTEGRATED_SUGGESTION is as defensible as CLARIFY_FIRST."
+      }
+    }
+  },
+  "post_review_correction": {
+    "made_before_any_model_run": true,
+    "source": "Independent non-authoring, prompt-blind review of PR #926 at eb4418a, finding 2 (MATERIAL).",
+    "applied_by": "Execution Lead; no other label changed.",
+    "changes": {
+      "H12": {
+        "field": "expected_unknowns",
+        "old": [
+          {
+            "unknown_id": "H12-U1",
+            "meaning": "whether the sensor gets any housing or casing of its own",
+            "screen_stems": [
+              "sensor"
+            ]
+          }
+        ],
+        "new": [],
+        "reason": "The idea text states no open question about a housing; the unknown was not stated by the inventor, so a correct NO_INTEGRATED_SUGGESTION reply could fail G5 for omitting it."
       }
     }
   }

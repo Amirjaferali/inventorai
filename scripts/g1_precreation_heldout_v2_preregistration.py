@@ -44,7 +44,7 @@ INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_precreation_semantic_h
 INPUT_SHA256 = "db4b88f007d26bc02e0da49bfa06e3ae481c41ab749de0d13db4ae594dda059d"
 REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures",
                               "g1_precreation_semantic_heldout_v2_reference.json")
-REFERENCE_SHA256 = "6748366706acde0c36d1a9e89a0b01fb33da7257f19c6ee3e44afa5ddad7d31b"
+REFERENCE_SHA256 = "9803322931c2dc4f6e990c4b368b73a521a1b5dae3e628babf07d5500a99fa08"
 AUTHOR_COMMIT = "459abb871419dcf534a861237d94995511de7c92"
 ADJUDICATION_COMMIT = "6e7880c4a719dea32833540acd6e63b7b4449635"
 CASE_IDS = tuple("H%02d" % i for i in range(1, 25))
@@ -70,8 +70,8 @@ CRITERIA = {
           "outcome is SUGGEST_INTEGRATED.",
     "G3": "Required stated parts found with the right concept in at least 30 of 33 slots.",
     "G4": "Every required negation recorded under negated_or_excluded (3 of 3).",
-    "G5": "At least 16 of the 18 expected unknowns judged RECOGNIZED by a human, and at least "
-          "one RECOGNIZED in each of the 13 cases with expected unknowns; an abstaining, "
+    "G5": "At least 15 of the 17 expected unknowns judged RECOGNIZED by a human, and at least "
+          "one RECOGNIZED in each of the 12 cases with expected unknowns; an abstaining, "
           "failed or rejected reply earns none.",
     "D1": "Admitted-integrated recall strictly above the deterministic baseline's on this "
           "pack, with no K3 failure.",
@@ -89,8 +89,18 @@ DECISION_RULE = (
     "production PASS and says nothing about Arabic or dialects.")
 
 
+# Superseded before any model run (never evaluated): the PR #926 independent
+# review found that decide() did not give INCOMPLETE for a provider error and
+# that H12's only expected unknown was not stated by the inventor.
+SUPERSEDED = ({"preregistration_sha256":
+               "d4df1e33c9eefbecec4b7a381fbe2ff1f0de9a3f65f9ae25452ac0a82b7243d5",
+               "reference_sha256":
+               "6748366706acde0c36d1a9e89a0b01fb33da7257f19c6ee3e44afa5ddad7d31b",
+               "evaluated": False},)
+
+
 def preregistration():
-    return {"pack_id": PACK_ID, "input_sha256": INPUT_SHA256,
+    return {"pack_id": PACK_ID, "input_sha256": INPUT_SHA256, "supersedes": list(SUPERSEDED),
             "reference_sha256": REFERENCE_SHA256, "author_commit": AUTHOR_COMMIT,
             "adjudication_commit": ADJUDICATION_COMMIT, "groups": GROUP_MEANING,
             "criteria": CRITERIA, "decision_rule": DECISION_RULE,
@@ -168,6 +178,11 @@ def decide(scored, refs, baseline_recall, assessment=None):
     """The pre-registered verdict over one complete run's per-case scores."""
     if [s["case_id"] for s in scored] != list(CASE_IDS):
         return {"verdict": "INCOMPLETE"}
+    if any(s["status"] == ev.V_ERROR for s in scored):
+        # A case stopped by a provider error (no reply) makes the run incomplete;
+        # a model's malformed or rejected reply is scored, not excused.
+        return {"verdict": "INCOMPLETE",
+                "provider_errors": [s["case_id"] for s in scored if s["status"] == ev.V_ERROR]}
     k6, g5_judged, k4_judged = ev._check_assessment(assessment, scored)
     unknowns = {k: g5_judged.get(k, st) for s in scored for k, st in s["unknowns"].items()}
     context = {k: k4_judged.get(k, st) for s in scored for k, st in s["context_review"].items()}
@@ -188,9 +203,9 @@ def decide(scored, refs, baseline_recall, assessment=None):
     recognized = [k for k, st in unknowns.items() if st == ev.G5_RECOGNIZED]
     unassessed = sorted(k for k, st in unknowns.items() if st == ev.G5_NOT_ASSESSED)
     per_case = {r: [k for k in unknowns if k.startswith(r + "-U")] for r in refs}
-    g5_possible = (len(recognized) + len(unassessed) >= 16 and all(
+    g5_possible = (len(recognized) + len(unassessed) >= 15 and all(
         any(unknowns[k] != ev.G5_NOT_RECOGNIZED for k in ks) for ks in per_case.values() if ks))
-    g["G5"] = (not unassessed and len(recognized) >= 16 and all(
+    g["G5"] = (not unassessed and len(recognized) >= 15 and all(
         any(unknowns[k] == ev.G5_RECOGNIZED for k in ks) for ks in per_case.values() if ks))
     if critical or not all(g[k] for k in ("G1", "GA", "G2", "G3", "G4", "D1")) or not g5_possible:
         verdict = "NO_GO"
