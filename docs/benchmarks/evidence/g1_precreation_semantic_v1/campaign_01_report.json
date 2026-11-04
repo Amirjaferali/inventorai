@@ -1,0 +1,1090 @@
+{
+ "finished_at": "2026-11-04T00:57:08Z",
+ "manifest": {
+  "budget": {
+   "ceiling_usd": 5.0,
+   "price_verification": {
+    "input_usd_per_1m": 2.0,
+    "output_usd_per_1m": 10.0,
+    "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+    "verified_on": "2026-11-04"
+   },
+   "pricing": {
+    "basis": "OpenAI official GPT-6 Sol model page, checked 2026-11-04; Standard text-token prices per million, under the model's short-context tier (this frozen pack is well below the long-context threshold). Other tiers/regions/account routing may differ; the 6x reservation remains a conservative ceiling, not proof of account billing.",
+    "input_usd_per_1m": 2.0,
+    "model": "gpt-6-sol",
+    "output_usd_per_1m": 10.0,
+    "tier": "Standard"
+   },
+   "reservation": {
+    "input_usd_per_1m": 12.0,
+    "multiplier": 6,
+    "output_usd_per_1m": 60.0,
+    "overhead_input_tokens": 1000,
+    "rule": "Proof B's rule, reused: before each request reserve (UTF-8 bytes of the whole request body + 1000) input tokens and max_output_tokens output tokens at the reservation rates; send only if the committed bound plus that reservation is within the ceiling; afterwards the bound grows by the validated usage at the reservation rates, or by the whole reservation when usage is missing or the attempt failed."
+   }
+  },
+  "code_revision": "4b9e53fe9323727d41765d0f6b9465ed6172b088",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "evidence": {
+   "journal": "docs/benchmarks/evidence/g1_precreation_semantic_v1/campaign_01_journal.jsonl",
+   "report": "docs/benchmarks/evidence/g1_precreation_semantic_v1/campaign_01_report.json"
+  },
+  "input_sha256": "92a28f436b32eb7b30a82253ce391a1577a99ecce5075daf622dc8aad5e9886b",
+  "max_output_tokens": 1200,
+  "max_provider_requests": 20,
+  "model": "gpt-6-sol",
+  "one_run_policy": "Exactly one run: the journal is claimed by exclusive create; existing evidence in the tree or in any commit refuses a new run; an interrupted run is incomplete and is never rerun.",
+  "pack_id": "inventorai-g1-precreation-semantic-01",
+  "payloads_sha256": "8acb212b505b30eec5d5d0df668aa02bb8c517cd24a28e436037f9a8973e72aa",
+  "preregistration_revision": 4,
+  "preregistration_sha256": "aae4a9af41d84616409badfcc77b9a313bae40dcc0919b69851de6b231285e1f",
+  "reference_sha256": "9229f4ebc572e51c07346884c4b7d54e8f8a5df0c7b1118afb7375a60cb52938",
+  "retries": 0,
+  "stop_rule": "Stop at the first provider ERROR (transport, HTTP status, malformed or incomplete reply, output over the cap, unconfirmed model) or an ambiguous refusal, and at the request or currency limit; every later case is NOT_ATTEMPTED and the run is INCOMPLETE. A confirmed provider refusal does not stop the run and is scored as a failed reply.",
+  "store": false,
+  "tools": "none"
+ },
+ "manifest_sha256": "8e149e563ddf21857370beb6767b5975e29fcfb7fa205845e0406aaafcbf094d",
+ "requests": 20,
+ "rows": [
+  {
+   "attempt": {
+    "attempt": 1,
+    "bound_usd": 0.023424,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4281,
+    "measured_cost_usd": 0.003904,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.135312,
+    "response_id": "resp_0940c9948d899370016aea82a179dc87d2a12dcc5fc2d1f586",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 787,
+     "output_tokens": 233,
+     "reasoning_tokens": 93,
+     "total_tokens": 1020
+    }
+   },
+   "case_id": "P01",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "What would you like the device to do?"
+    ],
+    "composition_suggestion": "SUGGEST_INTEGRATED",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "a circuit board inside an enclosure",
+      "text": "Circuit board"
+     },
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "an enclosure",
+      "text": "Enclosure"
+     }
+    ],
+    "unknowns": [
+     "The components have not been decided.",
+     "The dimensions have not been decided.",
+     "What the device should do is not stated."
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 2,
+    "bound_usd": 0.02946,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3563,
+    "measured_cost_usd": 0.00491,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.135432,
+    "response_id": "resp_0c508600c58b1fb6016aea82a4b1a887d2ab297bd0489dbf55",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 790,
+     "output_tokens": 333,
+     "reasoning_tokens": 166,
+     "total_tokens": 1123
+    }
+   },
+   "case_id": "P02",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "What would you like the device to do when plugged into a laptop?",
+     "Do you have a particular type of laptop connection in mind?"
+    ],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "plugs straight into a laptop",
+      "text": "Plug directly into a laptop; no other purpose is stated."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "built on a single circuit board",
+      "text": "A single circuit board."
+     }
+    ],
+    "unknowns": [
+     "The components have not been chosen yet.",
+     "The device’s purpose beyond plugging into a laptop is not stated."
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 3,
+    "bound_usd": 0.02862,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3779,
+    "measured_cost_usd": 0.00477,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.135348,
+    "response_id": "resp_080456e4665ab9dd016aea82a8508c87d28aa5cd6dfb5595c0",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 795,
+     "output_tokens": 318,
+     "reasoning_tokens": 181,
+     "total_tokens": 1113
+    }
+   },
+   "case_id": "P03",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "What would you like the gadget to do?",
+     "Do you want the gadget to have a box, or is that still undecided?"
+    ],
+    "composition_suggestion": "CLARIFY_FIRST",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "on a circuit board",
+      "text": "A circuit board for the gadget"
+     }
+    ],
+    "unknowns": [
+     "What the gadget should do is not specified.",
+     "Whether the gadget will have a box is undecided."
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 4,
+    "bound_usd": 0.027792,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3483,
+    "measured_cost_usd": 0.004632,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.13542,
+    "response_id": "resp_0bcaa74cecc75600016aea82ac230087d286a493541407b58e",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 796,
+     "output_tokens": 304,
+     "reasoning_tokens": 123,
+     "total_tokens": 1100
+    }
+   },
+   "case_id": "P04",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "SUGGEST_INTEGRATED",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "a desk lamp that tilts its arm toward me by itself",
+      "text": "A desk lamp that tilts its arm toward the person by itself."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "its arm toward me",
+      "text": "Arm"
+     },
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "a small motor",
+      "text": "Small motor"
+     },
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "a light sensor",
+      "text": "Light sensor"
+     },
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "a control board",
+      "text": "Control board"
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 5,
+    "bound_usd": 0.019632,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2180,
+    "measured_cost_usd": 0.003272,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134532,
+    "response_id": "resp_002dad23f56954d8016aea82af951087d2bff578214dca384f",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 776,
+     "output_tokens": 172,
+     "reasoning_tokens": 60,
+     "total_tokens": 948
+    }
+   },
+   "case_id": "P05",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "holds a tablet at a comfortable reading angle",
+      "text": "Hold a tablet at a comfortable reading angle."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "a wooden stand",
+      "text": "Wooden stand"
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 6,
+    "bound_usd": 0.022488,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2857,
+    "measured_cost_usd": 0.003748,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.135132,
+    "response_id": "resp_06b55c3cc09839bc016aea82b1cba887d29336455f7b1256be",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 784,
+     "output_tokens": 218,
+     "reasoning_tokens": 107,
+     "total_tokens": 1002
+    }
+   },
+   "case_id": "P06",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "organizer for screws and small tools",
+      "text": "Organize screws and small tools."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "folding cardboard organizer",
+      "text": "Folding cardboard organizer"
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 7,
+    "bound_usd": 0.02196,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2635,
+    "measured_cost_usd": 0.00366,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134988,
+    "response_id": "resp_064f88bd8ff52f74016aea82b4b3a487d2919df3e2430b9e52",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 785,
+     "output_tokens": 209,
+     "reasoning_tokens": 72,
+     "total_tokens": 994
+    }
+   },
+   "case_id": "P07",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [
+     {
+      "source_quote": "I do not want any case, housing or cover around it.",
+      "text": "A case, housing, or cover around the circuit board."
+     }
+    ],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "monitors room temperature",
+      "text": "Monitor room temperature."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "bare circuit board",
+      "text": "Bare circuit board."
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 8,
+    "bound_usd": 0.020292,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2504,
+    "measured_cost_usd": 0.003382,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134316,
+    "response_id": "resp_004137d5f2e848fd016aea82b74c7c87d2ac233e5f34cbbe69",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 771,
+     "output_tokens": 184,
+     "reasoning_tokens": 73,
+     "total_tokens": 955
+    }
+   },
+   "case_id": "P08",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "What part of your morning would you like it to help with?"
+    ],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "makes my mornings less stressful",
+      "text": "Make mornings less stressful."
+     }
+    ],
+    "stated_parts": [],
+    "unknowns": [
+     "What the invention would do to make mornings less stressful is not specified."
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 9,
+    "bound_usd": 0.031212,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4669,
+    "measured_cost_usd": 0.005202,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134928,
+    "response_id": "resp_0e8fce2702d2b52f016aea82b9f2f487d2b66e8b8abe984518",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 786,
+     "output_tokens": 363,
+     "reasoning_tokens": 245,
+     "total_tokens": 1149
+    }
+   },
+   "case_id": "P09",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "Should the beep depend on how dry the soil is, or would you prefer a reminder on a schedule?"
+    ],
+    "composition_suggestion": "CLARIFY_FIRST",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "beeps when my houseplant needs water",
+      "text": "Beep when the houseplant needs water."
+     }
+    ],
+    "stated_parts": [],
+    "unknowns": [
+     "What should go inside the gadget is undecided."
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 10,
+    "bound_usd": 0.02592,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3403,
+    "measured_cost_usd": 0.00432,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.13518,
+    "response_id": "resp_053154533fbe4daf016aea82be880487d28d375b12f1bcd964",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 790,
+     "output_tokens": 274,
+     "reasoning_tokens": 107,
+     "total_tokens": 1064
+    }
+   },
+   "case_id": "P10",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "Can you measure the sensor board when you have it available?",
+     "Do you have a preferred way to mount the board inside the housing?"
+    ],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "a weatherproof housing for a sensor board I already have",
+      "text": "Protect an existing sensor board from the weather."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "a weatherproof housing for a sensor board",
+      "text": "Weatherproof housing"
+     }
+    ],
+    "unknowns": [
+     "The sensor board’s size is not yet known.",
+     "How the board should be mounted is undecided."
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 11,
+    "bound_usd": 0.032472,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4326,
+    "measured_cost_usd": 0.005412,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134928,
+    "response_id": "resp_05894dbd5673c9e0016aea82c207e087d280c4c87c0e85d075",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 781,
+     "output_tokens": 385,
+     "reasoning_tokens": 260,
+     "total_tokens": 1166
+    }
+   },
+   "case_id": "P11",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "tuck the little green electronics card from my hobby project into a shell",
+      "text": "Hold the electronics card from the hobby project inside a shell."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "a shell that snaps together",
+      "text": "A shell that snaps together."
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 12,
+    "bound_usd": 0.027492,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4044,
+    "measured_cost_usd": 0.004582,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134628,
+    "response_id": "resp_00e752c4ee5b513d016aea82c646c487d2a9526764c7d6bdb8",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 781,
+     "output_tokens": 302,
+     "reasoning_tokens": 157,
+     "total_tokens": 1083
+    }
+   },
+   "case_id": "P12",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "What should the PCB do? The text does not say."
+    ],
+    "composition_suggestion": "SUGGEST_INTEGRATED",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "clips onto a bike handlebar",
+      "text": "Clip onto a bike handlebar."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "a PCB living inside",
+      "text": "PCB"
+     },
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "a 3D-printed casing",
+      "text": "3D-printed casing"
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 13,
+    "bound_usd": 0.026616,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3762,
+    "measured_cost_usd": 0.004436,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134628,
+    "response_id": "resp_085e833013992c01016aea82ca63f487d2809b6d902025aecb",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 778,
+     "output_tokens": 288,
+     "reasoning_tokens": 124,
+     "total_tokens": 1066
+    }
+   },
+   "case_id": "P13",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "SUGGEST_INTEGRATED",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "A table lamp",
+      "text": "Provide light as a table lamp."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "wiring and switch are hidden",
+      "text": "Wiring hidden inside the base."
+     },
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "wiring and switch are hidden",
+      "text": "A switch hidden inside the base."
+     },
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "hand-carved wooden base",
+      "text": "A hand-carved wooden base."
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 14,
+    "bound_usd": 0.0297,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3349,
+    "measured_cost_usd": 0.00495,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.135024,
+    "response_id": "resp_07ac4a1145bcd790016aea82ce251487d28ea7ff555cbbd218",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 790,
+     "output_tokens": 337,
+     "reasoning_tokens": 194,
+     "total_tokens": 1127
+    }
+   },
+   "case_id": "P14",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [
+     {
+      "source_quote": "If I ever add a case later, that would be a separate idea.",
+      "text": "A case is not part of this idea."
+     }
+    ],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "blinks a light",
+      "text": "Blink a light."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "a circuit board",
+      "text": "Circuit board."
+     }
+    ],
+    "unknowns": [
+     "Whether a case will be added later."
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 15,
+    "bound_usd": 0.031404,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3870,
+    "measured_cost_usd": 0.005234,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134976,
+    "response_id": "resp_0623ba819e610f6e016aea82d1769087d2b398b81e166ad2fe",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 787,
+     "output_tokens": 366,
+     "reasoning_tokens": 233,
+     "total_tokens": 1153
+    }
+   },
+   "case_id": "P15",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [
+     {
+      "source_quote": "I only want to design a new circuit",
+      "text": "Designing parts other than the circuit."
+     }
+    ],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "makes it play a tune",
+      "text": "Make the doorbell play a tune."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "a new circuit",
+      "text": "A new circuit."
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 16,
+    "bound_usd": 0.02598,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3688,
+    "measured_cost_usd": 0.00433,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134436,
+    "response_id": "resp_0a0a39b12e95cc4b016aea82d55c6487d2a36a8d1fa3308efd",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 775,
+     "output_tokens": 278,
+     "reasoning_tokens": 155,
+     "total_tokens": 1053
+    }
+   },
+   "case_id": "P16",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [
+     {
+      "source_quote": "nothing electric in it at all",
+      "text": "Electrical parts"
+     }
+    ],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "hand-cranked coffee grinder",
+      "text": "Grind coffee by hand."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "hand-cranked coffee grinder",
+      "text": "Hand crank"
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 17,
+    "bound_usd": 0.02904,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3400,
+    "measured_cost_usd": 0.00484,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.13482,
+    "response_id": "resp_06e70f7f3d97c0fe016aea82d9224087d288d2cbd4da2c788c",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 780,
+     "output_tokens": 328,
+     "reasoning_tokens": 193,
+     "total_tokens": 1108
+    }
+   },
+   "case_id": "P17",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "SUGGEST_INTEGRATED",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "unlocks itself when someone types the right code",
+      "text": "Unlock the cabinet door when someone enters the right code."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "A cabinet door",
+      "text": "Cabinet door"
+     },
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "battery-powered keypad",
+      "text": "Battery-powered keypad"
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 18,
+    "bound_usd": 0.021996,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2827,
+    "measured_cost_usd": 0.003666,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134304,
+    "response_id": "resp_02b96613d7c10eb3016aea82dc8c1c87d2ac3766d7f38b3b50",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 773,
+     "output_tokens": 212,
+     "reasoning_tokens": 96,
+     "total_tokens": 985
+    }
+   },
+   "case_id": "P18",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "reminds me to drink water every hour",
+      "text": "Remind the person to drink water every hour."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "NO_GOVERNED_MAPPING",
+      "source_quote": "A phone app",
+      "text": "An app."
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 19,
+    "bound_usd": 0.02202,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2604,
+    "measured_cost_usd": 0.00367,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134784,
+    "response_id": "resp_008c94b0b11f6fb3016aea82df70d087d29f38efc0fa0e16a2",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 780,
+     "output_tokens": 211,
+     "reasoning_tokens": 104,
+     "total_tokens": 991
+    }
+   },
+   "case_id": "P19",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "NO_INTEGRATED_SUGGESTION",
+    "negated_or_excluded": [],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "electronic kitchen timer",
+      "text": "Time activities in the kitchen."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "one circuit board",
+      "text": "One circuit board."
+     }
+    ],
+    "unknowns": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 20,
+    "bound_usd": 0.025044,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2824,
+    "measured_cost_usd": 0.004174,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.134988,
+    "response_id": "resp_040daff71bac8b32016aea82e208b087d28acb85b31964ff33",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 787,
+     "output_tokens": 260,
+     "reasoning_tokens": 97,
+     "total_tokens": 1047
+    }
+   },
+   "case_id": "P20",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "composition_suggestion": "SUGGEST_INTEGRATED",
+    "negated_or_excluded": [
+     {
+      "source_quote": "no pump",
+      "text": "No pump."
+     }
+    ],
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "source_quote": "tips water into the soil on a timer",
+      "text": "Tips water into the soil on a timer."
+     }
+    ],
+    "stated_parts": [
+     {
+      "candidate_concept": "mechanical",
+      "source_quote": "A plant pot",
+      "text": "Plant pot"
+     },
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "small electric valve",
+      "text": "Electric valve"
+     },
+     {
+      "candidate_concept": "electronics_electrical",
+      "source_quote": "a timer circuit",
+      "text": "Timer circuit"
+     }
+    ],
+    "unknowns": []
+   }
+  }
+ ],
+ "spend": {
+  "ceiling_usd": 5.0,
+  "conservative_bound_usd": 0.522564,
+  "measured_cost_complete": true,
+  "measured_cost_usd": 0.087094,
+  "requests_sent": 20
+ },
+ "started_at": "2026-11-04T00:56:00Z",
+ "stopped_on": null
+}
