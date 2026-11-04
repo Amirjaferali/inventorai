@@ -1,0 +1,316 @@
+{
+  "pack_id": "inventorai-g1-semantic-boundary-challenge-v1",
+  "purpose": "New OFFLINE diagnostic development cases after consumed v1 NO_GO. NOT independent held-out qualification or LLM evidence.",
+  "state": "DIAGNOSTIC_ONLY_NOT_HOLDOUT",
+  "synthetic_only": true,
+  "provider_runs_authorized": false,
+  "cases": [
+    {
+      "case_id": "G1B-A1",
+      "scenario": "included",
+      "idea_text": "I am installing the old GPS board into a new weatherproof case as a working part of the tracker.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "phrase": "GPS board",
+          "concept": "electronics_electrical"
+        },
+        {
+          "phrase": "weatherproof case",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-A2",
+      "scenario": "external",
+      "idea_text": "I want a weatherproof shelf that holds my old GPS navigator. The navigator stays a separate device.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "phrase": "weatherproof shelf",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": [
+        "GPS navigator"
+      ]
+    },
+    {
+      "case_id": "G1B-B1",
+      "scenario": "included",
+      "idea_text": "I am fitting a salvaged electric motor to the sliding arm of my new curtain opener.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "phrase": "electric motor",
+          "concept": "electronics_electrical"
+        },
+        {
+          "phrase": "sliding arm",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-B2",
+      "scenario": "external",
+      "idea_text": "I want a wooden stand that holds my salvaged electric motor while I repair it, without modifying the motor.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "phrase": "wooden stand",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": [
+        "electric motor"
+      ]
+    },
+    {
+      "case_id": "G1B-C1",
+      "scenario": "included",
+      "idea_text": "I will bolt my existing sensor board inside a new sealed enclosure; it is part of the working unit.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "phrase": "sensor board",
+          "concept": "electronics_electrical"
+        },
+        {
+          "phrase": "sealed enclosure",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-C2",
+      "scenario": "external",
+      "idea_text": "I will make a sealed box to carry my existing handheld sensor. The sensor stays a separate instrument.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "phrase": "sealed box",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": [
+        "handheld sensor"
+      ]
+    },
+    {
+      "case_id": "G1B-D1",
+      "scenario": "undecided",
+      "idea_text": "I want a protective shell for a sensor, but I have not decided whether the sensor goes inside or beside it.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "phrase": "protective shell",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-D2",
+      "scenario": "included",
+      "idea_text": "I want a protective shell with the sensor board fastened inside as a working part of the finished gadget.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "phrase": "protective shell",
+          "concept": "mechanical"
+        },
+        {
+          "phrase": "sensor board",
+          "concept": "electronics_electrical"
+        }
+      ],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-E1",
+      "scenario": "vague",
+      "idea_text": "I want something that helps me get through busy afternoons.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-E2",
+      "scenario": "single",
+      "idea_text": "I want a wooden tray to keep afternoon snacks together, but I have not decided its exact dimensions.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "phrase": "wooden tray",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-F1",
+      "scenario": "external",
+      "idea_text": "I will make a padded laptop sleeve. My laptop will stay a standalone device.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "phrase": "laptop sleeve",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": [
+        "laptop"
+      ]
+    },
+    {
+      "case_id": "G1B-F2",
+      "scenario": "included",
+      "idea_text": "I will reuse an old laptop control board as the controller inside my new dispensing cabinet.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "phrase": "control board",
+          "concept": "electronics_electrical"
+        },
+        {
+          "phrase": "dispensing cabinet",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-G1",
+      "scenario": "packaging",
+      "idea_text": "I will sell a standalone electronic timer circuit inside a disposable cardboard shipping box.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "phrase": "timer circuit",
+          "concept": "electronics_electrical"
+        }
+      ],
+      "external_context": [
+        "shipping box"
+      ]
+    },
+    {
+      "case_id": "G1B-G2",
+      "scenario": "included",
+      "idea_text": "I will install an electronic timer circuit into a rigid case that stays with the final device.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "phrase": "timer circuit",
+          "concept": "electronics_electrical"
+        },
+        {
+          "phrase": "rigid case",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": []
+    },
+    {
+      "case_id": "G1B-H1",
+      "scenario": "external",
+      "idea_text": "I want a bracket for my neighbor's camera; the camera remains their independent device.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "phrase": "bracket",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": [
+        "camera"
+      ]
+    },
+    {
+      "case_id": "G1B-H2",
+      "scenario": "included",
+      "idea_text": "I will assemble a camera module from my old project into a new swiveling bracket; both remain in the finished machine.",
+      "language": "en",
+      "synthetic": true,
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "phrase": "camera module",
+          "concept": "electronics_electrical"
+        },
+        {
+          "phrase": "swiveling bracket",
+          "concept": "mechanical"
+        }
+      ],
+      "external_context": []
+    }
+  ]
+}
