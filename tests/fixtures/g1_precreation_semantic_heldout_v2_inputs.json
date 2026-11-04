@@ -1,0 +1,163 @@
+{
+  "pack_id": "inventorai-g1-precreation-semantic-heldout-02",
+  "status": "FROZEN",
+  "synthetic_only": true,
+  "language_scope": "en only; same case shape and matching rule as pack inventorai-g1-precreation-semantic-01",
+  "purpose": "Independent held-out pre-creation composition evaluation (does the inventor's own invention contain both a mechanical and an electrical/electronic part?); no project, account or real inventor data",
+  "matching_rule": "Reference substrings, terms and stems are matched case-insensitively against the registry-normalised, whitespace-collapsed reply text.",
+  "input_rule": "Only idea_text is ever sent to a separately authorised provider run; case_id, language, labels and reference annotations are never sent.",
+  "authorship": {
+    "author": "Claude Code executor acting as independent blind test author (synthetic cases)",
+    "statement": "Authored blind under the stated access rules: only the v1 reference and input fixtures and the load_pack / score_case functions of scripts/run_g1_precreation_semantic_eval.py were read for format; no other branch, PR or commit, no v2 candidate prompt or design document, no author-informed development case or challenge test, no prior model response or campaign script was opened, and no model API was called.",
+    "base_commit": "28f5d4f4d9e73c2a29229535e288e5f71c03916f",
+    "authored_utc": "2026-11-04T15:20:47Z",
+    "not_seen": "Did not see any v2 candidate prompt, development case or model response.",
+    "review": "No independent human or AI label review yet; Owner approval NOT YET GIVEN."
+  },
+  "cases": [
+    {
+      "case_id": "H01",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want to build a rolling toolbox and screw a store-bought battery fan into its lid so it cools my power tools while they charge."
+    },
+    {
+      "case_id": "H02",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I'm making a wooden jewelry box and I'll glue in a cheap LED strip I bought online so the inside lights up when the lid opens."
+    },
+    {
+      "case_id": "H03",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "My invention is a camping chair with a ready-made USB power bank sewn into the armrest so people can charge their phones."
+    },
+    {
+      "case_id": "H04",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I'd take the weight sensor out of a broken kitchen scale and build it into the bottom of a dog bowl, so the bowl shows how much food is left."
+    },
+    {
+      "case_id": "H05",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A sliding bookshelf ladder where I fit a secondhand garage-door motor to move the ladder along its rail."
+    },
+    {
+      "case_id": "H06",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I'm designing a bird feeder and will mount a small off-the-shelf camera inside its roof so I can watch the birds up close."
+    },
+    {
+      "case_id": "H07",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A foam-lined hard case, with no electronics of its own, that protects a drone while I carry it on hikes."
+    },
+    {
+      "case_id": "H08",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A clamp that holds my phone onto a treadmill handrail so I can watch videos while I run."
+    },
+    {
+      "case_id": "H09",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A battery-powered night-light circuit for a child's bedroom, which I will sell posted in a padded cardboard mailer."
+    },
+    {
+      "case_id": "H10",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "My brother's electric scooter keeps getting scratched, so I want to design rubber bumper guards that stretch over its frame."
+    },
+    {
+      "case_id": "H11",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "Since everyone in my family keeps losing their Bluetooth earbuds, I want a magnetic wall shelf with little pockets to keep small things in one place."
+    },
+    {
+      "case_id": "H12",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A sensor that beeps when the freezer door is left open; it just sticks onto the outside of the freezer with tape."
+    },
+    {
+      "case_id": "H13",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A garden kneeling pad with handles. Someday it might also have a little light for working at dusk, but I haven't decided whether that belongs in this idea."
+    },
+    {
+      "case_id": "H14",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A baby stroller that rocks itself. I'm not sure yet whether the rocking would come from a wound-up spring or from something you plug in."
+    },
+    {
+      "case_id": "H15",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want a pet door that only opens for my cat. I don't know whether that needs any electronics or could work with a magnet on her collar."
+    },
+    {
+      "case_id": "H16",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "Something that keeps my bathroom mirror from fogging up. I picture a thin panel behind the glass, but I can't say what the panel would actually be."
+    },
+    {
+      "case_id": "H17",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A walking cane that warns blind users about obstacles; it might just have a longer tip, or it might need some kind of detector."
+    },
+    {
+      "case_id": "H18",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A sun hat that keeps the wearer cool. Maybe a tiny fan, maybe just better vents; I really don't know which."
+    },
+    {
+      "case_id": "H19",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A bedside device with a motorised arm that slides my curtain open at sunrise. I don't know what size motor I need or how the arm should attach."
+    },
+    {
+      "case_id": "H20",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A wheeled trash bin that rolls itself to the curb using a battery and two small motors. Which battery and how big the wheels should be are still open."
+    },
+    {
+      "case_id": "H21",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A standing desk that raises itself with an electric lift; I still need to work out what material the legs should be and how much power the lift will draw."
+    },
+    {
+      "case_id": "H22",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A spice rack that turns when you press a button, with a little motor under the shelf. I haven't picked a specific motor or decided how to mount it."
+    },
+    {
+      "case_id": "H23",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A self-closing garden gate that uses only a coiled spring and a hinge, no motor and nothing electric. I'm unsure how strong the spring should be."
+    },
+    {
+      "case_id": "H24",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "A self-filling dog water bowl fed from an upside-down bottle, so it tops itself up. I haven't decided how big the bottle should be or what plastic to use."
+    }
+  ]
+}

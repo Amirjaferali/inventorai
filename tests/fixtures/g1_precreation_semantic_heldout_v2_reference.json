@@ -1,0 +1,820 @@
+{
+  "pack_id": "inventorai-g1-precreation-semantic-heldout-02",
+  "status": "FROZEN",
+  "reference_revision": 1,
+  "revision_note": "Revision 1, authored blind together with the inputs before any model run. Groups: A incorporated existing component (counts as a part), B external device / installation / packaging context (not a part), C genuinely open composition, D clear composition with open engineering details. screen_stems are an advisory pre-screen only.",
+  "cases": [
+    {
+      "case_id": "H01",
+      "group": "A",
+      "category": "incorporated_bought_fan",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "toolbox",
+            "lid"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "fan"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "power tools",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H02",
+      "group": "A",
+      "category": "incorporated_led_strip",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "jewelry box",
+            "lid"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "led strip"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H03",
+      "group": "A",
+      "category": "incorporated_power_bank",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "camping chair",
+            "armrest"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "power bank"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "phones",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H04",
+      "group": "A",
+      "category": "salvaged_sensor_built_in",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "dog bowl",
+            "bowl"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "sensor"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H05",
+      "group": "A",
+      "category": "secondhand_motor_fitted",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "ladder",
+            "rail"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "motor"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H06",
+      "group": "A",
+      "category": "off_the_shelf_camera_mounted",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "bird feeder",
+            "roof"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "camera"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H07",
+      "group": "B",
+      "category": "protective_case_negated_electronics",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "hard case",
+            "case"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "drone",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        },
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [
+        {
+          "any_of": [
+            "no electronics"
+          ]
+        }
+      ],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H08",
+      "group": "B",
+      "category": "holder_for_external_devices",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "clamp"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "phone",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        },
+        {
+          "term": "treadmill",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H09",
+      "group": "B",
+      "category": "shipping_packaging",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "night-light",
+            "circuit"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "mailer",
+          "concept": "mechanical"
+        },
+        {
+          "term": "cardboard",
+          "concept": "mechanical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H10",
+      "group": "B",
+      "category": "third_party_device_accessory",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "bumper guards",
+            "guards"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "scooter",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        },
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H11",
+      "group": "B",
+      "category": "technology_name_as_context",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "wall shelf",
+            "shelf"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "bluetooth",
+          "concept": "electronics_electrical"
+        },
+        {
+          "term": "earbuds",
+          "concept": "electronics_electrical"
+        },
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": []
+    },
+    {
+      "case_id": "H12",
+      "group": "B",
+      "category": "electrical_part_mechanical_only_external",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION",
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "sensor"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "freezer",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H12-U1",
+          "meaning": "whether the sensor gets any housing or casing of its own",
+          "screen_stems": [
+            "sensor"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H13",
+      "group": "C",
+      "category": "future_maybe_light",
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "kneeling pad",
+            "handles"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H13-U1",
+          "meaning": "whether the invention will include a light at all",
+          "screen_stems": [
+            "light"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H14",
+      "group": "C",
+      "category": "drive_source_undecided",
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "stroller"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H14-U1",
+          "meaning": "whether the rocking is driven by a spring or by electric power",
+          "screen_stems": [
+            "spring"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H15",
+      "group": "C",
+      "category": "electronics_need_unknown",
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "pet door"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "collar",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        },
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H15-U1",
+          "meaning": "whether the door needs any electronics or works mechanically with a magnet",
+          "screen_stems": [
+            "electronics"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H16",
+      "group": "C",
+      "category": "unknown_kind_of_panel",
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [],
+      "forbidden_stated_parts": [
+        {
+          "term": "mirror",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H16-U1",
+          "meaning": "what kind of panel it is, and so which kinds of part the invention contains",
+          "screen_stems": [
+            "panel"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H17",
+      "group": "C",
+      "category": "tip_or_detector_undecided",
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "walking cane",
+            "cane"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H17-U1",
+          "meaning": "whether obstacle warning is purely mechanical or needs a detector",
+          "screen_stems": [
+            "detector"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H18",
+      "group": "C",
+      "category": "fan_or_vents_undecided",
+      "allowed_composition": [
+        "CLARIFY_FIRST"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "sun hat",
+            "hat"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "fan",
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H18-U1",
+          "meaning": "whether cooling uses a fan or only passive vents",
+          "screen_stems": [
+            "fan"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H19",
+      "group": "D",
+      "category": "open_motor_size_and_attachment",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "arm"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "motor"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": "curtain",
+          "concept": null,
+          "role": "EXTERNAL_CONTEXT"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H19-U1",
+          "meaning": "the motor size",
+          "screen_stems": [
+            "size"
+          ]
+        },
+        {
+          "unknown_id": "H19-U2",
+          "meaning": "how the arm attaches",
+          "screen_stems": [
+            "attach"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H20",
+      "group": "D",
+      "category": "open_battery_and_wheel_size",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "trash bin",
+            "wheels"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "battery",
+            "motors"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H20-U1",
+          "meaning": "which battery to use",
+          "screen_stems": [
+            "which battery"
+          ]
+        },
+        {
+          "unknown_id": "H20-U2",
+          "meaning": "the wheel size",
+          "screen_stems": [
+            "how big"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H21",
+      "group": "D",
+      "category": "open_material_and_power",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "standing desk",
+            "legs"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "electric lift"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H21-U1",
+          "meaning": "the leg material",
+          "screen_stems": [
+            "material"
+          ]
+        },
+        {
+          "unknown_id": "H21-U2",
+          "meaning": "the power the lift draws",
+          "screen_stems": [
+            "power"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H22",
+      "group": "D",
+      "category": "open_motor_choice_and_mounting",
+      "allowed_composition": [
+        "SUGGEST_INTEGRATED"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "spice rack",
+            "shelf"
+          ],
+          "concept": "mechanical"
+        },
+        {
+          "any_of": [
+            "motor"
+          ],
+          "concept": "electronics_electrical"
+        }
+      ],
+      "forbidden_stated_parts": [],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H22-U1",
+          "meaning": "which specific motor",
+          "screen_stems": [
+            "specific motor"
+          ]
+        },
+        {
+          "unknown_id": "H22-U2",
+          "meaning": "how to mount the motor",
+          "screen_stems": [
+            "mount"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H23",
+      "group": "D",
+      "category": "mechanical_only_negated_open_strength",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "coiled spring",
+            "spring",
+            "hinge",
+            "gate"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [
+        {
+          "any_of": [
+            "no motor"
+          ]
+        },
+        {
+          "any_of": [
+            "nothing electric"
+          ]
+        }
+      ],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H23-U1",
+          "meaning": "how strong the spring should be",
+          "screen_stems": [
+            "how strong"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "H24",
+      "group": "D",
+      "category": "unstated_component_trap_gravity",
+      "allowed_composition": [
+        "NO_INTEGRATED_SUGGESTION"
+      ],
+      "required_parts": [
+        {
+          "any_of": [
+            "water bowl",
+            "bowl",
+            "bottle"
+          ],
+          "concept": "mechanical"
+        }
+      ],
+      "forbidden_stated_parts": [
+        {
+          "term": null,
+          "concept": "electronics_electrical"
+        }
+      ],
+      "required_negations": [],
+      "expected_unknowns": [
+        {
+          "unknown_id": "H24-U1",
+          "meaning": "the bottle size",
+          "screen_stems": [
+            "how big"
+          ]
+        },
+        {
+          "unknown_id": "H24-U2",
+          "meaning": "which plastic to use",
+          "screen_stems": [
+            "plastic"
+          ]
+        }
+      ]
+    }
+  ]
+}
