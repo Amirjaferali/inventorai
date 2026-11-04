@@ -11,30 +11,30 @@ ORIGINAL_COMPONENT_RULE = (
     "packaging, a technology mentioned only as inspiration, and anything "
     "hypothetical, undecided or negated is NOT a stated part. "
 )
-CANDIDATE_COMPONENT_RULE = (
-    "Count as a stated included part a pre-existing board or module that the "
-    "person explicitly intends to install, connect, fasten or use as a functional "
-    "constituent of the finished invention, even if the person bought or reused it. "
-    "Being included does NOT mean the person designed or manufactured that part, "
-    "owns its rights, or has verified its suitability. Exclude a standalone "
-    "device that the invention merely holds, carries, supports or works with "
-    "while that device remains separate; exclude shipping packaging, external "
-    "installation targets, inspiration, hypothetical, undecided or negated parts. "
-    "Do not include an external device just because it appears nearby. "
+# F1 correction: the v1 exclusion sentence is kept verbatim as the first
+# sentence, so every v1 protection (including "someone else's device" and
+# unqualified "packaging") survives; the inclusion clause is narrowed (F2).
+CANDIDATE_COMPONENT_RULE = ORIGINAL_COMPONENT_RULE + (
+    "A component counts as a stated part only when the text states that it is "
+    "built into, or incorporated as part of, the person's finished invention, "
+    "even if the person bought or reused it. Being included does NOT mean the "
+    "person designed or manufactured that part, owns its rights, or has "
+    "verified its suitability. Holding, carrying, mounting on, fastening onto, "
+    "plugging into, connecting to or being used with a separate device does "
+    "NOT make that device a part. "
 )
 ORIGINAL_COMPOSITION_RULE = (
     "CLARIFY_FIRST if that is genuinely open and a question to the person should "
     "come first; otherwise NO_INTEGRATED_SUGGESTION."
 )
 CANDIDATE_COMPOSITION_RULE = (
-    "CLARIFY_FIRST when the kind or function of the proposed invention is too "
-    "unclear to choose a composition route, or when whether a mentioned part "
-    "belongs to the final assembly is genuinely undecided; ask about that "
-    "uncertainty before assigning inclusion or exclusion. Otherwise return "
-    "NO_INTEGRATED_SUGGESTION if an integrated composition is not grounded. "
-    "Do NOT choose CLARIFY_FIRST merely because dimensions, mounting details "
-    "or another engineering question remains: a clearly stated integrated "
-    "assembly can still need questions. Never infer an unstated part to "
+    "CLARIFY_FIRST if it is genuinely open whether a mechanical or an "
+    "electrical or electronic part is part of the invention at all, or what the "
+    "invention is or does, and a question to the person should come first; ask "
+    "about that uncertainty instead of assigning inclusion or exclusion. An open "
+    "engineering detail (size, which component, material, power, or how a "
+    "stated part is attached) does not by itself require CLARIFY_FIRST. "
+    "Otherwise NO_INTEGRATED_SUGGESTION. Never infer an unstated part to "
     "justify SUGGEST_INTEGRATED."
 )
 

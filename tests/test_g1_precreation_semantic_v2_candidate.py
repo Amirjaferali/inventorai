@@ -22,7 +22,11 @@ def test_candidate_changes_only_two_known_instruction_spans():
     assert proposed != original
     assert candidate.ORIGINAL_COMPONENT_RULE in original
     assert candidate.ORIGINAL_COMPOSITION_RULE in original
-    assert candidate.ORIGINAL_COMPONENT_RULE not in proposed
+    # F1: the v1 exclusion sentence is kept verbatim (exactly once); only the
+    # composition span is wholly replaced.
+    assert proposed.count(candidate.ORIGINAL_COMPONENT_RULE) == 1
+    assert candidate.CANDIDATE_COMPONENT_RULE.startswith(
+        candidate.ORIGINAL_COMPONENT_RULE)
     assert candidate.ORIGINAL_COMPOSITION_RULE not in proposed
     assert proposed == (original.replace(
         candidate.ORIGINAL_COMPONENT_RULE,
@@ -32,9 +36,40 @@ def test_candidate_changes_only_two_known_instruction_spans():
     assert "source_quote" in proposed
     assert "UNVERIFIED" in proposed
     assert "Output only the JSON object." in proposed
-    assert "explicitly intends to install" in proposed
-    assert "while that device remains separate" in proposed
-    assert "Do NOT choose CLARIFY_FIRST merely because dimensions" in proposed
+    assert "built into, or incorporated as part of" in proposed
+    assert "does not by itself require CLARIFY_FIRST" in proposed
+
+V1_EXCLUSIONS = (
+    "negated",
+    "hypothetical, undecided",
+    "a technology mentioned only as inspiration",
+    "someone else's device",
+    "packaging,",
+    "A device the invention only holds or works with",
+)
+
+def test_candidate_keeps_every_v1_exclusion():
+    """F5: every v1 stated-part exclusion survives in the composed prompt."""
+    proposed = candidate.candidate_instructions(v1.governed_concepts())
+    for phrase in V1_EXCLUSIONS:
+        assert phrase in candidate.ORIGINAL_COMPONENT_RULE
+        assert phrase in candidate.CANDIDATE_COMPONENT_RULE
+        assert phrase in proposed
+    # "packaging" is not narrowed to a subtype (F1).
+    assert "shipping packaging" not in proposed
+
+def test_candidate_drops_over_broad_phrases():
+    """F5: the over-broad inclusion (F2) and clarification-suppression (F3)
+    wording is gone; separate-device and composition-open protections stay."""
+    proposed = candidate.candidate_instructions(v1.governed_concepts())
+    for gone in ("connect, fasten or use", "or another engineering question",
+                 "Do NOT choose CLARIFY_FIRST merely because"):
+        assert gone not in proposed
+    assert ("Holding, carrying, mounting on, fastening onto, plugging into, "
+            "connecting to or being used with a separate device does NOT make "
+            "that device a part.") in proposed
+    assert ("CLARIFY_FIRST if it is genuinely open whether a mechanical or an "
+            "electrical or electronic part is part of the invention at all") in proposed
 
 def test_candidate_request_reuses_existing_schema_and_accepts_idea_only():
     idea = "I am fitting my old circuit board into a new wooden case."
