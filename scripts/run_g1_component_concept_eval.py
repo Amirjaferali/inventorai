@@ -305,12 +305,21 @@ def validate(reply, idea_text):
 INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_component_concept_heldout_v2_inputs.json")
 REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures",
                               "g1_component_concept_heldout_v2_reference.json")
-INPUT_SHA256 = None
-REFERENCE_SHA256 = None
-FROZEN_BEFORE_PACK_COMMIT = None       # the commit that froze the corrected candidate
-AUTHOR_COMMIT = None
-ADJUDICATION_COMMIT = None
+INPUT_SHA256 = "c083db315a7aa4ada00dcac2e54f42cbb861d08cf9a74f2dd505268199270576"
+REFERENCE_SHA256 = "b3ddd17e45e3d14aa9e176496994ce285984a127ae5dffa83f1e98eaf3bac0f6"
+FROZEN_BEFORE_PACK_COMMIT = "43bb93b5f4662553b21362cd93c514b9e1bd7363"   # corrected candidate
+AUTHOR_COMMIT = "2da3ffea0522f5818a5bd3e04dc3b5f9d1b3a291"
+ADJUDICATION_COMMIT = "ccf3b91f5a0dc30fcfb79dddc95ef54853d49a1e"
 CASE_IDS = tuple("Q%02d" % i for i in range(1, 17))
+# Owner disposition (2026-11-05): Q01 is the predeclared diagnostic anchor, the exact
+# Owner-specified plant-watering idea the approved design requires; it is shared with the
+# development pack. The pack is 15 newly authored cases plus this one known case; it is NOT
+# claimed that all 16 are independently novel, and every verdict carries this disclosure.
+DIAGNOSTIC_ANCHOR_CASE = "Q01"
+PACK_DISCLOSURE = ("15 newly authored held-out cases plus one predeclared diagnostic anchor "
+                   "(Q01, the Owner-specified plant-watering idea) that is shared with the "
+                   "development pack; Q01 is not an independently novel case, and any result "
+                   "must be interpreted with that limitation.")
 
 # The DEVELOPMENT pack (v1): authored blind (f8b2809) against the first freeze (43c6b09),
 # adjudicated twice prompt-blind (dbbb162, eedcdb2) and reconciled. The Execution Lead saw
@@ -391,6 +400,7 @@ def preregistration():
             "adjudication_commit": ADJUDICATION_COMMIT,
             "frozen_before_pack_commit": FROZEN_BEFORE_PACK_COMMIT,
             "instructions_sha256": _sha(INSTRUCTIONS),
+            "diagnostic_anchor_case": DIAGNOSTIC_ANCHOR_CASE, "pack_disclosure": PACK_DISCLOSURE,
             "development_pack": {"pack_id": DEV_PACK_ID, "input_sha256": DEV_INPUT_SHA256,
                                  "reference_sha256": DEV_REFERENCE_SHA256, "commits": DEV_COMMITS,
                                  "status": "development evidence only, never a qualification"},
@@ -727,7 +737,7 @@ def decide(scored, refs, judged):
         verdict = "PRELIMINARY_GO" if all(final.values()) else "NO_GO"
     return {"verdict": verdict, "critical": critical, "graded": final,
             "graded_reachable": reachable, "not_assessed": unassessed,
-            "human_review_basis": HUMAN_REVIEW_BASIS}
+            "human_review_basis": HUMAN_REVIEW_BASIS, "pack_disclosure": PACK_DISCLOSURE}
 
 
 # ─────────────────────────────────────────────────────────────────────────────

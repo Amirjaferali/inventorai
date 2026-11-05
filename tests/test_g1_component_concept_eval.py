@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 REVISION = "0" * 40
 INSTRUCTIONS_SHA256 = "e5047edb1815fd70c02889f589d80142fc509bb44d427957dbf1a7aa0c84de9a"
 SCHEMA_SHA256 = "59c5c056838c76039b1a4a58b0c5ef79d1ce354d2bb4ec7967ea3047bd057a22"
-PREREGISTRATION_SHA256 = "fa55b6f613788c60d3c72a17b1c02358f3d37db4063e434a32f90db1c0b331b4"
+PREREGISTRATION_SHA256 = "97b5d9e17b49b57b2038da2bc305556e96d6fb68568c95cc11da4483a3eaec0c"
 
 
 @pytest.fixture(autouse=True)
@@ -333,10 +333,11 @@ def test_a_non_device_case_given_a_concept_is_k4(pack):
 
 
 def test_a_provider_error_is_incomplete_and_a_malformed_reply_is_no_go(pack):
-    _cases, refs = pack
-    scored = _scored(pack, {"C03": None})
+    cases, refs = pack
+    target = cases[2]["case_id"]
+    scored = _scored(pack, {target: None})
     assert cc.decide(scored, refs, _judged(scored))["verdict"] == "INCOMPLETE"
-    scored = _scored(pack, {"C03": {"outcome": "RESPONDED"}})
+    scored = _scored(pack, {target: {"outcome": "RESPONDED"}})
     d = cc.decide(scored, refs, _judged(scored))
     assert d["verdict"] == "NO_GO" and "K5" in d["critical"]
 
@@ -541,3 +542,15 @@ def test_an_ambiguous_case_may_still_safely_abstain_or_ask(pack):
     scored = _scored(pack, {amb[0]: _empty(cc.ABSTAIN), amb[1]: asks})
     d = cc.decide(scored, refs, _judged(scored))
     assert d["verdict"] == "PRELIMINARY_GO" and d["graded"]["G6"] is True
+
+
+def test_the_diagnostic_anchor_is_disclosed_and_every_verdict_carries_it(pack):
+    cases, refs = pack
+    anchor = next(c for c in cases if c["case_id"] == cc.DIAGNOSTIC_ANCHOR_CASE)
+    assert anchor["idea_text"] == cc.PLANT_IDEA and refs["Q01"]["group"] == "POSITIVE"
+    pre = cc.preregistration()
+    assert pre["diagnostic_anchor_case"] == "Q01" and "15 newly authored" in pre["pack_disclosure"]
+    assert pre["instructions_sha256"] == INSTRUCTIONS_SHA256          # disclosure changed no instruction
+    scored = _scored(pack)
+    for judged in ({}, _judged(scored)):
+        assert cc.decide(scored, refs, judged)["pack_disclosure"] == cc.PACK_DISCLOSURE
