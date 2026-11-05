@@ -1,0 +1,332 @@
+{
+ "board_file_version": "20221018",
+ "geometry": {
+  "board_v1": {
+   "declared_mm": [
+    "84",
+    "50"
+   ],
+   "export_mm": [
+    "84",
+    "50"
+   ],
+   "export_sha256": "95810445fefccd52a30ece6b0ae7ad29067cd84425cd7330ca7f0457c1983ff3",
+   "source_mm": [
+    "84",
+    "50"
+   ],
+   "source_sha256": "624be5a81c3321271dc280d49b326c3427afa1ffccd6be94a357b1a9167f5871",
+   "supported": true
+  },
+  "board_v1_inch_export": {
+   "export_refused": "export is not metric ($MEASUREMENT 0)",
+   "export_sha256": "20f10bfb8bb12dc9971acc49e2ecab10a0e6a532ac695d116504fea1f26eb4e4",
+   "source_mm": [
+    "84",
+    "50"
+   ],
+   "source_sha256": "624be5a81c3321271dc280d49b326c3427afa1ffccd6be94a357b1a9167f5871",
+   "supported": false
+  },
+  "board_v1_lines": {
+   "declared_mm": [
+    "84",
+    "50"
+   ],
+   "export_mm": [
+    "84",
+    "50"
+   ],
+   "export_sha256": "95810445fefccd52a30ece6b0ae7ad29067cd84425cd7330ca7f0457c1983ff3",
+   "source_mm": [
+    "84",
+    "50"
+   ],
+   "source_sha256": "14a1895ed6e8d6404a1c9d6218cb40e814e3eee2df2af04cc442d2192aa0def4",
+   "supported": true
+  },
+  "board_v2": {
+   "declared_mm": [
+    "80",
+    "50"
+   ],
+   "export_mm": [
+    "80",
+    "50"
+   ],
+   "export_sha256": "1498cfb96329720ba20d17d2dda848c2b0eb48941ad2bdf820affa2eb02884a7",
+   "source_mm": [
+    "80",
+    "50"
+   ],
+   "source_sha256": "b11d48639b697401ceb9372cb0ab73d57f40c84d0ba82791b25d457527551ac9",
+   "supported": true
+  },
+  "neg_cutout": {
+   "export_refused": "unsupported export entities: CIRCLE, LINE",
+   "export_sha256": "e1efd2c0b811c0015ee41934997eafe6827118878ea667c005e8c2e332858a22",
+   "source_refused": "unsupported Edge.Cuts shapes: gr_circle, gr_rect",
+   "source_sha256": "1706c20d91028207b21dff5c06fb626b2ba6a66e1e8a970498d4a2ada731ed2a",
+   "supported": false
+  },
+  "neg_l_shape": {
+   "export_refused": "6 outline segments, not the four of one rectangle",
+   "export_sha256": "69d4bb6cf62f6ccfba460b344a9fa57c39bea9f14d1eea80cba78dc3b1775064",
+   "source_refused": "6 outline segments, not the four of one rectangle",
+   "source_sha256": "82897ca26f017304047fbc32caeb03c997e2c6361e50e2022c70d9fd692c4b22",
+   "supported": false
+  },
+  "neg_no_outline": {
+   "export_refused": "no outline in the export",
+   "export_sha256": "c7e0eb174ddfff7c5a02582eb80495da569aff2c37bc184ff823d8f2b995724e",
+   "source_refused": "no Edge.Cuts outline",
+   "source_sha256": "aa3a2948c5293803b8ee93c4551d4d4de949aacfb53817546c3021a41d3fb8ef",
+   "supported": false
+  },
+  "neg_open_outline": {
+   "export_refused": "3 outline segments, not the four of one rectangle",
+   "export_sha256": "7a6c6bb3749042c9f4efed3052fcdd1a4f3369719c3af75763f94bc49c9d9e7c",
+   "source_refused": "3 outline segments, not the four of one rectangle",
+   "source_sha256": "fbe5658761c00aabb622f5c893e790422f7bedb45527d2e9e48df1289cb2b81d",
+   "supported": false
+  },
+  "neg_rotated": {
+   "export_refused": "a segment is not axis-aligned",
+   "export_sha256": "625da735c310ee979474746193714cc496da01a4a86f6336c81b160f249b7c42",
+   "source_refused": "a segment is not axis-aligned",
+   "source_sha256": "5fb382d4f88663e5de2bdbf095b37ce389362bed57f07c1c74e896759922b20e",
+   "supported": false
+  },
+  "neg_rounded_corners": {
+   "export_refused": "unsupported export entities: ARC, LINE",
+   "export_sha256": "6b54c4d011a507ba42b451b6d2db4874c59121d4f783dd6e21de2064c56b85ce",
+   "source_refused": "unsupported Edge.Cuts shapes: gr_arc, gr_line",
+   "source_sha256": "89a3ec809a40a8e72e49f6c03ca703c42dde45281a5e8034d18d97db9a931272",
+   "supported": false
+  },
+  "neg_two_boards": {
+   "export_refused": "8 outline segments, not the four of one rectangle",
+   "export_sha256": "451e0c341e8bd2e7d0da4598fc9cc841018a712755dff8d72600e4a89e52f036",
+   "source_refused": "2 separate rectangles on Edge.Cuts, not one outline",
+   "source_sha256": "9c04e86fb21a3f8782766b23c7b213f15788664d921d64e7e791e6446f6a0ee4",
+   "supported": false
+  }
+ },
+ "inventor_inputs": {
+  "c": "2",
+  "declarations": "all eight answered 'applies' explicitly",
+  "region_x": "86",
+  "region_y": "56"
+ },
+ "kicad_cli_sha256": "390de70be2e43114fec97941fe3f72dcd70a254c03303a116369ba58a93d14a0",
+ "kicad_package": "Ubuntu 24.04 kicad 7.0.11+dfsg-1build4 (GPL-3+)",
+ "kicad_runs": {
+  "board_v1": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/board_v1.dxf fixtures/board_v1.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "board_v1_inch_export": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units in --exclude-refdes --exclude-value -o exports/board_v1_inch_export.dxf fixtures/board_v1.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "board_v1_lines": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/board_v1_lines.dxf fixtures/board_v1_lines.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "board_v2": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/board_v2.dxf fixtures/board_v2.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "neg_cutout": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/neg_cutout.dxf fixtures/neg_cutout.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "neg_l_shape": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/neg_l_shape.dxf fixtures/neg_l_shape.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "neg_no_outline": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/neg_no_outline.dxf fixtures/neg_no_outline.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "neg_open_outline": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/neg_open_outline.dxf fixtures/neg_open_outline.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "neg_rotated": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/neg_rotated.dxf fixtures/neg_rotated.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "neg_rounded_corners": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/neg_rounded_corners.dxf fixtures/neg_rounded_corners.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  },
+  "neg_two_boards": {
+   "command": "kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm --exclude-refdes --exclude-value -o exports/neg_two_boards.dxf fixtures/neg_two_boards.kicad_pcb",
+   "exported": true,
+   "returncode": 0
+  }
+ },
+ "method": "mechanical:planar_centered_rectangular_clearance 1.0",
+ "product_route": {
+  "cad_v1": {
+   "companion_binds_dxf": true,
+   "content_type": "application/zip",
+   "declared_values": {
+    "board_x": "84",
+    "board_y": "50",
+    "c": "2",
+    "region_x": "86",
+    "region_y": "56"
+   },
+   "dxf_sha256": "815de72341bb34afeb8cdbfeebad75cb3f4b18ccd047482c2d1ce20e05bc614f",
+   "files": [
+    "geometry.dxf",
+    "companion.json",
+    "README.txt"
+   ],
+   "margins_mm": [
+    "-1",
+    "1"
+   ],
+   "measured_mm": {
+    "IAI_DECLARED_BOARD_OUTLINE": [
+     "84.0",
+     "50.0"
+    ],
+    "IAI_DECLARED_USABLE_REGION": [
+     "86.0",
+     "56.0"
+    ]
+   },
+   "outcome": "NOT_MET",
+   "revision": 0,
+   "snapshot_digest": "3529b2335850a935",
+   "source_digest_in_bundle": false,
+   "status": 200,
+   "zip_sha256": "eaac1ed3b36150f4bb4c0eec88541875d92fed8688f3fc32eb6941a358bb7983"
+  },
+  "cad_v2": {
+   "companion_binds_dxf": true,
+   "content_type": "application/zip",
+   "declared_values": {
+    "board_x": "80",
+    "board_y": "50",
+    "c": "2",
+    "region_x": "86",
+    "region_y": "56"
+   },
+   "dxf_sha256": "36a684686b917d0acb9352bf8f0f5bb2200ac5f595f6889c7ed417e1a9660b90",
+   "files": [
+    "geometry.dxf",
+    "companion.json",
+    "README.txt"
+   ],
+   "margins_mm": [
+    "1",
+    "1"
+   ],
+   "measured_mm": {
+    "IAI_DECLARED_BOARD_OUTLINE": [
+     "80.0",
+     "50.0"
+    ],
+    "IAI_DECLARED_USABLE_REGION": [
+     "86.0",
+     "56.0"
+    ]
+   },
+   "outcome": "MET",
+   "revision": 1,
+   "snapshot_digest": "e9c359fdf4c38df3",
+   "source_digest_in_bundle": false,
+   "status": 200,
+   "zip_sha256": "c47aa3d31c74eaaa29352f8b406c4a56917f6c8419dcf76d7f72321aa473f839"
+  },
+  "declare_v1": {
+   "page": {
+    "cad": [
+     "/session/cdaab1cb-5400-4d1e-8cfa-6035c2b064f0/interface-clearance/ifc-412fc0ed38a4433491e0f05dde45ea93/cad.zip?revision=pcr-993413b7bba34a15a7fd13cd51648a81&digest=3529b2335850a935"
+    ],
+    "digest": [
+     "3529b2335850a935"
+    ],
+    "margins": [
+     "-1 mm",
+     "1 mm"
+    ],
+    "outcome": [
+     "NOT_MET"
+    ],
+    "revision": [
+     "0"
+    ]
+   },
+   "status": 200
+  },
+  "old_cad_link_after_change": {
+   "content_type": "text/html; charset=utf-8",
+   "status": 409
+  },
+  "redeclare_v2": {
+   "page": {
+    "cad": [
+     "/session/cdaab1cb-5400-4d1e-8cfa-6035c2b064f0/interface-clearance/ifc-412fc0ed38a4433491e0f05dde45ea93/cad.zip?revision=pcr-22119c7c6f1047c197a223a11640d3f7&digest=e9c359fdf4c38df3"
+    ],
+    "digest": [
+     "e9c359fdf4c38df3"
+    ],
+    "margins": [
+     "1 mm",
+     "1 mm"
+    ],
+    "outcome": [
+     "MET"
+    ],
+    "revision": [
+     "1"
+    ]
+   },
+   "status": 200
+  },
+  "source_change": {
+   "harness_verdict": "SOURCE MISMATCH: the current declaration names a different board file; its result does not describe the presented source",
+   "product_page_before_redeclaration": {
+    "cad": [
+     "/session/cdaab1cb-5400-4d1e-8cfa-6035c2b064f0/interface-clearance/ifc-412fc0ed38a4433491e0f05dde45ea93/cad.zip?revision=pcr-993413b7bba34a15a7fd13cd51648a81&digest=3529b2335850a935"
+    ],
+    "digest": [
+     "3529b2335850a935"
+    ],
+    "margins": [
+     "-1 mm",
+     "1 mm"
+    ],
+    "outcome": [
+     "NOT_MET"
+    ],
+    "revision": [
+     "0"
+    ]
+   },
+   "stored_note_names_v1_digest": true,
+   "stored_note_names_v2_digest": false,
+   "v1_source_sha256": "624be5a81c3321271dc280d49b326c3427afa1ffccd6be94a357b1a9167f5871",
+   "v2_source_sha256": "b11d48639b697401ceb9372cb0ab73d57f40c84d0ba82791b25d457527551ac9"
+  }
+ },
+ "proof": "PCB-OUTLINE-TO-PLANAR-CLEARANCE-PROOF-01",
+ "synthetic_only": true,
+ "tolerance_mm": "1E-9",
+ "tool": "kicad-cli 7.0.11"
+}
