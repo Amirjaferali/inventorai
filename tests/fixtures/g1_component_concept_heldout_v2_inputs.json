@@ -1,0 +1,124 @@
+{
+ "pack_id": "inventorai-g1-component-concept-heldout-02",
+ "synthetic_only": true,
+ "status": "FROZEN",
+ "authorship": {
+  "role": "blind author",
+  "base_commit": "9ad18ef0b2e68301efb0fae912a7c1b790aa1823",
+  "statement": "The author saw no candidate prompt, schema, scoring code, earlier pack or model response for this evaluation and wrote these synthetic ideas and reference judgments independently from base commit 9ad18ef0b2e68301efb0fae912a7c1b790aa1823."
+ },
+ "cases": [
+  {
+   "case_id": "Q01",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I want a device that waters my plants automatically when they need water, but I don't know what components I need."
+  },
+  {
+   "case_id": "Q02",
+   "language": "ar",
+   "variety": "gulf",
+   "synthetic": true,
+   "idea_text": "أبي شي يبعد الحمام عن البلكونة مالتي بدون ما يأذيهم وبدون أي صوت عالي يزعج الجيران"
+  },
+  {
+   "case_id": "Q03",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I keep thinking about something that would make mornings less stressful for my family. Maybe a gadget, maybe not, I'm not sure yet what it would actually do."
+  },
+  {
+   "case_id": "Q04",
+   "language": "ar",
+   "variety": "msa",
+   "synthetic": true,
+   "idea_text": "أريد جهازاً يذكّر والدي المسنّ بمواعيد أدويته، ويخبرني أنا إذا لم يتناول الدواء في موعده."
+  },
+  {
+   "case_id": "Q05",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "Can you tell me which brand of washing machine is the most reliable one to buy this year?"
+  },
+  {
+   "case_id": "Q06",
+   "language": "ar",
+   "variety": "egyptian",
+   "synthetic": true,
+   "idea_text": "عايز أعمل سرير صغير للبيبي يتهز لوحده أول ما يعيط عشان ينام تاني، وعايز أبقى متأكد إنه آمن مية في المية ومفيش أي خطر خالص."
+  },
+  {
+   "case_id": "Q07",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I'd like something that tells me when there's new mail in the mailbox at the end of my long driveway, so I stop walking out there for nothing."
+  },
+  {
+   "case_id": "Q08",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I need a way to keep my cat off the kitchen counter while I'm at work, but no water sprays and nothing that shocks her."
+  },
+  {
+   "case_id": "Q09",
+   "language": "ar",
+   "variety": "gulf",
+   "synthetic": true,
+   "idea_text": "عندي فكرة لشي في السيارة بس للحين مو متأكد إذا هو للتنظيف ولا للراحة، ساعدني أطلعها"
+  },
+  {
+   "case_id": "Q10",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "A small gadget for my bike that switches its light on by itself when it gets dark, and makes it flash when I slow down."
+  },
+  {
+   "case_id": "Q11",
+   "language": "ar",
+   "variety": "msa",
+   "synthetic": true,
+   "idea_text": "اكتب لي قصيدة قصيرة عن فصل الشتاء لأقرأها في حفل المدرسة."
+  },
+  {
+   "case_id": "Q12",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I want to build a box that keeps my homemade baby food cold on long car trips, and it has to be certified food-safe and guaranteed never to let anything spoil."
+  },
+  {
+   "case_id": "Q13",
+   "language": "ar",
+   "variety": "egyptian",
+   "synthetic": true,
+   "idea_text": "نفسي في حاجة تنبهني لما المطرة تبتدي عشان ألحق ألم الغسيل من على السطح قبل ما يتبل."
+  },
+  {
+   "case_id": "Q14",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "My grandmother told me I should invent 'the thing for the stairs'. I honestly don't know what she meant, but I want to make it."
+  },
+  {
+   "case_id": "Q15",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "Something that reminds my teenage son to turn the bathroom fan off after his shower, without a camera in the bathroom and without an app on his phone."
+  },
+  {
+   "case_id": "Q16",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I'd love a lunchbox that keeps my daughter's soup warm until lunchtime at school and lets her know if it has gone cold."
+  }
+ ]
+}
