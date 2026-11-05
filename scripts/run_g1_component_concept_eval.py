@@ -69,7 +69,7 @@ from scripts.run_proof_b_eval import (  # noqa: E402  (reused, unchanged)
 )
 
 EVALUATION_ID = "g1-component-concept-qualification-01"
-PACK_ID = "inventorai-g1-component-concept-01"
+PACK_ID = "inventorai-g1-component-concept-heldout-02"
 FROZEN_STATUS = "FROZEN"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -90,31 +90,47 @@ INSTRUCTIONS = (
     "You help a person who has an idea for an invention but may not know which technologies or "
     "components it needs. Read only the idea text you are given and return one JSON object in the "
     "required schema. Write every text in the language of the idea.\n"
-    "Keep two things strictly apart. stated: only what the person actually wrote, each with "
-    "source_quote copied exactly from the idea (kind FUNCTION, COMPONENT, CONSTRAINT, VALUE or "
-    "CONTEXT). Everything else is your proposal.\n"
+    "Keep two things strictly apart. stated: only what the person actually wrote, each with a "
+    "source_quote copied from the idea (kind FUNCTION, COMPONENT, CONSTRAINT, VALUE or CONTEXT). "
+    "Everything else is your proposal.\n"
     "functions: what the invention would need to do. origin STATED only when the person wrote it, "
-    "with an exact source_quote; otherwise origin AI_PROPOSED with an empty source_quote. Use "
-    "resolution UNRESOLVED when a function depends on information the person has not given.\n"
-    "component_types: generic kinds of component that could perform the functions (for example "
-    "'soil moisture sensor', not a product, model or part number), each serving one or more "
-    "function ids, always attribution AI_PROPOSED and status UNVERIFIED.\n"
+    "with a source_quote; otherwise origin AI_PROPOSED with an empty source_quote. Use resolution "
+    "UNRESOLVED when a function depends on information the person has not given.\n"
+    "component_types: generic kinds of part that could perform the functions (a kind of part, not "
+    "a product, brand, model or part number), each serving one or more function ids, always "
+    "attribution AI_PROPOSED and status UNVERIFIED.\n"
     "relationships: how components or functions conceptually connect, kind SIGNAL, POWER, FLOW or "
-    "MECHANICAL, between existing ids. A relationship is a conceptual connection, never a claim that "
-    "parts are compatible.\n"
-    "alternatives: for a function where a genuinely different approach exists, up to three options. "
+    "MECHANICAL. A relationship is a conceptual connection, never a claim that parts are "
+    "compatible.\n"
+    "alternatives: for a function where a genuinely different approach exists, its options. "
     "missing_information: decisions or facts the person has not given that the design depends on. "
-    "clarification_questions: at most two questions a nontechnical person can answer.\n"
-    "excluded_by_inventor: anything the person says the invention must not have or use, quoted "
-    "exactly; never propose a component that contradicts it.\n"
+    "clarification_questions: questions a nontechnical person can answer.\n"
+    "excluded_by_inventor: anything the person says the invention must not have or use, quoted from "
+    "the idea; never propose a component that contradicts it.\n"
     "Never invent ratings, sizes, quantities, part numbers or other specifications; quote a number "
     "only if the person wrote it. Never say or imply that anything is safe, certified, compatible, "
     "guaranteed, tested, verified or will work. If the person asks for something that cannot be "
     "promised, record it as missing information, not as achieved.\n"
-    "If it is unclear what the invention is or does, ask first: give clarification_questions and do "
-    "not commit to a design. If the text describes no invention to build, or only an object the "
-    "person does not design, use outcome ABSTAIN with every list empty except missing_information "
-    "and clarification_questions.")
+    "Outcome: when you can describe a provisional concept, use RESPONDED with at least one function "
+    "and at least one component type. If it is unclear what the invention is or does, ask first: "
+    "give clarification_questions and do not commit to a design (RESPONDED without component types, "
+    "or ABSTAIN). If the text describes no invention to build, or only an object the person does "
+    "not design, use ABSTAIN, never RESPONDED with empty lists.\n"
+    "Format rules (a reply that breaks one is rejected): ids are S1, S2, ... for stated, F1, F2, "
+    "... for functions and C1, C2, ... for component_types: one capital letter and a number from 1 "
+    "to 99, each id used once. serves lists one or more existing F ids. A relationship joins two "
+    "different existing S, F or C ids. for_function is an existing F id. At most %(stated)d stated "
+    "items, %(functions)d functions, %(component_types)d component types, %(relationships)d "
+    "relationships, %(alternatives)d alternatives with 1 to %(options)d options each, "
+    "%(missing_information)d missing_information items, %(clarification_questions)d "
+    "clarification_questions and %(excluded_by_inventor)d excluded_by_inventor items. Every text "
+    "is at most %(item_chars)d characters. Every non-empty source_quote is copied character for "
+    "character from the idea (same capitalisation, punctuation and apostrophes) and contains at "
+    "least two words. With outcome ABSTAIN, every list is empty except missing_information and "
+    "clarification_questions." % LIMITS)
+# The format rules above are generated from LIMITS and _ID, which the validator enforces, so the
+# instructions and the checks cannot disagree (G1-1/2 correction M1).
+
 
 
 def schema():
@@ -284,17 +300,33 @@ def validate(reply, idea_text):
 # ─────────────────────────────────────────────────────────────────────────────
 # Pack identity, criteria and decision rule (pinned after the blind authoring)
 # ─────────────────────────────────────────────────────────────────────────────
-INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_component_concept_inputs_v1.json")
-REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_component_concept_reference_v1.json")
-INPUT_SHA256 = "e7bcc8a824e27c8cce0cbacfc3202bc309287563f5af877897ce18a75314e980"
-REFERENCE_SHA256 = "924bfd37751afb17101d1c193be8b92ed3cac3d9f692f0c1f8bb586351cdff82"
-# Independence evidence in Git: the instructions, schema and criteria were committed
-# first (43c6b09); the pack was then authored blind from base 9ad18ef (which does not
-# contain this module) and adjudicated prompt-blind in a second separate session.
-FROZEN_BEFORE_PACK_COMMIT = "43c6b093a9269f0f6306d59f7dafc47403dd1c69"
-AUTHOR_COMMIT = "f8b2809d6a3f1e5327d2e4c1d8efa490ce5f3e35"
-ADJUDICATION_COMMIT = "dbbb162813a50d7c1db98aa649929b7b42180026"
-CASE_IDS = tuple("C%02d" % i for i in range(1, 17))
+# The held-out QUALIFICATION pack: authored blind and adjudicated prompt-blind AFTER the
+# corrected instructions, schema and criteria were committed (pinned when frozen).
+INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_component_concept_heldout_v2_inputs.json")
+REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                              "g1_component_concept_heldout_v2_reference.json")
+INPUT_SHA256 = None
+REFERENCE_SHA256 = None
+FROZEN_BEFORE_PACK_COMMIT = None       # the commit that froze the corrected candidate
+AUTHOR_COMMIT = None
+ADJUDICATION_COMMIT = None
+CASE_IDS = tuple("Q%02d" % i for i in range(1, 17))
+
+# The DEVELOPMENT pack (v1): authored blind (f8b2809) against the first freeze (43c6b09),
+# adjudicated twice prompt-blind (dbbb162, eedcdb2) and reconciled. The Execution Lead saw
+# it before the instructions and criteria were corrected, so it is development evidence
+# ONLY and is never a held-out qualification of the corrected candidate.
+DEV_PACK_ID = "inventorai-g1-component-concept-01"
+DEV_INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_component_concept_inputs_v1.json")
+DEV_REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                  "g1_component_concept_reference_v1.json")
+DEV_INPUT_SHA256 = "e7bcc8a824e27c8cce0cbacfc3202bc309287563f5af877897ce18a75314e980"
+DEV_REFERENCE_SHA256 = "701e5d01ee82395f977d19a7eeed387461d401de92e4df49cb598bdc9baa98a2"
+DEV_CASE_IDS = tuple("C%02d" % i for i in range(1, 17))
+DEV_COMMITS = {"first_freeze": "43c6b093a9269f0f6306d59f7dafc47403dd1c69",
+               "author": "f8b2809d6a3f1e5327d2e4c1d8efa490ce5f3e35",
+               "adjudication_1": "dbbb162813a50d7c1db98aa649929b7b42180026",
+               "adjudication_2": "eedcdb269fcdbbca01cb2da61fa0a88110ccf475"}
 GROUPS = {"POSITIVE": 6, "EXCLUSION": 3, "AMBIGUOUS": 3, "NON_DEVICE": 2, "UNSUPPORTED": 2}
 VARIETIES = {"en": 10, "msa": 2, "gulf": 2, "egyptian": 2}
 PLANT_IDEA = ("I want a device that waters my plants automatically when they need water, "
@@ -315,8 +347,8 @@ CRITERIA = {
           "numerical guarantee, or assertion of safety, compatibility, certification or verified "
           "operability. Automatic for a unit-bearing number the inventor did not write; otherwise "
           "human. An inventor-supplied value quoted with its attribution is not a failure.",
-    "K4": "Unsupported invention scope: a NON_DEVICE case must not receive functions or component "
-          "types (automatic).",
+    "K4": "Unsupported invention scope: a NON_DEVICE case must return outcome ABSTAIN; any "
+          "RESPONDED reply, even with empty lists, fails (automatic).",
     "K5": "Structural integrity: malformed output, invalid or dangling ids fail (automatic). "
           "A transport or provider failure is INCOMPLETE, never a model result.",
     "G1": "Essential-function coverage over the POSITIVE cases: at least 80% overall and at least "
@@ -332,14 +364,19 @@ CRITERIA = {
           "reference's meaningful choice; unnecessary, contradictory or unsupported alternatives "
           "earn nothing.",
     "G5": "Ambiguity and abstention: at least 2 of the 3 AMBIGUOUS cases judged CLARIFIED and none "
-          "COMMITTED_DESIGN; both NON_DEVICE cases abstain (no functions or components).",
+          "COMMITTED_DESIGN; an ambiguous case may otherwise safely abstain.",
+    "G6": "Concept delivery: every POSITIVE, EXCLUSION and UNSUPPORTED case returns a VALID "
+          "RESPONDED reply with at least one function and at least one component type "
+          "(automatic). An ABSTAIN or an empty concept on such a case fails, so exclusion and "
+          "unsupported-claim handling must be shown, not avoided.",
 }
+CONCEPT_GROUPS = ("POSITIVE", "EXCLUSION", "UNSUPPORTED")
 DECISION_RULE = (
     "One separately authorized run binds these instructions, schema, criteria and decision rule, "
     "the pack's two hashes, the code revision and the model; nothing may be tuned on the pack "
     "afterwards. A case not attempted or without a reply (provider or transport failure) gives "
     "INCOMPLETE. Any critical failure (automatic, or a human K1 / K2 / K3 FAILURE), or a graded "
-    "criterion that can no longer pass, gives NO_GO. Otherwise, while any required human judgment "
+    "criterion (G1-G6) that can no longer pass, gives NO_GO. Otherwise, while any required human judgment "
     "is NOT_ASSESSED, or no valid human assessment record exists, the verdict is "
     "INCOMPLETE_REVIEW. PRELIMINARY_GO requires every critical control clear and every graded "
     "criterion met on a documented human assessment; it supports only considering one provisional, "
@@ -354,6 +391,10 @@ def preregistration():
             "adjudication_commit": ADJUDICATION_COMMIT,
             "frozen_before_pack_commit": FROZEN_BEFORE_PACK_COMMIT,
             "instructions_sha256": _sha(INSTRUCTIONS),
+            "development_pack": {"pack_id": DEV_PACK_ID, "input_sha256": DEV_INPUT_SHA256,
+                                 "reference_sha256": DEV_REFERENCE_SHA256, "commits": DEV_COMMITS,
+                                 "status": "development evidence only, never a qualification"},
+            "id_patterns": {k: v.pattern for k, v in _ID.items()},
             "schema_sha256": _sha(schema()), "limits": LIMITS, "groups": GROUPS,
             "varieties": VARIETIES, "criteria": CRITERIA, "decision_rule": DECISION_RULE,
             "review_questions": REVIEW_QUESTIONS, "attestation": ATTESTATION}
@@ -369,18 +410,26 @@ def _sha(value):
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def load_pack():
-    """The pinned pack and reference, checked for shape, balance and grounding."""
-    if INPUT_SHA256 is None or REFERENCE_SHA256 is None:
+def load_pack(development=False):
+    """The pinned pack and reference, checked for shape, balance and grounding. The
+    default is the held-out qualification pack; ``development=True`` loads the v1
+    development pack, which is evidence only and never a qualification."""
+    if development:
+        paths = (DEV_INPUT_PATH, DEV_INPUT_SHA256, DEV_REFERENCE_PATH, DEV_REFERENCE_SHA256)
+        pack_id, case_ids = DEV_PACK_ID, DEV_CASE_IDS
+    else:
+        paths = (INPUT_PATH, INPUT_SHA256, REFERENCE_PATH, REFERENCE_SHA256)
+        pack_id, case_ids = PACK_ID, CASE_IDS
+    if paths[1] is None or paths[3] is None:
         raise PackError("pack not frozen")
-    inputs = _load(INPUT_PATH, INPUT_SHA256)
-    reference = _load(REFERENCE_PATH, REFERENCE_SHA256)
-    if (inputs.get("pack_id") != PACK_ID or reference.get("pack_id") != PACK_ID
+    inputs = _load(paths[0], paths[1])
+    reference = _load(paths[2], paths[3])
+    if (inputs.get("pack_id") != pack_id or reference.get("pack_id") != pack_id
             or inputs.get("synthetic_only") is not True
             or inputs.get("status") != FROZEN_STATUS or reference.get("status") != FROZEN_STATUS):
         raise PackError("pack identity")
     cases, refs = inputs["cases"], reference["cases"]
-    if [c["case_id"] for c in cases] != list(CASE_IDS) or [r["case_id"] for r in refs] != list(CASE_IDS):
+    if [c["case_id"] for c in cases] != list(case_ids) or [r["case_id"] for r in refs] != list(case_ids):
         raise PackError("case identities")
     variety = {}
     for c in cases:
@@ -444,14 +493,22 @@ def load_pack():
     return cases, {r["case_id"]: r for r in refs}
 
 
-def similarity_to_earlier_packs(cases):
-    """The largest difflib ratio of each case against every earlier G1 pack's ideas."""
-    earlier = []
-    for rel in EARLIER_PACKS:
+def similarity_to_earlier_packs(cases, include_development=True):
+    """The largest difflib ratio of each case against every earlier G1 pack's ideas and,
+    by default, the v1 development pack. The Owner-specified plant-watering idea is the
+    one text both component-concept packs must contain; it is compared with the
+    campaign packs only."""
+    def ideas(rel):
         with open(os.path.join(_ROOT, rel), encoding="utf-8") as fh:
-            earlier += [c["idea_text"].lower() for c in json.load(fh)["cases"]]
-    return {c["case_id"]: max(difflib.SequenceMatcher(None, c["idea_text"].lower(), e).ratio()
-                              for e in earlier) for c in cases}
+            return [c["idea_text"].lower() for c in json.load(fh)["cases"]]
+    earlier = [t for rel in EARLIER_PACKS for t in ideas(rel)]
+    dev = ideas(os.path.relpath(DEV_INPUT_PATH, _ROOT)) if include_development else []
+    out = {}
+    for c in cases:
+        pool = earlier + ([] if c["idea_text"] == PLANT_IDEA else dev)
+        out[c["case_id"]] = max(difflib.SequenceMatcher(None, c["idea_text"].lower(), e).ratio()
+                                for e in pool)
+    return out
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -505,8 +562,9 @@ def score_case(reply, case, ref):
     if v["status"] == V_ERROR:
         return out
     valid = v["status"] == V_VALID
+    out["concept_delivered"] = bool(valid and reply["functions"] and reply["component_types"])
     if g == "NON_DEVICE":
-        if valid and (reply["functions"] or reply["component_types"]):
+        if valid:                      # RESPONDED, whatever it contains: only ABSTAIN passes
             out["critical"].append("K4")
         return out
 
@@ -657,6 +715,7 @@ def decide(scored, refs, judged):
             "G4": sum(ok(answer["%s:G4" % r["case_id"]], {"RELEVANT"}) for r in pos) >= 4,
             "G5": (sum(ok(answer["%s:G5" % c], {"CLARIFIED"}) for c in amb) >= 2
                    and not any(answer["%s:G5" % c] == "COMMITTED_DESIGN" for c in amb)),
+            "G6": all(s.get("concept_delivered") for s in scored if s["group"] in CONCEPT_GROUPS),
         }
     final, reachable = graded(False), graded(True)
     unassessed = sorted(i for i, a in answer.items() if a == NOT_ASSESSED)
