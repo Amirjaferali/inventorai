@@ -275,21 +275,27 @@ _AID_SENTENCE_BREAK = re.compile(r"[!?;؛؟\n]|(?<![0-9])\.|\.(?![0-9])")
 # syntactic forms; a board merely mentioned elsewhere in the sentence binds
 # nothing ("The board carries a camera that is 80 x 50 mm" abstains). These are
 # literal templates, not a parser.
-#   before the pair: "[circuit] board / PCB [size|dimensions|outline|footprint]"
-#     followed by ":" or "is / are / measures / =" (English), or "مقاس / أبعاد /
-#     حجم اللوحة", "اللوحة مقاسها / أبعادها / حجمها", "لوحة بمقاس / بأبعاد / بحجم"
-#     or "اللوحة" with an optional ":" (Arabic), ending exactly where the pair starts;
+#   before the pair, as the WHOLE start of the sentence: "[the|my|our|this|a|an]
+#     [circuit] board / PCB['s] [size|dimensions|outline|footprint]" followed by ":"
+#     or "is / are / measures / =" (English), or "مقاس / أبعاد / حجم اللوحة",
+#     "اللوحة مقاسها / أبعادها / حجمها", "لوحة بمقاس / بأبعاد / بحجم" or "اللوحة"
+#     with an optional ":" (Arabic) - so the board is the subject, never a
+#     prepositional or possessive attachment of another object;
 #   after the pair: "[circuit] board / PCB" directly ("an 85 x 56 mm board").
+# Either way the sentence must then end, pause or continue with a conjunction.
 _AID_BIND_BEFORE = re.compile(
-    r"(?:(?<![\w-])(?:circuit[ \t]+)?(?:board|pcb)(?:'s|’s)?"
-    r"(?:[ \t]+(?:size|dimensions|outline|footprint))?"
+    r"^[ \t]*(?:"
+    r"(?:(?:the|my|our|this|a|an)[ \t]+)?(?:circuit[ \t]+)?(?:board|pcb)"
+    r"(?:(?:'s|’s)?[ \t]+(?:size|dimensions|outline|footprint))?"
     r"(?:[ \t]*:|[ \t]+(?:is|are|measures|=))"
-    r"|(?<!\w)(?:(?:مقاس|مقاسات|أبعاد|ابعاد|حجم)[ \t]+(?:ال)?لوح[ةه]"
+    r"|(?:(?:مقاس|مقاسات|أبعاد|ابعاد|حجم)[ \t]+(?:ال)?لوح[ةه]"
     r"|(?:ال)?لوح[ةه][ \t]+(?:مقاسها|مقاساتها|أبعادها|ابعادها|حجمها)"
     r"|(?:ال)?لوح[ةه][ \t]+(?:بمقاس|بمقاسات|بأبعاد|بابعاد|بحجم)"
     r"|(?:ال)?لوح[ةه])[ \t]*:?)"
     r"[ \t]*$", re.IGNORECASE)
-_AID_BIND_AFTER = re.compile(r"^[ \t]+(?:circuit[ \t]+)?(?:board|pcb)(?!\w)", re.IGNORECASE)
+# The board word directly after the pair, never the modifier of another noun
+# or of a hyphenated word ("a 40 x 40 mm board fan", "a PCB-mounted fan").
+_AID_BIND_AFTER = re.compile(r"^[ \t]+(?:circuit[ \t]+)?(?:board|pcb)(?![\w-])", re.IGNORECASE)
 # After a pair bound from the left, the sentence must end, pause or continue
 # with a conjunction: never a noun the pair could describe instead.
 _AID_AFTER_OK = re.compile(
@@ -316,12 +322,15 @@ _AID_UNCERTAIN = re.compile(
     r"must|need|needs|want|wants|target|ideally|"
     # past, belief and change
     r"was|were|used|previous|previously|old|earlier|before|later|now|think|believe|"
-    r"probably|likely|seems?|hope|planned|plan|change|changed)(?!\w)|"
+    r"probably|likely|seems?|hope|hopefully|planned|plan|change|changed|"
+    r"suppose|supposing|supposedly|assume|assuming|say|imagine|originally|initially|"
+    r"presumably|theoretically|hypothetically|expect|expected)(?!\w)|"
     r"n't(?!\w)|[~≈±]|"
     r"(?<!\w)[وف]?(?:ربما|قد|لعل|ربّما|إذا|اذا|لو|إن|أو|او|إما|اما|حوالي|حوالى|تقريبا|تقريبًا|"
     r"نحو|قرابة|لا|لن|لم|ليس|ليست|لست|ما|مش|مو|بدون|دون|غير|بدل|بدلا|بدلًا|"
     r"أقل|اقل|أكثر|اكثر|أكبر|اكبر|أصغر|اصغر|حتى|أقصى|اقصى|أدنى|ادنى|حد|بين|ضمن|يجب|ينبغي|"
-    r"أريد|اريد|كان|كانت|سابقا|سابقًا|أظن|اظن|أعتقد|اعتقد|يبدو|الآن|الان)(?!\w)",
+    r"أريد|اريد|كان|كانت|سابقا|سابقًا|أظن|اظن|أعتقد|اعتقد|يبدو|الآن|الان|"
+    r"لنفترض|نفترض|افترض|فرضا|فرضًا|يفترض|مفترض|أتمنى|اتمنى|أرجو|ارجو|تخيل|لنقل)(?!\w)",
     re.IGNORECASE)
 
 
@@ -352,8 +361,9 @@ def literal_board_pair(original_idea):
     sentence = original_idea[start:end]
     before = original_idea[start:pair.start()]
     after = original_idea[pair.end():end]
+    tail = _AID_BIND_AFTER.match(after)
     bound = ((_AID_BIND_BEFORE.search(before) and _AID_AFTER_OK.match(after))
-             or _AID_BIND_AFTER.match(after))
+             or (tail and _AID_AFTER_OK.match(after[tail.end():])))
     if not bound or _AID_OTHER_OBJECT.search(sentence):
         return None
     if _AID_UNCERTAIN.search(sentence):

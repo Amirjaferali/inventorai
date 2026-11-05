@@ -50,6 +50,8 @@ NOTE_Y = "From my original idea: “85 x 56 mm”; I entered 56 as board X and 8
     ("A weather station with an 85 x 56 mm board.", "85", "56", "85 x 56 mm"),
     ("اللوحة مقاسها 85 × 56 mm.", "85", "56", "85 × 56 mm"),
     ("لوحة بمقاس 85 × 56 mm.", "85", "56", "85 × 56 mm"),
+    ("The board's size is 80 x 50 mm.", "80", "50", "80 x 50 mm"),
+    ("اللوحة 85 × 56 mm وهي خضراء.", "85", "56", "85 × 56 mm"),
     ("A lamp. The board: 70 * 30 mm. It is bright.", "70", "30", "70 * 30 mm"),
     ("مقاس اللوحة 85 × 56 mm. وأريد علبة لها.", "85", "56", "85 × 56 mm"),
     ("The board is 999999.9999 x 0.0001 mm.", "999999.9999", "0.0001", "999999.9999 x 0.0001 mm"),
@@ -109,6 +111,28 @@ def test_r01_one_literal_board_pair_is_located_verbatim(idea, first, second, spa
     "The board sits next to 80 x 50 mm.",
     "اللوحة تحمل كاميرا 80 × 50 mm.",
     "اللوحة متصلة بعدسة مقاسها 80 × 50 mm.",
+    # follow-up review: the board must be the subject at the start of the sentence, or the
+    # noun directly after the pair - never a prepositional, possessive or modifier attachment
+    "The fan for the board is 40 x 40 mm.",
+    "The camera attached to the board is 30 x 30 mm.",
+    "The heatsink on the board is 40 x 40 mm.",
+    "The label on the board is 20 x 10 mm.",
+    "Camera on board: 25 x 25 mm.",
+    "Our competitor's board is 80 x 50 mm.",
+    "مروحة اللوحة 40 x 40 mm.",
+    "كاميرا اللوحة: 30 x 30 mm.",
+    "ملصق اللوحة 20 x 10 mm.",
+    "A 40 x 40 mm board fan cools it.",
+    "A 30 x 30 mm board camera.",
+    "A 20 x 20 mm PCB-mounted fan.",
+    "Suppose the board is 80 x 50 mm.",
+    "Assume the board is 80 x 50 mm.",
+    "Let's say the board is 80 x 50 mm.",
+    "Imagine the board is 80 x 50 mm.",
+    "Hopefully the board is 80 x 50 mm.",
+    "Originally the board is 80 x 50 mm.",
+    "لنفترض أن اللوحة 80 x 50 mm.",
+    "أتمنى أن اللوحة 80 x 50 mm.",
     # review findings: limits, comparisons, past or unsure statements, other objects
     "The board must be smaller than 80 x 50 mm.",
     "The board is at most 80 x 50 mm.",
@@ -261,7 +285,7 @@ def test_w02_no_aid_without_exactly_one_literal_pair(client):
 
 
 def test_w03_the_passage_is_escaped(client):
-    idea = 'A planter on a hinge. <b onclick="x()"> My board is 85 x 56 mm.'
+    idea = 'A planter on a hinge. My board is 85 x 56 mm, <b onclick="x()">really</b>.'
     sid, ifc, _ = _project(client, idea)
     body = _body(client.get(_url(sid, ifc)))
     chunk = _aid_chunk(body)

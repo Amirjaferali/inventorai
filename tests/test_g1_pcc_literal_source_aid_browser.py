@@ -154,3 +154,37 @@ def test_literal_aid_needs_the_board_and_an_explicit_choice_and_fills_only_empty
     expect(page.locator("[data-pcc-outcome]")).to_have_attribute("data-pcc-outcome", "MET")
     assert board_fields() == ("85", "57", proposed + " Checked with calipers.")
     assert errors == []
+
+
+def test_a_proposed_note_loaded_with_the_page_is_removed_when_a_value_changes(server, page):
+    """A saved declaration whose board note is still exactly the proposal: on the correction page,
+    changing a board value removes that unedited proposal instead of leaving it describing the
+    old assignment (follow-up review finding)."""
+    lang = "en"
+    _start(page, server, lang)
+    _prepare(page, lang)
+    page.locator("[data-pcc-link] a").first.click()
+    page.wait_for_load_state()
+    form = page.locator("[data-pcc-form]")
+    box = page.locator("[data-pcc-aid]")
+    board, case = NAMES[lang]
+    form.locator("#pcc-board").select_option(label=board)
+    box.locator("input[name=pcc_aid_order][value=first_x]").check()
+    box.locator("[data-pcc-aid-apply]").click()
+    proposed = page.input_value("#pcc-basis_board")
+    form.locator("#pcc-enclosure").select_option(label=case)
+    page.fill("#pcc-region", REGION[lang])
+    for role, value in (("region_x", "95"), ("region_y", "95"), ("c", "2")):
+        page.fill("#pcc-v-%s" % role, value)
+    for fieldset in form.locator("[data-pcc-decl]").all():
+        fieldset.locator("input[value=applies]").check()
+    form.locator("button[type=submit]").click()
+    page.wait_for_load_state()
+    expect(page.locator("[data-pcc-notice]")).to_have_text(text("UI_PCC_MSG_SAVED", lang))
+    page.goto(page.url)
+    page.wait_for_load_state()
+    assert page.input_value("#pcc-basis_board") == proposed          # loaded from the saved record
+    page.fill("#pcc-v-board_x", "90")
+    expect(page.locator("[data-pcc-aid-status]")).to_have_text(text("UI_PCC_AID_MSG_NOTE_CLEARED", lang))
+    assert page.input_value("#pcc-basis_board") == ""
+    assert page.input_value("#pcc-v-board_y") == "56"

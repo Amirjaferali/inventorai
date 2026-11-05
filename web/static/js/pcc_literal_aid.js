@@ -29,6 +29,14 @@
   controls.hidden = false;
   var placed = null;    // the exact note text the aid placed, while it is unedited
   var derived = false;  // the inventor has edited the note the aid placed
+  // A proposed note already in the field when the page loads (a saved
+  // declaration being corrected, a refused save shown again, a restored
+  // form) is treated exactly like one placed in this visit.
+  Array.prototype.forEach.call(orders, function (radio) {
+    if (note.value !== "" && note.value === radio.getAttribute("data-note")) {
+      placed = note.value;
+    }
+  });
 
   function say(name) {
     status.textContent = status.getAttribute("data-msg-" + name);
