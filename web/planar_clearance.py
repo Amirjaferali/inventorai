@@ -12,6 +12,7 @@ sketch, never a measured drawing).
 """
 import hashlib
 import json
+import re
 
 from engine import mechanical_planar_clearance as _pcc
 from engine import subsystem_model as _sm
@@ -243,3 +244,140 @@ def clearance_view(snapshot, interface_id, binding):
     view["evaluation"] = evaluation
     view["diagram"] = diagram(material, evaluation)
     return view
+
+
+# G1-PCC-LITERAL-SOURCE-AID-01: ONE bounded input aid. It LOCATES one literal
+# "<number> x <number> mm" pair written in the inventor's original idea and
+# shows it with its sentence; it never decides which component is the board,
+# which number is X or Y, whether the numbers are right or whether any
+# applicability declaration holds. The inventor assigns the axes and saves
+# through the unchanged save path. Not a dimension parser: anything outside
+# the narrow scope below is refused (``None``), never guessed. Nothing is
+# stored; the numbers must pass the method's own strict grammar unchanged.
+AID_MAX_IDEA_CHARS = 2000
+AID_ORDERS = ("first_x", "first_y")
+# The fixed opening of the documentary basis note the aid proposes. The save
+# route refuses a note that opens with one of these but no longer matches the
+# submitted board values (``aid_note_consistent``).
+AID_NOTE_PREFIX = {"en": "From my original idea: ", "ar": "من فكرتي الأصلية: "}
+_AID_NUMBER = r"[0-9]+(?:\.[0-9]+)?"
+_AID_PAIR = re.compile(
+    r"(?<![\w.,٫/+\-–−])(?P<a>%s)\s*[x×X*]\s*(?P<b>%s)\s*mm(?![\w²³])"
+    % (_AID_NUMBER, _AID_NUMBER), re.ASCII)
+# Any two numbers joined by a multiplication sign, whatever follows (another
+# unit, no unit, other digit systems): a second one makes the idea ambiguous.
+_AID_ANY_PAIR = re.compile(r"\d+(?:[.,٫]\d+)?\s*[x×X*]\s*\d", re.UNICODE)
+_AID_ANY_NUMBER = re.compile(r"\d+(?:[.,٫]\d+)*", re.UNICODE)
+# A sentence ends at ! ? ; ؛ ؟ a line break, or a dot that is not a decimal point.
+_AID_SENTENCE_BREAK = re.compile(r"[!?;؛؟\n]|(?<![0-9])\.|\.(?![0-9])")
+_AID_BOARD = re.compile(
+    r"(?<!\w)(?:boards?|pcbs?)(?!\w)|(?<!\w)[وبلفك]?(?:ال|ل)?(?:لوحة|لوحه)(?!\w)",
+    re.IGNORECASE)
+_AID_OTHER_OBJECT = re.compile(
+    r"(?<!\w)(?:box(?:es)?|case|cases|enclosures?|housings?|lid|cover|shell|"
+    r"region|area|space|opening|slot)(?!\w)|"
+    r"(?<!\w)(?:ال)?(?:صندوق|علبة|علبه|غلاف|حاوية|حاويه|غطاء|منطقة|منطقه|فتحة|فتحه)(?!\w)",
+    re.IGNORECASE)
+# Words that make the sentence hypothetical, approximate, alternative or
+# negated. A stop list, not an interpreter: a listed word refuses the aid even
+# where it would be harmless, which is the safe direction.
+_AID_UNCERTAIN = re.compile(
+    r"(?<!\w)(?:maybe|perhaps|might|could|would|should|if|unless|or|either|about|"
+    r"around|approx(?:imately)?|roughly|nearly|almost|estimated?|guess(?:ed)?|"
+    r"unsure|uncertain|not|never|no|cannot|without|instead|rather|unknown|tbd)(?!\w)|"
+    r"n't(?!\w)|[~≈±]|"
+    r"(?<!\w)[وف]?(?:ربما|قد|لعل|ربّما|إذا|اذا|لو|إن|أو|او|إما|اما|حوالي|حوالى|تقريبا|تقريبًا|"
+    r"نحو|قرابة|لا|لن|لم|ليس|ليست|لست|ما|مش|مو|بدون|دون|غير|بدل|بدلا|بدلًا)(?!\w)",
+    re.IGNORECASE)
+
+
+def literal_board_pair(original_idea):
+    """The ONE literal board-dimension pair of ``original_idea``, or ``None``.
+
+    Returns ``{"passage", "span", "first", "second", "unit"}`` with every text
+    copied verbatim from the idea. ``first`` / ``second`` are in the order the
+    inventor wrote them; no axis is implied. Refused (``None``) unless ALL hold:
+    the idea has exactly one ``A x B`` pair of any kind and it is ``A x B mm``
+    in ASCII digits; its sentence names a board and no other object, holds no
+    other number and no hypothetical, approximate, alternative or negating
+    word; and both numbers pass the method's strict grammar for a dimension."""
+    if not isinstance(original_idea, str) or not 0 < len(original_idea) <= AID_MAX_IDEA_CHARS:
+        return None
+    if len(_AID_ANY_PAIR.findall(original_idea)) != 1:
+        return None
+    pairs = list(_AID_PAIR.finditer(original_idea))
+    if len(pairs) != 1:
+        return None
+    pair = pairs[0]
+    breaks = [m.end() for m in _AID_SENTENCE_BREAK.finditer(original_idea, 0, pair.start())]
+    start = breaks[-1] if breaks else 0
+    end_match = _AID_SENTENCE_BREAK.search(original_idea, pair.end())
+    end = end_match.start() if end_match else len(original_idea)
+    sentence = original_idea[start:end]
+    if not _AID_BOARD.search(sentence) or _AID_OTHER_OBJECT.search(sentence):
+        return None
+    if _AID_UNCERTAIN.search(sentence):
+        return None
+    if len(_AID_ANY_NUMBER.findall(sentence)) != 2:
+        return None
+    first, second = pair.group("a"), pair.group("b")
+    if not (_pcc.is_admitted_value("board_x", first)
+            and _pcc.is_admitted_value("board_y", second)):
+        return None
+    return {"passage": sentence.strip(), "span": pair.group(0),
+            "first": first, "second": second, "unit": _pcc.UNIT}
+
+
+def aid_assignment(pair, order):
+    """``(board_x, board_y)`` for the inventor's explicit ``order`` choice."""
+    if pair is None or order not in AID_ORDERS:
+        return None
+    if order == "first_x":
+        return pair["first"], pair["second"]
+    return pair["second"], pair["first"]
+
+
+def aid_note(pair, order, lang):
+    """The documentary basis note for ONE explicit assignment, in ``lang``.
+    It quotes the source and states the inventor's own assignment; it never
+    says the numbers were checked."""
+    assignment = aid_assignment(pair, order)
+    if assignment is None or lang not in AID_NOTE_PREFIX:
+        return None
+    x, y = assignment
+    if lang == "ar":
+        body = "«%s»؛ أدخلتُ %s لـ X و%s لـ Y للوحة." % (pair["span"], x, y)
+    else:
+        body = "“%s”; I entered %s as board X and %s as board Y." % (
+            pair["span"], x, y)
+    return AID_NOTE_PREFIX[lang] + body
+
+
+def aid_note_claimed(note):
+    """True when ``note`` opens with the aid's fixed prefix (either language)."""
+    return isinstance(note, str) and any(note.startswith(p) for p in AID_NOTE_PREFIX.values())
+
+
+def aid_offer(pair, lang):
+    """The display model of the aid for ONE located pair in ``lang``: both
+    explicit assignments with their proposed note, none pre-chosen."""
+    if pair is None:
+        return None
+    return {"passage": pair["passage"], "span": pair["span"], "first": pair["first"],
+            "second": pair["second"], "unit": pair["unit"],
+            "orders": [{"order": order, "x": aid_assignment(pair, order)[0],
+                        "y": aid_assignment(pair, order)[1],
+                        "note": aid_note(pair, order, lang if lang in AID_NOTE_PREFIX else "en")}
+                       for order in AID_ORDERS]}
+
+
+def aid_note_consistent(note, pair, board_x, board_y):
+    """False only for a note that opens with the aid's fixed prefix but is not
+    exactly the note of the submitted board values (an edited value, a forged
+    or stale note, or no locatable pair). Any other note is the inventor's own
+    free text and is never judged."""
+    if not aid_note_claimed(note):
+        return True
+    return any(aid_note(pair, order, lang) == note
+               and aid_assignment(pair, order) == (board_x, board_y)
+               for order in AID_ORDERS for lang in AID_NOTE_PREFIX)
