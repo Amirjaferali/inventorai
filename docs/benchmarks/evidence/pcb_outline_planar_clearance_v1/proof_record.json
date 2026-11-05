@@ -1,5 +1,14 @@
 {
  "board_file_version": "20221018",
+ "environment": {
+  "ezdxf": "1.4.2",
+  "kernel": "6.18.44-fc-v236",
+  "kicad_package": "kicad 7.0.11+dfsg-1build4 amd64",
+  "kicad_source": "Ubuntu 24.04 official archive (noble/universe); no PPA",
+  "machine": "x86_64",
+  "os": "Ubuntu 24.04.5 LTS",
+  "python": "3.13.18"
+ },
  "geometry": {
   "board_v1": {
    "declared_mm": [
@@ -11,6 +20,21 @@
     "50"
    ],
    "export_sha256": "95810445fefccd52a30ece6b0ae7ad29067cd84425cd7330ca7f0457c1983ff3",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
    "source_mm": [
     "84",
     "50"
@@ -21,6 +45,18 @@
   "board_v1_inch_export": {
    "export_refused": "export is not metric ($MEASUREMENT 0)",
    "export_sha256": "20f10bfb8bb12dc9971acc49e2ecab10a0e6a532ac695d116504fea1f26eb4e4",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 0,
+    "refused": "export is not metric"
+   },
    "source_mm": [
     "84",
     "50"
@@ -38,6 +74,21 @@
     "50"
    ],
    "export_sha256": "95810445fefccd52a30ece6b0ae7ad29067cd84425cd7330ca7f0457c1983ff3",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
    "source_mm": [
     "84",
     "50"
@@ -55,6 +106,21 @@
     "50"
    ],
    "export_sha256": "1498cfb96329720ba20d17d2dda848c2b0eb48941ad2bdf820affa2eb02884a7",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "mm": [
+     "80.0",
+     "50.0"
+    ]
+   },
    "source_mm": [
     "80",
     "50"
@@ -65,6 +131,19 @@
   "neg_cutout": {
    "export_refused": "unsupported export entities: CIRCLE, LINE",
    "export_sha256": "e1efd2c0b811c0015ee41934997eafe6827118878ea667c005e8c2e332858a22",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "CIRCLE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "refused": "unsupported export entities: CIRCLE, LINE"
+   },
    "source_refused": "unsupported Edge.Cuts shapes: gr_circle, gr_rect",
    "source_sha256": "1706c20d91028207b21dff5c06fb626b2ba6a66e1e8a970498d4a2ada731ed2a",
    "supported": false
@@ -72,6 +151,20 @@
   "neg_l_shape": {
    "export_refused": "6 outline segments, not the four of one rectangle",
    "export_sha256": "69d4bb6cf62f6ccfba460b344a9fa57c39bea9f14d1eea80cba78dc3b1775064",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "refused": "6 outline segments, not the four of one rectangle"
+   },
    "source_refused": "6 outline segments, not the four of one rectangle",
    "source_sha256": "82897ca26f017304047fbc32caeb03c997e2c6361e50e2022c70d9fd692c4b22",
    "supported": false
@@ -79,6 +172,13 @@
   "neg_no_outline": {
    "export_refused": "no outline in the export",
    "export_sha256": "c7e0eb174ddfff7c5a02582eb80495da569aff2c37bc184ff823d8f2b995724e",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [],
+    "insunits": null,
+    "measurement": 1,
+    "refused": "unsupported export entities: none"
+   },
    "source_refused": "no Edge.Cuts outline",
    "source_sha256": "aa3a2948c5293803b8ee93c4551d4d4de949aacfb53817546c3021a41d3fb8ef",
    "supported": false
@@ -86,6 +186,17 @@
   "neg_open_outline": {
    "export_refused": "3 outline segments, not the four of one rectangle",
    "export_sha256": "7a6c6bb3749042c9f4efed3052fcdd1a4f3369719c3af75763f94bc49c9d9e7c",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "refused": "3 outline segments, not the four of one rectangle"
+   },
    "source_refused": "3 outline segments, not the four of one rectangle",
    "source_sha256": "fbe5658761c00aabb622f5c893e790422f7bedb45527d2e9e48df1289cb2b81d",
    "supported": false
@@ -93,6 +204,18 @@
   "neg_rotated": {
    "export_refused": "a segment is not axis-aligned",
    "export_sha256": "625da735c310ee979474746193714cc496da01a4a86f6336c81b160f249b7c42",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "refused": "a segment is not axis-aligned"
+   },
    "source_refused": "a segment is not axis-aligned",
    "source_sha256": "5fb382d4f88663e5de2bdbf095b37ce389362bed57f07c1c74e896759922b20e",
    "supported": false
@@ -100,6 +223,22 @@
   "neg_rounded_corners": {
    "export_refused": "unsupported export entities: ARC, LINE",
    "export_sha256": "6b54c4d011a507ba42b451b6d2db4874c59121d4f783dd6e21de2064c56b85ce",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "ARC",
+     "ARC",
+     "ARC",
+     "ARC",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "refused": "unsupported export entities: ARC, LINE"
+   },
    "source_refused": "unsupported Edge.Cuts shapes: gr_arc, gr_line",
    "source_sha256": "89a3ec809a40a8e72e49f6c03ca703c42dde45281a5e8034d18d97db9a931272",
    "supported": false
@@ -107,6 +246,22 @@
   "neg_two_boards": {
    "export_refused": "8 outline segments, not the four of one rectangle",
    "export_sha256": "451e0c341e8bd2e7d0da4598fc9cc841018a712755dff8d72600e4a89e52f036",
+   "ezdxf": {
+    "dxfversion": "AC1009",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": null,
+    "measurement": 1,
+    "refused": "8 outline segments, not the four of one rectangle"
+   },
    "source_refused": "2 separate rectangles on Edge.Cuts, not one outline",
    "source_sha256": "9c04e86fb21a3f8782766b23c7b213f15788664d921d64e7e791e6446f6a0ee4",
    "supported": false
@@ -119,6 +274,22 @@
   "region_y": "56"
  },
  "kicad_cli_sha256": "390de70be2e43114fec97941fe3f72dcd70a254c03303a116369ba58a93d14a0",
+ "kicad_licence_notice": {
+  "file": "/usr/share/doc/kicad/copyright",
+  "licence_fields": [
+   "BSD-3-clause",
+   "CC-BY-SA-3.0",
+   "CC-BY-SA-4.0",
+   "Expat",
+   "GPL-2+",
+   "GPL-2+ or CC-BY-SA-3.0",
+   "GPL-3+",
+   "LGPL-2.1+",
+   "WXWINDOWS"
+  ],
+  "main_files_licence": "GPL-3+",
+  "sha256": "fdb6508741cecb5a50c0d2e84d72ee1d9f17b63e35027d0caa6203b234bbd0ca"
+ },
  "kicad_package": "Ubuntu 24.04 kicad 7.0.11+dfsg-1build4 (GPL-3+)",
  "kicad_runs": {
   "board_v1": {
@@ -189,7 +360,7 @@
     "region_x": "86",
     "region_y": "56"
    },
-   "dxf_sha256": "815de72341bb34afeb8cdbfeebad75cb3f4b18ccd047482c2d1ce20e05bc614f",
+   "dxf_sha256": "ac93c5c3c515cbca3195a2718af13b9a03ebbf493db4b19a94c163bad255b1eb",
    "files": [
     "geometry.dxf",
     "companion.json",
@@ -211,10 +382,10 @@
    },
    "outcome": "NOT_MET",
    "revision": 0,
-   "snapshot_digest": "3529b2335850a935",
+   "snapshot_digest": "e5b31ecccc61d24a",
    "source_digest_in_bundle": false,
    "status": 200,
-   "zip_sha256": "eaac1ed3b36150f4bb4c0eec88541875d92fed8688f3fc32eb6941a358bb7983"
+   "zip_sha256": "0ddbf270192e4621cb3cee6b7f007638c48b323a136e9e63ff37e883281ad410"
   },
   "cad_v2": {
    "companion_binds_dxf": true,
@@ -226,7 +397,7 @@
     "region_x": "86",
     "region_y": "56"
    },
-   "dxf_sha256": "36a684686b917d0acb9352bf8f0f5bb2200ac5f595f6889c7ed417e1a9660b90",
+   "dxf_sha256": "e5c123aae6b9c7c45c27ba12eb43d563cefb4cb89e4dd1749b277d6a5a44c1d0",
    "files": [
     "geometry.dxf",
     "companion.json",
@@ -248,18 +419,18 @@
    },
    "outcome": "MET",
    "revision": 1,
-   "snapshot_digest": "e9c359fdf4c38df3",
+   "snapshot_digest": "b93e48e8ecb5f120",
    "source_digest_in_bundle": false,
    "status": 200,
-   "zip_sha256": "c47aa3d31c74eaaa29352f8b406c4a56917f6c8419dcf76d7f72321aa473f839"
+   "zip_sha256": "cfd03d8acea83c92552b9e61837f37bef0c44ef2bd6b1e8ea4e5b2a40fe22018"
   },
   "declare_v1": {
    "page": {
     "cad": [
-     "/session/cdaab1cb-5400-4d1e-8cfa-6035c2b064f0/interface-clearance/ifc-412fc0ed38a4433491e0f05dde45ea93/cad.zip?revision=pcr-993413b7bba34a15a7fd13cd51648a81&digest=3529b2335850a935"
+     "/session/efbefe41-bf1c-444d-a1a8-53c63744632e/interface-clearance/ifc-1e0715271ebb4dccb9da6d23c82912e9/cad.zip?revision=pcr-b14bf5679e6c49c1aceadceed3d57cce&digest=e5b31ecccc61d24a"
     ],
     "digest": [
-     "3529b2335850a935"
+     "e5b31ecccc61d24a"
     ],
     "margins": [
      "-1 mm",
@@ -281,10 +452,10 @@
   "redeclare_v2": {
    "page": {
     "cad": [
-     "/session/cdaab1cb-5400-4d1e-8cfa-6035c2b064f0/interface-clearance/ifc-412fc0ed38a4433491e0f05dde45ea93/cad.zip?revision=pcr-22119c7c6f1047c197a223a11640d3f7&digest=e9c359fdf4c38df3"
+     "/session/efbefe41-bf1c-444d-a1a8-53c63744632e/interface-clearance/ifc-1e0715271ebb4dccb9da6d23c82912e9/cad.zip?revision=pcr-bad45476911843f68981df16f0d4a17a&digest=b93e48e8ecb5f120"
     ],
     "digest": [
-     "e9c359fdf4c38df3"
+     "b93e48e8ecb5f120"
     ],
     "margins": [
      "1 mm",
@@ -303,10 +474,10 @@
    "harness_verdict": "SOURCE MISMATCH: the current declaration names a different board file; its result does not describe the presented source",
    "product_page_before_redeclaration": {
     "cad": [
-     "/session/cdaab1cb-5400-4d1e-8cfa-6035c2b064f0/interface-clearance/ifc-412fc0ed38a4433491e0f05dde45ea93/cad.zip?revision=pcr-993413b7bba34a15a7fd13cd51648a81&digest=3529b2335850a935"
+     "/session/efbefe41-bf1c-444d-a1a8-53c63744632e/interface-clearance/ifc-1e0715271ebb4dccb9da6d23c82912e9/cad.zip?revision=pcr-b14bf5679e6c49c1aceadceed3d57cce&digest=e5b31ecccc61d24a"
     ],
     "digest": [
-     "3529b2335850a935"
+     "e5b31ecccc61d24a"
     ],
     "margins": [
      "-1 mm",

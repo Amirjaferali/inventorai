@@ -74,7 +74,9 @@ def _sexpr(text):
             cur = stack.pop()
         else:
             cur.append(tok[1:-1] if tok.startswith('"') else tok)
-    if stack or len(root) != 1 or not root[0] or root[0][0] != "kicad_pcb":
+    if stack:
+        raise Refused("malformed board file (unbalanced parentheses)")
+    if len(root) != 1 or not root[0] or root[0][0] != "kicad_pcb":
         raise Refused("not a KiCad board file")
     return root[0]
 
@@ -271,9 +273,36 @@ def _plain(value):
     return text.rstrip("0").rstrip(".") if "." in text else text
 
 
+def ezdxf_reading(path):
+    """A third, independent reading of the KiCad export with ezdxf (the pinned 1.4.2 the
+    product already uses), applying the same rectangle rules to what ezdxf parses."""
+    import ezdxf
+    doc = ezdxf.readfile(path)
+    out = {"dxfversion": doc.dxfversion, "measurement": doc.header.get("$MEASUREMENT"),
+           "insunits": doc.header.get("$INSUNITS"),
+           "entities": sorted(e.dxftype() for e in doc.modelspace())}
+    try:
+        if out["measurement"] != 1:
+            raise Refused("export is not metric")
+        if out["insunits"] not in (None, 4):
+            raise Refused("export units are not millimetres")
+        kinds = sorted(set(out["entities"]))
+        if kinds != ["LINE"]:
+            raise Refused("unsupported export entities: %s" % (", ".join(kinds) or "none"))
+        segments = [((Decimal(repr(e.dxf.start.x)), Decimal(repr(e.dxf.start.y))),
+                     (Decimal(repr(e.dxf.end.x)), Decimal(repr(e.dxf.end.y))))
+                    for e in doc.modelspace()]
+        out["mm"] = [str(v) for v in _closed_rectangle(
+            segments, close=lambda a, b: abs(a - b) <= TOLERANCE_MM)]
+    except Refused as exc:
+        out["refused"] = str(exc)
+    return out
+
+
 def judge(name, export_name=None):
-    """The independent decision for one fixture: both readings must agree exactly
-    (within TOLERANCE_MM) on ONE supported rectangle, otherwise it is refused."""
+    """The independent decision for one fixture: the board file's text, this proof's own
+    DXF reader and ezdxf must all agree (within TOLERANCE_MM) on ONE supported rectangle,
+    otherwise it is refused."""
     src = open(os.path.join(FIXTURES, name + ".kicad_pcb"), encoding="utf-8").read()
     dxf_path = os.path.join(EXPORTS, (export_name or name) + ".dxf")
     result = {"source_sha256": sha256(src.encode("utf-8"))}
@@ -290,10 +319,13 @@ def judge(name, export_name=None):
             result["export_mm"] = [str(v) for v in measured]
         except Refused as exc:
             measured, result["export_refused"] = None, str(exc)
+        result["ezdxf"] = ezdxf_reading(dxf_path)
     else:
         measured, result["export_refused"] = None, "KiCad wrote no export"
-    agree = (source is not None and measured is not None
-             and all(abs(a - b) <= TOLERANCE_MM for a, b in zip(source, measured)))
+    third = result.get("ezdxf", {}).get("mm")
+    agree = (source is not None and measured is not None and third is not None
+             and all(abs(a - b) <= TOLERANCE_MM for a, b in zip(source, measured))
+             and all(abs(a - Decimal(b)) <= TOLERANCE_MM for a, b in zip(source, third)))
     result["supported"] = agree
     if agree:
         result["declared_mm"] = [_plain(v) for v in source]   # the value of record
@@ -396,12 +428,50 @@ def product_route(judged_v1, judged_v2, tool):
     return record, raw0, raw1
 
 
+COPYRIGHT = "/usr/share/doc/kicad/copyright"
+
+
+def licence_notice():
+    """The installed package's own licence notice: its distinct License fields and the
+    file's digest. The notice itself is not copied; KiCad is used unmodified and is not
+    bundled."""
+    text = open(COPYRIGHT, encoding="utf-8").read()
+    fields = sorted(set(m.strip() for m in re.findall(r"^License:(.*)$", text, re.M)))
+    main = None
+    for stanza in re.split(r"\n\s*\n", text):
+        lines = stanza.strip().splitlines()
+        if lines and lines[0].strip() == "Files: *":
+            main = next((ln.split(":", 1)[1].strip() for ln in lines
+                         if ln.startswith("License:")), None)
+            break
+    return {"file": COPYRIGHT, "sha256": sha256(text.encode("utf-8")),
+            "main_files_licence": main,
+            "licence_fields": fields}
+
+
+def environment():
+    import platform
+    import ezdxf
+    release = dict(re.findall(r'^(\w+)="?([^"\n]*)"?$', open("/etc/os-release").read(), re.M))
+    dpkg = subprocess.run(["dpkg-query", "-W", "-f=${Package} ${Version} ${Architecture}", "kicad"],
+                          capture_output=True, text=True).stdout.strip()
+    return {"os": release.get("PRETTY_NAME"), "kernel": platform.release(),
+            "machine": platform.machine(), "python": platform.python_version(),
+            "ezdxf": ezdxf.__version__, "kicad_package": dpkg,
+            "kicad_source": "Ubuntu 24.04 official archive (noble/universe); no PPA"}
+
+
 def main():
     if shutil.which("kicad-cli") is None:
         print(json.dumps({"verdict": "BLOCKED", "cause": "kicad-cli is not on PATH"}))
         return 2
     tool = "kicad-cli " + kicad_version()
     os.makedirs(EXPORTS, exist_ok=True)
+    help_text = subprocess.run(["kicad-cli", "pcb", "export", "dxf", "--help"],
+                               capture_output=True, text=True).stdout
+    with open(os.path.join(EVIDENCE, "kicad_cli_7.0.11_pcb_export_dxf_help.txt"), "w",
+              encoding="utf-8") as fh:
+        fh.write(help_text)
     runs, judged = {}, {}
     for name in POSITIVE + NEGATIVE:
         runs[name] = run_kicad(name)
@@ -416,6 +486,8 @@ def main():
     record = {"proof": "PCB-OUTLINE-TO-PLANAR-CLEARANCE-PROOF-01", "synthetic_only": True,
               "tool": tool, "kicad_package": "Ubuntu 24.04 kicad 7.0.11+dfsg-1build4 (GPL-3+)",
               "kicad_cli_sha256": sha256(open(shutil.which("kicad-cli"), "rb").read()),
+              "kicad_licence_notice": licence_notice(),
+              "environment": environment(),
               "board_file_version": SUPPORTED_FILE_VERSION, "tolerance_mm": str(TOLERANCE_MM),
               "method": "mechanical:planar_centered_rectangular_clearance 1.0",
               "inventor_inputs": {"region_x": REGION_X, "region_y": REGION_Y, "c": CLEARANCE,

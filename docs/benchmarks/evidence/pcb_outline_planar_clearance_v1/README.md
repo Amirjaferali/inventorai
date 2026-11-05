@@ -5,24 +5,38 @@ InventorAI test fixture, not a real design. Nothing here is a project record, a 
 result, a tool admission or a product feature.
 
 ## What was run
-- **Tool:** `kicad-cli` 7.0.11, from the Ubuntu 24.04 package `kicad 7.0.11+dfsg-1build4`.
-  - Licence: GPL-3+, per `/usr/share/doc/kicad/copyright`.
-  - Binary SHA-256: `390de70be2e43114fec97941fe3f72dcd70a254c03303a116369ba58a93d14a0`.
-  - It ran as a separate program on synthetic files in an isolated container. It is not an
-    InventorAI dependency, and nothing from KiCad is vendored here.
+- **Tool:** `kicad-cli` 7.0.11 (`kicad-cli version`), from the Ubuntu 24.04 official archive
+  package `kicad 7.0.11+dfsg-1build4 amd64` (noble/universe; no PPA). Binary SHA-256:
+  `390de70be2e43114fec97941fe3f72dcd70a254c03303a116369ba58a93d14a0`.
+  - **Licence notices:** the package's own `/usr/share/doc/kicad/copyright` (SHA-256
+    `fdb6508741cecb5a50c0d2e84d72ee1d9f17b63e35027d0caa6203b234bbd0ca`). Its main `Files: *`
+    licence is GPL-3+; other files carry GPL-2+, LGPL-2.1+, BSD-3-clause, Expat, WXWINDOWS,
+    CC-BY-SA-3.0 and CC-BY-SA-4.0 (the full field list is in `proof_record.json`).
+  - **Use:** the unmodified program ran as a separate process on synthetic files in an isolated
+    container. It is not an InventorAI dependency, no KiCad binary or source is bundled or
+    copied here, and the inputs are InventorAI's own synthetic boards.
+  - **Command reference:** the installed 7.0.11 CLI's own help, kept as
+    `kicad_cli_7.0.11_pcb_export_dxf_help.txt`. It shows the default output unit is inches,
+    so `--output-units mm` is passed explicitly.
+- **Environment:** Ubuntu 24.04.5 LTS, x86_64, Python 3.13.18, ezdxf 1.4.2.
 - **Command, for each fixture:** `kicad-cli pcb export dxf --layers Edge.Cuts --output-units mm
   --exclude-refdes --exclude-value -o exports/<name>.dxf fixtures/<name>.kicad_pcb`.
   - The default output unit is inches, which `board_v1_inch_export` uses as a units control.
   - Re-exporting gave byte-identical files.
-- **Harness:** `scripts/pcb_outline_planar_clearance_proof.py`.
-  - It reads each export with its own DXF group-code reader. It accepts only LINE entities
-    and metric `$MEASUREMENT 1`, and they must form exactly four axis-aligned segments in
-    one closed loop.
-  - It compares that against the board file's own text: one `gr_rect`, or four `gr_line`,
-    on `Edge.Cuts` in format version `20221018`.
-  - A board is supported only when both readings agree within this proof's 1e-9 mm
-    measurement tolerance. That tolerance belongs to the proof, not to the method. The value
-    of record is the exact decimal in the board file.
+- **Harness:** `scripts/pcb_outline_planar_clearance_proof.py`. Three independent readings:
+  1. **The board file's text**, through a strictly bounded proof-only reader: one `gr_rect`,
+     or four `gr_line`, on `Edge.Cuts`, format version `20221018` only. Anything else
+     refuses: another version, malformed text, a non-board file, any other shape or text on
+     `Edge.Cuts`, or outline graphics inside a footprint. It does not claim general KiCad
+     format support.
+  2. **The KiCad export, through this proof's own DXF group-code reader:** only LINE entities,
+     metric `$MEASUREMENT 1`, exactly four axis-aligned segments in one closed loop.
+  3. **The KiCad export, through `ezdxf` 1.4.2:** it reads the file as DXF R12 (`AC1009`), and
+     the same rules are applied to what it parses.
+
+  A board is supported only when all three agree within this proof's 1e-9 mm measurement
+  tolerance. That tolerance belongs to the proof, not to the method. The value of record is
+  the exact decimal in the board file.
 - **Product route:** the harness then drives the real product routes through the Flask test
   client on a scratch database:
   - an integrated project, one interaction and two participating components;
@@ -36,11 +50,11 @@ result, a tool admission or a product feature.
 ## Results (`proof_record.json`)
 **Supported geometry:**
 
-| Fixture | Board file | KiCad export | Declared |
-|---|---|---|---|
-| `board_v1` (`gr_rect`) | 84 × 50 | 84 × 50 | 84 × 50 |
-| `board_v1_lines` (four `gr_line`) | 84 × 50 | 84 × 50 | 84 × 50 |
-| `board_v2` (revised) | 80 × 50 | 80 × 50 | 80 × 50 |
+| Fixture | Board file | Own DXF reader | ezdxf | Declared |
+|---|---|---|---|---|
+| `board_v1` (`gr_rect`) | 84 × 50 | 84 × 50 | 84 × 50 | 84 × 50 |
+| `board_v1_lines` (four `gr_line`) | 84 × 50 | 84 × 50 | 84 × 50 | 84 × 50 |
+| `board_v2` (revised) | 80 × 50 | 80 × 50 | 80 × 50 | 80 × 50 |
 
 `board_v1` and `board_v1_lines` export byte-identical DXFs.
 
@@ -65,7 +79,8 @@ result, a tool admission or a product feature.
   old CAD link answers 409 with no ZIP. That is the product's existing refusal of a stale
   declaration revision.
 
-**Refused:** each refusal gives its reason from both readers.
+**Refused:** each refusal gives its reason from the board-file reader and the own DXF reader,
+and `ezdxf` refuses every one as well.
 
 | Fixture | Board-file reading | Export reading |
 |---|---|---|

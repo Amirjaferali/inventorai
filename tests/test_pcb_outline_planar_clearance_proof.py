@@ -38,6 +38,23 @@ def test_checksums_bind_every_evidence_file():
         assert _sha(os.path.join(EVIDENCE, name)) == digest, name
 
 
+def test_the_record_names_the_tool_its_licence_notice_and_environment():
+    env = RECORD["environment"]
+    assert env["kicad_package"] == "kicad 7.0.11+dfsg-1build4 amd64"
+    assert env["os"].startswith("Ubuntu 24.04") and "no PPA" in env["kicad_source"]
+    assert env["ezdxf"] == "1.4.2"
+    notice = RECORD["kicad_licence_notice"]
+    assert notice["file"] == "/usr/share/doc/kicad/copyright"
+    assert notice["main_files_licence"] == "GPL-3+"
+    assert re.fullmatch(r"[0-9a-f]{64}", notice["sha256"])
+    assert {"GPL-3+", "GPL-2+"} <= set(notice["licence_fields"])
+    help_text = open(os.path.join(EVIDENCE, "kicad_cli_7.0.11_pcb_export_dxf_help.txt"),
+                     encoding="utf-8").read()
+    # The installed 7.0.11 CLI is the command reference: both flags exist and inches is the default.
+    assert "--layers" in help_text and "--output-units" in help_text
+    assert 'valid options: mm, in [default: "in"]' in help_text
+
+
 def test_the_record_names_the_tool_and_stays_synthetic():
     assert RECORD["synthetic_only"] is True
     assert RECORD["tool"] == "kicad-cli 7.0.11"
@@ -79,6 +96,36 @@ def test_every_unsupported_case_refuses_without_dimensions():
         assert g["supported"] is False and "declared_mm" not in g, name
         assert "export_refused" in g or "source_refused" in g, name
     assert "not metric" in RECORD["geometry"][proof.UNITS_CONTROL]["export_refused"]
+
+
+def test_supported_boards_agree_with_the_third_ezdxf_reading():
+    for name in proof.POSITIVE:
+        e = RECORD["geometry"][name]["ezdxf"]
+        assert e["dxfversion"] == "AC1009" and e["measurement"] == 1
+        assert [Decimal(v) for v in e["mm"]] == [Decimal(v) for v in RECORD["geometry"][name]["declared_mm"]]
+    for name in proof.NEGATIVE + (proof.UNITS_CONTROL,):
+        assert "refused" in RECORD["geometry"][name]["ezdxf"], name
+
+
+_HEAD = ('(kicad_pcb (version 20221018) (generator pcbnew) (layers (44 "Edge.Cuts" user)) %s)')
+
+
+@pytest.mark.parametrize("text, reason", [
+    ('(kicad_pcb (version 20240108) (gr_rect (start 0 0) (end 84 50) (layer "Edge.Cuts")))',
+     "format version"),
+    ("(kicad_pcb (version 20221018) (gr_rect (start 0 0) (end 84 50)", "malformed"),
+    ('(not_a_board (version 20221018))', "not a KiCad board file"),
+    (_HEAD % '(gr_poly (pts (xy 0 0) (xy 84 0) (xy 84 50) (xy 0 50)) (layer "Edge.Cuts"))',
+     "unsupported Edge.Cuts shapes: gr_poly"),
+    (_HEAD % '(gr_rect (start 0 0) (end 84 50) (layer "Edge.Cuts")) '
+             '(gr_text "X" (at 1 1) (layer "Edge.Cuts"))', "unsupported Edge.Cuts shapes"),
+    (_HEAD % '(gr_rect (start 0 0) (end 84 50) (layer "Edge.Cuts")) '
+             '(footprint "F" (fp_line (start 1 1) (end 2 2) (layer "Edge.Cuts")))', "inside a footprint"),
+    (_HEAD % '(gr_rect (start 0 0) (end 0 50) (layer "Edge.Cuts"))', "rectangle"),
+])
+def test_the_board_file_reader_refuses_unfamiliar_structures(text, reason):
+    with pytest.raises(proof.Refused, match=reason):
+        proof.source_rectangle(text)
 
 
 @pytest.mark.parametrize("dxf, reason", [
