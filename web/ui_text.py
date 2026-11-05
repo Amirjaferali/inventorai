@@ -12232,8 +12232,11 @@ UI_STRINGS = {
         "en": "Choose which of your components is the board first, in the form below.",
         "ar": "اختر أولًا أي مكوّناتك هو اللوحة، في النموذج أدناه."},
     "UI_PCC_AID_MSG_NOTE_CLEARED": {
-        "en": "The proposed note was removed because a board value or the X / Y choice changed after it was placed. Write your own note if you want one.",
-        "ar": "أُزيلت الملاحظة المقترحة لأن إحدى قيمتي اللوحة أو اختيار X / Y تغيّر بعد وضعها. اكتب ملاحظتك الخاصة إن أردت."},
+        "en": "The proposed note was removed because the board, a board value or the X / Y choice changed after it was placed. Write your own note if you want one.",
+        "ar": "أُزيلت الملاحظة المقترحة لأن اللوحة أو إحدى قيمتي اللوحة أو اختيار X / Y تغيّر بعد وضعها. اكتب ملاحظتك الخاصة إن أردت."},
+    "UI_PCC_AID_MSG_NOTE_REVIEW": {
+        "en": "Please review your board basis note: the board, a board value or the X / Y choice changed after it was written. Your note was kept as you wrote it.",
+        "ar": "يُرجى مراجعة ملاحظة مصدر أبعاد اللوحة: تغيّرت اللوحة أو إحدى قيمتيها أو اختيار X / Y بعد كتابتها. وقد أُبقيت ملاحظتك كما كتبتها."},
     "UI_PCC_DIAGRAM_LEGEND": {
         "en": "Symbols in the sketch: region_x and region_y are the usable region; board_x × board_y is the board; c is the clearance per side; ✕ marks an axis where the clearance is not available. The sketch is not mirrored for right-to-left reading: X runs left to right, as declared.",
         "ar": "رموز الرسم: region_x و region_y هما المنطقة القابلة للاستخدام؛ و board_x × board_y هي اللوحة؛ و c هو الخلوص لكل جانب؛ وتشير ✕ إلى محور لا يتوفر فيه الخلوص. الرسم غير معكوس للقراءة من اليمين إلى اليسار: يمتد X من اليسار إلى اليمين كما صُرِّح به."},

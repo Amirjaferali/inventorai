@@ -271,10 +271,29 @@ _AID_ANY_PAIR = re.compile(r"\d+(?:[.,٫]\d+)?\s*[x×X*]\s*\d", re.UNICODE)
 _AID_ANY_NUMBER = re.compile(r"\d+(?:[.,٫]\d+)*", re.UNICODE)
 # A sentence ends at ! ? ; ؛ ؟ a line break, or a dot that is not a decimal point.
 _AID_SENTENCE_BREAK = re.compile(r"[!?;؛؟\n]|(?<![0-9])\.|\.(?![0-9])")
-# ONE board, named in the singular ("boards" is refused below as another object).
-_AID_BOARD = re.compile(
-    r"(?<!\w)(?:board|pcb)(?!\w)|(?<!\w)[وبلفك]?(?:ال|ل)?(?:لوحة|لوحه)(?!\w)",
-    re.IGNORECASE)
+# The pair must be BOUND to ONE board (singular) by one of a few fixed
+# syntactic forms; a board merely mentioned elsewhere in the sentence binds
+# nothing ("The board carries a camera that is 80 x 50 mm" abstains). These are
+# literal templates, not a parser.
+#   before the pair: "[circuit] board / PCB [size|dimensions|outline|footprint]"
+#     followed by ":" or "is / are / measures / =" (English), or "مقاس / أبعاد /
+#     حجم اللوحة", "اللوحة مقاسها / أبعادها / حجمها", "لوحة بمقاس / بأبعاد / بحجم"
+#     or "اللوحة" with an optional ":" (Arabic), ending exactly where the pair starts;
+#   after the pair: "[circuit] board / PCB" directly ("an 85 x 56 mm board").
+_AID_BIND_BEFORE = re.compile(
+    r"(?:(?<![\w-])(?:circuit[ \t]+)?(?:board|pcb)(?:'s|’s)?"
+    r"(?:[ \t]+(?:size|dimensions|outline|footprint))?"
+    r"(?:[ \t]*:|[ \t]+(?:is|are|measures|=))"
+    r"|(?<!\w)(?:(?:مقاس|مقاسات|أبعاد|ابعاد|حجم)[ \t]+(?:ال)?لوح[ةه]"
+    r"|(?:ال)?لوح[ةه][ \t]+(?:مقاسها|مقاساتها|أبعادها|ابعادها|حجمها)"
+    r"|(?:ال)?لوح[ةه][ \t]+(?:بمقاس|بمقاسات|بأبعاد|بابعاد|بحجم)"
+    r"|(?:ال)?لوح[ةه])[ \t]*:?)"
+    r"[ \t]*$", re.IGNORECASE)
+_AID_BIND_AFTER = re.compile(r"^[ \t]+(?:circuit[ \t]+)?(?:board|pcb)(?!\w)", re.IGNORECASE)
+# After a pair bound from the left, the sentence must end, pause or continue
+# with a conjunction: never a noun the pair could describe instead.
+_AID_AFTER_OK = re.compile(
+    r"^[ \t]*(?:$|[,،)]|(?:and|but|so|which|that|it)(?!\w)|و)", re.IGNORECASE)
 _AID_OTHER_OBJECT = re.compile(
     r"(?<!\w)(?:boards|pcbs|box(?:es)?|case|cases|enclosures?|housings?|lids?|covers?|shell|"
     r"region|area|space|opening|slot|screens?|displays?|batter(?:y|ies)|motors?|holes?|"
@@ -313,9 +332,11 @@ def literal_board_pair(original_idea):
     copied verbatim from the idea. ``first`` / ``second`` are in the order the
     inventor wrote them; no axis is implied. Refused (``None``) unless ALL hold:
     the idea has exactly one ``A x B`` pair of any kind and it is ``A x B mm``
-    in ASCII digits; its sentence names a board and no other object, holds no
-    other number and no hypothetical, approximate, alternative or negating
-    word; and both numbers pass the method's strict grammar for a dimension."""
+    in ASCII digits; the pair is bound to one board by a fixed syntactic form
+    (``_AID_BIND_BEFORE`` / ``_AID_BIND_AFTER``); its sentence names no other
+    object and holds no other number and no hypothetical, approximate,
+    alternative, limiting, past or negating word; and both numbers pass the
+    method's strict grammar for a dimension."""
     if not isinstance(original_idea, str) or not 0 < len(original_idea) <= AID_MAX_IDEA_CHARS:
         return None
     if len(_AID_ANY_PAIR.findall(original_idea)) != 1:
@@ -329,7 +350,11 @@ def literal_board_pair(original_idea):
     end_match = _AID_SENTENCE_BREAK.search(original_idea, pair.end())
     end = end_match.start() if end_match else len(original_idea)
     sentence = original_idea[start:end]
-    if not _AID_BOARD.search(sentence) or _AID_OTHER_OBJECT.search(sentence):
+    before = original_idea[start:pair.start()]
+    after = original_idea[pair.end():end]
+    bound = ((_AID_BIND_BEFORE.search(before) and _AID_AFTER_OK.match(after))
+             or _AID_BIND_AFTER.match(after))
+    if not bound or _AID_OTHER_OBJECT.search(sentence):
         return None
     if _AID_UNCERTAIN.search(sentence):
         return None

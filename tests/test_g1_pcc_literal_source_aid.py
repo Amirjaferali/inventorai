@@ -44,6 +44,12 @@ NOTE_Y = "From my original idea: “85 x 56 mm”; I entered 56 as board X and 8
     ("My board is 85 x 56 mm.", "85", "56", "85 x 56 mm"),
     ("My board is 85×56 mm.", "85", "56", "85×56 mm"),
     ("The PCB is 85.5 X 56.25mm", "85.5", "56.25", "85.5 X 56.25mm"),
+    ("The board size is 80 x 50 mm.", "80", "50", "80 x 50 mm"),
+    ("Board dimensions: 80 x 50 mm", "80", "50", "80 x 50 mm"),
+    ("The board measures 80 x 50 mm and it is green.", "80", "50", "80 x 50 mm"),
+    ("A weather station with an 85 x 56 mm board.", "85", "56", "85 x 56 mm"),
+    ("اللوحة مقاسها 85 × 56 mm.", "85", "56", "85 × 56 mm"),
+    ("لوحة بمقاس 85 × 56 mm.", "85", "56", "85 × 56 mm"),
     ("A lamp. The board: 70 * 30 mm. It is bright.", "70", "30", "70 * 30 mm"),
     ("مقاس اللوحة 85 × 56 mm. وأريد علبة لها.", "85", "56", "85 × 56 mm"),
     ("The board is 999999.9999 x 0.0001 mm.", "999999.9999", "0.0001", "999999.9999 x 0.0001 mm"),
@@ -93,6 +99,16 @@ def test_r01_one_literal_board_pair_is_located_verbatim(idea, first, second, spa
     "اللوحة حوالي 85 × 56 mm.",                                   # Arabic approximate
     "اللوحة 85 × 56 mm أو 90 × 60 mm.",
     "اللوحة مقاسها 85 × 56 mm وتوضع داخل علبة.",                  # Arabic other object
+    # Lead finding: a board mentioned in the sentence does not bind another object's size
+    "The board carries a camera that is 80 x 50 mm.",
+    "The board holds an 80 x 50 mm camera.",
+    "On the board, a 80 x 50 mm display.",
+    "The board is fixed and the lens is 80 x 50 mm.",
+    "The board is 80 x 50 mm camera.",
+    "My board drives a fan; the fan is 80 x 50 mm.",
+    "The board sits next to 80 x 50 mm.",
+    "اللوحة تحمل كاميرا 80 × 50 mm.",
+    "اللوحة متصلة بعدسة مقاسها 80 × 50 mm.",
     # review findings: limits, comparisons, past or unsure statements, other objects
     "The board must be smaller than 80 x 50 mm.",
     "The board is at most 80 x 50 mm.",
@@ -245,7 +261,7 @@ def test_w02_no_aid_without_exactly_one_literal_pair(client):
 
 
 def test_w03_the_passage_is_escaped(client):
-    idea = 'A planter on a hinge. My <b onclick="x()">board</b> is 85 x 56 mm.'
+    idea = 'A planter on a hinge. <b onclick="x()"> My board is 85 x 56 mm.'
     sid, ifc, _ = _project(client, idea)
     body = _body(client.get(_url(sid, ifc)))
     chunk = _aid_chunk(body)
@@ -384,7 +400,7 @@ def test_w13_every_aid_string_exists_in_both_languages():
         "UI_PCC_AID_ORDER_PROMPT", "UI_PCC_AID_AS_X", "UI_PCC_AID_AS_Y", "UI_PCC_AID_APPLY",
         "UI_PCC_AID_APPLY_NOTE", "UI_PCC_AID_MANUAL", "UI_PCC_AID_MSG_CHOOSE",
         "UI_PCC_AID_MSG_OCCUPIED", "UI_PCC_AID_MSG_DONE", "UI_PCC_AID_MSG_BOARD_FIRST",
-        "UI_PCC_AID_MSG_NOTE_CLEARED"]
+        "UI_PCC_AID_MSG_NOTE_CLEARED", "UI_PCC_AID_MSG_NOTE_REVIEW"]
     for key in keys:
         assert ui_text.has_string(key)
         en, ar = ui_text.text(key, "en"), ui_text.text(key, "ar")

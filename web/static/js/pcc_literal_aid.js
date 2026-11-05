@@ -5,9 +5,10 @@
  * "I do not know yet" box or a note, and never submits anything.
  *
  * The note it places is a PROPOSAL of the inventor's own documentary text. If
- * a board value or the X / Y choice changes afterwards, that note is removed
- * only while it is still exactly the text the aid placed; a note the inventor
- * has edited is theirs and is left alone. Nothing here verifies a note.
+ * the board, a board value or the X / Y choice changes afterwards, that note is
+ * removed only while it is still exactly the text the aid placed; a note the
+ * inventor has edited from it is theirs and is never erased: they get a
+ * non-blocking reminder to review it instead. Nothing here verifies a note.
  */
 (function () {
   "use strict";
@@ -26,7 +27,8 @@
   var orders = box.querySelectorAll('input[name="pcc_aid_order"]');
   if (!controls || !apply || !status || !board || !x || !y || !ux || !uy || !note) return;
   controls.hidden = false;
-  var placed = null;   // the exact note text the aid placed, while it is unedited
+  var placed = null;    // the exact note text the aid placed, while it is unedited
+  var derived = false;  // the inventor has edited the note the aid placed
 
   function say(name) {
     status.textContent = status.getAttribute("data-msg-" + name);
@@ -36,8 +38,11 @@
     if (placed !== null && note.value === placed) {
       note.value = "";
       say("cleared");
+    } else if (derived && note.value !== "") {
+      say("review");
     }
     placed = null;
+    derived = false;
   }
 
   apply.addEventListener("click", function () {
@@ -58,8 +63,10 @@
     y.value = chosen.getAttribute("data-y");
     note.value = chosen.getAttribute("data-note");
     placed = note.value;
+    derived = false;
     say("done");
   });
+  board.addEventListener("change", withdrawPlacedNote);
   [x, y, ux, uy].forEach(function (field) {
     field.addEventListener("input", withdrawPlacedNote);
     field.addEventListener("change", withdrawPlacedNote);
@@ -68,6 +75,9 @@
     radio.addEventListener("change", withdrawPlacedNote);
   });
   note.addEventListener("input", function () {
-    if (note.value !== placed) placed = null;   // edited: now entirely the inventor's
+    if (placed !== null && note.value !== placed) {
+      placed = null;          // edited: now the inventor's own text, never erased
+      derived = true;
+    }
   });
 }());

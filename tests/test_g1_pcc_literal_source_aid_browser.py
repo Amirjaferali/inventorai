@@ -121,13 +121,24 @@ def test_literal_aid_needs_the_board_and_an_explicit_choice_and_fills_only_empty
     expect(status).to_have_text(text("UI_PCC_AID_MSG_NOTE_CLEARED", lang))
     assert board_fields() == ("86", "56", "")
 
-    # a note the inventor has edited is theirs: a later value change leaves it intact
+    # changing the BOARD after applying removes the unedited proposal
+    page.fill("#pcc-v-board_x", "")
+    page.fill("#pcc-v-board_y", "")
+    apply.click()
+    expect(status).to_have_text(text("UI_PCC_AID_MSG_DONE", lang))
+    form.locator("#pcc-board").select_option(label=case)
+    expect(status).to_have_text(text("UI_PCC_AID_MSG_NOTE_CLEARED", lang))
+    assert board_fields() == ("85", "56", "")
+    form.locator("#pcc-board").select_option(label=board)
+
+    # a note the inventor has edited is theirs: a later change keeps it and asks for a review
     page.fill("#pcc-v-board_x", "")
     page.fill("#pcc-v-board_y", "")
     apply.click()
     proposed = page.input_value("#pcc-basis_board")
     page.fill("#pcc-basis_board", proposed + " Checked with calipers.")
     page.fill("#pcc-v-board_y", "57")
+    expect(status).to_have_text(text("UI_PCC_AID_MSG_NOTE_REVIEW", lang))
     assert board_fields() == ("85", "57", proposed + " Checked with calipers.")
 
     # the inventor completes the existing form; the existing save records exactly that
