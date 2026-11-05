@@ -325,7 +325,7 @@
     },
     {
      "function_id": "Q10-F2",
-     "meaning": "Switch the bike light on by itself when it is dark",
+     "meaning": "Switch the light on by itself when it gets dark",
      "may_be_unresolved": false
     },
     {
@@ -427,7 +427,7 @@
    "essential_functions": [
     {
      "function_id": "Q13-F1",
-     "meaning": "Find out that rain is starting or about to start",
+     "meaning": "Find out when rain begins",
      "may_be_unresolved": true
     },
     {
@@ -513,7 +513,7 @@
      "any_of": [
       "without an app on his phone"
      ],
-     "meaning": "A phone app"
+     "meaning": "An app on the son's phone"
     }
    ],
    "meaningful_choice": null,
@@ -542,7 +542,7 @@
     },
     {
      "function_id": "Q16-F4",
-     "meaning": "Show the daughter when the soup has gone cold",
+     "meaning": "Let the daughter know when the soup has gone cold",
      "may_be_unresolved": false
     }
    ],
@@ -553,7 +553,7 @@
     },
     {
      "unknown_id": "Q16-U2",
-     "meaning": "Whether any power can be used or recharged at home only"
+     "meaning": "Whether the lunchbox may use any power (for example batteries recharged at home)"
     }
    ],
    "exclusions": [],
@@ -563,5 +563,34 @@
    "unsupported_claims": [],
    "notes": "Warm-keeping lunchbox with cold indication; no temperature specification should be invented."
   }
- ]
+ ],
+ "adjudication": {
+  "role": "prompt-blind adjudicator",
+  "base_commit": "2da3ffea0522f5818a5bd3e04dc3b5f9d1b3a291",
+  "statement": "The adjudicator saw no candidate prompt, schema, scoring code, earlier pack or model response for this evaluation and reviewed only the two held-out v2 fixture files at base commit 2da3ffea0522f5818a5bd3e04dc3b5f9d1b3a291.",
+  "cases_reviewed": [
+   "Q01",
+   "Q02",
+   "Q03",
+   "Q04",
+   "Q05",
+   "Q06",
+   "Q07",
+   "Q08",
+   "Q09",
+   "Q10",
+   "Q11",
+   "Q12",
+   "Q13",
+   "Q14",
+   "Q15",
+   "Q16"
+  ],
+  "changes": {
+   "Q10": "Q10-F2 'Switch the bike light on' -> 'Switch the light on': the idea's 'its light' may be the gadget's own light, so the reference must not presume an existing bike light (Q10-U2 already asks this).",
+   "Q13": "Q13-F1 dropped 'or about to start': the idea asks to be alerted when the rain starts (لما المطرة تبتدي); predicting rain is a proposal, not a stated essential function (the forecast option stays in meaningful_choice).",
+   "Q15": "Q15-X2 meaning 'A phone app' -> 'An app on the son's phone': the exclusion is 'without an app on his phone', not every phone app (e.g. a parent's).",
+   "Q16": "Q16-F4 'Show the daughter' -> 'Let the daughter know': the idea says 'lets her know', so the reference must not presume a visual indication; Q16-U2 reworded because the original sentence was garbled and unclear."
+  }
+ }
 }
