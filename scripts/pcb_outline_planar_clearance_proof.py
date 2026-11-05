@@ -141,19 +141,37 @@ def _exact(a, b):
 
 
 def _closed_rectangle(segments, close=_exact):
-    """Exactly four horizontal / vertical segments forming ONE closed loop."""
+    """Exactly four DISTINCT proper sides forming ONE connected closed rectangle: two
+    horizontal sides at different heights, each spanning exactly the full width, and two
+    vertical sides at different positions, each spanning exactly the full height. Repeated,
+    overlapping, partial or disconnected segments are refused even when their endpoints or
+    extrema look like a rectangle's."""
     if len(segments) != 4:
         raise Refused("%d outline segments, not the four of one rectangle" % len(segments))
+    horizontal, vertical = [], []
     for (ax, ay), (bx, by) in segments:
-        if not (close(ax, bx) or close(ay, by)):
-            raise Refused("a segment is not axis-aligned")
         if close(ax, bx) and close(ay, by):
             raise Refused("zero-length segment")
-    ends = [p for seg in segments for p in seg]
-    for p in ends:
-        if sum(1 for q in ends if close(p[0], q[0]) and close(p[1], q[1])) != 2:
-            raise Refused("the outline is not closed")
-    return _rect_from_points_tol(ends, close)
+        if close(ay, by):
+            horizontal.append((min(ax, bx), max(ax, bx), ay))
+        elif close(ax, bx):
+            vertical.append((min(ay, by), max(ay, by), ax))
+        else:
+            raise Refused("a segment is not axis-aligned")
+    if len(horizontal) != 2 or len(vertical) != 2:
+        raise Refused("not two horizontal and two vertical sides")
+    bottom, top = sorted(horizontal, key=lambda h: h[2])
+    left, right = sorted(vertical, key=lambda v: v[2])
+    x0, x1, y0, y1 = left[2], right[2], bottom[2], top[2]
+    if close(x0, x1) or close(y0, y1):
+        raise Refused("opposite sides coincide")
+    for lo, hi, _at in (bottom, top):
+        if not (close(lo, x0) and close(hi, x1)):
+            raise Refused("the sides do not form one closed rectangle")
+    for lo, hi, _at in (left, right):
+        if not (close(lo, y0) and close(hi, y1)):
+            raise Refused("the sides do not form one closed rectangle")
+    return x1 - x0, y1 - y0
 
 
 def _rect_from_points_tol(points, close):
@@ -254,17 +272,26 @@ def kicad_version():
                           check=True).stdout.strip()
 
 
-def run_kicad(name, inches=False):
-    src = os.path.join(FIXTURES, name + ".kicad_pcb")
-    out = os.path.join(EXPORTS, (UNITS_CONTROL if inches else name) + ".dxf")
+def run_kicad(name, inches=False, fixtures=None, exports=None, executable="kicad-cli"):
+    """Run ONE export. Any earlier output at the target path is removed first, so a failed
+    invocation can never leave an older DXF to be read as if this run had produced it; the
+    run is ``ok`` only when the process exits 0 AND a new output file exists."""
+    fixtures, exports = fixtures or FIXTURES, exports or EXPORTS
+    src = os.path.join(fixtures, name + ".kicad_pcb")
+    out = os.path.join(exports, (UNITS_CONTROL if inches else name) + ".dxf")
     args = list(EXPORT_ARGS)
     if inches:
         args[args.index("mm")] = "in"
-    cmd = ["kicad-cli"] + args + ["-o", out, src]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    return {"command": " ".join(["kicad-cli"] + args + ["-o", os.path.relpath(out, EVIDENCE),
-                                                         os.path.relpath(src, EVIDENCE)]),
-            "returncode": proc.returncode, "exported": os.path.exists(out)}
+    if os.path.exists(out):
+        os.remove(out)
+    proc = subprocess.run([executable] + args + ["-o", out, src], capture_output=True, text=True)
+    fresh = os.path.exists(out)
+    run = {"command": " ".join(["kicad-cli"] + args + ["-o", os.path.relpath(out, EVIDENCE),
+                                                       os.path.relpath(src, EVIDENCE)]),
+           "returncode": proc.returncode, "exported": fresh,
+           "ok": proc.returncode == 0 and fresh,
+           "output_sha256": sha256(open(out, "rb").read()) if fresh else None}
+    return run
 
 
 def _plain(value):
@@ -299,27 +326,36 @@ def ezdxf_reading(path):
     return out
 
 
-def judge(name, export_name=None):
+def judge(name, export_name=None, run=None, fixtures=None, exports=None):
     """The independent decision for one fixture: the board file's text, this proof's own
     DXF reader and ezdxf must all agree (within TOLERANCE_MM) on ONE supported rectangle,
     otherwise it is refused."""
-    src = open(os.path.join(FIXTURES, name + ".kicad_pcb"), encoding="utf-8").read()
-    dxf_path = os.path.join(EXPORTS, (export_name or name) + ".dxf")
+    fixtures, exports = fixtures or FIXTURES, exports or EXPORTS
+    src = open(os.path.join(fixtures, name + ".kicad_pcb"), encoding="utf-8").read()
+    dxf_path = os.path.join(exports, (export_name or name) + ".dxf")
     result = {"source_sha256": sha256(src.encode("utf-8"))}
     try:
         source = source_rectangle(src)
         result["source_mm"] = [str(v) for v in source]
     except Refused as exc:
         source, result["source_refused"] = None, str(exc)
-    if os.path.exists(dxf_path):
+    failed_run = run is not None and not (run.get("ok") and run.get("output_sha256"))
+    if failed_run:
+        # A failed or unverified invocation: no file at the path is accepted, whatever exists.
+        measured, result["export_refused"] = None, (
+            "KiCad export failed (exit %s); no output accepted" % run.get("returncode"))
+    elif os.path.exists(dxf_path):
         raw = open(dxf_path, "rb").read()
         result["export_sha256"] = sha256(raw)
-        try:
-            measured = export_rectangle(raw.decode("utf-8"))
-            result["export_mm"] = [str(v) for v in measured]
-        except Refused as exc:
-            measured, result["export_refused"] = None, str(exc)
-        result["ezdxf"] = ezdxf_reading(dxf_path)
+        if run is not None and sha256(raw) != run["output_sha256"]:
+            measured, result["export_refused"] = None, "the export changed after KiCad wrote it"
+        else:
+            try:
+                measured = export_rectangle(raw.decode("utf-8"))
+                result["export_mm"] = [str(v) for v in measured]
+            except Refused as exc:
+                measured, result["export_refused"] = None, str(exc)
+            result["ezdxf"] = ezdxf_reading(dxf_path)
     else:
         measured, result["export_refused"] = None, "KiCad wrote no export"
     third = result.get("ezdxf", {}).get("mm")
@@ -345,10 +381,38 @@ def _basis_note(name, judged, tool):
 
 
 def product_route(judged_v1, judged_v2, tool):
-    os.environ.setdefault("INVENTORAI_DB_PATH",
-                          os.path.join(tempfile.mkdtemp(prefix="pcb_proof_"), "proof.db"))
+    """Run the product part on a FRESH scratch database, whatever the caller's environment.
+    Any preconfigured ``INVENTORAI_DB_PATH``, cached store and in-memory sessions are set
+    aside for the run and restored afterwards, and the proof refuses to continue unless the
+    store it writes to is exactly the scratch file."""
     sys.path.insert(0, _ROOT)
     import web.app as appmod
+    scratch = os.path.join(tempfile.mkdtemp(prefix="pcb_proof_"), "proof.db")
+    absent = object()
+    saved_env = os.environ.get("INVENTORAI_DB_PATH", absent)
+    saved_store, saved_identity = appmod._STORE, appmod._STORE_FILE_IDENTITY
+    saved_sessions = set(appmod.SESSION_STORE)
+    os.environ["INVENTORAI_DB_PATH"] = scratch
+    appmod._STORE, appmod._STORE_FILE_IDENTITY = None, None
+    try:
+        used = os.path.realpath(appmod._get_store()._path)
+        if used != os.path.realpath(scratch):
+            raise RuntimeError("the proof store is not the scratch database: %s" % used)
+        return _product_route_on_scratch(appmod, judged_v1, judged_v2, tool)
+    finally:
+        scratch_store = appmod._STORE
+        if scratch_store is not None and scratch_store is not saved_store:
+            scratch_store.close()
+        appmod._STORE, appmod._STORE_FILE_IDENTITY = saved_store, saved_identity
+        for sid in set(appmod.SESSION_STORE) - saved_sessions:
+            appmod.SESSION_STORE.pop(sid, None)
+        if saved_env is absent:
+            os.environ.pop("INVENTORAI_DB_PATH", None)
+        else:
+            os.environ["INVENTORAI_DB_PATH"] = saved_env
+
+
+def _product_route_on_scratch(appmod, judged_v1, judged_v2, tool):
     from tests.csrf_client import csrf_client
     from tests.test_g1_pcc_literal_source_aid import _project, _submit, _url, _body
     appmod.app.config["TESTING"] = True
@@ -475,9 +539,9 @@ def main():
     runs, judged = {}, {}
     for name in POSITIVE + NEGATIVE:
         runs[name] = run_kicad(name)
-        judged[name] = judge(name)
+        judged[name] = judge(name, run=runs[name])
     runs[UNITS_CONTROL] = run_kicad("board_v1", inches=True)
-    judged[UNITS_CONTROL] = judge("board_v1", export_name=UNITS_CONTROL)
+    judged[UNITS_CONTROL] = judge("board_v1", export_name=UNITS_CONTROL, run=runs[UNITS_CONTROL])
     product, raw0, raw1 = product_route(judged["board_v1"], judged["board_v2"], tool)
     with open(os.path.join(EVIDENCE, "cad_v1.zip"), "wb") as fh:
         fh.write(raw0)

@@ -105,4 +105,24 @@ No dimension is inferred for any refused case.
 - The export's DXF layer is named `BLACK`, so layer identity is not preserved. The proof
   relies on exporting `Edge.Cuts` alone.
 
+## Proof-guard corrections F1–F3 (after `fc12824`)
+These repair the harness's guards only. The planar-clearance method, region bound, Stage-15
+semantics, product routes, persistence and CAD export are untouched. All the evidence above
+is byte-identical to what the `fc12824` script produced. The correction's own evidence is in
+`corrections_f1_f3.json`.
+- **F1, rectangle topology:** a board is accepted only with four distinct proper sides
+  forming one closed rectangle: two horizontal sides at different heights spanning the full
+  width, and two vertical sides spanning the full height. The `fc12824` check accepted two
+  doubled lines as 84 × 50 mm; the corrected check refuses them. Repeated, coincident,
+  partial and overshooting sides are refused as well.
+- **F2, scratch database:** the product part always runs on a fresh scratch database.
+  A preconfigured `INVENTORAI_DB_PATH`, the cached store and in-memory sessions are set aside
+  and restored, and the proof refuses to continue unless it is writing to the scratch file.
+- **F3, export freshness:** each run deletes any earlier output first. It counts only on exit
+  status 0 with a newly written file, and binds that file's SHA-256. A failed or empty run,
+  or an output replaced after the run, is refused.
+- **Re-check:** the corrected harness was re-run against the real `kicad-cli` 7.0.11 into a
+  scratch folder. All 11 exports succeeded, and every geometry decision equals the accepted
+  record.
+
 `SHA256SUMS` binds every file in this folder.

@@ -186,3 +186,132 @@ def test_the_harness_stays_outside_the_product():
                     assert "pcb_outline_planar_clearance_proof" not in text, f
     requirements = open(os.path.join(ROOT, "requirements.txt"), encoding="utf-8").read().lower()
     assert "kicad" not in requirements
+
+
+# ---- Correction F1: exact rectangle topology -------------------------------------------------
+def _seg(x1, y1, x2, y2):
+    return ((Decimal(x1), Decimal(y1)), (Decimal(x2), Decimal(y2)))
+
+
+_FULL = [_seg(0, 0, 84, 0), _seg(84, 0, 84, 50), _seg(84, 50, 0, 50), _seg(0, 50, 0, 0)]
+
+
+@pytest.mark.parametrize("segments, reason", [
+    # two doubled horizontal lines: every endpoint appears twice and the extrema are 84 x 50
+    ([_seg(0, 0, 84, 0), _seg(84, 0, 0, 0), _seg(0, 50, 84, 50), _seg(84, 50, 0, 50)],
+     "not two horizontal and two vertical sides"),
+    ([_seg(0, 0, 84, 0), _seg(0, 0, 84, 0), _seg(0, 0, 0, 50), _seg(84, 0, 84, 50)],
+     "opposite sides coincide"),
+    ([_seg(0, 0, 84, 0), _seg(0, 50, 84, 50), _seg(0, 0, 0, 50), _seg(0, 50, 0, 0)],
+     "opposite sides coincide"),
+    # a short side that leaves the boundary open
+    ([_seg(0, 0, 84, 0), _seg(0, 50, 84, 50), _seg(0, 0, 0, 50), _seg(84, 0, 84, 25)],
+     "do not form one closed rectangle"),
+    # a side that overshoots the corner
+    ([_seg(0, 0, 90, 0), _seg(0, 50, 84, 50), _seg(0, 0, 0, 50), _seg(84, 0, 84, 50)],
+     "do not form one closed rectangle"),
+])
+def test_f1_only_four_distinct_proper_sides_of_one_closed_rectangle_are_accepted(segments, reason):
+    with pytest.raises(proof.Refused, match=reason):
+        proof._closed_rectangle(segments)
+
+
+def test_f1_a_proper_rectangle_in_any_order_and_direction_is_still_84_by_50():
+    reordered = [_FULL[2], ((_FULL[0][1]), (_FULL[0][0])), _FULL[3], _FULL[1]]
+    assert proof._closed_rectangle(reordered) == (Decimal(84), Decimal(50))
+
+
+def test_f1_doubled_lines_are_refused_by_both_file_and_export_readers():
+    lines = "".join('(gr_line (start %s %s) (end %s %s) (layer "Edge.Cuts"))' % xy for xy in
+                    ((0, 0, 84, 0), (84, 0, 0, 0), (0, 50, 84, 50), (84, 50, 0, 50)))
+    with pytest.raises(proof.Refused, match="not two horizontal"):
+        proof.source_rectangle(_HEAD % lines)
+    dxf = ("  0\nSECTION\n  2\nHEADER\n  9\n$MEASUREMENT\n 70\n1\n  0\nENDSEC\n"
+           "  0\nSECTION\n  2\nENTITIES\n" + "".join(
+               "  0\nLINE\n  8\nBLACK\n 10\n%s\n 20\n%s\n 11\n%s\n 21\n%s\n" % xy for xy in
+               ((0, 0, 84, 0), (84, 0, 0, 0), (0, 50, 84, 50), (84, 50, 0, 50)))
+           + "  0\nENDSEC\n  0\nEOF\n")
+    with pytest.raises(proof.Refused, match="not two horizontal"):
+        proof.export_rectangle(dxf)
+
+
+# ---- Correction F2: the proof never writes to a preconfigured database -----------------------
+def test_f2_a_preconfigured_database_is_left_untouched_and_restored(tmp_path, monkeypatch):
+    import sqlite3
+    import web.app as appmod
+    configured = tmp_path / "configured_project.db"
+    conn = sqlite3.connect(str(configured))
+    conn.execute("CREATE TABLE sentinel (v TEXT)")
+    conn.execute("INSERT INTO sentinel VALUES ('do not touch')")
+    conn.commit()
+    conn.close()
+    before = _sha(str(configured))
+    monkeypatch.setenv("INVENTORAI_DB_PATH", str(configured))
+    monkeypatch.setattr(appmod, "_STORE", None)        # nothing cached: the old code would open it
+    monkeypatch.setattr(appmod, "_STORE_FILE_IDENTITY", None)
+    sessions = set(appmod.SESSION_STORE)
+    g = RECORD["geometry"]
+    record, _raw0, _raw1 = proof.product_route(g["board_v1"], g["board_v2"], RECORD["tool"])
+    assert record["cad_v1"]["outcome"] == "NOT_MET" and record["cad_v2"]["outcome"] == "MET"
+    assert os.environ["INVENTORAI_DB_PATH"] == str(configured)       # setting preserved
+    assert _sha(str(configured)) == before                            # file unchanged
+    assert appmod._STORE is None and appmod._STORE_FILE_IDENTITY is None   # cache restored
+    assert set(appmod.SESSION_STORE) == sessions                      # no leaked proof sessions
+
+
+def test_f2_an_absent_setting_stays_absent(monkeypatch):
+    import web.app as appmod
+    monkeypatch.delenv("INVENTORAI_DB_PATH", raising=False)
+    monkeypatch.setattr(appmod, "_STORE", None)
+    monkeypatch.setattr(appmod, "_STORE_FILE_IDENTITY", None)
+    g = RECORD["geometry"]
+    proof.product_route(g["board_v1"], g["board_v2"], RECORD["tool"])
+    assert "INVENTORAI_DB_PATH" not in os.environ and appmod._STORE is None
+
+
+# ---- Correction F3: a failed KiCad run never lets an earlier export through ------------------
+_FAKE = """#!%s
+import shutil, sys
+args = sys.argv[1:]
+out = args[args.index("-o") + 1]
+mode = %r
+if mode in ("write_then_fail", "write_ok"):
+    shutil.copyfile(%r, out)
+sys.exit(0 if mode in ("write_ok", "silent_ok") else 3)
+"""
+
+
+def _fake(tmp_path, mode):
+    import sys
+    exe = tmp_path / ("fake-kicad-" + mode)
+    exe.write_text(_FAKE % (sys.executable, mode, os.path.join(proof.EXPORTS, "board_v1.dxf")))
+    exe.chmod(0o755)
+    return str(exe)
+
+
+@pytest.mark.parametrize("mode", ["fail", "silent_ok", "write_then_fail"])
+def test_f3_a_failed_or_empty_run_is_refused_even_with_an_old_export_present(tmp_path, mode):
+    exports = tmp_path / "exports"
+    exports.mkdir()
+    stale = exports / "board_v1.dxf"
+    stale.write_bytes(open(os.path.join(proof.EXPORTS, "board_v1.dxf"), "rb").read())
+    run = proof.run_kicad("board_v1", exports=str(exports), executable=_fake(tmp_path, mode))
+    assert run["ok"] is False
+    if mode != "write_then_fail":
+        assert not stale.exists()           # the earlier file was removed before the run
+    judged = proof.judge("board_v1", run=run, exports=str(exports))
+    assert judged["supported"] is False and "declared_mm" not in judged
+    assert "KiCad export failed" in judged["export_refused"]
+
+
+def test_f3_a_fresh_successful_run_is_accepted_and_bound_to_its_output(tmp_path):
+    exports = tmp_path / "exports"
+    exports.mkdir()
+    run = proof.run_kicad("board_v1", exports=str(exports), executable=_fake(tmp_path, "write_ok"))
+    assert run["ok"] is True and run["returncode"] == 0
+    assert run["output_sha256"] == _sha(str(exports / "board_v1.dxf"))
+    assert proof.judge("board_v1", run=run, exports=str(exports))["declared_mm"] == ["84", "50"]
+    # Replacing the output after the run is caught: it is no longer the file KiCad wrote.
+    (exports / "board_v1.dxf").write_bytes(open(os.path.join(proof.EXPORTS, "board_v2.dxf"), "rb").read())
+    tampered = proof.judge("board_v1", run=run, exports=str(exports))
+    assert tampered["supported"] is False and "changed after KiCad wrote it" in tampered["export_refused"]
