@@ -137,14 +137,18 @@ declaration version, stored schema or outcome, and admits no AI or scientific au
   [size | dimensions | outline | footprint]" followed by ":" or "is / are / measures / =", or "مقاس / أبعاد / حجم
   اللوحة", "اللوحة مقاسها / أبعادها / حجمها", "لوحة بمقاس / بأبعاد / بحجم" or "اللوحة [:]") and the pair follows
   directly, or "[circuit] board / PCB" follows the pair directly ("an 85 x 56 mm board"), never as the modifier of
-  another noun or a hyphenated word; in both forms the sentence then ends, pauses or continues with a conjunction —
+  another noun or a hyphenated word; in both forms the expression ENDS its sentence, with nothing after it but an
+  optional closing bracket (G1-PCC-UNCERTAINTY-BOUNDARY-01: no comma, conjunction or further clause, so a trailing
+  qualification such as "… mm and it may change" or "… mm وممكن تتغير" abstains structurally, without a word list) —
   so a board merely mentioned in the sentence, or attached to another object by a preposition or possessive, binds
   no other object's size ("The board carries a camera that is 80 x 50 mm", "The fan for the board is 40 x 40 mm"
   and "مروحة اللوحة 40 x 40 mm" abstain); the sentence names no other object and
   holds no other number and no hypothetical, approximate, alternative, limiting, comparative, past, belief or negating
   word from the governed English / Arabic stop lists; both numbers pass the §6 grammar for a dimension unchanged.
   These rules refuse some harmless sentences, which is the safe direction; a form or word they do not list is not
-  recognised.
+  recognised. Known limit: the rule is local to the expression's own sentence, so uncertainty stated in a LATER
+  sentence ("My board is 84 x 50 mm. It may change.") is not recognised; the aid claims no semantic understanding,
+  and the inventor's explicit board and X / Y choice and the unchanged save remain the only path to a declaration.
 - **What the inventor decides.** The page decides nothing. It states that InventorAI has not checked which component
   the numbers describe, which is X or Y, or whether they are correct. Its script fills the two board values and a
   proposed board basis note only after the inventor has chosen the board component in the form AND an explicit X / Y
