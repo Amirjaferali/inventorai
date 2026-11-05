@@ -174,7 +174,7 @@
    "essential_functions": [
     {
      "function_id": "C05-F1",
-     "meaning": "Store several days of dry food",
+     "meaning": "Store enough food for the days the owner is away",
      "may_be_unresolved": false
     },
     {
@@ -367,6 +367,10 @@
     {
      "unknown_id": "C10-U2",
      "meaning": "How the lights are powered and recharged"
+    },
+    {
+     "unknown_id": "C10-U3",
+     "meaning": "Whether the lights are added to an existing helmet or a new helmet is to be made"
     }
    ],
    "exclusions": [],
@@ -515,11 +519,6 @@
      "function_id": "C15-F3",
      "meaning": "Check whether the dose was actually taken",
      "may_be_unresolved": true
-    },
-    {
-     "function_id": "C15-F4",
-     "meaning": "Let someone know if a dose is missed",
-     "may_be_unresolved": true
     }
    ],
    "expected_unknowns": [
@@ -585,10 +584,39 @@
    ],
    "exclusions": [],
    "meaningful_choice": {
-    "meaning": "Heating only versus heating plus cooling; local alarm versus phone notification"
+    "meaning": "Heating only versus heating plus cooling; sending the alert through the home internet connection versus through a mobile-network message that still works if the home internet is down"
    },
    "unsupported_claims": [],
    "notes": "Pets/hobby positive case."
   }
- ]
+ ],
+ "adjudication": {
+  "role": "prompt-blind adjudicator",
+  "base_commit": "f8b2809d6a3f1e5327d2e4c1d8efa490ce5f3e35",
+  "statement": "The adjudicator reviewed these cases and references without seeing any candidate prompt, schema, scoring code or model response for this evaluation.",
+  "cases_reviewed": [
+   "C01",
+   "C02",
+   "C03",
+   "C04",
+   "C05",
+   "C06",
+   "C07",
+   "C08",
+   "C09",
+   "C10",
+   "C11",
+   "C12",
+   "C13",
+   "C14",
+   "C15",
+   "C16"
+  ],
+  "changes": {
+   "C05": "C05-F1 changed from 'Store several days of dry food' to 'Store enough food for the days the owner is away': the idea does not say the food is dry and C05-U2 lists dry versus wet food as unknown, so the function must not presuppose it.",
+   "C10": "Added C10-U3 (whether lights are added to an existing helmet or a new helmet is to be made): the idea says 'make a helmet', and this decision determines whether head protection comes from an existing helmet or must be designed and tested anew.",
+   "C15": "Removed C15-F4 'Let someone know if a dose is missed': the grandmother's idea asks only to remind and to make sure the dose was taken; notifying someone else is a possible proposal, not an essential function, and is already covered as the open question C15-U3.",
+   "C16": "Replaced the 'local alarm versus phone notification' half of meaningful_choice: the owner is away at work, so a local alarm alone does not meet the stated need and is not a genuine alternative; the replacement (home internet versus mobile-network alert) is a functionally different choice."
+  }
+ }
 }
