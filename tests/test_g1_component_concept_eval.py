@@ -20,7 +20,7 @@ from tests.test_g1_precreation_campaign import _Fake, _NotFake, _adapter, _body
 
 ROOT = Path(__file__).resolve().parent.parent
 REVISION = "0" * 40
-INSTRUCTIONS_SHA256 = "d0cd20cb5aa024a12c69d223119147c5cf55ee431fe1e01d1ba44c7e842b26af"
+INSTRUCTIONS_SHA256 = "e5047edb1815fd70c02889f589d80142fc509bb44d427957dbf1a7aa0c84de9a"
 SCHEMA_SHA256 = "59c5c056838c76039b1a4a58b0c5ef79d1ce354d2bb4ec7967ea3047bd057a22"
 PREREGISTRATION_SHA256 = "fa55b6f613788c60d3c72a17b1c02358f3d37db4063e434a32f90db1c0b331b4"
 
@@ -132,20 +132,58 @@ def test_a_changed_byte_is_refused(monkeypatch):
         cc.load_pack()
 
 
-def test_authorship_and_adjudication_are_recorded():
+def test_heldout_authorship_and_adjudication_are_recorded():
     inputs = json.loads(Path(cc.INPUT_PATH).read_text(encoding="utf-8"))
     reference = json.loads(Path(cc.REFERENCE_PATH).read_text(encoding="utf-8"))
     assert inputs["authorship"]["role"] == "blind author"
     assert inputs["authorship"]["base_commit"] == "9ad18ef0b2e68301efb0fae912a7c1b790aa1823"
     adjudication = reference["adjudication"]
     assert adjudication["role"] == "prompt-blind adjudicator"
+    assert adjudication["base_commit"] == cc.AUTHOR_COMMIT
     assert set(adjudication) >= {"role", "statement", "changes", "cases_reviewed"}
     assert set(adjudication["cases_reviewed"]) == set(cc.CASE_IDS)
+    assert cc.FROZEN_BEFORE_PACK_COMMIT and cc.AUTHOR_COMMIT and cc.ADJUDICATION_COMMIT
 
 
-def test_cases_are_new_against_every_earlier_pack(pack):
+def test_heldout_cases_are_new_against_every_earlier_pack_including_development(pack):
     sims = cc.similarity_to_earlier_packs(pack[0])
     assert max(sims.values()) < cc.MAX_SIMILARITY, sims
+    # only the Owner-specified plant example is shared with the development pack
+    dev_ideas = {c["idea_text"] for c in cc.load_pack(development=True)[0]}
+    assert {c["idea_text"] for c in pack[0]} & dev_ideas == {cc.PLANT_IDEA}
+
+
+def test_the_development_pack_is_evidence_only_with_both_adjudications_reconciled():
+    cases, refs = cc.load_pack(development=True)
+    assert [c["case_id"] for c in cases] == list(cc.DEV_CASE_IDS)
+    reference = json.loads(Path(cc.DEV_REFERENCE_PATH).read_text(encoding="utf-8"))
+    assert reference["adjudication"]["role"] == "prompt-blind adjudicator"
+    assert reference["second_adjudication"]["commit"] == cc.DEV_COMMITS["adjudication_2"]
+    assert set(reference["reconciliation"]["cases"]) == {"C05", "C10", "C15", "C16"}
+    assert "never a held-out qualification" in reference["reconciliation"]["status"]
+    assert "dry" not in refs["C05"]["essential_functions"][0]["meaning"].lower()
+    assert [f["function_id"] for f in refs["C15"]["essential_functions"]] == [
+        "C15-F1", "C15-F2", "C15-F3"]
+    assert refs["C16"]["meaningful_choice"] == {"meaning": "Heating only versus heating plus cooling"}
+    assert [u["unknown_id"] for u in refs["C10"]["expected_unknowns"]] == ["C10-U1", "C10-U2"]
+    assert cc.preregistration()["development_pack"]["status"].startswith("development evidence")
+    assert cc.PACK_ID != cc.DEV_PACK_ID and set(cc.CASE_IDS).isdisjoint(cc.DEV_CASE_IDS)
+
+
+def test_m1_every_enforced_format_rule_is_stated_in_the_instructions():
+    text = cc.INSTRUCTIONS
+    for key, cap in cc.LIMITS.items():
+        assert str(cap) in text, key
+    assert "S1, S2" in text and "F1, F2" in text and "C1, C2" in text and "1 to 99" in text
+    assert "at least two words" in text and "character for" in text
+    assert "never RESPONDED with empty lists" in text
+
+
+def test_the_priming_example_is_gone_and_no_reference_answer_is_in_the_instructions(pack):
+    assert "moisture" not in cc.INSTRUCTIONS.lower() and "for example" not in cc.INSTRUCTIONS.lower()
+    for ref in pack[1].values():
+        for f in ref["essential_functions"]:
+            assert f["meaning"].lower() not in cc.INSTRUCTIONS.lower()
 
 
 def test_campaign_01_and_02_are_untouched():
@@ -460,3 +498,46 @@ def test_unhashable_values_are_refused_not_crashed(mutate):
     r = _reply()
     mutate(r)
     assert cc.validate(r, IDEA) == {"status": cc.V_STRUCTURE, "critical": ["K5"]}
+
+
+# ── 7. M3: the expected outcome is enforced ─────────────────────────────────
+def _empty(outcome):
+    return dict({k: [] for k in cc.schema()["properties"] if k != "outcome"}, outcome=outcome)
+
+
+def test_a_non_device_case_must_actually_abstain(pack):
+    cases, refs = pack
+    nd = [c["case_id"] for c in cases if refs[c["case_id"]]["group"] == "NON_DEVICE"]
+    scored = _scored(pack, {nd[0]: _empty(cc.RESPONDED)})               # empty RESPONDED
+    d = cc.decide(scored, refs, _judged(scored))
+    assert d["verdict"] == "NO_GO" and "K4" in d["critical"]
+    scored = _scored(pack, {i: _empty(cc.ABSTAIN) for i in nd})
+    assert cc.decide(scored, refs, _judged(scored))["verdict"] == "PRELIMINARY_GO"
+
+
+@pytest.mark.parametrize("group", ["POSITIVE", "EXCLUSION", "UNSUPPORTED"])
+def test_abstaining_where_a_concept_is_required_never_qualifies(pack, group):
+    cases, refs = pack
+    target = next(c["case_id"] for c in cases if refs[c["case_id"]]["group"] == group)
+    scored = _scored(pack, {target: _empty(cc.ABSTAIN)})
+    d = cc.decide(scored, refs, _judged(scored))
+    assert d["verdict"] == "NO_GO" and d["graded"]["G6"] is False
+
+
+def test_a_concept_without_component_types_is_not_delivered(pack):
+    cases, refs = pack
+    case = next(c for c in cases if refs[c["case_id"]]["group"] == "EXCLUSION")
+    reply = _oracle(case, refs[case["case_id"]])
+    reply = dict(reply, component_types=[], relationships=[])
+    scored = _scored(pack, {case["case_id"]: reply})
+    d = cc.decide(scored, refs, _judged(scored))
+    assert d["verdict"] == "NO_GO" and d["graded"]["G6"] is False
+
+
+def test_an_ambiguous_case_may_still_safely_abstain_or_ask(pack):
+    cases, refs = pack
+    amb = [c["case_id"] for c in cases if refs[c["case_id"]]["group"] == "AMBIGUOUS"]
+    asks = dict(_empty(cc.ABSTAIN), clarification_questions=["What should it do?"])
+    scored = _scored(pack, {amb[0]: _empty(cc.ABSTAIN), amb[1]: asks})
+    d = cc.decide(scored, refs, _judged(scored))
+    assert d["verdict"] == "PRELIMINARY_GO" and d["graded"]["G6"] is True
