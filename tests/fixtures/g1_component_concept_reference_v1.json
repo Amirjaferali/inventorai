@@ -174,7 +174,7 @@
    "essential_functions": [
     {
      "function_id": "C05-F1",
-     "meaning": "Store enough food for the days the owner is away",
+     "meaning": "Store several days of food",
      "may_be_unresolved": false
     },
     {
@@ -367,10 +367,6 @@
     {
      "unknown_id": "C10-U2",
      "meaning": "How the lights are powered and recharged"
-    },
-    {
-     "unknown_id": "C10-U3",
-     "meaning": "Whether the lights are added to an existing helmet or a new helmet is to be made"
     }
    ],
    "exclusions": [],
@@ -383,7 +379,7 @@
      "meaning": "A guarantee of 100% head protection in any accident"
     }
    ],
-   "notes": "Gulf dialect. Concept may add lighting to a helmet but must not promise complete protection or claim certification."
+   "notes": "Gulf dialect. Concept may add lighting to a helmet but must not promise complete protection or claim certification. Useful clarification (not scored): whether the lights are added to an existing helmet or a new helmet is to be made."
   },
   {
    "case_id": "C11",
@@ -584,7 +580,7 @@
    ],
    "exclusions": [],
    "meaningful_choice": {
-    "meaning": "Heating only versus heating plus cooling; sending the alert through the home internet connection versus through a mobile-network message that still works if the home internet is down"
+    "meaning": "Heating only versus heating plus cooling"
    },
    "unsupported_claims": [],
    "notes": "Pets/hobby positive case."
@@ -618,5 +614,25 @@
    "C15": "Removed C15-F4 'Let someone know if a dose is missed': the grandmother's idea asks only to remind and to make sure the dose was taken; notifying someone else is a possible proposal, not an essential function, and is already covered as the open question C15-U3.",
    "C16": "Replaced the 'local alarm versus phone notification' half of meaningful_choice: the owner is away at work, so a local alarm alone does not meet the stated need and is not a genuine alternative; the replacement (home internet versus mobile-network alert) is a functionally different choice."
   }
+ },
+ "second_adjudication": {
+  "role": "prompt-blind adjudicator",
+  "commit": "eedcdb269fcdbbca01cb2da61fa0a88110ccf475",
+  "base_commit": "f8b2809d6a3f1e5327d2e4c1d8efa490ce5f3e35",
+  "changes": {
+   "C05": "C05-F1 'Store several days of dry food' -> 'Store several days of food' (food type not stated; C05-U2 lists dry versus wet as unknown).",
+   "C15": "C15-F4 'Let someone know if a dose is missed' removed (not stated; already open as C15-U3).",
+   "C16": "meaningful_choice reduced to 'Heating only versus heating plus cooling' (a local alarm does not meet the stated need)."
+  }
+ },
+ "reconciliation": {
+  "authority": "Owner instruction 'PR #931 — ONE BOUNDED REPAIR' (2026-11-05): the more conservative, directly idea-grounded disposition of the two adjudications (dbbb162, eedcdb2); no third adjudication.",
+  "cases": {
+   "C05": "Both adjudications remove the dry-food presumption; the second's wording ('several days of food') is kept because 'a few days away' is stated in the idea.",
+   "C15": "Both adjudications remove the unstated notification function C15-F4.",
+   "C16": "The meaningful choice is heating only versus heating and cooling; no communication architecture is required (second adjudication).",
+   "C10": "The first adjudication's added unknown C10-U3 (existing versus new helmet) is a useful clarification, not an inventor-stated requirement; it is NOT a scored unknown and is kept only as a note."
+  },
+  "status": "DEVELOPMENT EVIDENCE ONLY: this pack was seen by the Execution Lead before the candidate instructions and criteria were corrected; it is never a held-out qualification of the corrected candidate."
  }
 }
