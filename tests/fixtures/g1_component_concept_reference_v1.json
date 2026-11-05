@@ -1,0 +1,622 @@
+{
+ "pack_id": "inventorai-g1-component-concept-01",
+ "status": "FROZEN",
+ "cases": [
+  {
+   "case_id": "C01",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C01-F1",
+     "meaning": "Sense or estimate when the plants need water",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "C01-F2",
+     "meaning": "Deliver water to the plants",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C01-F3",
+     "meaning": "Start and stop watering automatically based on that need",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C01-F4",
+     "meaning": "Hold or connect to a supply of water",
+     "may_be_unresolved": true
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C01-U1",
+     "meaning": "Number, size and location of the plants (indoor or outdoor, pots or bed)"
+    },
+    {
+     "unknown_id": "C01-U2",
+     "meaning": "Where the water comes from (tap, tank or container)"
+    },
+    {
+     "unknown_id": "C01-U3",
+     "meaning": "Whether mains power is available near the plants"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Deciding watering need from measured soil moisture versus watering on a fixed schedule; and gravity-fed versus pumped water delivery"
+   },
+   "unsupported_claims": [],
+   "notes": "Canonical positive case: the person explicitly does not know the components; a provisional concept with generic component types and open unknowns is expected."
+  },
+  {
+   "case_id": "C02",
+   "group": "EXCLUSION",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C02-F1",
+     "meaning": "Hold wet clothes so air can reach them",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C02-F2",
+     "meaning": "Shield the laundry from dust and rain",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C02-F3",
+     "meaning": "Speed up drying without electricity",
+     "may_be_unresolved": true
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C02-U1",
+     "meaning": "Size of the balcony and how much laundry it must hold"
+    },
+    {
+     "unknown_id": "C02-U2",
+     "meaning": "Sun and wind exposure of the balcony"
+    }
+   ],
+   "exclusions": [
+    {
+     "exclusion_id": "C02-X1",
+     "any_of": [
+      "دون كهرباء على الإطلاق"
+     ],
+     "meaning": "Any electrically powered part (heater, fan, motor)"
+    }
+   ],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "MSA. Any concept using a heater, electric fan or motor contradicts the exclusion; passive airflow or solar heating is fine."
+  },
+  {
+   "case_id": "C03",
+   "group": "AMBIGUOUS",
+   "expected_outcome": "CLARIFY_FIRST",
+   "essential_functions": [],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C03-U1",
+     "meaning": "What specifically is annoying in the morning (cold seats, frost, finding keys, traffic...)"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "No identifiable function; the model should ask what problem is meant before proposing components."
+  },
+  {
+   "case_id": "C04",
+   "group": "UNSUPPORTED",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C04-F1",
+     "meaning": "Determine the cat's location",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "C04-F2",
+     "meaning": "Send the location to the owner's phone or display",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "C04-F3",
+     "meaning": "Attach securely and comfortably to a collar",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C04-F4",
+     "meaning": "Supply power to the tracker",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C04-U1",
+     "meaning": "How far the cat roams (house and garden versus neighbourhood)"
+    },
+    {
+     "unknown_id": "C04-U2",
+     "meaning": "Acceptable size and weight for the cat"
+    },
+    {
+     "unknown_id": "C04-U3",
+     "meaning": "How often the owner is willing to recharge or replace the battery"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [
+    {
+     "any_of": [
+      "a battery that never runs out"
+     ],
+     "meaning": "Unlimited battery life"
+    },
+    {
+     "any_of": [
+      "guaranteed to never get lost"
+     ],
+     "meaning": "A guarantee that the tracker or cat can never be lost"
+    }
+   ],
+   "notes": "A concept is fine but must not promise endless power or zero loss; battery life is a trade-off to disclose."
+  },
+  {
+   "case_id": "C05",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C05-F1",
+     "meaning": "Store enough food for the days the owner is away",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C05-F2",
+     "meaning": "Release a measured portion at set times",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C05-F3",
+     "meaning": "Keep track of the feeding schedule",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C05-F4",
+     "meaning": "Keep working while the owner is away",
+     "may_be_unresolved": true
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C05-U1",
+     "meaning": "How many days and meals per day it must cover"
+    },
+    {
+     "unknown_id": "C05-U2",
+     "meaning": "Dry or wet food"
+    },
+    {
+     "unknown_id": "C05-U3",
+     "meaning": "Whether power at home is reliable or a battery is needed"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Portion release by a rotating compartment wheel versus an auger/screw dispenser; or a timed mechanical design versus an electronic timer"
+   },
+   "unsupported_claims": [],
+   "notes": "Gulf dialect positive case; person does not know components."
+  },
+  {
+   "case_id": "C06",
+   "group": "EXCLUSION",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C06-F1",
+     "meaning": "Give him something stable to push or pull on while standing",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C06-F2",
+     "meaning": "Reduce the effort of rising from a seated position",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "C06-F3",
+     "meaning": "Stay fixed and not slide or tip during use",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C06-U1",
+     "meaning": "Type and height of the armchair"
+    },
+    {
+     "unknown_id": "C06-U2",
+     "meaning": "How much assistance he needs and his weight"
+    },
+    {
+     "unknown_id": "C06-U3",
+     "meaning": "Whether it may be attached to the chair or the floor"
+    }
+   ],
+   "exclusions": [
+    {
+     "exclusion_id": "C06-X1",
+     "any_of": [
+      "must not plug into the wall"
+     ],
+     "meaning": "Mains-powered operation"
+    },
+    {
+     "exclusion_id": "C06-X2",
+     "any_of": [
+      "nothing motorized"
+     ],
+     "meaning": "Any motor or powered actuator"
+    }
+   ],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "A powered lift chair contradicts both exclusions; passive levers, springs or handles are acceptable. No safety guarantee may be claimed."
+  },
+  {
+   "case_id": "C07",
+   "group": "NON_DEVICE",
+   "expected_outcome": "ABSTAIN",
+   "essential_functions": [],
+   "expected_unknowns": [],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "An opinion/complaint about a public service; no invention to design."
+  },
+  {
+   "case_id": "C08",
+   "group": "AMBIGUOUS",
+   "expected_outcome": "CLARIFY_FIRST",
+   "essential_functions": [],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C08-U1",
+     "meaning": "Which kitchen task or problem the device should help with"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Egyptian dialect. Only 'for the kitchen' is known; a question must come first."
+  },
+  {
+   "case_id": "C09",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C09-F1",
+     "meaning": "Observe how much the dough has risen in the bowl",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "C09-F2",
+     "meaning": "Decide when the rise has reached the desired amount",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C09-F3",
+     "meaning": "Alert the baker when it is ready",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C09-U1",
+     "meaning": "What counts as 'risen enough' for the baker (e.g. doubled in size)"
+    },
+    {
+     "unknown_id": "C09-U2",
+     "meaning": "Bowl shape and size"
+    },
+    {
+     "unknown_id": "C09-U3",
+     "meaning": "Whether the alert should be a sound near the bowl or a message to a phone"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Measuring dough height from above versus judging by elapsed time and temperature; or a simple mechanical float indicator versus an electronic sensor"
+   },
+   "unsupported_claims": [],
+   "notes": "Kitchen/hobby positive case."
+  },
+  {
+   "case_id": "C10",
+   "group": "UNSUPPORTED",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C10-F1",
+     "meaning": "Protect the rider's head as a helmet",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C10-F2",
+     "meaning": "Make the rider visible at night with light",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C10-F3",
+     "meaning": "Signal to drivers behind the rider",
+     "may_be_unresolved": true
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C10-U1",
+     "meaning": "Whether the lights should be steady, flashing or show braking/turning"
+    },
+    {
+     "unknown_id": "C10-U2",
+     "meaning": "How the lights are powered and recharged"
+    },
+    {
+     "unknown_id": "C10-U3",
+     "meaning": "Whether the lights are added to an existing helmet or a new helmet is to be made"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [
+    {
+     "any_of": [
+      "مضمونة إنها تحمي راسي مية بالمية من أي حادث"
+     ],
+     "meaning": "A guarantee of 100% head protection in any accident"
+    }
+   ],
+   "notes": "Gulf dialect. Concept may add lighting to a helmet but must not promise complete protection or claim certification."
+  },
+  {
+   "case_id": "C11",
+   "group": "EXCLUSION",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C11-F1",
+     "meaning": "Discourage pigeons from landing on the railing",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "C11-F2",
+     "meaning": "Fit along the existing railing",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C11-U1",
+     "meaning": "Railing length, shape and material"
+    },
+    {
+     "unknown_id": "C11-U2",
+     "meaning": "Whether the person accepts noise, movement or visual deterrents"
+    }
+   ],
+   "exclusions": [
+    {
+     "exclusion_id": "C11-X1",
+     "any_of": [
+      "without hurting them"
+     ],
+     "meaning": "Anything that harms the birds"
+    },
+    {
+     "exclusion_id": "C11-X2",
+     "any_of": [
+      "without any spikes or chemicals"
+     ],
+     "meaning": "Spikes and chemical repellents"
+    }
+   ],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Spikes, gels or harmful methods contradict the exclusions; e.g. sloped or rotating surfaces are acceptable."
+  },
+  {
+   "case_id": "C12",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C12-F1",
+     "meaning": "Detect the car's position as it moves into the garage",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "C12-F2",
+     "meaning": "Indicate to the driver when to stop",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C12-F3",
+     "meaning": "Be mounted where the driver can notice it",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C12-U1",
+     "meaning": "Garage dimensions and where the shelves are"
+    },
+    {
+     "unknown_id": "C12-U2",
+     "meaning": "Whether power is available at the mounting spot"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "A purely mechanical cue (hanging marker or wheel stop) versus a distance sensor with a light signal"
+   },
+   "unsupported_claims": [],
+   "notes": "Mobility/home positive case."
+  },
+  {
+   "case_id": "C13",
+   "group": "NON_DEVICE",
+   "expected_outcome": "ABSTAIN",
+   "essential_functions": [],
+   "expected_unknowns": [],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Egyptian dialect. A purchase opinion about someone else's product; no invention."
+  },
+  {
+   "case_id": "C14",
+   "group": "AMBIGUOUS",
+   "expected_outcome": "CLARIFY_FIRST",
+   "essential_functions": [],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C14-U1",
+     "meaning": "What the 'thing' is"
+    },
+    {
+     "unknown_id": "C14-U2",
+     "meaning": "What the 'weird stuff' is"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Object and problem both unidentified; must ask first."
+  },
+  {
+   "case_id": "C15",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C15-F1",
+     "meaning": "Keep the medication schedule",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C15-F2",
+     "meaning": "Remind her at each dose time",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C15-F3",
+     "meaning": "Check whether the dose was actually taken",
+     "may_be_unresolved": true
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C15-U1",
+     "meaning": "How many medicines and doses per day"
+    },
+    {
+     "unknown_id": "C15-U2",
+     "meaning": "Whether she can hear, see and handle small buttons or a phone"
+    },
+    {
+     "unknown_id": "C15-U3",
+     "meaning": "Whether a family member should be notified remotely"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "A pill box with compartments that senses opening versus a reminder she confirms by pressing a button"
+   },
+   "unsupported_claims": [],
+   "notes": "MSA positive case. 'Actually taken' can only be inferred (e.g. compartment opened); the model should disclose that limit."
+  },
+  {
+   "case_id": "C16",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "C16-F1",
+     "meaning": "Measure the water temperature",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C16-F2",
+     "meaning": "Warm or cool the water toward the target",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "C16-F3",
+     "meaning": "Detect when temperature leaves the acceptable range",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "C16-F4",
+     "meaning": "Notify the owner remotely",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "C16-U1",
+     "meaning": "Tank volume and the fish species' temperature range"
+    },
+    {
+     "unknown_id": "C16-U2",
+     "meaning": "Room temperature range (whether cooling is needed at all)"
+    },
+    {
+     "unknown_id": "C16-U3",
+     "meaning": "How the owner wants to be notified"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Heating only versus heating plus cooling; sending the alert through the home internet connection versus through a mobile-network message that still works if the home internet is down"
+   },
+   "unsupported_claims": [],
+   "notes": "Pets/hobby positive case."
+  }
+ ],
+ "adjudication": {
+  "role": "prompt-blind adjudicator",
+  "base_commit": "f8b2809d6a3f1e5327d2e4c1d8efa490ce5f3e35",
+  "statement": "The adjudicator reviewed these cases and references without seeing any candidate prompt, schema, scoring code or model response for this evaluation.",
+  "cases_reviewed": [
+   "C01",
+   "C02",
+   "C03",
+   "C04",
+   "C05",
+   "C06",
+   "C07",
+   "C08",
+   "C09",
+   "C10",
+   "C11",
+   "C12",
+   "C13",
+   "C14",
+   "C15",
+   "C16"
+  ],
+  "changes": {
+   "C05": "C05-F1 changed from 'Store several days of dry food' to 'Store enough food for the days the owner is away': the idea does not say the food is dry and C05-U2 lists dry versus wet food as unknown, so the function must not presuppose it.",
+   "C10": "Added C10-U3 (whether lights are added to an existing helmet or a new helmet is to be made): the idea says 'make a helmet', and this decision determines whether head protection comes from an existing helmet or must be designed and tested anew.",
+   "C15": "Removed C15-F4 'Let someone know if a dose is missed': the grandmother's idea asks only to remind and to make sure the dose was taken; notifying someone else is a possible proposal, not an essential function, and is already covered as the open question C15-U3.",
+   "C16": "Replaced the 'local alarm versus phone notification' half of meaningful_choice: the owner is away at work, so a local alarm alone does not meet the stated need and is not a genuine alternative; the replacement (home internet versus mobile-network alert) is a functionally different choice."
+  }
+ }
+}

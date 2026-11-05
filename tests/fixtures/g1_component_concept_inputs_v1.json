@@ -1,0 +1,124 @@
+{
+ "pack_id": "inventorai-g1-component-concept-01",
+ "synthetic_only": true,
+ "status": "FROZEN",
+ "authorship": {
+  "role": "blind author",
+  "base_commit": "9ad18ef0b2e68301efb0fae912a7c1b790aa1823",
+  "statement": "The author wrote these ideas and references without seeing any candidate prompt, schema, scoring code or model response for this evaluation."
+ },
+ "cases": [
+  {
+   "case_id": "C01",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I want a device that waters my plants automatically when they need water, but I don't know what components I need."
+  },
+  {
+   "case_id": "C02",
+   "language": "ar",
+   "variety": "msa",
+   "synthetic": true,
+   "idea_text": "أريد صنع مُجفِّف للملابس يوضع على الشرفة ويعمل دون كهرباء على الإطلاق، يحمي الغسيل من الغبار والمطر ويسرّع جفافه."
+  },
+  {
+   "case_id": "C03",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "Something for the car that makes the mornings less annoying, you know what I mean."
+  },
+  {
+   "case_id": "C04",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I want a little tracker for my cat's collar that shows me where she is, with a battery that never runs out and that is guaranteed to never get lost."
+  },
+  {
+   "case_id": "C05",
+   "language": "ar",
+   "variety": "gulf",
+   "synthetic": true,
+   "idea_text": "ابي جهاز يعطي قطوتي أكلها بمواعيد ثابتة لما أكون مسافر كم يوم، بس ما أدري شنو يحتاج من قطع ولا شلون يشتغل."
+  },
+  {
+   "case_id": "C06",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I'd like something that helps my elderly dad get up from his armchair, but it must not plug into the wall and nothing motorized please."
+  },
+  {
+   "case_id": "C07",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "Honestly I just think the city should fix the potholes on my street faster, it's been months."
+  },
+  {
+   "case_id": "C08",
+   "language": "ar",
+   "variety": "egyptian",
+   "synthetic": true,
+   "idea_text": "عايز أعمل حاجة كده للمطبخ تريّحني، مش عارف أوصفها بس تبقى حلوة وعملية."
+  },
+  {
+   "case_id": "C09",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "Something that tells me when the bread dough has risen enough so I don't have to keep checking the bowl."
+  },
+  {
+   "case_id": "C10",
+   "language": "ar",
+   "variety": "gulf",
+   "synthetic": true,
+   "idea_text": "ودي أسوي خوذة للسيكل تضوي بالليل وتنبه السيارات اللي وراي، وتكون مضمونة إنها تحمي راسي مية بالمية من أي حادث."
+  },
+  {
+   "case_id": "C11",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "A way to keep pigeons off my balcony railing without hurting them and without any spikes or chemicals."
+  },
+  {
+   "case_id": "C12",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "A gadget for my garage that tells me how far to pull the car in so I stop hitting the shelves at the back."
+  },
+  {
+   "case_id": "C13",
+   "language": "ar",
+   "variety": "egyptian",
+   "synthetic": true,
+   "idea_text": "أنا بس عايز رأيك، هو الموبايل الجديد اللي نزل ده يستاهل أشتريه ولا أستنى شوية؟"
+  },
+  {
+   "case_id": "C14",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "Can you make my thing better? It keeps doing that weird stuff when I use it."
+  },
+  {
+   "case_id": "C15",
+   "language": "ar",
+   "variety": "msa",
+   "synthetic": true,
+   "idea_text": "أرغب في جهاز يُذكّر جدتي بمواعيد أدويتها ويتأكد من أنها أخذت الجرعة فعلاً، لأنها تنسى كثيراً."
+  },
+  {
+   "case_id": "C16",
+   "language": "en",
+   "variety": "en",
+   "synthetic": true,
+   "idea_text": "I want something that keeps my fish tank water at the right temperature and lets me know if it gets too hot or cold while I'm at work."
+  }
+ ]
+}
