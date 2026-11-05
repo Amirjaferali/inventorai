@@ -174,7 +174,7 @@
    "essential_functions": [
     {
      "function_id": "C05-F1",
-     "meaning": "Store several days of dry food",
+     "meaning": "Store several days of food",
      "may_be_unresolved": false
     },
     {
@@ -515,11 +515,6 @@
      "function_id": "C15-F3",
      "meaning": "Check whether the dose was actually taken",
      "may_be_unresolved": true
-    },
-    {
-     "function_id": "C15-F4",
-     "meaning": "Let someone know if a dose is missed",
-     "may_be_unresolved": true
     }
    ],
    "expected_unknowns": [
@@ -585,7 +580,7 @@
    ],
    "exclusions": [],
    "meaningful_choice": {
-    "meaning": "Heating only versus heating plus cooling; local alarm versus phone notification"
+    "meaning": "Heating only versus heating plus cooling"
    },
    "unsupported_claims": [],
    "notes": "Pets/hobby positive case."
