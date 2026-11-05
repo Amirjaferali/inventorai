@@ -1,8 +1,13 @@
-/* G1-PCC-LITERAL-SOURCE-AID-01. Presentation only: it fills EMPTY fields of the
- * planar-clearance form after the inventor explicitly picks an assignment. It
- * never selects a component, never answers a declaration, never overwrites a
- * value, an "I do not know yet" box or a note, and never submits anything. The
- * server re-checks every saved value and note.
+/* G1-PCC-LITERAL-SOURCE-AID-01. Presentation only: after the inventor has
+ * chosen the board component in the form AND an explicit X / Y assignment, it
+ * fills EMPTY board fields of the planar-clearance form. It never selects a
+ * component, never answers a declaration, never overwrites a value, an
+ * "I do not know yet" box or a note, and never submits anything.
+ *
+ * The note it places is a PROPOSAL of the inventor's own documentary text. If
+ * a board value or the X / Y choice changes afterwards, that note is removed
+ * only while it is still exactly the text the aid placed; a note the inventor
+ * has edited is theirs and is left alone. Nothing here verifies a note.
  */
 (function () {
   "use strict";
@@ -12,27 +17,57 @@
   var controls = box.querySelector("[data-pcc-aid-controls]");
   var apply = box.querySelector("[data-pcc-aid-apply]");
   var status = box.querySelector("[data-pcc-aid-status]");
+  var board = form.querySelector("#pcc-board");
   var x = form.querySelector("#pcc-v-board_x");
   var y = form.querySelector("#pcc-v-board_y");
   var ux = form.querySelector('input[name="unknown_board_x"]');
   var uy = form.querySelector('input[name="unknown_board_y"]');
   var note = form.querySelector("#pcc-basis_board");
-  if (!controls || !apply || !status || !x || !y || !ux || !uy || !note) return;
+  var orders = box.querySelectorAll('input[name="pcc_aid_order"]');
+  if (!controls || !apply || !status || !board || !x || !y || !ux || !uy || !note) return;
   controls.hidden = false;
+  var placed = null;   // the exact note text the aid placed, while it is unedited
+
+  function say(name) {
+    status.textContent = status.getAttribute("data-msg-" + name);
+  }
+
+  function withdrawPlacedNote() {
+    if (placed !== null && note.value === placed) {
+      note.value = "";
+      say("cleared");
+    }
+    placed = null;
+  }
 
   apply.addEventListener("click", function () {
+    if (board.value === "") {
+      say("board");
+      return;
+    }
     var chosen = box.querySelector('input[name="pcc_aid_order"]:checked');
     if (!chosen) {
-      status.textContent = status.getAttribute("data-msg-choose");
+      say("choose");
       return;
     }
     if (x.value !== "" || y.value !== "" || ux.checked || uy.checked || note.value !== "") {
-      status.textContent = status.getAttribute("data-msg-occupied");
+      say("occupied");
       return;
     }
     x.value = chosen.getAttribute("data-x");
     y.value = chosen.getAttribute("data-y");
     note.value = chosen.getAttribute("data-note");
-    status.textContent = status.getAttribute("data-msg-done");
+    placed = note.value;
+    say("done");
+  });
+  [x, y, ux, uy].forEach(function (field) {
+    field.addEventListener("input", withdrawPlacedNote);
+    field.addEventListener("change", withdrawPlacedNote);
+  });
+  Array.prototype.forEach.call(orders, function (radio) {
+    radio.addEventListener("change", withdrawPlacedNote);
+  });
+  note.addEventListener("input", function () {
+    if (note.value !== placed) placed = null;   // edited: now entirely the inventor's
   });
 }());

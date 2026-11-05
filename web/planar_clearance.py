@@ -256,13 +256,14 @@ def clearance_view(snapshot, interface_id, binding):
 # stored; the numbers must pass the method's own strict grammar unchanged.
 AID_MAX_IDEA_CHARS = 2000
 AID_ORDERS = ("first_x", "first_y")
-# The fixed opening of the documentary basis note the aid proposes. The save
-# route refuses a note that opens with one of these but no longer matches the
-# submitted board values (``aid_note_consistent``).
+# The opening of the documentary basis note the aid PROPOSES. It is ordinary
+# editable inventor text once in the form: nothing ever parses or checks it.
 AID_NOTE_PREFIX = {"en": "From my original idea: ", "ar": "من فكرتي الأصلية: "}
 _AID_NUMBER = r"[0-9]+(?:\.[0-9]+)?"
+# At most three spaces or tabs between the tokens: never a line break (the note
+# field is one line) and never a note longer than its 300-character bound.
 _AID_PAIR = re.compile(
-    r"(?<![\w.,٫/+\-–−])(?P<a>%s)\s*[x×X*]\s*(?P<b>%s)\s*mm(?![\w²³])"
+    r"(?<![\w.,٫/+\-–−٠-٩۰-۹])(?P<a>%s)[ \t]{0,3}[x×X*][ \t]{0,3}(?P<b>%s)[ \t]{0,3}mm(?![\w²³])"
     % (_AID_NUMBER, _AID_NUMBER), re.ASCII)
 # Any two numbers joined by a multiplication sign, whatever follows (another
 # unit, no unit, other digit systems): a second one makes the idea ambiguous.
@@ -270,13 +271,18 @@ _AID_ANY_PAIR = re.compile(r"\d+(?:[.,٫]\d+)?\s*[x×X*]\s*\d", re.UNICODE)
 _AID_ANY_NUMBER = re.compile(r"\d+(?:[.,٫]\d+)*", re.UNICODE)
 # A sentence ends at ! ? ; ؛ ؟ a line break, or a dot that is not a decimal point.
 _AID_SENTENCE_BREAK = re.compile(r"[!?;؛؟\n]|(?<![0-9])\.|\.(?![0-9])")
+# ONE board, named in the singular ("boards" is refused below as another object).
 _AID_BOARD = re.compile(
-    r"(?<!\w)(?:boards?|pcbs?)(?!\w)|(?<!\w)[وبلفك]?(?:ال|ل)?(?:لوحة|لوحه)(?!\w)",
+    r"(?<!\w)(?:board|pcb)(?!\w)|(?<!\w)[وبلفك]?(?:ال|ل)?(?:لوحة|لوحه)(?!\w)",
     re.IGNORECASE)
 _AID_OTHER_OBJECT = re.compile(
-    r"(?<!\w)(?:box(?:es)?|case|cases|enclosures?|housings?|lid|cover|shell|"
-    r"region|area|space|opening|slot)(?!\w)|"
-    r"(?<!\w)(?:ال)?(?:صندوق|علبة|علبه|غلاف|حاوية|حاويه|غطاء|منطقة|منطقه|فتحة|فتحه)(?!\w)",
+    r"(?<!\w)(?:boards|pcbs|box(?:es)?|case|cases|enclosures?|housings?|lids?|covers?|shell|"
+    r"region|area|space|opening|slot|screens?|displays?|batter(?:y|ies)|motors?|holes?|"
+    r"panels?|keyboards?|keypads?|sensors?|modules?|chips?|connectors?|cells?|"
+    r"spacing|pitch|distance|apart|gap)(?!\w)|"
+    r"(?<!\w)[وبلفك]?(?:ال)?(?:صندوق|علبة|علبه|غلاف|حاوية|حاويه|غطاء|منطقة|منطقه|فتحة|فتحه|"
+    r"شاشة|شاشه|بطارية|بطاريه|محرك|ثقب|ثقوب|فتحات|مفاتيح|شمسية|شمسيه|حساس|مستشعر|وحدة|"
+    r"موصل|خلية|مسافة|مسافه|لوحات)(?!\w)",
     re.IGNORECASE)
 # Words that make the sentence hypothetical, approximate, alternative or
 # negated. A stop list, not an interpreter: a listed word refuses the aid even
@@ -284,10 +290,19 @@ _AID_OTHER_OBJECT = re.compile(
 _AID_UNCERTAIN = re.compile(
     r"(?<!\w)(?:maybe|perhaps|might|could|would|should|if|unless|or|either|about|"
     r"around|approx(?:imately)?|roughly|nearly|almost|estimated?|guess(?:ed)?|"
-    r"unsure|uncertain|not|never|no|cannot|without|instead|rather|unknown|tbd)(?!\w)|"
+    r"unsure|uncertain|not|never|no|cannot|without|instead|rather|unknown|tbd|"
+    # limits, comparisons and targets: a bound is not the board's size
+    r"than|less|more|smaller|larger|bigger|wider|narrower|longer|shorter|under|over|"
+    r"below|above|up|most|least|max|maximum|min|minimum|limit|between|within|fit|fits|"
+    r"must|need|needs|want|wants|target|ideally|"
+    # past, belief and change
+    r"was|were|used|previous|previously|old|earlier|before|later|now|think|believe|"
+    r"probably|likely|seems?|hope|planned|plan|change|changed)(?!\w)|"
     r"n't(?!\w)|[~≈±]|"
     r"(?<!\w)[وف]?(?:ربما|قد|لعل|ربّما|إذا|اذا|لو|إن|أو|او|إما|اما|حوالي|حوالى|تقريبا|تقريبًا|"
-    r"نحو|قرابة|لا|لن|لم|ليس|ليست|لست|ما|مش|مو|بدون|دون|غير|بدل|بدلا|بدلًا)(?!\w)",
+    r"نحو|قرابة|لا|لن|لم|ليس|ليست|لست|ما|مش|مو|بدون|دون|غير|بدل|بدلا|بدلًا|"
+    r"أقل|اقل|أكثر|اكثر|أكبر|اكبر|أصغر|اصغر|حتى|أقصى|اقصى|أدنى|ادنى|حد|بين|ضمن|يجب|ينبغي|"
+    r"أريد|اريد|كان|كانت|سابقا|سابقًا|أظن|اظن|أعتقد|اعتقد|يبدو|الآن|الان)(?!\w)",
     re.IGNORECASE)
 
 
@@ -353,11 +368,6 @@ def aid_note(pair, order, lang):
     return AID_NOTE_PREFIX[lang] + body
 
 
-def aid_note_claimed(note):
-    """True when ``note`` opens with the aid's fixed prefix (either language)."""
-    return isinstance(note, str) and any(note.startswith(p) for p in AID_NOTE_PREFIX.values())
-
-
 def aid_offer(pair, lang):
     """The display model of the aid for ONE located pair in ``lang``: both
     explicit assignments with their proposed note, none pre-chosen."""
@@ -369,15 +379,3 @@ def aid_offer(pair, lang):
                         "y": aid_assignment(pair, order)[1],
                         "note": aid_note(pair, order, lang if lang in AID_NOTE_PREFIX else "en")}
                        for order in AID_ORDERS]}
-
-
-def aid_note_consistent(note, pair, board_x, board_y):
-    """False only for a note that opens with the aid's fixed prefix but is not
-    exactly the note of the submitted board values (an edited value, a forged
-    or stale note, or no locatable pair). Any other note is the inventor's own
-    free text and is never judged."""
-    if not aid_note_claimed(note):
-        return True
-    return any(aid_note(pair, order, lang) == note
-               and aid_assignment(pair, order) == (board_x, board_y)
-               for order in AID_ORDERS for lang in AID_NOTE_PREFIX)

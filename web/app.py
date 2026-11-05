@@ -11969,17 +11969,6 @@ def planar_clearance_save(sid, interface_id):
     except ValueError:
         return _pcc_render(sid, interface_id, status=400, error="UI_PCC_MSG_REJECTED",
                            draft=_pcc_draft())
-    # G1-PCC-LITERAL-SOURCE-AID-01: a board basis note that says its values
-    # come from the original idea must name exactly the submitted board values
-    # (never a changed, swapped or forged pair). Refused before any write.
-    note = fields["basis"][_subsystem_model.PLANAR_CLEARANCE_BASIS_FIELDS.index("basis_board")]
-    if _pcc_view.aid_note_claimed(note):
-        values = dict(zip(_pcc.VALUE_ROLES, fields["values"]))
-        pair = _pcc_view.literal_board_pair(_original_idea_text(sid))
-        if not _pcc_view.aid_note_consistent(note, pair, values["board_x"], values["board_y"]):
-            return _pcc_render(sid, interface_id, status=400,
-                               error="UI_PCC_AID_MSG_NOTE_MISMATCH", draft=_pcc_draft())
-
     def material_from(snapshot):
         board, enclosure = fields["board"], fields["enclosure"]
         (brev, bep), (erev, eep) = fields["expected"][board], fields["expected"][enclosure]

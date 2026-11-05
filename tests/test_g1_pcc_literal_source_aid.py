@@ -7,9 +7,9 @@ Synthetic data only. What is pinned:
   * the numbers are the method's own strict grammar, copied verbatim; no axis is implied;
   * the page SHOWS the passage and both explicit assignments with none chosen; it selects no
     component, answers no declaration and fills no field (the script fills EMPTY fields only);
-  * the save path is the existing one: a board basis note that claims the idea as its source must
-    name exactly the submitted board values, else nothing is written; correction and withdrawal
-    are unchanged; the same values give the same result as manual entry;
+  * the save path is the existing one and never parses the board basis note: the note stays the
+    inventor's documentary, editable text; correction and withdrawal are unchanged; the same values
+    give the same result as manual entry;
   * rendering the aid writes nothing and changes no progression, readiness or answer state.
 """
 import html as _html
@@ -93,6 +93,24 @@ def test_r01_one_literal_board_pair_is_located_verbatim(idea, first, second, spa
     "اللوحة حوالي 85 × 56 mm.",                                   # Arabic approximate
     "اللوحة 85 × 56 mm أو 90 × 60 mm.",
     "اللوحة مقاسها 85 × 56 mm وتوضع داخل علبة.",                  # Arabic other object
+    # review findings: limits, comparisons, past or unsure statements, other objects
+    "The board must be smaller than 80 x 50 mm.",
+    "The board is at most 80 x 50 mm.",
+    "The board is up to 80 x 50 mm.",
+    "The board is between 70 x 40 mm and something else.",
+    "The board is 80 x 50 mm minimum.",
+    "اللوحة أقل من 80 x 50 mm.",
+    "The board used to be 80 x 50 mm, now it is bigger.",
+    "The board is 80 x 50 mm, I think.",
+    "A small board drives a 40 x 30 mm screen.",
+    "The board needs a 80 x 50 mm battery.",
+    "The board's mounting holes are 70 x 40 mm apart.",
+    "لوحة شمسية مقاسها 80 x 50 mm.",
+    "لوحة المفاتيح مقاسها 80 x 50 mm.",
+    "Two boards, each 80 x 50 mm.",
+    "The board is 80\nx 50 mm.",                                   # a line break in the pair
+    "The board is 80" + " " * 250 + "x 50 mm.",                    # unbounded spacing
+    "The board is ٣80 x 50 mm.",                                   # another digit system before it
     "",
     None,
     "The board is 85 x 56 mm. " + "x" * 2000,                     # longer than the bound
@@ -130,27 +148,6 @@ def test_r05_the_note_states_only_the_source_and_the_inventors_assignment():
         assert len(note) <= 300
         for claim in ("verified", "checked", "correct", "validated", "measured"):
             assert claim not in note.lower()
-
-
-def test_r06_a_claiming_note_must_name_exactly_the_submitted_values():
-    pair = aid.literal_board_pair(IDEA)
-    ar = aid.aid_note(pair, "first_y", "ar")
-    assert aid.aid_note_consistent(NOTE_X, pair, "85", "56")
-    assert aid.aid_note_consistent(NOTE_Y, pair, "56", "85")
-    assert aid.aid_note_consistent(ar, pair, "56", "85")
-    assert not aid.aid_note_consistent(NOTE_X, pair, "56", "85")        # swapped values
-    assert not aid.aid_note_consistent(NOTE_X, pair, "85", "57")        # a changed value
-    assert not aid.aid_note_consistent(NOTE_X, pair, "85.0", "56")      # not verbatim
-    assert not aid.aid_note_consistent(NOTE_X, pair, None, "56")        # value removed
-    assert not aid.aid_note_consistent(NOTE_X + " ok", pair, "85", "56")  # edited note
-    assert not aid.aid_note_consistent(NOTE_X, None, "85", "56")        # no pair to match
-    other = aid.literal_board_pair("My board is 90 x 60 mm.")
-    assert not aid.aid_note_consistent(NOTE_X, other, "85", "56")       # another idea's note
-    forged = aid.AID_NOTE_PREFIX["en"] + "“85 x 56 mm”; checked by an engineer."
-    assert not aid.aid_note_consistent(forged, pair, "85", "56")
-    # any note that does not open with the prefix is the inventor's own and never judged
-    for own in ("Measured with calipers", "from my original idea: 85 x 56", None, ""):
-        assert aid.aid_note_consistent(own, pair, "1", "2")
 
 
 # ==========================================================================
@@ -279,51 +276,52 @@ def test_w05_a_swapped_assignment_is_saved_as_the_inventor_chose(client):
     assert (m.values_map()["board_x"], m.values_map()["board_y"]) == ("56", "85")
 
 
-@pytest.mark.parametrize("bx,by,note", [
-    ("56", "85", NOTE_X),                                   # values reversed after the note
-    ("85", "57", NOTE_X),                                   # a value changed after the note
-    ("85", "", NOTE_X),                                     # a value removed
-    ("85", "56", NOTE_X.replace("85 as", "90 as")),        # a forged note
-    ("85", "56", aid.AID_NOTE_PREFIX["en"] + "checked by an engineer"),
-    ("85", "56", aid.AID_NOTE_PREFIX["ar"] + "«85 x 56 mm»"),
-])
-def test_w06_a_note_that_no_longer_matches_is_refused_and_writes_nothing(client, bx, by, note):
+def test_w06_the_note_is_documentary_and_never_parsed_by_the_save(client, monkeypatch):
+    """Any note saves verbatim through the existing path, including notes in the aid's wording
+    whose values no longer match and notes beginning with similar words; the save never reads
+    the original idea."""
     sid, ifc, ids = _project(client)
-    before = _dump()
-    r = _submit(client, sid, ifc, ids, bx, by, note)
-    assert r.status_code == 400
-    assert ui_text.text("UI_PCC_AID_MSG_NOTE_MISMATCH", "en") in _html.unescape(_body(r))
-    assert _dump() == before
-    assert appmod._get_store().load_planar_clearance(sid)["ledger"].active_for(ifc) is None
+    def no_read(_sid):
+        raise AssertionError("the save path read the original idea")
+    page = client.get(_url(sid, ifc))
+    monkeypatch.setattr(appmod, "_original_idea_text", no_read)
+    for bx, by, note in (
+            ("56", "85", NOTE_X),                                      # stale proposal, kept as written
+            ("85", "57", NOTE_X + " I later re-measured Y."),
+            ("85", "56", aid.AID_NOTE_PREFIX["en"] + "the sketch on page 2"),
+            ("85", "56", "From my original idea and a caliper check"),
+            ("85", "56", aid.AID_NOTE_PREFIX["ar"] + "رسم يدوي")):
+        r = _submit(client, sid, ifc, ids, bx, by, note, page=page)
+        assert r.status_code == 200, note
+        m = appmod._get_store().load_planar_clearance(sid)["ledger"].active_for(ifc).current
+        assert (m.values_map()["board_x"], m.values_map()["board_y"]) == (bx, by)
+        assert m.basis_map()["basis_board"] == note
+        page = client.get(_url(sid, ifc))
 
 
-def test_w07_the_note_is_refused_when_the_idea_has_no_matching_pair(client):
-    sid, ifc, ids = _project(client, "A smart planter that opens its lid on a hinge.")
-    before = _dump()
-    r = _submit(client, sid, ifc, ids, "85", "56", NOTE_X)
-    assert r.status_code == 400 and _dump() == before
+def test_w07_no_note_check_or_aid_owner_exists_on_the_save_path():
+    import inspect
+    src = inspect.getsource(appmod.planar_clearance_save) + inspect.getsource(appmod._pcc_write)
+    assert "_pcc_view" not in src and "_original_idea_text" not in src
+    assert not hasattr(aid, "aid_note_consistent") and not hasattr(aid, "aid_note_claimed")
+    assert not ui_text.has_string("UI_PCC_AID_MSG_NOTE_MISMATCH")
 
 
-def test_w08_correction_and_withdrawal_keep_the_note_honest(client):
+def test_w08_correction_and_withdrawal_are_the_unchanged_paths(client):
     sid, ifc, ids = _project(client)
     assert _submit(client, sid, ifc, ids, "85", "56", NOTE_X).status_code == 200
     page = client.get(_url(sid, ifc))
-    form = _form_chunk(_body(page))
+    body = _body(page)
+    form = _form_chunk(body)
     assert re.search(r'id="pcc-v-board_x"[^>]*value="85"', form)   # existing values shown
-    # changing a value without changing the note is refused; the head is unchanged
+    assert "data-pcc-aid" in body                                   # the passage is still shown
     head = appmod._get_store().load_planar_clearance(sid)["ledger"].active_for(ifc).head_revision_no
-    r = _submit(client, sid, ifc, ids, "86", "56", NOTE_X, page=page)
-    assert r.status_code == 400
-    assert appmod._get_store().load_planar_clearance(sid)["ledger"].active_for(ifc).head_revision_no == head
-    # the inventor rewrites the note in their own words: the correction saves normally
     r = _submit(client, sid, ifc, ids, "86", "56", "Re-measured with calipers", page=page)
     assert r.status_code == 200
     rec = appmod._get_store().load_planar_clearance(sid)["ledger"].active_for(ifc)
     assert rec.head_revision_no == head + 1
     assert rec.current.basis_map()["basis_board"] == "Re-measured with calipers"
-    # withdrawal is the unchanged path
-    body = _body(client.get(_url(sid, ifc)))
-    data = _fields(body, form="data-pcc-withdraw-form")
+    data = _fields(_body(client.get(_url(sid, ifc))), form="data-pcc-withdraw-form")
     data["withdraw_confirm"] = "yes"
     r = client.post(_url(sid, ifc) + "/withdraw", data=data)
     assert r.status_code == 200
@@ -385,7 +383,8 @@ def test_w13_every_aid_string_exists_in_both_languages():
         "UI_PCC_AID_HEADING", "UI_PCC_AID_INTRO", "UI_PCC_AID_NUMBERS", "UI_PCC_AID_BOUNDARY",
         "UI_PCC_AID_ORDER_PROMPT", "UI_PCC_AID_AS_X", "UI_PCC_AID_AS_Y", "UI_PCC_AID_APPLY",
         "UI_PCC_AID_APPLY_NOTE", "UI_PCC_AID_MANUAL", "UI_PCC_AID_MSG_CHOOSE",
-        "UI_PCC_AID_MSG_OCCUPIED", "UI_PCC_AID_MSG_DONE", "UI_PCC_AID_MSG_NOTE_MISMATCH"]
+        "UI_PCC_AID_MSG_OCCUPIED", "UI_PCC_AID_MSG_DONE", "UI_PCC_AID_MSG_BOARD_FIRST",
+        "UI_PCC_AID_MSG_NOTE_CLEARED"]
     for key in keys:
         assert ui_text.has_string(key)
         en, ar = ui_text.text(key, "en"), ui_text.text(key, "ar")
@@ -398,3 +397,11 @@ def test_w14_one_component_as_both_board_and_enclosure_is_still_refused(client):
     r = _submit(client, sid, ifc, ids, "85", "56", NOTE_X,
                 extra={"enclosure_component_id": ids[0]})
     assert r.status_code in (400, 409) and _dump() == before
+
+
+def test_w15_an_inventors_own_words_after_the_proposed_note_save(client):
+    sid, ifc, ids = _project(client)
+    r = _submit(client, sid, ifc, ids, "85", "56", NOTE_X + " Measured with calipers.")
+    assert r.status_code == 200
+    m = appmod._get_store().load_planar_clearance(sid)["ledger"].active_for(ifc).current
+    assert m.basis_map()["basis_board"] == NOTE_X + " Measured with calipers."

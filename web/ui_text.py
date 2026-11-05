@@ -12214,8 +12214,8 @@ UI_STRINGS = {
         "en": "Put these numbers in the form",
         "ar": "ضع هذين الرقمين في النموذج"},
     "UI_PCC_AID_APPLY_NOTE": {
-        "en": "This only fills the two board values and the board basis note below, and only if they are empty. It saves nothing. You still choose the board and the enclosure, check every answer and press Save.",
-        "ar": "يملأ هذا قيمتي اللوحة وملاحظة مصدر أبعادها أدناه فقط، وفقط إن كانت فارغة. ولا يحفظ شيئًا. وتبقى أنت من يختار اللوحة والحاوية ويراجع كل إجابة ويضغط حفظ."},
+        "en": "Choose the board in the form first. This then fills only the two board values and the board basis note below, and only if they are empty. It saves nothing. You still choose the enclosure, check every value and answer, and press Save; the note stays your own editable text.",
+        "ar": "اختر اللوحة في النموذج أولًا. بعدها يملأ هذا قيمتي اللوحة وملاحظة مصدر أبعادها أدناه فقط، وفقط إن كانت فارغة. ولا يحفظ شيئًا. وتبقى أنت من يختار الحاوية ويراجع كل قيمة وإجابة ويضغط حفظ؛ وتبقى الملاحظة نصك الخاص القابل للتعديل."},
     "UI_PCC_AID_MANUAL": {
         "en": "You can also type the values yourself in the form below.",
         "ar": "يمكنك أيضًا كتابة القيم بنفسك في النموذج أدناه."},
@@ -12228,9 +12228,12 @@ UI_STRINGS = {
     "UI_PCC_AID_MSG_DONE": {
         "en": "The two numbers and the note are now in the form. Nothing is saved yet.",
         "ar": "أصبح الرقمان والملاحظة في النموذج. ولم يُحفظ شيء بعد."},
-    "UI_PCC_AID_MSG_NOTE_MISMATCH": {
-        "en": "Not saved: the board basis note says the values come from your original idea, but the board values in the form are not the ones it names. Correct the values or rewrite the note in your own words.",
-        "ar": "لم يُحفظ: تقول ملاحظة مصدر أبعاد اللوحة إن القيم مأخوذة من فكرتك الأصلية، لكن قيمتي اللوحة في النموذج ليستا ما تذكره. صحّح القيم أو أعد كتابة الملاحظة بكلماتك."},
+    "UI_PCC_AID_MSG_BOARD_FIRST": {
+        "en": "Choose which of your components is the board first, in the form below.",
+        "ar": "اختر أولًا أي مكوّناتك هو اللوحة، في النموذج أدناه."},
+    "UI_PCC_AID_MSG_NOTE_CLEARED": {
+        "en": "The proposed note was removed because a board value or the X / Y choice changed after it was placed. Write your own note if you want one.",
+        "ar": "أُزيلت الملاحظة المقترحة لأن إحدى قيمتي اللوحة أو اختيار X / Y تغيّر بعد وضعها. اكتب ملاحظتك الخاصة إن أردت."},
     "UI_PCC_DIAGRAM_LEGEND": {
         "en": "Symbols in the sketch: region_x and region_y are the usable region; board_x × board_y is the board; c is the clearance per side; ✕ marks an axis where the clearance is not available. The sketch is not mirrored for right-to-left reading: X runs left to right, as declared.",
         "ar": "رموز الرسم: region_x و region_y هما المنطقة القابلة للاستخدام؛ و board_x × board_y هي اللوحة؛ و c هو الخلوص لكل جانب؛ وتشير ✕ إلى محور لا يتوفر فيه الخلوص. الرسم غير معكوس للقراءة من اليمين إلى اليسار: يمتد X من اليسار إلى اليمين كما صُرِّح به."},

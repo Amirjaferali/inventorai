@@ -2,11 +2,12 @@
 
 Synthetic data only. An integrated project whose original idea states ONE literal board pair reaches
 the existing planar clearance page through the real forms. The aid shows the passage; its controls
-appear only with the script. Applying without a choice changes nothing; the inventor's explicit
-reversed choice fills ONLY the two board values and the board note; a second apply over filled
-fields changes nothing; no component, region, other value or declaration is touched; the inventor
-then completes the existing form and the existing save records exactly those values. At phone
-width nothing overflows, and the Arabic page is RTL.
+appear only with the script. Nothing is applied until the inventor has chosen the board component
+in the form AND an explicit X / Y assignment; the reversed choice fills ONLY the two board values and
+the board note; a later change of a board value or of the choice removes only the aid's own unedited
+note, never an inventor-edited one; a second apply never overwrites; no component, region, other
+value or declaration is touched; the existing save records exactly what the inventor submits. At
+phone width nothing overflows, and the Arabic page is RTL.
 """
 import pytest
 from playwright.sync_api import expect
@@ -48,7 +49,8 @@ def _start(page, base, lang):
 
 
 @pytest.mark.parametrize("lang", ["en", "ar"])
-def test_literal_aid_fills_only_empty_board_fields_after_an_explicit_choice(server, page, lang):
+def test_literal_aid_needs_the_board_and_an_explicit_choice_and_fills_only_empty_fields(
+        server, page, lang):
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     _start(page, server, lang)
@@ -64,37 +66,74 @@ def test_literal_aid_fills_only_empty_board_fields_after_an_explicit_choice(serv
     form = page.locator("[data-pcc-form]")
     apply = box.locator("[data-pcc-aid-apply]")
     status = box.locator("[data-pcc-aid-status]")
+    board, case = NAMES[lang]
 
-    apply.click()                                                        # no choice: nothing changes
+    def board_fields():
+        return (page.input_value("#pcc-v-board_x"), page.input_value("#pcc-v-board_y"),
+                page.input_value("#pcc-basis_board"))
+
+    # no board chosen: nothing is applied, even with an assignment chosen
+    box.locator("input[name=pcc_aid_order][value=first_y]").check()
+    apply.click()
+    expect(status).to_have_text(text("UI_PCC_AID_MSG_BOARD_FIRST", lang))
+    assert board_fields() == ("", "", "")
+    assert form.locator("#pcc-board").input_value() == ""                # never chosen for them
+
+    # board chosen by the inventor, no assignment yet: nothing is applied
+    form.locator("#pcc-board").select_option(label=board)
+    page.reload()
+    page.wait_for_load_state()
+    form.locator("#pcc-board").select_option(label=board)
+    apply.click()
     expect(status).to_have_text(text("UI_PCC_AID_MSG_CHOOSE", lang))
-    assert page.input_value("#pcc-v-board_x") == "" and page.input_value("#pcc-basis_board") == ""
+    assert board_fields() == ("", "", "")
 
-    box.locator("input[name=pcc_aid_order][value=first_y]").check()      # the inventor reverses it
+    # the inventor reverses the order: only the two board values and the note are filled
+    box.locator("input[name=pcc_aid_order][value=first_y]").check()
     apply.click()
     expect(status).to_have_text(text("UI_PCC_AID_MSG_DONE", lang))
-    assert (page.input_value("#pcc-v-board_x"), page.input_value("#pcc-v-board_y")) == ("56", "85")
-    note = page.input_value("#pcc-basis_board")
+    x, y, note = board_fields()
+    assert (x, y) == ("56", "85")
     assert note.startswith("من فكرتي الأصلية: " if lang == "ar" else "From my original idea: ")
     for role in ("region_x", "region_y", "c"):
         assert page.input_value("#pcc-v-%s" % role) == ""
-    assert form.locator("#pcc-board").input_value() == ""                # no component chosen
     assert form.locator("#pcc-enclosure").input_value() == ""
     assert form.locator("input[type=radio]:checked").count() == 0        # no declaration answered
     assert page.input_value("#pcc-region") == ""
 
-    box.locator("input[name=pcc_aid_order][value=first_x]").check()      # never overwrites
+    # a second apply never overwrites
+    box.locator("input[name=pcc_aid_order][value=first_x]").check()      # changing the choice ...
+    expect(status).to_have_text(text("UI_PCC_AID_MSG_NOTE_CLEARED", lang))
+    assert board_fields() == ("56", "85", "")                            # ... removes only the note
     apply.click()
     expect(status).to_have_text(text("UI_PCC_AID_MSG_OCCUPIED", lang))
-    assert (page.input_value("#pcc-v-board_x"), page.input_value("#pcc-v-board_y")) == ("56", "85")
-    assert page.input_value("#pcc-basis_board") == note
+    assert board_fields() == ("56", "85", "")
     _no_overflow(page, "[data-pcc-aid]")
     page.set_viewport_size({"width": 1280, "height": 900})
 
-    board, case = NAMES[lang]                                            # the inventor completes it
-    form.locator("#pcc-board").select_option(label=board)
+    # empty the fields and apply again; then an edited value removes the unedited proposal
+    page.fill("#pcc-v-board_x", "")
+    page.fill("#pcc-v-board_y", "")
+    apply.click()
+    expect(status).to_have_text(text("UI_PCC_AID_MSG_DONE", lang))
+    assert board_fields()[:2] == ("85", "56")
+    page.fill("#pcc-v-board_x", "86")
+    expect(status).to_have_text(text("UI_PCC_AID_MSG_NOTE_CLEARED", lang))
+    assert board_fields() == ("86", "56", "")
+
+    # a note the inventor has edited is theirs: a later value change leaves it intact
+    page.fill("#pcc-v-board_x", "")
+    page.fill("#pcc-v-board_y", "")
+    apply.click()
+    proposed = page.input_value("#pcc-basis_board")
+    page.fill("#pcc-basis_board", proposed + " Checked with calipers.")
+    page.fill("#pcc-v-board_y", "57")
+    assert board_fields() == ("85", "57", proposed + " Checked with calipers.")
+
+    # the inventor completes the existing form; the existing save records exactly that
     form.locator("#pcc-enclosure").select_option(label=case)
     page.fill("#pcc-region", REGION[lang])
-    for role, value in (("region_x", "90"), ("region_y", "90"), ("c", "2")):
+    for role, value in (("region_x", "95"), ("region_y", "95"), ("c", "2")):
         page.fill("#pcc-v-%s" % role, value)
     for fieldset in form.locator("[data-pcc-decl]").all():
         fieldset.locator("input[value=applies]").check()
@@ -102,14 +141,5 @@ def test_literal_aid_fills_only_empty_board_fields_after_an_explicit_choice(serv
     page.wait_for_load_state()
     expect(page.locator("[data-pcc-notice]")).to_have_text(text("UI_PCC_MSG_SAVED", lang))
     expect(page.locator("[data-pcc-outcome]")).to_have_attribute("data-pcc-outcome", "MET")
-    assert (page.input_value("#pcc-v-board_x"), page.input_value("#pcc-v-board_y")) == ("56", "85")
-    assert page.input_value("#pcc-basis_board") == note
-
-    # a value changed after the note was proposed is refused and nothing is written
-    page.fill("#pcc-v-board_x", "57")
-    form.locator("button[type=submit]").click()
-    page.wait_for_load_state()
-    expect(page.locator("[data-pcc-error]")).to_have_text(text("UI_PCC_AID_MSG_NOTE_MISMATCH", lang))
-    page.goto(page.url)
-    assert page.input_value("#pcc-v-board_x") == "56"
+    assert board_fields() == ("85", "57", proposed + " Checked with calipers.")
     assert errors == []
