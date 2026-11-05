@@ -1,0 +1,2171 @@
+{
+ "finished_at": "2026-11-05T19:21:12Z",
+ "manifest": {
+  "budget": {
+   "ceiling_usd": 5.0,
+   "price_verification": {
+    "input_usd_per_1m": 2.0,
+    "output_usd_per_1m": 10.0,
+    "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+    "verified_on": "2026-11-04"
+   },
+   "pricing": {
+    "basis": "OpenAI official GPT-6 Sol model page, checked 2026-11-04; Standard text-token prices per million, under the model's short-context tier (this frozen pack is well below the long-context threshold). Other tiers/regions/account routing may differ; the 6x reservation remains a conservative ceiling, not proof of account billing.",
+    "input_usd_per_1m": 2.0,
+    "model": "gpt-6-sol",
+    "output_usd_per_1m": 10.0,
+    "tier": "Standard"
+   },
+   "reservation": {
+    "input_usd_per_1m": 12.0,
+    "max_output_tokens": 2000,
+    "multiplier": 6,
+    "output_usd_per_1m": 60.0,
+    "overhead_input_tokens": 1000,
+    "rule": "Proof B's rule, reused: before each request reserve (UTF-8 bytes of the whole request body + 1000) input tokens and max_output_tokens output tokens at the reservation rates; send only if the committed bound plus that reservation is within the ceiling; afterwards the bound grows by the validated usage at the reservation rates, or by the whole reservation when usage is missing or the attempt failed."
+   }
+  },
+  "code_revision": "dd5c95f214cb29848cf7f0be3f4d1c4f0cc91496",
+  "decision_rule": "scripts/run_g1_component_concept_eval.py decide",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "evaluation_id": "g1-component-concept-qualification-01",
+  "evidence": {
+   "journal": "docs/benchmarks/evidence/g1_component_concept_v1/run_journal.jsonl",
+   "report": "docs/benchmarks/evidence/g1_component_concept_v1/run_report.json"
+  },
+  "input_sha256": "c083db315a7aa4ada00dcac2e54f42cbb861d08cf9a74f2dd505268199270576",
+  "instructions_sha256": "e5047edb1815fd70c02889f589d80142fc509bb44d427957dbf1a7aa0c84de9a",
+  "max_output_tokens": 2000,
+  "max_provider_requests": 16,
+  "model": "gpt-6-sol",
+  "one_run_policy": "Exactly one run: the journal is claimed by exclusive create; existing evidence in the tree or in any commit refuses a new run; an interrupted run is incomplete and is never rerun.",
+  "pack_id": "inventorai-g1-component-concept-heldout-02",
+  "payloads_sha256": "453a78167c3d66a97fda3baa03c9b3e874e3faaa5f101b2ae467138f781a5946",
+  "preregistration_sha256": "97b5d9e17b49b57b2038da2bc305556e96d6fb68568c95cc11da4483a3eaec0c",
+  "reference_sha256": "b3ddd17e45e3d14aa9e176496994ce285984a127ae5dffa83f1e98eaf3bac0f6",
+  "retries": 0,
+  "schema_sha256": "59c5c056838c76039b1a4a58b0c5ef79d1ce354d2bb4ec7967ea3047bd057a22",
+  "stop_rule": "Stop at the first provider ERROR (transport, HTTP status, malformed or incomplete reply, output over the cap, unconfirmed model) or an ambiguous refusal, and at the request or currency limit; every later case is NOT_ATTEMPTED. Any case without a reply makes the run INCOMPLETE; it is never scored as a success.",
+  "store": false,
+  "synthetic_only": true,
+  "tools": "none"
+ },
+ "manifest_sha256": "1b29c9e3dea0bb007fd0075a6d04ea13f4f8f287a6c234166f5da96b55ec8bd7",
+ "requests": 16,
+ "rows": [
+  {
+   "attempt": {
+    "attempt": 1,
+    "bound_usd": 0.07242,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 10944,
+    "measured_cost_usd": 0.01207,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202032,
+    "response_id": "resp_09d13d9878ddbcc3016aecd68fc42c87d286c35e5a4556c876",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1100,
+     "output_tokens": 987,
+     "reasoning_tokens": 382,
+     "total_tokens": 2087
+    }
+   },
+   "case_id": "Q01",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F3",
+      "options": [
+       "Water stored in a reservoir",
+       "Water supplied from an existing water source"
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "Are the plants in pots, in the ground, or both?",
+     "Would you prefer to refill a container or connect the device to an existing water source?"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Soil moisture sensor"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Controller"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Water reservoir"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Water pump"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C5",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Water delivery tubing"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C6",
+      "serves": [
+       "F4",
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Power source"
+     }
+    ],
+    "excluded_by_inventor": [],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "when they need water",
+      "text": "Determine when the plants need water."
+     },
+     {
+      "id": "F2",
+      "origin": "STATED",
+      "resolution": "PROPOSED",
+      "source_quote": "waters my plants automatically",
+      "text": "Deliver water to the plants automatically."
+     },
+     {
+      "id": "F3",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Provide a water supply."
+     },
+     {
+      "id": "F4",
+      "origin": "AI_PROPOSED",
+      "resolution": "PROPOSED",
+      "source_quote": "",
+      "text": "Use the indication of water need to control delivery."
+     }
+    ],
+    "missing_information": [
+     "How to decide that each plant needs water.",
+     "How many plants need watering and where they are located.",
+     "Where the water would come from.",
+     "What power source is available."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C2"
+     },
+     {
+      "from": "C2",
+      "kind": "SIGNAL",
+      "to": "C4"
+     },
+     {
+      "from": "C6",
+      "kind": "POWER",
+      "to": "C2"
+     },
+     {
+      "from": "C6",
+      "kind": "POWER",
+      "to": "C4"
+     },
+     {
+      "from": "C3",
+      "kind": "FLOW",
+      "to": "C4"
+     },
+     {
+      "from": "C4",
+      "kind": "FLOW",
+      "to": "C5"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "waters my plants automatically",
+      "text": "Water plants automatically."
+     },
+     {
+      "id": "S2",
+      "kind": "CONSTRAINT",
+      "source_quote": "when they need water",
+      "text": "Water them when they need water."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 2,
+    "bound_usd": 0.080832,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 10387,
+    "measured_cost_usd": 0.013472,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202452,
+    "response_id": "resp_0daa63256ee9c131016aecd699c78087d2983914656020a056",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1106,
+     "output_tokens": 1126,
+     "reasoning_tokens": 324,
+     "total_tokens": 2232
+    }
+   },
+   "case_id": "Q02",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F1",
+      "options": [
+       "علامة بصرية ثابتة",
+       "حاجز يمنع وصول الحمام إلى موضع وقوفه، إذا أمكن تركيبه دون إيذائه"
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "الحمام يوقف على الدرابزين، الأرض، لو بمكان ثاني؟",
+     "تفضّل شيء ينثبت، لو شيء تقدر تشيله؟"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1",
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "علامة ردع بصرية ثابتة"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "حامل لتثبيت العلامة"
+     }
+    ],
+    "excluded_by_inventor": [
+     {
+      "source_quote": "بدون ما يأذيهم",
+      "text": "أي شيء يؤذي الحمام."
+     },
+     {
+      "source_quote": "بدون أي صوت عالي يزعج الجيران",
+      "text": "أي صوت عالي يزعج الجيران."
+     }
+    ],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "يبعد الحمام عن البلكونة مالتي",
+      "text": "محاولة إبعاد الحمام عن البلكونة."
+     },
+     {
+      "id": "F2",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "بدون ما يأذيهم",
+      "text": "تجنّب إيذاء الحمام."
+     },
+     {
+      "id": "F3",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "بدون أي صوت عالي يزعج الجيران",
+      "text": "تجنّب إصدار صوت عالي يزعج الجيران."
+     }
+    ],
+    "missing_information": [
+     "وين يوقف الحمام بالبلكونة، ووين ممكن تثبيت شيء فيها؟",
+     "هل مسموح تثبيت شيء على البلكونة أو واجهة المبنى؟",
+     "ما نكدر نفترض إن الفكرة تبعد الحمام بلا أذى أو إزعاج؛ هذا يعتمد على طريقة التنفيذ ومكانها."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "MECHANICAL",
+      "to": "C2"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "يبعد الحمام عن البلكونة مالتي",
+      "text": "إبعاد الحمام عن البلكونة."
+     },
+     {
+      "id": "S2",
+      "kind": "CONSTRAINT",
+      "source_quote": "بدون ما يأذيهم",
+      "text": "عدم إيذاء الحمام."
+     },
+     {
+      "id": "S3",
+      "kind": "CONSTRAINT",
+      "source_quote": "بدون أي صوت عالي يزعج الجيران",
+      "text": "تجنّب الصوت العالي اللي يزعج الجيران."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 3,
+    "bound_usd": 0.028248,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3666,
+    "measured_cost_usd": 0.004708,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202548,
+    "response_id": "resp_0e3e737ec6f2f87b016aecd6a42c2887d2a39d96d189ddd594",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1109,
+     "output_tokens": 249,
+     "reasoning_tokens": 154,
+     "total_tokens": 1358
+    }
+   },
+   "case_id": "Q03",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [],
+    "clarification_questions": [
+     "Which part of your family's mornings feels most stressful?",
+     "What would you like a solution to do?"
+    ],
+    "component_types": [],
+    "excluded_by_inventor": [],
+    "functions": [],
+    "missing_information": [
+     "The morning problem to address and what a possible invention would do are not yet specified."
+    ],
+    "outcome": "ABSTAIN",
+    "relationships": [],
+    "stated": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 4,
+    "bound_usd": 0.11334,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 13877,
+    "measured_cost_usd": 0.01889,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.20262,
+    "response_id": "resp_01da08b3be2e0e92016aecd6a7e06087d292d0b5a69abd622f",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1110,
+     "output_tokens": 1667,
+     "reasoning_tokens": 604,
+     "total_tokens": 2777
+    }
+   },
+   "case_id": "Q04",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F4",
+      "options": [
+       "تأكيد يدوي من الوالد؛ لا يثبت وحده ابتلاع الدواء.",
+       "رصد إخراج الدواء من موزع؛ لا يثبت ابتلاعه."
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "كيف تريد معرفة أن والدك تناول الدواء: بتأكيد منه، أم برصد إخراج الدواء، أم بطريقة أخرى؟",
+     "كيف تفضّل أن يصلك الإشعار؟"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1",
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "وحدة لتسجيل المواعيد ومتابعة الوقت"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "واجهة تنبيه صوتية أو مرئية"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "واجهة لإدخال تأكيد يدوي"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "مستشعر لرصد إخراج الدواء من موزع"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C5",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "واجهة لإرسال إشعار عن بُعد"
+     }
+    ],
+    "excluded_by_inventor": [],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "STATED",
+      "resolution": "PROPOSED",
+      "source_quote": "يذكّر والدي المسنّ بمواعيد أدويته",
+      "text": "تذكير الوالد بمواعيد أدويته."
+     },
+     {
+      "id": "F2",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "ويخبرني أنا إذا لم يتناول الدواء في موعده",
+      "text": "إبلاغ صاحب الفكرة عند عدم تناول الدواء في موعده؛ يتوقف تحديد الحالة على طريقة التحقق منها."
+     },
+     {
+      "id": "F3",
+      "origin": "AI_PROPOSED",
+      "resolution": "PROPOSED",
+      "source_quote": "",
+      "text": "تسجيل مواعيد الأدوية ومقارنتها بالوقت الحالي."
+     },
+     {
+      "id": "F4",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "تلقي تأكيد أو رصد مؤشر متعلق بالجرعة؛ رصد إخراج الدواء وحده لا يثبت تناوله."
+     }
+    ],
+    "missing_information": [
+     "مواعيد الأدوية وكيفية إدخالها أو تعديلها.",
+     "كيف يراد تحديد عدم تناول الجرعة، وما مستوى اليقين المطلوب بشأن ابتلاع الدواء فعلاً.",
+     "وسيلة إرسال الإشعار إلى صاحب الفكرة."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C2"
+     },
+     {
+      "from": "C3",
+      "kind": "SIGNAL",
+      "to": "C1"
+     },
+     {
+      "from": "C4",
+      "kind": "SIGNAL",
+      "to": "C1"
+     },
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C5"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "يذكّر والدي المسنّ بمواعيد أدويته",
+      "text": "تذكير الوالد بمواعيد أدويته."
+     },
+     {
+      "id": "S2",
+      "kind": "FUNCTION",
+      "source_quote": "ويخبرني أنا إذا لم يتناول الدواء في موعده",
+      "text": "إخبار صاحب الفكرة إذا لم يتناول الوالد الدواء في موعده."
+     },
+     {
+      "id": "S3",
+      "kind": "CONTEXT",
+      "source_quote": "والدي المسنّ",
+      "text": "الجهاز مخصص لوالد مسنّ."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 5,
+    "bound_usd": 0.018432,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 1577,
+    "measured_cost_usd": 0.003072,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.201732,
+    "response_id": "resp_0977847670d1cbdd016aecd6b5c38c87d2bfc907b4b68dd1ee",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1096,
+     "output_tokens": 88,
+     "reasoning_tokens": 31,
+     "total_tokens": 1184
+    }
+   },
+   "case_id": "Q05",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [],
+    "clarification_questions": [],
+    "component_types": [],
+    "excluded_by_inventor": [],
+    "functions": [],
+    "missing_information": [],
+    "outcome": "ABSTAIN",
+    "relationships": [],
+    "stated": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 6,
+    "bound_usd": 0.101076,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 15867,
+    "measured_cost_usd": 0.016846,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.203292,
+    "response_id": "resp_0885ce8ffd72d39a016aecd6b7b9b087d2bae475882d25b270",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1128,
+     "output_tokens": 1459,
+     "reasoning_tokens": 355,
+     "total_tokens": 2587
+    }
+   },
+   "case_id": "Q06",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F1",
+      "options": [
+       "رصد الصوت بحساس صوت",
+       "رصد حركة البيبي بحساس حركة بدل الصوت"
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "البيبي سنه ووزنه قد إيه؟",
+     "عايز السرير يتهز إزاي، ويقف إمتى؟"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "حساس صوت"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F1",
+       "F2",
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "وحدة تحكم"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "آلية تحريك"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "هيكل سرير قابل للهز"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C5",
+      "serves": [
+       "F1",
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "مصدر طاقة"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C6",
+      "serves": [
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "آلية لتحديد مدى الحركة"
+     }
+    ],
+    "excluded_by_inventor": [],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "رصد صوت عياط البيبي."
+     },
+     {
+      "id": "F2",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "يتهز لوحده أول ما يعيط",
+      "text": "بدء هز السرير تلقائيًا لما البيبي يعيط."
+     },
+     {
+      "id": "F3",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "تحديد حركة الهز وطريقة إيقافها."
+     }
+    ],
+    "missing_information": [
+     "سن البيبي ووزنه.",
+     "شكل السرير المقصود وطريقة الهز المطلوبة.",
+     "إمتى الهز يقف، وإيه المطلوب لو العياط استمر.",
+     "طريقة تغذية الجهاز بالطاقة.",
+     "الأمان المطلق وانعدام أي خطر لا يمكن الوعد بيهم؛ يلزم تقييم المخاطر وتحديد المتطلبات قبل اعتبار التصميم مناسبًا للاستخدام."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C2"
+     },
+     {
+      "from": "C2",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C2"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C3"
+     },
+     {
+      "from": "C3",
+      "kind": "MECHANICAL",
+      "to": "C4"
+     },
+     {
+      "from": "C6",
+      "kind": "MECHANICAL",
+      "to": "C4"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "COMPONENT",
+      "source_quote": "سرير صغير للبيبي",
+      "text": "سرير صغير للبيبي"
+     },
+     {
+      "id": "S2",
+      "kind": "FUNCTION",
+      "source_quote": "يتهز لوحده أول ما يعيط",
+      "text": "السرير يتهز لوحده أول ما البيبي يعيط."
+     },
+     {
+      "id": "S3",
+      "kind": "VALUE",
+      "source_quote": "عشان ينام تاني",
+      "text": "الهدف إن البيبي ينام تاني."
+     },
+     {
+      "id": "S4",
+      "kind": "CONSTRAINT",
+      "source_quote": "آمن مية في المية ومفيش أي خطر خالص",
+      "text": "عايز تتأكد إنه آمن مية في المية ومفيش أي خطر؛ ده طلب لا يمكن اعتباره متحقق من الفكرة وحدها."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 7,
+    "bound_usd": 0.082164,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 11432,
+    "measured_cost_usd": 0.013694,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202368,
+    "response_id": "resp_0884edc85ff5360c016aecd6c72f9087d2b52c6ba2b9848a80",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1107,
+     "output_tokens": 1148,
+     "reasoning_tokens": 418,
+     "total_tokens": 2255
+    }
+   },
+   "case_id": "Q07",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F2",
+      "options": [
+       "Sense mail inside the mailbox.",
+       "Sense mailbox-door activity as a possible delivery event; opening alone would not establish that mail arrived."
+      ]
+     },
+     {
+      "for_function": "F3",
+      "options": [
+       "Send a wireless signal.",
+       "Run a wired connection."
+      ]
+     },
+     {
+      "for_function": "F1",
+      "options": [
+       "Show a visual indicator.",
+       "Give an audible alert."
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "Do you want an alert only when mail is actually inside, or would an alert when the mailbox opens be useful?",
+     "Where would you like to receive the alert, and is power available at the mailbox?"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Mail-detection sensor"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F2",
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Control circuit"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Communication modules"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Notification indicator"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C5",
+      "serves": [
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Power source"
+     }
+    ],
+    "excluded_by_inventor": [],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "tells me when there's new mail in the mailbox",
+      "text": "Notify you when there is new mail."
+     },
+     {
+      "id": "F2",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Detect a change that indicates new mail has arrived."
+     },
+     {
+      "id": "F3",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Send the mailbox status to wherever you want the notification."
+     },
+     {
+      "id": "F4",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Supply power to the mailbox-side parts."
+     }
+    ],
+    "missing_information": [
+     "Whether you need confirmation of mail inside, rather than an alert when the mailbox opens.",
+     "Mailbox construction and the conditions along the driveway that may affect sensing or communication.",
+     "Where you want to receive the alert and what form it should take.",
+     "What power or connectivity, if any, is available at the mailbox."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C2"
+     },
+     {
+      "from": "C2",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C3",
+      "kind": "SIGNAL",
+      "to": "C4"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C1"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C2"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C3"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "tells me when there's new mail in the mailbox",
+      "text": "Tell you when there is new mail in the mailbox."
+     },
+     {
+      "id": "S2",
+      "kind": "CONTEXT",
+      "source_quote": "mailbox at the end of my long driveway",
+      "text": "The mailbox is at the end of a long driveway."
+     },
+     {
+      "id": "S3",
+      "kind": "VALUE",
+      "source_quote": "so I stop walking out there for nothing.",
+      "text": "Avoid unnecessary walks to the mailbox."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 8,
+    "bound_usd": 0.087588,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 13424,
+    "measured_cost_usd": 0.014598,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202092,
+    "response_id": "resp_0fb4f56717b400c9016aecd6d29abc87d2b88417f4a947c3cf",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1104,
+     "output_tokens": 1239,
+     "reasoning_tokens": 557,
+     "total_tokens": 2343
+    }
+   },
+   "case_id": "Q08",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F1",
+      "options": [
+       "Detect an approach and give an audible cue.",
+       "Use a removable physical barrier to limit access."
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "Would you prefer an audible cue or a removable barrier?",
+     "Are other pets or people in the kitchen while you're at work?"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Presence sensor"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F2",
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Control unit"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F3",
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Sound emitter"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Power source"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C5",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Removable access barrier"
+     }
+    ],
+    "excluded_by_inventor": [
+     {
+      "source_quote": "no water sprays",
+      "text": "Water sprays must not be used."
+     },
+     {
+      "source_quote": "nothing that shocks her",
+      "text": "Nothing that shocks the cat may be used."
+     }
+    ],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "keep my cat off the kitchen counter",
+      "text": "Keep the cat off the kitchen counter."
+     },
+     {
+      "id": "F2",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Detect when the cat approaches the counter."
+     },
+     {
+      "id": "F3",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Give an audible cue when the cat approaches."
+     },
+     {
+      "id": "F4",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "while I'm at work",
+      "text": "Operate while the owner is at work."
+     }
+    ],
+    "missing_information": [
+     "Whether an audible cue is acceptable and would deter this cat.",
+     "Whether a removable barrier would fit the counter and how it is used.",
+     "Whether other pets or people use the kitchen while the owner is away.",
+     "What power source is available where the device would be placed."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C2"
+     },
+     {
+      "from": "C2",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C4",
+      "kind": "POWER",
+      "to": "C1"
+     },
+     {
+      "from": "C4",
+      "kind": "POWER",
+      "to": "C2"
+     },
+     {
+      "from": "C4",
+      "kind": "POWER",
+      "to": "C3"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "keep my cat off the kitchen counter",
+      "text": "Keep the cat off the kitchen counter."
+     },
+     {
+      "id": "S2",
+      "kind": "CONTEXT",
+      "source_quote": "while I'm at work",
+      "text": "The owner is away at work."
+     },
+     {
+      "id": "S3",
+      "kind": "CONSTRAINT",
+      "source_quote": "no water sprays",
+      "text": "No water sprays."
+     },
+     {
+      "id": "S4",
+      "kind": "CONSTRAINT",
+      "source_quote": "nothing that shocks her",
+      "text": "Nothing that shocks the cat."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 9,
+    "bound_usd": 0.03894,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5287,
+    "measured_cost_usd": 0.00649,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202476,
+    "response_id": "resp_066abf495b5c38f3016aecd6e00ef487d29eb05930e07b0585",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1105,
+     "output_tokens": 428,
+     "reasoning_tokens": 240,
+     "total_tokens": 1533
+    }
+   },
+   "case_id": "Q09",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [],
+    "clarification_questions": [
+     "وش الموقف في السيارة اللي خلاك تفكر بهالفكرة؟",
+     "تتخيلها تنظّف شي، تزيد الراحة، أو تسوي شي ثاني؟"
+    ],
+    "component_types": [],
+    "excluded_by_inventor": [],
+    "functions": [],
+    "missing_information": [
+     "وش المشكلة اللي تبي الفكرة تحلها؟",
+     "أي جزء من السيارة أو أي شخص تبي الفكرة تخدمه؟"
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "CONTEXT",
+      "source_quote": "لشي في السيارة",
+      "text": "الفكرة لشي في السيارة."
+     },
+     {
+      "id": "S2",
+      "kind": "CONTEXT",
+      "source_quote": "مو متأكد إذا هو للتنظيف ولا للراحة",
+      "text": "مو متأكد إذا هو للتنظيف ولا للراحة."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 10,
+    "bound_usd": 0.081588,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 10695,
+    "measured_cost_usd": 0.013598,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202092,
+    "response_id": "resp_06050c73bfb7159d016aecd6e550ec87d2a6a360a8f80d48c6",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1104,
+     "output_tokens": 1139,
+     "reasoning_tokens": 396,
+     "total_tokens": 2243
+    }
+   },
+   "case_id": "Q10",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F3",
+      "options": [
+       "Sense changes in the bike's motion.",
+       "Sense changes in wheel rotation."
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "Should the light flash when you slow down during the day, or only when it is dark?",
+     "Do you want the gadget to include its own light?"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Ambient-light sensor"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Motion sensor"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F2",
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Control circuit"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F2",
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Light emitter"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C5",
+      "serves": [
+       "F5"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Power source"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C6",
+      "serves": [
+       "F6"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Bike mount"
+     }
+    ],
+    "excluded_by_inventor": [],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "AI_PROPOSED",
+      "resolution": "PROPOSED",
+      "source_quote": "",
+      "text": "Detect when it gets dark."
+     },
+     {
+      "id": "F2",
+      "origin": "STATED",
+      "resolution": "PROPOSED",
+      "source_quote": "switches its light on by itself when it gets dark",
+      "text": "Switch the light on automatically when it gets dark."
+     },
+     {
+      "id": "F3",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Detect when the bike slows down."
+     },
+     {
+      "id": "F4",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "makes it flash when I slow down",
+      "text": "Make the light flash when the rider slows down."
+     },
+     {
+      "id": "F5",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Supply power to the gadget."
+     },
+     {
+      "id": "F6",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Attach the gadget to the bike."
+     }
+    ],
+    "missing_information": [
+     "Whether the light should flash when slowing down in daylight, or only when it is dark.",
+     "What kind of slowing down should trigger flashing.",
+     "How the gadget should be powered and where it should attach to the bike."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C2",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C3",
+      "kind": "SIGNAL",
+      "to": "C4"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C3"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C4"
+     },
+     {
+      "from": "C6",
+      "kind": "MECHANICAL",
+      "to": "C4"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "CONTEXT",
+      "source_quote": "A small gadget for my bike",
+      "text": "A small gadget for a bike."
+     },
+     {
+      "id": "S2",
+      "kind": "FUNCTION",
+      "source_quote": "switches its light on by itself when it gets dark",
+      "text": "Switch its light on automatically when it gets dark."
+     },
+     {
+      "id": "S3",
+      "kind": "FUNCTION",
+      "source_quote": "makes it flash when I slow down",
+      "text": "Make its light flash when the rider slows down."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 11,
+    "bound_usd": 0.018,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 1730,
+    "measured_cost_usd": 0.003,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.2019,
+    "response_id": "resp_0c37590d7bb4eace016aecd6effd2487d2b94249796b20a06d",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1095,
+     "output_tokens": 81,
+     "reasoning_tokens": 24,
+     "total_tokens": 1176
+    }
+   },
+   "case_id": "Q11",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [],
+    "clarification_questions": [],
+    "component_types": [],
+    "excluded_by_inventor": [],
+    "functions": [],
+    "missing_information": [],
+    "outcome": "ABSTAIN",
+    "relationships": [],
+    "stated": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 12,
+    "bound_usd": 0.082032,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 11827,
+    "measured_cost_usd": 0.013672,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202572,
+    "response_id": "resp_07f19e8cb7fcbc23016aecd6f1ca8487d2ae910f234790375d",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1111,
+     "output_tokens": 1145,
+     "reasoning_tokens": 417,
+     "total_tokens": 2256
+    }
+   },
+   "case_id": "Q12",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F1",
+      "options": [
+       "An insulated box with a removable cooling medium",
+       "An insulated box with powered cooling"
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "How long are your trips, and can the box use power in the car?",
+     "What food-safety certification do you need, and how will the food be prepared and handled before the trip?"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1",
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Insulated enclosure"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Removable cooling medium"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Powered cooling module"
+     }
+    ],
+    "excluded_by_inventor": [],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "keeps my homemade baby food cold on long car trips",
+      "text": "Keep homemade baby food cold during car trips."
+     },
+     {
+      "id": "F2",
+      "origin": "AI_PROPOSED",
+      "resolution": "PROPOSED",
+      "source_quote": "",
+      "text": "Hold the food inside the box."
+     }
+    ],
+    "missing_information": [
+     "Trip duration, starting food temperature, and the temperature the food must remain below.",
+     "Whether the box can use power in the car or must cool without it.",
+     "The required food-safety certification and how the finished box would be assessed; certification cannot be presumed.",
+     "A guarantee that food will never spoil cannot be established from the box concept; storage and handling conditions also matter."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C2",
+      "kind": "MECHANICAL",
+      "to": "C1"
+     },
+     {
+      "from": "C3",
+      "kind": "MECHANICAL",
+      "to": "C1"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "keeps my homemade baby food cold on long car trips",
+      "text": "Keep homemade baby food cold on long car trips."
+     },
+     {
+      "id": "S2",
+      "kind": "CONSTRAINT",
+      "source_quote": "it has to be certified food-safe",
+      "text": "The box must be certified food-safe."
+     },
+     {
+      "id": "S3",
+      "kind": "CONSTRAINT",
+      "source_quote": "guaranteed never to let anything spoil",
+      "text": "The box is requested to guarantee that nothing spoils."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 13,
+    "bound_usd": 0.112992,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 16066,
+    "measured_cost_usd": 0.018832,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202452,
+    "response_id": "resp_03a64a7f2e6f86d8016aecd6fd8a2487d2b056393a7658bc5f",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1106,
+     "output_tokens": 1662,
+     "reasoning_tokens": 801,
+     "total_tokens": 2768
+    }
+   },
+   "case_id": "Q13",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F2",
+      "options": [
+       "تنبيه بصوت في مكان قريب",
+       "إشعار على الهاتف"
+      ]
+     },
+     {
+      "for_function": "F3",
+      "options": [
+       "بطارية",
+       "مصدر كهرباء متاح في المكان"
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "بتكون قريب من السطح وتقدر تسمع تنبيه، ولا محتاج إشعار على هاتفك؟",
+     "فيه كهرباء متاحة في المكان، ولا تفضّل بطارية؟"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "حساس لرصد المطر"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F1",
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "دائرة تحكم"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "وسيلة تنبيه"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "مصدر طاقة"
+     }
+    ],
+    "excluded_by_inventor": [],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "AI_PROPOSED",
+      "resolution": "PROPOSED",
+      "source_quote": "",
+      "text": "رصد بداية المطر."
+     },
+     {
+      "id": "F2",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "تنبهني لما المطرة تبتدي",
+      "text": "تنبيهك لما المطر يبدأ."
+     },
+     {
+      "id": "F3",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "توفير طاقة لأجزاء التنبيه."
+     }
+    ],
+    "missing_information": [
+     "مكان وجودك عادةً لما الغسيل يكون على السطح، عشان يتحدد شكل التنبيه المناسب.",
+     "مدى توفر الكهرباء في المكان وطريقة تغذية الجهاز بالطاقة."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C2"
+     },
+     {
+      "from": "C2",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C4",
+      "kind": "POWER",
+      "to": "C1"
+     },
+     {
+      "from": "C4",
+      "kind": "POWER",
+      "to": "C2"
+     },
+     {
+      "from": "C4",
+      "kind": "POWER",
+      "to": "C3"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "تنبهني لما المطرة تبتدي",
+      "text": "تنبيهك لما المطر يبدأ."
+     },
+     {
+      "id": "S2",
+      "kind": "CONTEXT",
+      "source_quote": "الغسيل من على السطح",
+      "text": "الغسيل موجود على السطح."
+     },
+     {
+      "id": "S3",
+      "kind": "VALUE",
+      "source_quote": "ألحق ألم الغسيل من على السطح قبل ما يتبل",
+      "text": "تريد تلحق تلم الغسيل قبل ما يتبل."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 14,
+    "bound_usd": 0.025572,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3047,
+    "measured_cost_usd": 0.004262,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202188,
+    "response_id": "resp_09155cfd0cdf14e9016aecd70db53887d284eb57e842b88a31",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1106,
+     "output_tokens": 205,
+     "reasoning_tokens": 110,
+     "total_tokens": 1311
+    }
+   },
+   "case_id": "Q14",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [],
+    "clarification_questions": [
+     "What problem did your grandmother have with the stairs?",
+     "Did she describe what the thing might look like or how someone would use it?"
+    ],
+    "component_types": [],
+    "excluded_by_inventor": [],
+    "functions": [],
+    "missing_information": [
+     "What the thing for the stairs is meant to do."
+    ],
+    "outcome": "ABSTAIN",
+    "relationships": [],
+    "stated": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 15,
+    "bound_usd": 0.093024,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 11179,
+    "measured_cost_usd": 0.015504,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202464,
+    "response_id": "resp_03819f7424d6907e016aecd710aefc87d29363b914f6a1ddfd",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1107,
+     "output_tokens": 1329,
+     "reasoning_tokens": 372,
+     "total_tokens": 2436
+    }
+   },
+   "case_id": "Q15",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F1",
+      "options": [
+       "Infer shower completion from humidity changes",
+       "Sense when shower water stops flowing"
+      ]
+     },
+     {
+      "for_function": "F3",
+      "options": [
+       "Audible reminder",
+       "Visible reminder"
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "Would you prefer a sound or a light to remind your son, and where should he notice it?",
+     "Is the fan controlled by a wall switch, or does it turn on automatically?"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Humidity sensor"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Fan-state sensor"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Local control circuit"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Audible indicator"
+     }
+    ],
+    "excluded_by_inventor": [
+     {
+      "source_quote": "without a camera in the bathroom",
+      "text": "A camera in the bathroom."
+     },
+     {
+      "source_quote": "without an app on his phone",
+      "text": "An app on his son's phone."
+     }
+    ],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Infer when a shower has ended."
+     },
+     {
+      "id": "F2",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Determine whether the bathroom fan is still on."
+     },
+     {
+      "id": "F3",
+      "origin": "STATED",
+      "resolution": "PROPOSED",
+      "source_quote": "reminds my teenage son to turn the bathroom fan off after his shower",
+      "text": "Remind his son to turn off the bathroom fan after a shower."
+     },
+     {
+      "id": "F4",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Trigger the reminder when the shower appears to have ended and the fan remains on."
+     }
+    ],
+    "missing_information": [
+     "How to distinguish the end of a shower from other changes in bathroom humidity.",
+     "How the fan is switched on and how its on-state could be detected.",
+     "Where the reminder should be noticeable and whether sound or light is preferred.",
+     "Whether the reminder should occur immediately after the shower or later."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C1",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C2",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C3",
+      "kind": "SIGNAL",
+      "to": "C4"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "reminds my teenage son to turn the bathroom fan off after his shower",
+      "text": "Remind his teenage son to turn off the bathroom fan after a shower."
+     },
+     {
+      "id": "S2",
+      "kind": "CONSTRAINT",
+      "source_quote": "without a camera in the bathroom",
+      "text": "No camera in the bathroom."
+     },
+     {
+      "id": "S3",
+      "kind": "CONSTRAINT",
+      "source_quote": "without an app on his phone",
+      "text": "No app on his son's phone."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 16,
+    "bound_usd": 0.085104,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 12887,
+    "measured_cost_usd": 0.014184,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.202092,
+    "response_id": "resp_068269294cf40658016aecd71bdb7487d2940cdff1ab7141d4",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 1070,
+     "input_tokens": 1102,
+     "output_tokens": 1198,
+     "reasoning_tokens": 516,
+     "total_tokens": 2300
+    }
+   },
+   "case_id": "Q16",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "alternatives": [
+     {
+      "for_function": "F1",
+      "options": [
+       "Insulation to slow heat loss",
+       "Powered heating to add heat"
+      ]
+     },
+     {
+      "for_function": "F2",
+      "options": [
+       "Visual indication",
+       "Audible indication"
+      ]
+     }
+    ],
+    "clarification_questions": [
+     "About how long is it between packing the soup and lunchtime, and what would you consider too cold?",
+     "Would your daughter prefer a visual signal, and does the school allow powered lunchboxes?"
+    ],
+    "component_types": [
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C1",
+      "serves": [
+       "F1",
+       "F4"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Insulated food container"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C2",
+      "serves": [
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Temperature sensor"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C3",
+      "serves": [
+       "F3",
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Threshold-detection circuit"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C4",
+      "serves": [
+       "F2"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Visual indicator"
+     },
+     {
+      "attribution": "AI_PROPOSED",
+      "id": "C5",
+      "serves": [
+       "F2",
+       "F3"
+      ],
+      "status": "UNVERIFIED",
+      "type": "Power source"
+     }
+    ],
+    "excluded_by_inventor": [],
+    "functions": [
+     {
+      "id": "F1",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "keeps my daughter's soup warm until lunchtime at school",
+      "text": "Limit the soup's heat loss until lunchtime."
+     },
+     {
+      "id": "F2",
+      "origin": "STATED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "lets her know if it has gone cold",
+      "text": "Give her an indication if the soup is cold."
+     },
+     {
+      "id": "F3",
+      "origin": "AI_PROPOSED",
+      "resolution": "UNRESOLVED",
+      "source_quote": "",
+      "text": "Determine whether the soup has reached a temperature considered cold."
+     },
+     {
+      "id": "F4",
+      "origin": "AI_PROPOSED",
+      "resolution": "PROPOSED",
+      "source_quote": "",
+      "text": "Hold the soup in a container within the lunchbox."
+     }
+    ],
+    "missing_information": [
+     "What temperature counts as cold is not specified.",
+     "The soup's starting temperature and the time until lunch are not given, so keeping it warm cannot be promised.",
+     "The school’s rules for powered or audible items are unknown.",
+     "It is unclear whether the indicator should reflect the soup's temperature or the container's temperature."
+    ],
+    "outcome": "RESPONDED",
+    "relationships": [
+     {
+      "from": "C2",
+      "kind": "SIGNAL",
+      "to": "C3"
+     },
+     {
+      "from": "C3",
+      "kind": "SIGNAL",
+      "to": "C4"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C3"
+     },
+     {
+      "from": "C5",
+      "kind": "POWER",
+      "to": "C4"
+     }
+    ],
+    "stated": [
+     {
+      "id": "S1",
+      "kind": "FUNCTION",
+      "source_quote": "keeps my daughter's soup warm until lunchtime at school",
+      "text": "Keep the soup warm until lunchtime at school."
+     },
+     {
+      "id": "S2",
+      "kind": "FUNCTION",
+      "source_quote": "lets her know if it has gone cold",
+      "text": "Let her know if the soup has gone cold."
+     },
+     {
+      "id": "S3",
+      "kind": "CONTEXT",
+      "source_quote": "my daughter's soup warm until lunchtime at school",
+      "text": "The lunchbox is for the inventor's daughter to use at school."
+     }
+    ]
+   }
+  }
+ ],
+ "spend": {
+  "ceiling_usd": 5.0,
+  "conservative_bound_usd": 1.121352,
+  "measured_cost_complete": true,
+  "measured_cost_usd": 0.186892,
+  "requests_sent": 16
+ },
+ "started_at": "2026-11-05T19:18:38Z",
+ "stopped_on": null
+}
