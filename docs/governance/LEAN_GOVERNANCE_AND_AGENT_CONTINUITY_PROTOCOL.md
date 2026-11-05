@@ -663,6 +663,40 @@ compiler, runtime, dependency, reference-data or output clearance.
   parameters for inventor data; explicit applicability and refusal on a missing required input; input, model,
   tool and settings identity with revision-bound outputs; executable files and measured values, not screenshots
   alone.
+- **F. Engineering-tool candidates for the second G1 bridge (Owner-directed continuity, 2026-11-05; not a
+  register, selection or authorization).** Bridge: confirmed invention data -> linked components and methods ->
+  ONE qualified cross-disciplinary relationship -> an inspectable output. It does not depend on the unresolved
+  free-language semantic bridge or on production AI. Already recorded, not repeated: MSL / OpenModelica (B),
+  FMI / SSP / OMSimulator and OpenMDAO (D), CadQuery (the G1-3/4 row and source leads), FreeCAD (A). Every row
+  below is a CANDIDATE: nothing is installed, run, qualified, adopted or active, and availability on GitHub is
+  not qualification. Licences marked "upstream-declared" were seen through a search index, not inspected at a
+  pinned revision; a tool's licence is not clearance of its runtime, bundled libraries, outputs or redistribution.
+
+  | Tool | Role | Existing InventorAI owner | Licence / IP questions | Trigger |
+  |---|---|---|---|---|
+  | [`kicad-cli`](https://docs.kicad.org/10.0/en/cli/cli.html) | Read board geometry from a KiCad PCB file (e.g. `pcb export dxf` of the board-edge layer, `pcb export stats`). Whether either yields reliable outline dimensions is UNCERTAIN. | An input source for the planar-clearance consumer, never its method; Stage-15 component identity; roadmap §8B. | KiCad licence and version at a pinned release; local use on synthetic files differs from bundling or hosting it; a real board file is inventor data. | Experiment G, separately authorized |
+  | [KiCad StepUp](https://www.kicad.org/external-tools/stepup/) ([source](https://github.com/easyw/kicadStepUpMod)) | ECAD <-> MCAD exchange in FreeCAD (board outline and 3D) | Phase-7 export / adapter boundary | Licence at a pinned revision; FreeCAD add-on distribution | A qualified relation needing 3D exchange beyond the DXF reference |
+  | [atopile](https://github.com/atopile/atopile) ([docs](https://docs.atopile.io/)) | Lesson for reusable electronic modules and typed interfaces with units and assertions. Its compiler also selects parts, which is out of scope here. | Stage-15 components / interfaces and the Electronics owner, as a design reference only | MIT core upstream-declared; package-registry content has its own terms; part selection would collide with the T6 / BOM block | A qualified typed-interface relation (the CELUS row) |
+  | [FMPy](https://github.com/CATIA-Systems/FMPy) | Execute FMI 1 / 2 / 3 FMUs | Specialist and external-tool owners (G1-3/4) | BSD-2 upstream-declared; each FMU's own runtime and licence (B's WAITING item) | D's FMI trigger: a demonstrated need to run an exchanged model |
+  | [Eclipse SysON](https://projects.eclipse.org/projects/modeling.syson) | SysML v2 system and relationship modelling (incubating) | Stage 15 stays the relationship owner; at most an exchange format | Eclipse licence at a pinned release | A demonstrated need to exchange the Stage-15 relationships with an MBSE tool; never physical-verification authority |
+- **G. Candidate experiment — PCB source geometry -> planar clearance -> revision-bound CAD (RECOMMENDATION ONLY;
+  working name PCB-OUTLINE-TO-PLANAR-CLEARANCE-PROOF-01).** Steps: (1) a synthetic, version-pinned KiCad PCB file;
+  (2) establish whether `kicad-cli` extracts its supported board outline reliably; (3) bind the dimensions and the
+  source identity (file SHA-256, KiCad version, command) to the existing Stage-15 component / interface context
+  under the current declaration and confirmation semantics: as with the PR #929 literal aid, a source offers
+  values and the inventor declares them, with the basis note naming the source; (4) reuse
+  `mechanical:planar_centered_rectangular_clearance` 1.0 with its applicability and refusal rules unchanged, and the
+  PR #917 CAD download; (5) inspect the resulting geometry independently; (6) change one source dimension and show
+  that the earlier check or artifact is not represented as current. EXISTS for step 6: a changed declared value
+  already makes a new revision and refuses the old download (PR #917, method contract §10A). Missing: no
+  source-file revision lifecycle exists, so the proof may show disclosure or refusal at the point of use, never
+  automatic invalidation. Prerequisites: Owner authorization; the pinned `kicad-cli` version and its licence for
+  the execution route; negative controls that refuse or require explicit confirmation (non-rectangular, rounded
+  corners, several outlines, missing board edge, inch units, ambiguous origin) instead of approximating a centred
+  rectangle; independent inspection; no product code before the proof is accepted. Reuse: PR #917 (CAD download),
+  PR #919 (integrated engineering continuation), PR #929 (literal-source pattern). A planar check is never
+  PCB-enclosure compatibility, manufacturability, electrical validity or safety; D4, T6, OD-2, provenance, the
+  AI / provider and real-data restrictions and source / IP qualification are unchanged.
 
 Unchanged: SCREEN_SUPPORT → Validation Plan STOPPED, PR #890 HOLD, Proof B paused, OD-2, the D4 / T6 boundaries,
 the Arabic obligations, every owner's responsibilities, the roadmap count and every capability status.
