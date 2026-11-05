@@ -64,6 +64,30 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {% if v.eligible %}
 {% set m = form %}
 <h2>{% if v.record %}{{ pcc_t('UI_PCC_FORM_HEADING_CORRECT') }}{% else %}{{ pcc_t('UI_PCC_FORM_HEADING_NEW') }}{% endif %}</h2>
+{#- G1-PCC-LITERAL-SOURCE-AID-01: ONE literal pair located in the original
+    idea, shown with its sentence. Display only: nothing here is submitted, no
+    component, axis or answer is chosen, and the script below only fills empty
+    fields of the form after the inventor picks an assignment. -#}
+{% if aid %}
+<div class="pcc-box" data-pcc-aid>
+  <h3>{{ pcc_t('UI_PCC_AID_HEADING') }}</h3>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_AID_INTRO') }}</p>
+  <blockquote dir="auto" style="margin:6px 0;padding:6px 10px;border-inline-start:3px solid #c9d6e3;white-space:pre-wrap" data-pcc-aid-passage>{{ aid.passage }}</blockquote>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_AID_NUMBERS') }} <bdi dir="ltr" data-pcc-aid-first>{{ aid.first }}</bdi>{{ '، ' if pcc_lang == 'ar' else ', ' }}<bdi dir="ltr" data-pcc-aid-second>{{ aid.second }}</bdi> (<bdi dir="ltr">{{ aid.unit }}</bdi>)</p>
+  <p class="pcc-small" data-pcc-aid-boundary>{{ pcc_t('UI_PCC_AID_BOUNDARY') }}</p>
+  <div data-pcc-aid-controls hidden>
+    <fieldset><legend>{{ pcc_t('UI_PCC_AID_ORDER_PROMPT') }}</legend>
+    {% for o in aid.orders %}
+    <label class="inline"><input type="radio" name="pcc_aid_order" value="{{ o.order }}" data-x="{{ o.x }}" data-y="{{ o.y }}" data-note="{{ o.note }}"> <bdi dir="ltr">{{ o.x }}</bdi> {{ pcc_t('UI_PCC_AID_AS_X') }}{{ '، ' if pcc_lang == 'ar' else ', ' }}<bdi dir="ltr">{{ o.y }}</bdi> {{ pcc_t('UI_PCC_AID_AS_Y') }}</label>
+    {% endfor %}
+    </fieldset>
+    <button type="button" data-pcc-aid-apply>{{ pcc_t('UI_PCC_AID_APPLY') }}</button>
+    <p class="pcc-small">{{ pcc_t('UI_PCC_AID_APPLY_NOTE') }}</p>
+    <p class="pcc-small" role="status" aria-live="polite" data-pcc-aid-status data-msg-choose="{{ pcc_t('UI_PCC_AID_MSG_CHOOSE') }}" data-msg-occupied="{{ pcc_t('UI_PCC_AID_MSG_OCCUPIED') }}" data-msg-done="{{ pcc_t('UI_PCC_AID_MSG_DONE') }}" data-msg-board="{{ pcc_t('UI_PCC_AID_MSG_BOARD_FIRST') }}" data-msg-cleared="{{ pcc_t('UI_PCC_AID_MSG_NOTE_CLEARED') }}" data-msg-review="{{ pcc_t('UI_PCC_AID_MSG_NOTE_REVIEW') }}"></p>
+  </div>
+  <p class="pcc-small" data-pcc-aid-manual>{{ pcc_t('UI_PCC_AID_MANUAL') }}</p>
+</div>
+{% endif %}
 <form method="POST" action="{{ url_for('planar_clearance_save', sid=sid, interface_id=v.interface_id) }}" data-pcc-form>
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <input type="hidden" name="pcc_submission" value="{{ submission }}">
@@ -130,4 +154,5 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 <p class="pcc-small">{{ pcc_t('UI_PCC_HISTORICAL_NOTE') }}</p>
 {% endif %}
 </div>
+{% if aid %}<script defer src="{{ url_for('static', filename='js/pcc_literal_aid.js') }}"></script>{% endif %}
 {% endblock %}

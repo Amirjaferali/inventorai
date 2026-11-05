@@ -11694,8 +11694,17 @@ def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=No
         return _deny_project()
     form = draft if draft is not None else _pcc_form_from_material(
         view["raw_material"] if view else None)
+    # G1-PCC-LITERAL-SOURCE-AID-01: the ONE literal board pair of the original
+    # idea, display only (the callers established project authorization).
+    aid = None
+    if view is not None and view["eligible"]:
+        try:
+            aid = _pcc_view.aid_offer(
+                _pcc_view.literal_board_pair(_original_idea_text(sid)), _current_ui_lang())
+        except Exception:
+            aid = None
     response = make_response(render_template(
-        "planar_clearance.html", sid=sid, v=view, form=form, error=error,
+        "planar_clearance.html", sid=sid, v=view, form=form, error=error, aid=aid,
         notice=notice, pcc_lang=_current_ui_lang(), cad_ready=_pcc_view.cad_eligible(view),
         submission=_fresh_submission_identity(sid, _PCC_SAVE_DOMAIN),
         withdraw_submission=_fresh_submission_identity(sid, _PCC_WITHDRAW_DOMAIN),
@@ -11960,7 +11969,6 @@ def planar_clearance_save(sid, interface_id):
     except ValueError:
         return _pcc_render(sid, interface_id, status=400, error="UI_PCC_MSG_REJECTED",
                            draft=_pcc_draft())
-
     def material_from(snapshot):
         board, enclosure = fields["board"], fields["enclosure"]
         (brev, bep), (erev, eep) = fields["expected"][board], fields["expected"][enclosure]

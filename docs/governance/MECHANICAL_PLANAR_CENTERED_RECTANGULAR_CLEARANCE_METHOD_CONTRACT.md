@@ -123,6 +123,44 @@ blank is never zero. Additionally:
 
 All values and notes are OWNER_STATED / UNVALIDATED.
 
+## 5A. Original-idea display aid (input aid only; G1-PCC-LITERAL-SOURCE-AID-01)
+
+An optional, provisional display on the declaration page. It changes no method, formula, role, unit, declaration,
+declaration version, stored schema or outcome, and admits no AI or scientific authority.
+
+- **What is shown.** When the project's original idea statement holds exactly ONE literal `A x B mm` pair (`x`, `×`,
+  `X` or `*`; ASCII digits; at most three spaces or tabs between tokens, never a line break), the page shows that
+  sentence verbatim and the two numbers in the order written. Recognition is a bounded literal rule
+  (`web/planar_clearance.py` `literal_board_pair`), not language understanding. Nothing is shown unless ALL hold: no
+  other `number x number` expression anywhere in the idea; the pair is BOUND to one board by a fixed syntactic form —
+  either the sentence starts with the board as its subject ("[the | my | our | this | a | an] [circuit] board / PCB['s]
+  [size | dimensions | outline | footprint]" followed by ":" or "is / are / measures / =", or "مقاس / أبعاد / حجم
+  اللوحة", "اللوحة مقاسها / أبعادها / حجمها", "لوحة بمقاس / بأبعاد / بحجم" or "اللوحة [:]") and the pair follows
+  directly, or "[circuit] board / PCB" follows the pair directly ("an 85 x 56 mm board"), never as the modifier of
+  another noun or a hyphenated word; in both forms the sentence then ends, pauses or continues with a conjunction —
+  so a board merely mentioned in the sentence, or attached to another object by a preposition or possessive, binds
+  no other object's size ("The board carries a camera that is 80 x 50 mm", "The fan for the board is 40 x 40 mm"
+  and "مروحة اللوحة 40 x 40 mm" abstain); the sentence names no other object and
+  holds no other number and no hypothetical, approximate, alternative, limiting, comparative, past, belief or negating
+  word from the governed English / Arabic stop lists; both numbers pass the §6 grammar for a dimension unchanged.
+  These rules refuse some harmless sentences, which is the safe direction; a form or word they do not list is not
+  recognised.
+- **What the inventor decides.** The page decides nothing. It states that InventorAI has not checked which component
+  the numbers describe, which is X or Y, or whether they are correct. Its script fills the two board values and a
+  proposed board basis note only after the inventor has chosen the board component in the form AND an explicit X / Y
+  assignment, and only into empty fields with no "I do not know yet" box ticked. It selects no component, answers no
+  applicability declaration, fills no other value and submits nothing. If the board, a board value or the X / Y choice
+  changes afterwards, the proposed note is removed only while it is still exactly the proposed text; a note the
+  inventor has edited is never erased, and the page shows a non-blocking reminder to review it. A note that is still
+  exactly a proposed text when the page loads (a saved declaration, a refused save shown again) is treated the same way.
+- **What is saved.** Only what the inventor submits, through the unchanged §8 declaration, correction and withdrawal
+  paths and their existing guards, as OWNER_STATED / UNVALIDATED inputs. The basis note stays documentary editable
+  text under §5: the save path never parses, checks or verifies it, and its wording proves nothing about where a value
+  came from.
+- **Unchanged prohibition.** This display does not convert free text into engineering inputs. Names, region
+  descriptions, basis notes and every other free text stay preserved and never become a dimension, an unknown or an
+  applicability answer (§14); the aid only proposes field contents that the inventor then confirms by submitting.
+
 ## 6. Numeric domain and numerical acceptance
 
 - **Grammar (representation policy, NOT physical ratings).** A strict unsigned ASCII decimal of one to six integer

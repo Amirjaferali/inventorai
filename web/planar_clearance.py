@@ -12,6 +12,7 @@ sketch, never a measured drawing).
 """
 import hashlib
 import json
+import re
 
 from engine import mechanical_planar_clearance as _pcc
 from engine import subsystem_model as _sm
@@ -243,3 +244,173 @@ def clearance_view(snapshot, interface_id, binding):
     view["evaluation"] = evaluation
     view["diagram"] = diagram(material, evaluation)
     return view
+
+
+# G1-PCC-LITERAL-SOURCE-AID-01: ONE bounded input aid. It LOCATES one literal
+# "<number> x <number> mm" pair written in the inventor's original idea and
+# shows it with its sentence; it never decides which component is the board,
+# which number is X or Y, whether the numbers are right or whether any
+# applicability declaration holds. The inventor assigns the axes and saves
+# through the unchanged save path. Not a dimension parser: anything outside
+# the narrow scope below is refused (``None``), never guessed. Nothing is
+# stored; the numbers must pass the method's own strict grammar unchanged.
+AID_MAX_IDEA_CHARS = 2000
+AID_ORDERS = ("first_x", "first_y")
+# The opening of the documentary basis note the aid PROPOSES. It is ordinary
+# editable inventor text once in the form: nothing ever parses or checks it.
+AID_NOTE_PREFIX = {"en": "From my original idea: ", "ar": "من فكرتي الأصلية: "}
+_AID_NUMBER = r"[0-9]+(?:\.[0-9]+)?"
+# At most three spaces or tabs between the tokens: never a line break (the note
+# field is one line) and never a note longer than its 300-character bound.
+_AID_PAIR = re.compile(
+    r"(?<![\w.,٫/+\-–−٠-٩۰-۹])(?P<a>%s)[ \t]{0,3}[x×X*][ \t]{0,3}(?P<b>%s)[ \t]{0,3}mm(?![\w²³])"
+    % (_AID_NUMBER, _AID_NUMBER), re.ASCII)
+# Any two numbers joined by a multiplication sign, whatever follows (another
+# unit, no unit, other digit systems): a second one makes the idea ambiguous.
+_AID_ANY_PAIR = re.compile(r"\d+(?:[.,٫]\d+)?\s*[x×X*]\s*\d", re.UNICODE)
+_AID_ANY_NUMBER = re.compile(r"\d+(?:[.,٫]\d+)*", re.UNICODE)
+# A sentence ends at ! ? ; ؛ ؟ a line break, or a dot that is not a decimal point.
+_AID_SENTENCE_BREAK = re.compile(r"[!?;؛؟\n]|(?<![0-9])\.|\.(?![0-9])")
+# The pair must be BOUND to ONE board (singular) by one of a few fixed
+# syntactic forms; a board merely mentioned elsewhere in the sentence binds
+# nothing ("The board carries a camera that is 80 x 50 mm" abstains). These are
+# literal templates, not a parser.
+#   before the pair, as the WHOLE start of the sentence: "[the|my|our|this|a|an]
+#     [circuit] board / PCB['s] [size|dimensions|outline|footprint]" followed by ":"
+#     or "is / are / measures / =" (English), or "مقاس / أبعاد / حجم اللوحة",
+#     "اللوحة مقاسها / أبعادها / حجمها", "لوحة بمقاس / بأبعاد / بحجم" or "اللوحة"
+#     with an optional ":" (Arabic) - so the board is the subject, never a
+#     prepositional or possessive attachment of another object;
+#   after the pair: "[circuit] board / PCB" directly ("an 85 x 56 mm board").
+# Either way the sentence must then end, pause or continue with a conjunction.
+_AID_BIND_BEFORE = re.compile(
+    r"^[ \t]*(?:"
+    r"(?:(?:the|my|our|this|a|an)[ \t]+)?(?:circuit[ \t]+)?(?:board|pcb)"
+    r"(?:(?:'s|’s)?[ \t]+(?:size|dimensions|outline|footprint))?"
+    r"(?:[ \t]*:|[ \t]+(?:is|are|measures|=))"
+    r"|(?:(?:مقاس|مقاسات|أبعاد|ابعاد|حجم)[ \t]+(?:ال)?لوح[ةه]"
+    r"|(?:ال)?لوح[ةه][ \t]+(?:مقاسها|مقاساتها|أبعادها|ابعادها|حجمها)"
+    r"|(?:ال)?لوح[ةه][ \t]+(?:بمقاس|بمقاسات|بأبعاد|بابعاد|بحجم)"
+    r"|(?:ال)?لوح[ةه])[ \t]*:?)"
+    r"[ \t]*$", re.IGNORECASE)
+# The board word directly after the pair, never the modifier of another noun
+# or of a hyphenated word ("a 40 x 40 mm board fan", "a PCB-mounted fan").
+_AID_BIND_AFTER = re.compile(r"^[ \t]+(?:circuit[ \t]+)?(?:board|pcb)(?![\w-])", re.IGNORECASE)
+# After a pair bound from the left, the sentence must end, pause or continue
+# with a conjunction: never a noun the pair could describe instead.
+_AID_AFTER_OK = re.compile(
+    r"^[ \t]*(?:$|[,،)]|(?:and|but|so|which|that|it)(?!\w)|و)", re.IGNORECASE)
+_AID_OTHER_OBJECT = re.compile(
+    r"(?<!\w)(?:boards|pcbs|box(?:es)?|case|cases|enclosures?|housings?|lids?|covers?|shell|"
+    r"region|area|space|opening|slot|screens?|displays?|batter(?:y|ies)|motors?|holes?|"
+    r"panels?|keyboards?|keypads?|sensors?|modules?|chips?|connectors?|cells?|"
+    r"spacing|pitch|distance|apart|gap)(?!\w)|"
+    r"(?<!\w)[وبلفك]?(?:ال)?(?:صندوق|علبة|علبه|غلاف|حاوية|حاويه|غطاء|منطقة|منطقه|فتحة|فتحه|"
+    r"شاشة|شاشه|بطارية|بطاريه|محرك|ثقب|ثقوب|فتحات|مفاتيح|شمسية|شمسيه|حساس|مستشعر|وحدة|"
+    r"موصل|خلية|مسافة|مسافه|لوحات)(?!\w)",
+    re.IGNORECASE)
+# Words that make the sentence hypothetical, approximate, alternative or
+# negated. A stop list, not an interpreter: a listed word refuses the aid even
+# where it would be harmless, which is the safe direction.
+_AID_UNCERTAIN = re.compile(
+    r"(?<!\w)(?:maybe|perhaps|might|could|would|should|if|unless|or|either|about|"
+    r"around|approx(?:imately)?|roughly|nearly|almost|estimated?|guess(?:ed)?|"
+    r"unsure|uncertain|not|never|no|cannot|without|instead|rather|unknown|tbd|"
+    # limits, comparisons and targets: a bound is not the board's size
+    r"than|less|more|smaller|larger|bigger|wider|narrower|longer|shorter|under|over|"
+    r"below|above|up|most|least|max|maximum|min|minimum|limit|between|within|fit|fits|"
+    r"must|need|needs|want|wants|target|ideally|"
+    # past, belief and change
+    r"was|were|used|previous|previously|old|earlier|before|later|now|think|believe|"
+    r"probably|likely|seems?|hope|hopefully|planned|plan|change|changed|"
+    r"suppose|supposing|supposedly|assume|assuming|say|imagine|originally|initially|"
+    r"presumably|theoretically|hypothetically|expect|expected)(?!\w)|"
+    r"n't(?!\w)|[~≈±]|"
+    r"(?<!\w)[وف]?(?:ربما|قد|لعل|ربّما|إذا|اذا|لو|إن|أو|او|إما|اما|حوالي|حوالى|تقريبا|تقريبًا|"
+    r"نحو|قرابة|لا|لن|لم|ليس|ليست|لست|ما|مش|مو|بدون|دون|غير|بدل|بدلا|بدلًا|"
+    r"أقل|اقل|أكثر|اكثر|أكبر|اكبر|أصغر|اصغر|حتى|أقصى|اقصى|أدنى|ادنى|حد|بين|ضمن|يجب|ينبغي|"
+    r"أريد|اريد|كان|كانت|سابقا|سابقًا|أظن|اظن|أعتقد|اعتقد|يبدو|الآن|الان|"
+    r"لنفترض|نفترض|افترض|فرضا|فرضًا|يفترض|مفترض|أتمنى|اتمنى|أرجو|ارجو|تخيل|لنقل)(?!\w)",
+    re.IGNORECASE)
+
+
+def literal_board_pair(original_idea):
+    """The ONE literal board-dimension pair of ``original_idea``, or ``None``.
+
+    Returns ``{"passage", "span", "first", "second", "unit"}`` with every text
+    copied verbatim from the idea. ``first`` / ``second`` are in the order the
+    inventor wrote them; no axis is implied. Refused (``None``) unless ALL hold:
+    the idea has exactly one ``A x B`` pair of any kind and it is ``A x B mm``
+    in ASCII digits; the pair is bound to one board by a fixed syntactic form
+    (``_AID_BIND_BEFORE`` / ``_AID_BIND_AFTER``); its sentence names no other
+    object and holds no other number and no hypothetical, approximate,
+    alternative, limiting, past or negating word; and both numbers pass the
+    method's strict grammar for a dimension."""
+    if not isinstance(original_idea, str) or not 0 < len(original_idea) <= AID_MAX_IDEA_CHARS:
+        return None
+    if len(_AID_ANY_PAIR.findall(original_idea)) != 1:
+        return None
+    pairs = list(_AID_PAIR.finditer(original_idea))
+    if len(pairs) != 1:
+        return None
+    pair = pairs[0]
+    breaks = [m.end() for m in _AID_SENTENCE_BREAK.finditer(original_idea, 0, pair.start())]
+    start = breaks[-1] if breaks else 0
+    end_match = _AID_SENTENCE_BREAK.search(original_idea, pair.end())
+    end = end_match.start() if end_match else len(original_idea)
+    sentence = original_idea[start:end]
+    before = original_idea[start:pair.start()]
+    after = original_idea[pair.end():end]
+    tail = _AID_BIND_AFTER.match(after)
+    bound = ((_AID_BIND_BEFORE.search(before) and _AID_AFTER_OK.match(after))
+             or (tail and _AID_AFTER_OK.match(after[tail.end():])))
+    if not bound or _AID_OTHER_OBJECT.search(sentence):
+        return None
+    if _AID_UNCERTAIN.search(sentence):
+        return None
+    if len(_AID_ANY_NUMBER.findall(sentence)) != 2:
+        return None
+    first, second = pair.group("a"), pair.group("b")
+    if not (_pcc.is_admitted_value("board_x", first)
+            and _pcc.is_admitted_value("board_y", second)):
+        return None
+    return {"passage": sentence.strip(), "span": pair.group(0),
+            "first": first, "second": second, "unit": _pcc.UNIT}
+
+
+def aid_assignment(pair, order):
+    """``(board_x, board_y)`` for the inventor's explicit ``order`` choice."""
+    if pair is None or order not in AID_ORDERS:
+        return None
+    if order == "first_x":
+        return pair["first"], pair["second"]
+    return pair["second"], pair["first"]
+
+
+def aid_note(pair, order, lang):
+    """The documentary basis note for ONE explicit assignment, in ``lang``.
+    It quotes the source and states the inventor's own assignment; it never
+    says the numbers were checked."""
+    assignment = aid_assignment(pair, order)
+    if assignment is None or lang not in AID_NOTE_PREFIX:
+        return None
+    x, y = assignment
+    if lang == "ar":
+        body = "«%s»؛ أدخلتُ %s لـ X و%s لـ Y للوحة." % (pair["span"], x, y)
+    else:
+        body = "“%s”; I entered %s as board X and %s as board Y." % (
+            pair["span"], x, y)
+    return AID_NOTE_PREFIX[lang] + body
+
+
+def aid_offer(pair, lang):
+    """The display model of the aid for ONE located pair in ``lang``: both
+    explicit assignments with their proposed note, none pre-chosen."""
+    if pair is None:
+        return None
+    return {"passage": pair["passage"], "span": pair["span"], "first": pair["first"],
+            "second": pair["second"], "unit": pair["unit"],
+            "orders": [{"order": order, "x": aid_assignment(pair, order)[0],
+                        "y": aid_assignment(pair, order)[1],
+                        "note": aid_note(pair, order, lang if lang in AID_NOTE_PREFIX else "en")}
+                       for order in AID_ORDERS]}

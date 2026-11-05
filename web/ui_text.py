@@ -12189,6 +12189,54 @@ UI_STRINGS = {
     "UI_PCC_DIGITS_HELP": {
         "en": "Use the digits 0–9 and a dot (.) as the decimal point, for example 84.5. Arabic-Indic digits (٠–٩), commas (، or ,) and units typed in the box are not accepted yet; such an entry is refused and never read as a number.",
         "ar": "استخدم الأرقام 0–9 والنقطة (.) فاصلةً عشرية، مثل 84.5. الأرقام العربية الهندية (٠–٩) والفاصلة (، أو ,) والوحدات المكتوبة داخل الخانة غير مقبولة حاليًا؛ يُرفض مثل هذا الإدخال ولا يُقرأ رقمًا أبدًا."},
+    "UI_PCC_AID_HEADING": {
+        "en": "Numbers from your original idea",
+        "ar": "أرقام من فكرتك الأصلية"},
+    "UI_PCC_AID_INTRO": {
+        "en": "Your original idea contains this passage:",
+        "ar": "تحتوي فكرتك الأصلية على هذا المقطع:"},
+    "UI_PCC_AID_NUMBERS": {
+        "en": "The two numbers in it, in the order you wrote them:",
+        "ar": "الرقمان الواردان فيه، بالترتيب الذي كتبتهما به:"},
+    "UI_PCC_AID_BOUNDARY": {
+        "en": "InventorAI has only found this text. It has not checked which component these numbers describe, which one is X and which is Y, or whether they are correct.",
+        "ar": "لم يفعل InventorAI سوى العثور على هذا النص. ولم يتحقق من المكوّن الذي يصفه هذان الرقمان، ولا من أيهما X وأيهما Y، ولا من صحتهما."},
+    "UI_PCC_AID_ORDER_PROMPT": {
+        "en": "If they are your board's length and width, choose which is which:",
+        "ar": "إن كانا طول لوحتك وعرضها، فاختر أيهما لأي محور:"},
+    "UI_PCC_AID_AS_X": {
+        "en": "as board X",
+        "ar": "لمحور X للوحة"},
+    "UI_PCC_AID_AS_Y": {
+        "en": "as board Y",
+        "ar": "لمحور Y للوحة"},
+    "UI_PCC_AID_APPLY": {
+        "en": "Put these numbers in the form",
+        "ar": "ضع هذين الرقمين في النموذج"},
+    "UI_PCC_AID_APPLY_NOTE": {
+        "en": "Choose the board in the form first. This then fills only the two board values and the board basis note below, and only if they are empty. It saves nothing. You still choose the enclosure, check every value and answer, and press Save; the note stays your own editable text.",
+        "ar": "اختر اللوحة في النموذج أولًا. بعدها يملأ هذا قيمتي اللوحة وملاحظة مصدر أبعادها أدناه فقط، وفقط إن كانت فارغة. ولا يحفظ شيئًا. وتبقى أنت من يختار الحاوية ويراجع كل قيمة وإجابة ويضغط حفظ؛ وتبقى الملاحظة نصك الخاص القابل للتعديل."},
+    "UI_PCC_AID_MANUAL": {
+        "en": "You can also type the values yourself in the form below.",
+        "ar": "يمكنك أيضًا كتابة القيم بنفسك في النموذج أدناه."},
+    "UI_PCC_AID_MSG_CHOOSE": {
+        "en": "Choose which number is board X first.",
+        "ar": "اختر أولًا أي الرقمين لمحور X للوحة."},
+    "UI_PCC_AID_MSG_OCCUPIED": {
+        "en": "Nothing was changed: a board value, its “I do not know yet” box or the board basis note already holds something. Change them yourself if you want to.",
+        "ar": "لم يتغير شيء: إحدى قيمتي اللوحة أو خانة «لا أعرف بعد» الخاصة بها أو ملاحظة مصدر أبعاد اللوحة تحتوي شيئًا بالفعل. غيّرها بنفسك إن أردت."},
+    "UI_PCC_AID_MSG_DONE": {
+        "en": "The two numbers and the note are now in the form. Nothing is saved yet.",
+        "ar": "أصبح الرقمان والملاحظة في النموذج. ولم يُحفظ شيء بعد."},
+    "UI_PCC_AID_MSG_BOARD_FIRST": {
+        "en": "Choose which of your components is the board first, in the form below.",
+        "ar": "اختر أولًا أي مكوّناتك هو اللوحة، في النموذج أدناه."},
+    "UI_PCC_AID_MSG_NOTE_CLEARED": {
+        "en": "The proposed note was removed because the board, a board value or the X / Y choice changed after it was placed. Write your own note if you want one.",
+        "ar": "أُزيلت الملاحظة المقترحة لأن اللوحة أو إحدى قيمتي اللوحة أو اختيار X / Y تغيّر بعد وضعها. اكتب ملاحظتك الخاصة إن أردت."},
+    "UI_PCC_AID_MSG_NOTE_REVIEW": {
+        "en": "Please review your board basis note: the board, a board value or the X / Y choice changed after it was written. Your note was kept as you wrote it.",
+        "ar": "يُرجى مراجعة ملاحظة مصدر أبعاد اللوحة: تغيّرت اللوحة أو إحدى قيمتيها أو اختيار X / Y بعد كتابتها. وقد أُبقيت ملاحظتك كما كتبتها."},
     "UI_PCC_DIAGRAM_LEGEND": {
         "en": "Symbols in the sketch: region_x and region_y are the usable region; board_x × board_y is the board; c is the clearance per side; ✕ marks an axis where the clearance is not available. The sketch is not mirrored for right-to-left reading: X runs left to right, as declared.",
         "ar": "رموز الرسم: region_x و region_y هما المنطقة القابلة للاستخدام؛ و board_x × board_y هي اللوحة؛ و c هو الخلوص لكل جانب؛ وتشير ✕ إلى محور لا يتوفر فيه الخلوص. الرسم غير معكوس للقراءة من اليمين إلى اليسار: يمتد X من اليسار إلى اليمين كما صُرِّح به."},
