@@ -165,6 +165,7 @@ _UNIT_NUMBER = re.compile(
     r"hz|khz|mhz|ghz|rpm|nm|n|kg|g|mg|bar|psi|pa|kpa|db|lm|lux|°c|°f|c\b|%|"
     r"ملم|مم|سم|متر|لتر|مل|فولت|واط|أمبير|امبير|كجم|كغ|غرام|جرام)(?![\w])",
     re.IGNORECASE)
+_NUMBER_TOKEN = re.compile(r"(?<![\w.])\d+(?:[.,]\d+)?(?![\d])")
 _CLAIM_HINTS = re.compile(
     r"(?i)\b(safe|safely|certified|certification|guarantee[ds]?|compatible|compatibility|"
     r"verified|tested|proven|will work|works reliably|approved)\b|"
@@ -241,11 +242,11 @@ def _proposed_texts(reply):
 
 def _invented_numbers(texts, idea_text):
     """Unit-bearing numbers in proposed text that the idea does not contain."""
-    idea = _normalised(idea_text).lower()
+    stated = set(_NUMBER_TOKEN.findall(_normalised(idea_text)))   # whole numbers, never substrings
     out = []
     for t in texts:
         for m in _UNIT_NUMBER.finditer(_normalised(t)):
-            if m.group(1) not in idea:
+            if m.group(1) not in stated:
                 out.append(m.group(0))
     return out
 
@@ -275,8 +276,14 @@ def validate(reply, idea_text):
 # ─────────────────────────────────────────────────────────────────────────────
 INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_component_concept_inputs_v1.json")
 REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures", "g1_component_concept_reference_v1.json")
-INPUT_SHA256 = None            # pinned when the blind-authored pack is frozen
-REFERENCE_SHA256 = None        # pinned when the prompt-blind adjudication is frozen
+INPUT_SHA256 = "e7bcc8a824e27c8cce0cbacfc3202bc309287563f5af877897ce18a75314e980"
+REFERENCE_SHA256 = "924bfd37751afb17101d1c193be8b92ed3cac3d9f692f0c1f8bb586351cdff82"
+# Independence evidence in Git: the instructions, schema and criteria were committed
+# first (43c6b09); the pack was then authored blind from base 9ad18ef (which does not
+# contain this module) and adjudicated prompt-blind in a second separate session.
+FROZEN_BEFORE_PACK_COMMIT = "43c6b093a9269f0f6306d59f7dafc47403dd1c69"
+AUTHOR_COMMIT = "f8b2809d6a3f1e5327d2e4c1d8efa490ce5f3e35"
+ADJUDICATION_COMMIT = "dbbb162813a50d7c1db98aa649929b7b42180026"
 CASE_IDS = tuple("C%02d" % i for i in range(1, 17))
 GROUPS = {"POSITIVE": 6, "EXCLUSION": 3, "AMBIGUOUS": 3, "NON_DEVICE": 2, "UNSUPPORTED": 2}
 VARIETIES = {"en": 10, "msa": 2, "gulf": 2, "egyptian": 2}
@@ -333,7 +340,10 @@ DECISION_RULE = (
 
 def preregistration():
     return {"evaluation_id": EVALUATION_ID, "pack_id": PACK_ID, "input_sha256": INPUT_SHA256,
-            "reference_sha256": REFERENCE_SHA256, "instructions_sha256": _sha(INSTRUCTIONS),
+            "reference_sha256": REFERENCE_SHA256, "author_commit": AUTHOR_COMMIT,
+            "adjudication_commit": ADJUDICATION_COMMIT,
+            "frozen_before_pack_commit": FROZEN_BEFORE_PACK_COMMIT,
+            "instructions_sha256": _sha(INSTRUCTIONS),
             "schema_sha256": _sha(schema()), "limits": LIMITS, "groups": GROUPS,
             "varieties": VARIETIES, "criteria": CRITERIA, "decision_rule": DECISION_RULE,
             "review_questions": REVIEW_QUESTIONS, "attestation": ATTESTATION}
@@ -475,19 +485,27 @@ HUMAN_REVIEW_BASIS = ("A valid, attested human assessment record is necessary bu
 
 
 def score_case(reply, case, ref):
-    """Automatic results and the human review items for ONE case."""
+    """Automatic results and the human review items for ONE case. A reply that
+    abstains, is malformed or is rejected earns nothing; only a VALID reply
+    produces human review items."""
     v = validate(reply, case["idea_text"])
     g, cid = ref["group"], case["case_id"]
     out = {"case_id": cid, "group": g, "status": v["status"], "critical": list(v["critical"]),
            "items": {}, "auto": {}, "flags": {}}
-    if v["status"] in (V_ERROR, V_STRUCTURE) or (v["status"] == V_REJECTED):
+    if v["status"] == V_ERROR:
         return out
-    concept = v["status"] == V_VALID and bool(reply["functions"] or reply["component_types"])
+    valid = v["status"] == V_VALID
     if g == "NON_DEVICE":
-        if concept:
+        if valid and (reply["functions"] or reply["component_types"]):
             out["critical"].append("K4")
         return out
-    if v["status"] == V_VALID:
+
+    def item(key, kind, nothing):
+        if valid:
+            out["items"][key] = kind
+        else:
+            out["auto"][key] = nothing
+    if valid:
         for k in ("K1", "K3"):
             out["items"]["%s:%s" % (cid, k)] = k
         if ref["exclusions"]:
@@ -498,30 +516,18 @@ def score_case(reply, case, ref):
                 a for x in ref["exclusions"] for a in x["any_of"]
                 if _normalised(a).lower() in _normalised(proposed).lower()),
             "claim_words": sorted(set(m.group(0).lower() for m in _CLAIM_HINTS.finditer(proposed))),
-            "digits_not_in_idea": sorted(set(d for d in re.findall(r"\d+", proposed)
-                                             if d not in case["idea_text"]))}
+            "numbers_not_in_idea": sorted(
+                set(_NUMBER_TOKEN.findall(_normalised(proposed)))
+                - set(_NUMBER_TOKEN.findall(_normalised(case["idea_text"]))))}
     for u in ref["expected_unknowns"]:
-        key = u["unknown_id"]
-        if v["status"] == V_VALID:
-            out["items"][key] = "G3"
-        else:
-            out["auto"][key] = "NOT_RECOGNIZED"
+        item(u["unknown_id"], "G3", "NOT_RECOGNIZED")
     if g == "POSITIVE":
         for f in ref["essential_functions"]:
-            if v["status"] == V_VALID:
-                out["items"][f["function_id"]] = "G1"
-            else:
-                out["auto"][f["function_id"]] = "MISSING"
-        for k, absent in (("G2", "NOT_COHERENT"), ("G4", "ABSENT")):
-            if v["status"] == V_VALID:
-                out["items"]["%s:%s" % (cid, k)] = k
-            else:
-                out["auto"]["%s:%s" % (cid, k)] = absent
+            item(f["function_id"], "G1", "MISSING")
+        item("%s:G2" % cid, "G2", "NOT_COHERENT")
+        item("%s:G4" % cid, "G4", "ABSENT")
     if g == "AMBIGUOUS":
-        if v["status"] == V_VALID:
-            out["items"]["%s:G5" % cid] = "G5"
-        else:
-            out["auto"]["%s:G5" % cid] = "SAFE_ABSTAIN"
+        item("%s:G5" % cid, "G5", "SAFE_ABSTAIN")
     return out
 
 
