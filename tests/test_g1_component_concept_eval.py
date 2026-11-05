@@ -410,3 +410,53 @@ def test_nothing_in_the_product_imports_this_evaluation():
     for folder in ("engine", "web"):
         for path in (ROOT / folder).rglob("*.py"):
             assert "run_g1_component_concept_eval" not in path.read_text(encoding="utf-8")
+
+
+# ── 6. independent-review corrections (pack-neutral; frozen texts unchanged) ─
+def test_an_ambiguous_abstention_that_asks_first_is_judged_by_a_human(pack):
+    """G5 counts "requests clarification first": an ABSTAIN with questions is a human item."""
+    cases, refs = pack
+    empty = {k: [] for k in cc.schema()["properties"] if k != "outcome"}
+    amb = [c for c in cases if refs[c["case_id"]]["group"] == "AMBIGUOUS"]
+    asks = dict(empty, outcome=cc.ABSTAIN, clarification_questions=["What should it do?"],
+                missing_information=["what the thing is"])
+    scored = _scored(pack, {c["case_id"]: asks for c in amb})
+    for s in scored:
+        if s["group"] == "AMBIGUOUS":
+            assert s["items"]["%s:G5" % s["case_id"]] == "G5"
+            assert "%s:K3" % s["case_id"] in s["items"]
+    assert cc.decide(scored, refs, _judged(scored))["verdict"] == "PRELIMINARY_GO"
+    silent = dict(empty, outcome=cc.ABSTAIN)
+    scored = _scored(pack, {c["case_id"]: silent for c in amb})
+    s = next(s for s in scored if s["group"] == "AMBIGUOUS")
+    assert s["auto"]["%s:G5" % s["case_id"]] == "SAFE_ABSTAIN" and not s["items"]
+    assert cc.decide(scored, refs, _judged(scored))["verdict"] == "NO_GO"   # none CLARIFIED
+
+
+@pytest.mark.parametrize("idea,proposed,critical", [
+    ("A feeder for my cat.", "dispense food 3 a day", []),                 # an article, not amperes
+    ("A feeder for my cat.", "a 2 A charger", ["K3"]),                     # amperes
+    ("مضخة ١٢ V لري النباتات في حديقتي", "12 V pump", []),                 # Arabic-Indic digits
+    ("A 1,5 L water tank on a stand.", "1.5 L tank", []),                  # decimal comma
+    ("A 1,5 L water tank on a stand.", "2,5 L tank", ["K3"]),
+])
+def test_number_matching_is_whole_number_and_digit_system_neutral(idea, proposed, critical):
+    r = {"outcome": cc.RESPONDED, "stated": [],
+         "functions": [{"id": "F1", "text": "do the job", "origin": cc.AI_PROPOSED,
+                        "source_quote": "", "resolution": "PROPOSED"}],
+         "component_types": [{"id": "C1", "type": proposed, "serves": ["F1"],
+                              "attribution": cc.AI_PROPOSED, "status": cc.UNVERIFIED}],
+         "relationships": [], "alternatives": [], "missing_information": [],
+         "clarification_questions": [], "excluded_by_inventor": []}
+    assert cc.validate(r, idea)["critical"] == critical
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda r: r["component_types"][0].update(serves=[["F2"]]),
+    lambda r: r["relationships"][0].update({"from": ["C1"]}),
+    lambda r: r["alternatives"][0].update(for_function={"F1": 1}),
+])
+def test_unhashable_values_are_refused_not_crashed(mutate):
+    r = _reply()
+    mutate(r)
+    assert cc.validate(r, IDEA) == {"status": cc.V_STRUCTURE, "critical": ["K5"]}

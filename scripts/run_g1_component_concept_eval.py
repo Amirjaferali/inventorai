@@ -161,11 +161,18 @@ V_STRUCTURE, V_REJECTED = "STRUCTURE_VIOLATION", "REJECTED"
 # A number with a unit or percentage the inventor did not write is an invented
 # specification (K3, automatic). Anything subtler is a human K3 judgment.
 _UNIT_NUMBER = re.compile(
-    r"(?<![\w.])(\d+(?:[.,]\d+)?)\s*(?:mm|cm|m|km|ml|l|v|mv|kv|a|ma|w|kw|mw|wh|kwh|mah|ah|"
+    r"(?<![\w.])(\d+(?:[.,]\d+)?)\s*(?:mm|cm|m|km|ml|l|v|mv|kv|(?-i:A)|ma|w|kw|mw|wh|kwh|mah|ah|"
     r"hz|khz|mhz|ghz|rpm|nm|n|kg|g|mg|bar|psi|pa|kpa|db|lm|lux|°c|°f|c\b|%|"
     r"ملم|مم|سم|متر|لتر|مل|فولت|واط|أمبير|امبير|كجم|كغ|غرام|جرام)(?![\w])",
     re.IGNORECASE)
 _NUMBER_TOKEN = re.compile(r"(?<![\w.])\d+(?:[.,]\d+)?(?![\d])")
+# Arabic-Indic / Persian digits compare equal to ASCII digits and a decimal comma to
+# a decimal point, so an inventor's own value is never read as invented.
+_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹٫", "01234567890123456789.")
+
+
+def _numbers(text):
+    return {n.replace(",", ".") for n in _NUMBER_TOKEN.findall(_normalised(text).translate(_DIGITS))}
 _CLAIM_HINTS = re.compile(
     r"(?i)\b(safe|safely|certified|certification|guarantee[ds]?|compatible|compatibility|"
     r"verified|tested|proven|will work|works reliably|approved)\b|"
@@ -211,15 +218,18 @@ def _structure_ok(reply):
     nodes = ids["stated"] | ids["functions"] | ids["component_types"]
     for c in reply["component_types"]:
         if not _is_text(c["type"]) or not isinstance(c["serves"], list) or not c["serves"] \
-                or not all(x in ids["functions"] for x in c["serves"]) \
+                or not all(isinstance(x, str) and x in ids["functions"] for x in c["serves"]) \
                 or (c["attribution"], c["status"]) != (AI_PROPOSED, UNVERIFIED):
             return False
     for r in reply["relationships"]:
-        if r["kind"] not in RELATIONSHIP_KINDS or r["from"] not in nodes or r["to"] not in nodes \
+        if not (isinstance(r["kind"], str) and isinstance(r["from"], str)
+                and isinstance(r["to"], str)) \
+                or r["kind"] not in RELATIONSHIP_KINDS or r["from"] not in nodes or r["to"] not in nodes \
                 or r["from"] == r["to"]:
             return False
     for a in reply["alternatives"]:
-        if a["for_function"] not in ids["functions"] or not isinstance(a["options"], list) \
+        if not isinstance(a["for_function"], str) or a["for_function"] not in ids["functions"] \
+                or not isinstance(a["options"], list) \
                 or not 1 <= len(a["options"]) <= LIMITS["options"] \
                 or not all(_is_text(o) for o in a["options"]):
             return False
@@ -242,11 +252,11 @@ def _proposed_texts(reply):
 
 def _invented_numbers(texts, idea_text):
     """Unit-bearing numbers in proposed text that the idea does not contain."""
-    stated = set(_NUMBER_TOKEN.findall(_normalised(idea_text)))   # whole numbers, never substrings
+    stated = _numbers(idea_text)                  # whole numbers, never substrings
     out = []
     for t in texts:
-        for m in _UNIT_NUMBER.finditer(_normalised(t)):
-            if m.group(1) not in stated:
+        for m in _UNIT_NUMBER.finditer(_normalised(t).translate(_DIGITS)):
+            if m.group(1).replace(",", ".") not in stated:
                 out.append(m.group(0))
     return out
 
@@ -500,11 +510,20 @@ def score_case(reply, case, ref):
             out["critical"].append("K4")
         return out
 
-    def item(key, kind, nothing):
-        if valid:
+    # An abstention earns no concept credit, but what it DOES say is still judged by a
+    # human: clarification questions (G5: "requests clarification first") and missing
+    # information (G3), with K3 over its text. Malformed / rejected replies earn nothing.
+    abstained = v["status"] == V_ABSTAIN
+    asks = abstained and bool(reply["clarification_questions"])
+    lists_unknowns = abstained and bool(reply["missing_information"])
+
+    def item(key, kind, nothing, human_if=False):
+        if valid or human_if:
             out["items"][key] = kind
         else:
             out["auto"][key] = nothing
+    if abstained and (asks or lists_unknowns):
+        out["items"]["%s:K3" % cid] = "K3"
     if valid:
         for k in ("K1", "K3"):
             out["items"]["%s:%s" % (cid, k)] = k
@@ -516,18 +535,16 @@ def score_case(reply, case, ref):
                 a for x in ref["exclusions"] for a in x["any_of"]
                 if _normalised(a).lower() in _normalised(proposed).lower()),
             "claim_words": sorted(set(m.group(0).lower() for m in _CLAIM_HINTS.finditer(proposed))),
-            "numbers_not_in_idea": sorted(
-                set(_NUMBER_TOKEN.findall(_normalised(proposed)))
-                - set(_NUMBER_TOKEN.findall(_normalised(case["idea_text"]))))}
+            "numbers_not_in_idea": sorted(_numbers(proposed) - _numbers(case["idea_text"]))}
     for u in ref["expected_unknowns"]:
-        item(u["unknown_id"], "G3", "NOT_RECOGNIZED")
+        item(u["unknown_id"], "G3", "NOT_RECOGNIZED", human_if=lists_unknowns)
     if g == "POSITIVE":
         for f in ref["essential_functions"]:
             item(f["function_id"], "G1", "MISSING")
         item("%s:G2" % cid, "G2", "NOT_COHERENT")
         item("%s:G4" % cid, "G4", "ABSENT")
     if g == "AMBIGUOUS":
-        item("%s:G5" % cid, "G5", "SAFE_ABSTAIN")
+        item("%s:G5" % cid, "G5", "SAFE_ABSTAIN", human_if=asks)
     return out
 
 
