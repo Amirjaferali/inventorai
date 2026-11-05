@@ -46,12 +46,10 @@ NOTE_Y = "From my original idea: “85 x 56 mm”; I entered 56 as board X and 8
     ("The PCB is 85.5 X 56.25mm", "85.5", "56.25", "85.5 X 56.25mm"),
     ("The board size is 80 x 50 mm.", "80", "50", "80 x 50 mm"),
     ("Board dimensions: 80 x 50 mm", "80", "50", "80 x 50 mm"),
-    ("The board measures 80 x 50 mm and it is green.", "80", "50", "80 x 50 mm"),
     ("A weather station with an 85 x 56 mm board.", "85", "56", "85 x 56 mm"),
     ("اللوحة مقاسها 85 × 56 mm.", "85", "56", "85 × 56 mm"),
     ("لوحة بمقاس 85 × 56 mm.", "85", "56", "85 × 56 mm"),
     ("The board's size is 80 x 50 mm.", "80", "50", "80 x 50 mm"),
-    ("اللوحة 85 × 56 mm وهي خضراء.", "85", "56", "85 × 56 mm"),
     ("A lamp. The board: 70 * 30 mm. It is bright.", "70", "30", "70 * 30 mm"),
     ("مقاس اللوحة 85 × 56 mm. وأريد علبة لها.", "85", "56", "85 × 56 mm"),
     ("The board is 999999.9999 x 0.0001 mm.", "999999.9999", "0.0001", "999999.9999 x 0.0001 mm"),
@@ -285,12 +283,18 @@ def test_w02_no_aid_without_exactly_one_literal_pair(client):
 
 
 def test_w03_the_passage_is_escaped(client):
-    idea = 'A planter on a hinge. My board is 85 x 56 mm, <b onclick="x()">really</b>.'
+    # since G1-PCC-UNCERTAINTY-BOUNDARY-01 nothing may follow the pair in its own sentence, so the
+    # hostile markup sits in another sentence of the idea and must never reach the page unescaped
+    idea = 'A planter <b onclick="x()">on a hinge</b>. My board is 85 x 56 mm.'
     sid, ifc, _ = _project(client, idea)
     body = _body(client.get(_url(sid, ifc)))
     chunk = _aid_chunk(body)
-    assert chunk is not None and "<b onclick" not in chunk
-    assert "&lt;b onclick=" in chunk
+    assert chunk is not None and "<b onclick" not in body
+    assert _html.unescape(re.search(r"data-pcc-aid-passage>(.*?)</blockquote>", chunk, re.S)
+                          .group(1)) == "My board is 85 x 56 mm"
+    # the template escapes the passage itself (Jinja autoescape on the unchanged template)
+    rendered = appmod.app.jinja_env.from_string("{{ p }}").render(p='<b onclick="x()">')
+    assert "<b" not in rendered and "&lt;b onclick=" in rendered
 
 
 def test_w04_the_aid_values_save_exactly_like_manual_entry(client):
@@ -445,3 +449,67 @@ def test_w15_an_inventors_own_words_after_the_proposed_note_save(client):
     assert r.status_code == 200
     m = appmod._get_store().load_planar_clearance(sid)["ledger"].active_for(ifc).current
     assert m.basis_map()["basis_board"] == NOTE_X + " Measured with calipers."
+
+
+# ==========================================================================
+# 3. G1-PCC-UNCERTAINTY-BOUNDARY-01: the expression must END its sentence
+# ==========================================================================
+SUFFIX_ABSTAIN = [
+    # the five demonstrated dialect false offers (Gulf / Egyptian / MSA)
+    "مقاس اللوحة 84 × 50 mm وممكن تتغير.",
+    "مقاس اللوحة 84 × 50 mm ويمكن تتغير.",
+    "مقاس اللوحة 84 × 50 mm وبعدين هغيره.",
+    "مقاس اللوحة 84 × 50 mm وغالبا هيتغير.",
+    "مقاس اللوحة 84 × 50 mm وفيه احتمال يتغير.",
+    # English trailing qualifications
+    "My board is 84 x 50 mm and it may change.",
+    "My board is 84 x 50 mm, give or take.",
+    "My board is 84 x 50 mm, but who knows.",
+    # conjunction continuations that were accepted before this correction
+    "اللوحة 85 × 56 mm وهي خضراء.",
+    "The board measures 80 x 50 mm and it is green.",
+    # the after-pair binding direction gets the same full-suffix rule
+    "A weather station with an 85 x 56 mm board, which may change.",
+    "An 85 x 56 mm board and maybe a bigger one.",
+]
+SUFFIX_OFFER = [
+    ("My board is 85 x 56 mm.", "85", "56"),
+    ("My circuit board is 85 x 56 mm.", "85", "56"),
+    ("The PCB is 85.5 X 56.25mm", "85.5", "56.25"),
+    ("The board: 70 * 30 mm. It is bright.", "70", "30"),
+    ("مقاس اللوحة 85 × 56 mm. وأريد علبة لها.", "85", "56"),
+    ("The board size is 80 x 50 mm.", "80", "50"),
+    ("Board dimensions: 80 x 50 mm", "80", "50"),
+    ("A weather station with an 85 x 56 mm board.", "85", "56"),
+    ("اللوحة مقاسها 85 × 56 mm.", "85", "56"),
+    ("لوحة بمقاس 85 × 56 mm.", "85", "56"),
+    ("The board's size is 80 x 50 mm.", "80", "50"),
+    ("اللوحة: 85 × 56 mm", "85", "56"),
+]
+
+
+@pytest.mark.parametrize("idea", SUFFIX_ABSTAIN)
+def test_u01_anything_after_the_expression_in_its_sentence_abstains(idea):
+    assert aid.literal_board_pair(idea) is None
+
+
+@pytest.mark.parametrize("idea,first,second", SUFFIX_OFFER)
+def test_u02_an_expression_that_ends_its_sentence_is_still_offered(idea, first, second):
+    pair = aid.literal_board_pair(idea)
+    assert pair is not None and (pair["first"], pair["second"]) == (first, second)
+
+
+def test_u03_only_a_closing_bracket_may_follow_in_either_direction():
+    assert aid.literal_board_pair("A lamp (my board is 85 x 56 mm).") is None   # not sentence-initial
+    assert aid.literal_board_pair("My board is 85 x 56 mm) .") is not None
+    assert aid.literal_board_pair("It has an 85 x 56 mm board).") is not None
+    for tail in (" ,", " و", " and", " (green)", " which", " ok"):
+        assert aid.literal_board_pair("My board is 85 x 56 mm" + tail + ".") is None
+        assert aid.literal_board_pair("It has an 85 x 56 mm board" + tail + ".") is None
+
+
+def test_u04_the_documented_residual_a_later_sentence_is_not_seen():
+    """Bounded local rule: uncertainty stated in a LATER sentence is not recognised (method
+    contract §5A). Pinned so that a change to this limit is deliberate, never silent."""
+    assert aid.literal_board_pair("My board is 84 x 50 mm. It may change.") is not None
+    assert aid.literal_board_pair("مقاس اللوحة 84 × 50 mm. ويمكن تتغير.") is not None

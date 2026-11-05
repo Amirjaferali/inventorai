@@ -282,7 +282,7 @@ _AID_SENTENCE_BREAK = re.compile(r"[!?;؛؟\n]|(?<![0-9])\.|\.(?![0-9])")
 #     with an optional ":" (Arabic) - so the board is the subject, never a
 #     prepositional or possessive attachment of another object;
 #   after the pair: "[circuit] board / PCB" directly ("an 85 x 56 mm board").
-# Either way the sentence must then end, pause or continue with a conjunction.
+# Either way the literal expression must END its sentence (``_AID_SUFFIX``).
 _AID_BIND_BEFORE = re.compile(
     r"^[ \t]*(?:"
     r"(?:(?:the|my|our|this|a|an)[ \t]+)?(?:circuit[ \t]+)?(?:board|pcb)"
@@ -296,10 +296,13 @@ _AID_BIND_BEFORE = re.compile(
 # The board word directly after the pair, never the modifier of another noun
 # or of a hyphenated word ("a 40 x 40 mm board fan", "a PCB-mounted fan").
 _AID_BIND_AFTER = re.compile(r"^[ \t]+(?:circuit[ \t]+)?(?:board|pcb)(?![\w-])", re.IGNORECASE)
-# After a pair bound from the left, the sentence must end, pause or continue
-# with a conjunction: never a noun the pair could describe instead.
-_AID_AFTER_OK = re.compile(
-    r"^[ \t]*(?:$|[,،)]|(?:and|but|so|which|that|it)(?!\w)|و)", re.IGNORECASE)
+# G1-PCC-UNCERTAINTY-BOUNDARY-01: the WHOLE rest of the sentence after the
+# pair (or after the board word that follows it) may hold only spaces and at
+# most one closing bracket. No comma, conjunction or clause may follow, so a
+# trailing qualification ("... mm and it may change", "... mm وممكن تتغير")
+# abstains structurally, in any language, without a word list. This is a
+# bounded local rule: uncertainty stated in a LATER sentence is not seen.
+_AID_SUFFIX = re.compile(r"[ \t]*\)?[ \t]*")
 _AID_OTHER_OBJECT = re.compile(
     r"(?<!\w)(?:boards|pcbs|box(?:es)?|case|cases|enclosures?|housings?|lids?|covers?|shell|"
     r"region|area|space|opening|slot|screens?|displays?|batter(?:y|ies)|motors?|holes?|"
@@ -342,8 +345,10 @@ def literal_board_pair(original_idea):
     inventor wrote them; no axis is implied. Refused (``None``) unless ALL hold:
     the idea has exactly one ``A x B`` pair of any kind and it is ``A x B mm``
     in ASCII digits; the pair is bound to one board by a fixed syntactic form
-    (``_AID_BIND_BEFORE`` / ``_AID_BIND_AFTER``); its sentence names no other
-    object and holds no other number and no hypothetical, approximate,
+    (``_AID_BIND_BEFORE`` / ``_AID_BIND_AFTER``) and ends its sentence
+    (``_AID_SUFFIX``, nothing after it but an optional closing bracket); its
+    sentence names no other object and holds no other number and no
+    hypothetical, approximate,
     alternative, limiting, past or negating word; and both numbers pass the
     method's strict grammar for a dimension."""
     if not isinstance(original_idea, str) or not 0 < len(original_idea) <= AID_MAX_IDEA_CHARS:
@@ -362,8 +367,8 @@ def literal_board_pair(original_idea):
     before = original_idea[start:pair.start()]
     after = original_idea[pair.end():end]
     tail = _AID_BIND_AFTER.match(after)
-    bound = ((_AID_BIND_BEFORE.search(before) and _AID_AFTER_OK.match(after))
-             or (tail and _AID_AFTER_OK.match(after[tail.end():])))
+    bound = ((_AID_BIND_BEFORE.search(before) and _AID_SUFFIX.fullmatch(after))
+             or (tail and _AID_SUFFIX.fullmatch(after[tail.end():])))
     if not bound or _AID_OTHER_OBJECT.search(sentence):
         return None
     if _AID_UNCERTAIN.search(sentence):
