@@ -1,0 +1,567 @@
+{
+ "pack_id": "inventorai-g1-component-concept-heldout-02",
+ "status": "FROZEN",
+ "cases": [
+  {
+   "case_id": "Q01",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q01-F1",
+     "meaning": "Tell when the plants need water",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q01-F2",
+     "meaning": "Decide on its own when to start and stop watering",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q01-F3",
+     "meaning": "Deliver water to the plants",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q01-F4",
+     "meaning": "Get water from some supply it can draw on",
+     "may_be_unresolved": true
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q01-U1",
+     "meaning": "Where the water comes from (a tap or a container that is refilled)"
+    },
+    {
+     "unknown_id": "Q01-U2",
+     "meaning": "How many plants there are and where they are (indoors, outdoors, pots or beds)"
+    },
+    {
+     "unknown_id": "Q01-U3",
+     "meaning": "What power is available where the plants are"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Draw water from a refillable container and move it actively, or connect to a tap and only open and close the flow"
+   },
+   "unsupported_claims": [],
+   "notes": "Owner's fixed example. The person says they do not know the components; the need-based trigger is stated, how need is sensed is open."
+  },
+  {
+   "case_id": "Q02",
+   "group": "EXCLUSION",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q02-F1",
+     "meaning": "Discourage pigeons from landing or staying on the balcony",
+     "may_be_unresolved": true
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q02-U1",
+     "meaning": "Which parts of the balcony the pigeons use (railing, floor, ledges) and how large it is"
+    }
+   ],
+   "exclusions": [
+    {
+     "exclusion_id": "Q02-X1",
+     "any_of": [
+      "بدون ما يأذيهم"
+     ],
+     "meaning": "Anything that harms the pigeons"
+    },
+    {
+     "exclusion_id": "Q02-X2",
+     "any_of": [
+      "بدون أي صوت عالي"
+     ],
+     "meaning": "Loud sound that would disturb the neighbours"
+    }
+   ],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Gulf Arabic. Two explicit exclusions: no harm to birds, no loud noise."
+  },
+  {
+   "case_id": "Q03",
+   "group": "AMBIGUOUS",
+   "expected_outcome": "CLARIFY_FIRST",
+   "essential_functions": [],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q03-U1",
+     "meaning": "What part of the morning causes the stress and what the thing should do about it"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "No function, object or problem stated; the person says they do not know what it would do. Must ask first."
+  },
+  {
+   "case_id": "Q04",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q04-F1",
+     "meaning": "Keep the times at which medicine should be taken",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q04-F2",
+     "meaning": "Remind the father at each of those times in a way he notices",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q04-F3",
+     "meaning": "Find out whether the medicine was actually taken",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q04-F4",
+     "meaning": "Tell the person (the son or daughter) when a dose was not taken in time",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q04-U1",
+     "meaning": "How many medicines and daily times there are"
+    },
+    {
+     "unknown_id": "Q04-U2",
+     "meaning": "How the person wants to be told (and whether they are in the same home)"
+    },
+    {
+     "unknown_id": "Q04-U3",
+     "meaning": "Whether the father can easily hear, see or handle small controls"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Know a dose was taken because the medicine container was opened, or because the father confirms it himself (for example by pressing something)"
+   },
+   "unsupported_claims": [],
+   "notes": "MSA. Reminder plus remote notification of missed dose; detection of taking is the open part. No medical claim should be made."
+  },
+  {
+   "case_id": "Q05",
+   "group": "NON_DEVICE",
+   "expected_outcome": "ABSTAIN",
+   "essential_functions": [],
+   "expected_unknowns": [],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Shopping advice about a product the person does not design; no invention."
+  },
+  {
+   "case_id": "Q06",
+   "group": "UNSUPPORTED",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q06-F1",
+     "meaning": "Hold the baby in a small bed",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q06-F2",
+     "meaning": "Notice when the baby starts crying",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q06-F3",
+     "meaning": "Rock the bed gently on its own when that happens",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q06-U1",
+     "meaning": "The baby's age and weight range"
+    },
+    {
+     "unknown_id": "Q06-U2",
+     "meaning": "How long and how strongly the bed should rock, and when it should stop"
+    },
+    {
+     "unknown_id": "Q06-U3",
+     "meaning": "What power is available near the bed"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [
+    {
+     "any_of": [
+      "آمن مية في المية",
+      "مفيش أي خطر خالص"
+     ],
+     "meaning": "A guarantee that the bed is completely safe with no risk at all"
+    }
+   ],
+   "notes": "Egyptian Arabic. Buildable concept, but the absolute safety guarantee for an infant product cannot be promised."
+  },
+  {
+   "case_id": "Q07",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q07-F1",
+     "meaning": "Notice that new mail has been put in the mailbox",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q07-F2",
+     "meaning": "Get that information from the mailbox to the person in the house",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q07-F3",
+     "meaning": "Show or sound an indication the person will notice",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q07-F4",
+     "meaning": "Keep working outdoors at the mailbox",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q07-U1",
+     "meaning": "How far the mailbox is from the house"
+    },
+    {
+     "unknown_id": "Q07-U2",
+     "meaning": "What kind of mailbox it is (door, slot, material)"
+    },
+    {
+     "unknown_id": "Q07-U3",
+     "meaning": "Whether any power is available at the mailbox"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Detect that the mailbox door was opened, or detect that something is actually lying inside the box"
+   },
+   "unsupported_claims": [],
+   "notes": "Remote notification of mail arrival; how arrival is detected and how it reaches the house are open."
+  },
+  {
+   "case_id": "Q08",
+   "group": "EXCLUSION",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q08-F1",
+     "meaning": "Discourage the cat from getting onto or staying on the kitchen counter",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q08-F2",
+     "meaning": "Work while nobody is home",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q08-U1",
+     "meaning": "How large the counter area is and from where the cat jumps up"
+    }
+   ],
+   "exclusions": [
+    {
+     "exclusion_id": "Q08-X1",
+     "any_of": [
+      "no water sprays"
+     ],
+     "meaning": "Spraying water at the cat"
+    },
+    {
+     "exclusion_id": "Q08-X2",
+     "any_of": [
+      "nothing that shocks her"
+     ],
+     "meaning": "Any electric shock to the cat"
+    }
+   ],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Two explicit exclusions on deterrent method."
+  },
+  {
+   "case_id": "Q09",
+   "group": "AMBIGUOUS",
+   "expected_outcome": "CLARIFY_FIRST",
+   "essential_functions": [],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q09-U1",
+     "meaning": "What the thing in the car should do: cleaning or comfort, and for what exactly"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Gulf Arabic. Only 'something for the car', purpose explicitly undecided; ask first."
+  },
+  {
+   "case_id": "Q10",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q10-F1",
+     "meaning": "Tell when it has become dark",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q10-F2",
+     "meaning": "Switch the bike light on by itself when it is dark",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q10-F3",
+     "meaning": "Tell when the rider is slowing down",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q10-F4",
+     "meaning": "Make the light flash while slowing down",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q10-U1",
+     "meaning": "How the gadget will be powered and recharged or replaced"
+    },
+    {
+     "unknown_id": "Q10-U2",
+     "meaning": "What bike and existing light it attaches to, if any"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Recognise slowing from the bike's own movement, or from the rider using the brake"
+   },
+   "unsupported_claims": [],
+   "notes": "Automatic light plus slow-down flashing; the slowing detection approach is open."
+  },
+  {
+   "case_id": "Q11",
+   "group": "NON_DEVICE",
+   "expected_outcome": "ABSTAIN",
+   "essential_functions": [],
+   "expected_unknowns": [],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "MSA. A writing request, no invention."
+  },
+  {
+   "case_id": "Q12",
+   "group": "UNSUPPORTED",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q12-F1",
+     "meaning": "Hold containers of baby food",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q12-F2",
+     "meaning": "Keep the food cold for the length of a long trip",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q12-F3",
+     "meaning": "Be usable inside a car",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q12-U1",
+     "meaning": "How long the trips are"
+    },
+    {
+     "unknown_id": "Q12-U2",
+     "meaning": "Whether the car's power can be used"
+    },
+    {
+     "unknown_id": "Q12-U3",
+     "meaning": "How much food it must hold"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [
+    {
+     "any_of": [
+      "certified food-safe"
+     ],
+     "meaning": "A certification claim that cannot be given by a concept"
+    },
+    {
+     "any_of": [
+      "guaranteed never to let anything spoil"
+     ],
+     "meaning": "A guarantee that food will never spoil"
+    }
+   ],
+   "notes": "Cool box concept is fine; certification and no-spoilage guarantee cannot be promised."
+  },
+  {
+   "case_id": "Q13",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q13-F1",
+     "meaning": "Find out that rain is starting or about to start",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q13-F2",
+     "meaning": "Keep watching for rain the whole time the washing is out",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q13-F3",
+     "meaning": "Alert the person, who is not on the roof, in time to collect the washing",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q13-U1",
+     "meaning": "How far the person usually is from the roof and whether they would hear or see an alert"
+    },
+    {
+     "unknown_id": "Q13-U2",
+     "meaning": "Whether power is available on the roof"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Sense actual raindrops on the roof, or rely on weather forecast information for the place"
+   },
+   "unsupported_claims": [],
+   "notes": "Egyptian Arabic. Early rain warning for laundry on the roof."
+  },
+  {
+   "case_id": "Q14",
+   "group": "AMBIGUOUS",
+   "expected_outcome": "CLARIFY_FIRST",
+   "essential_functions": [],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q14-U1",
+     "meaning": "What problem with the stairs the grandmother meant and what the thing should do"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Only a vague label; the person does not know the purpose. Must ask first."
+  },
+  {
+   "case_id": "Q15",
+   "group": "EXCLUSION",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q15-F1",
+     "meaning": "Tell when the fan has been left on after the shower is over",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q15-F2",
+     "meaning": "Remind the son to switch the fan off",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q15-U1",
+     "meaning": "How the fan is switched (wall switch, pull cord) and whether it may be modified"
+    },
+    {
+     "unknown_id": "Q15-U2",
+     "meaning": "How long after the shower the fan should normally stay on"
+    }
+   ],
+   "exclusions": [
+    {
+     "exclusion_id": "Q15-X1",
+     "any_of": [
+      "without a camera in the bathroom"
+     ],
+     "meaning": "Any camera in the bathroom"
+    },
+    {
+     "exclusion_id": "Q15-X2",
+     "any_of": [
+      "without an app on his phone"
+     ],
+     "meaning": "A phone app"
+    }
+   ],
+   "meaningful_choice": null,
+   "unsupported_claims": [],
+   "notes": "Privacy and no-app exclusions; reminder must use some other channel."
+  },
+  {
+   "case_id": "Q16",
+   "group": "POSITIVE",
+   "expected_outcome": "CONCEPT",
+   "essential_functions": [
+    {
+     "function_id": "Q16-F1",
+     "meaning": "Hold soup without spilling",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q16-F2",
+     "meaning": "Keep the soup warm for the morning until lunch",
+     "may_be_unresolved": false
+    },
+    {
+     "function_id": "Q16-F3",
+     "meaning": "Check how warm the soup still is",
+     "may_be_unresolved": true
+    },
+    {
+     "function_id": "Q16-F4",
+     "meaning": "Show the daughter when the soup has gone cold",
+     "may_be_unresolved": false
+    }
+   ],
+   "expected_unknowns": [
+    {
+     "unknown_id": "Q16-U1",
+     "meaning": "How many hours between packing and lunch"
+    },
+    {
+     "unknown_id": "Q16-U2",
+     "meaning": "Whether any power can be used or recharged at home only"
+    }
+   ],
+   "exclusions": [],
+   "meaningful_choice": {
+    "meaning": "Keep the soup warm only by holding in its heat, or also add heat during the morning"
+   },
+   "unsupported_claims": [],
+   "notes": "Warm-keeping lunchbox with cold indication; no temperature specification should be invented."
+  }
+ ]
+}
