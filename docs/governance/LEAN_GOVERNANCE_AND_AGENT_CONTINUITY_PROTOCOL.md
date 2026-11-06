@@ -684,7 +684,7 @@ compiler, runtime, dependency, reference-data or output clearance.
 
   | Tool | Role | Existing InventorAI owner | Licence / IP questions | Trigger |
   |---|---|---|---|---|
-  | [`kicad-cli`](https://github.com/Amirjaferali/inventorai/pull/933) | EXECUTED in an isolated proof: KiCad 7.0.11 `Edge.Cuts` DXF cross-checked with exact source text and ezdxf, for format `20221018` and ONE axis-aligned rectangle only; unsupported cases refused. Not general KiCad support. | Input source candidate for the existing planar-clearance consumer; Stage-15 identity unchanged; roadmap §8B. | Main package GPL-3+ (mixed dependency notices in #933); production hosting, ingestion, retention and redistribution NOT cleared. | Separately authorized inventor-facing source-binding/confirmation consumer, only if selected |
+  | [`kicad-cli`](https://github.com/Amirjaferali/inventorai/pull/933) | EXECUTED in an isolated proof: KiCad 7.0.11 `Edge.Cuts` DXF cross-checked with exact source text and ezdxf, for format `20221018` and ONE axis-aligned rectangle only; unsupported cases refused. Not general KiCad support. Later: KiCad 10.0.8 format `20260206` qualified for the same tested constructs only ([#936](https://github.com/Amirjaferali/inventorai/pull/936)). | Input source candidate for the existing planar-clearance consumer; Stage-15 identity unchanged; roadmap §8B. | Main package GPL-3+ (mixed dependency notices in #933); production hosting, ingestion, retention and redistribution NOT cleared. | Separately authorized inventor-facing source-binding/confirmation consumer, only if selected |
   | [KiCad StepUp](https://www.kicad.org/external-tools/stepup/) ([source](https://github.com/easyw/kicadStepUpMod)) | ECAD <-> MCAD exchange in FreeCAD (board outline and 3D) | Phase-7 export / adapter boundary | Licence at a pinned revision; FreeCAD add-on distribution | A qualified relation needing 3D exchange beyond the DXF reference |
   | [atopile](https://github.com/atopile/atopile) ([docs](https://docs.atopile.io/)) | Lesson for reusable electronic modules and typed interfaces with units and assertions. Its compiler also selects parts, which is out of scope here. | Stage-15 components / interfaces and the Electronics owner, as a design reference only | MIT core upstream-declared; package-registry content has its own terms; part selection would collide with the T6 / BOM block | A qualified typed-interface relation (the CELUS row) |
   | [FMPy](https://github.com/CATIA-Systems/FMPy) | Execute FMI 1 / 2 / 3 FMUs | Specialist and external-tool owners (G1-3/4) | BSD-2 upstream-declared; each FMU's own runtime and licence (B's WAITING item) | D's FMI trigger: a demonstrated need to run an exchanged model |
@@ -711,9 +711,11 @@ compiler, runtime, dependency, reference-data or output clearance.
   MERGED at `5cf701e9d6dc122cab94adca9ac3b21359e647ef`; F1–F3 geometry-topology, scratch-DB and fresh-export
   guards are closed. The source-driven check and CAD worked for the tested synthetic rectangle; this is proof-only,
   not product upload. A changed board file is NOT detected automatically in the product: the proof harness detected
-  re-presented source mismatch; old CAD was refused only AFTER inventor correction of the declaration. Structured
-  source binding, file intake, privacy/retention and CAD source digest remain absent; no whole-fit claim follows.
-- **H. Next G1 engineering action (CANDIDATE, NOT APPROVED):** Prefer one real inventor-facing, owner-bound
+  re-presented source mismatch; old CAD was refused only AFTER inventor correction of the declaration. AT THAT DATE
+  (historical, superseded by I): structured source binding, file intake, privacy/retention and the CAD source digest
+  were absent. No whole-fit claim follows, then or now.
+- **H. Next G1 engineering action (CANDIDATE, NOT APPROVED; as of 2026-11-05 — its board-source candidate was later
+  implemented, see I):** Prefer one real inventor-facing, owner-bound
   engineering input -> qualified check -> inspectable, revision-consistent output, reusing Stage 15 and current
   specialist/evidence owners. The optional board-source handoff is one candidate, not automatic priority: it needs
   source attribution and privacy/security/retention decisions and ACE for material persistence semantics. A
@@ -721,6 +723,25 @@ compiler, runtime, dependency, reference-data or output clearance.
   relevant load basis (Q-02 remains BLOCKED), execution isolation/IP, evidence/retention authority and Stage-36
   activation are resolved. Do not infer execution authority from the two merged proofs, reopen the G1 language hold,
   or create a generic tool/analysis engine.
+- **I. Reconciliation after #936 / #937 (2026-11-06; continuity only, no new authority).**
+  - [#936](https://github.com/Amirjaferali/inventorai/pull/936) (merge `560cfa7`): KiCad 10.0.8 board format
+    `20260206` qualified for the observed constructs only (`docs/benchmarks/evidence/kicad10_format_qualification_v1`).
+  - [#937](https://github.com/Amirjaferali/inventorai/pull/937) (merge `5ab8e64`): BOARD-OUTLINE-SOURCE-BINDING-01
+    implemented — an optional in-product reader of that one format and rectangle rule, an offer the inventor declares,
+    and a file-linked (v2) declaration with source digest in the CAD companion; contract: method contract §5B.
+    v2 writes are OFF by default; enabling them, deployment and any release are separate Owner decisions.
+  - The in-product reader is a pure parser: it does not run KiCad, admit a simulator or tool runtime, support formats
+    beyond the #936-qualified scope, track later changes to an external file automatically, or establish general engineering compatibility.
+  - Operational (the Execution Lead's direct Render check, not the executor's): service `inventorai`
+    (`srv-damqgrbm8hqs73af5evg`), Frankfurt, Docker, one instance, 10 GB disk at `/var/data`, Auto-Deploy OFF;
+    live deploy `06bf3632ae9914732e945f00f5ff9f130aea57a0` (2026-09-19) does NOT contain #937. Render's upstream
+    request-body handling and temporary retention stay UNPROVEN: the application's in-memory intake (#937 tests) and
+    Gunicorn 26.1.0's in-memory body reader are not an end-to-end disk-free guarantee. This open item blocks only a
+    v2 activation decision that depends on it; it does not stop independent work and does not require a support
+    request.
+  - Unchanged and independent: the Q01–Q16 run evidence at `2f6925bd2232d3c4bda7fb3119dacd897d3bc3dc` on its own
+    branch (not rerun, not moved, Owner judgements untouched); PR #935 stays on the research path and admits no
+    method. Every HOLD, DEFER and reopening trigger above is unchanged except the facts recorded here.
 
 Unchanged: SCREEN_SUPPORT → Validation Plan STOPPED, PR #890 HOLD, Proof B paused, OD-2, the D4 / T6 boundaries,
 the Arabic obligations, every owner's responsibilities, the roadmap count and every capability status.
