@@ -651,10 +651,19 @@ compiler, runtime, dependency, reference-data or output clearance.
   third-party inventory and any applicable AGPL obligations; reference trajectories (SRC-062) stay IP-UNRESOLVED
   and excluded. No method or product admission. The 20-run TECH-SOURCES-001 campaign stays STOPPED at 20 / 20
   (`4001c80`); no schedule is restarted, and further research needs a new Owner authorization.
-- **C. Conditional continuation (RECOMMENDATION ONLY).** After the Owner accepts the CAD proof, scope the smallest
-  useful inventor-facing handoff under G1. A separate one-model local simulation proof (MP-01's corrected outline)
-  may be proposed only when its inputs, applicable claims, execution route and rights are ready. Neither the
-  product step nor the model proof is authorized by this record.
+- **B update — MP-01 executed (2026-11-06; [PR #934](https://github.com/Amirjaferali/inventorai/pull/934), merge
+  `f73a05dc90b02cddf5cdcfe37d5c961edf7cfc42`).** The isolated synthetic A–D proof reused MSL 4.1.0
+  (`8ae3d35`) with OpenModelica 1.27.1 (not originally planned 1.27.2) and froze criteria before running.
+  B1 speed recovery MET while B2 under increased load NOT MET; both exceeded the 150 A armature-current criterion
+  (about 159.1 A peak). Numerical sensitivity and revision/refusal checks held within the proof's declared bounds.
+  This is executed tool/model evidence, NOT motor validation, admitted method, product integration, or clearance
+  to host/distribute models or FMUs. Original 1.27.2 pairing remains untested; Q-02 load authority, D4,
+  result retention, tool runtime/security and relevant rights/Stage-36 triggers remain unchanged.
+- **C. Historical conditional continuation, now superseded by #933 and #934 (RECOMMENDATION ONLY for new work).**
+  The bounded CAD/source and one-model synthetic proofs have executed; neither automatically selects an
+  inventor-facing increment or authorizes a production simulator runner. Choose a real consumer and resolve
+  the existing-owner, input/provenance, method-admission, privacy, security, IP and activation requirements
+  before product coding.
 - **D. Future-use triggers, not stack dependencies.** DCPM_Cooling only for an actual qualified thermal need;
   FMI / SSP / OMSimulator only for demonstrated multi-tool or model exchange; PyBaMM / CoolProp only for a concrete
   missing capability. NASA / OpenMDAO lessons inform owner interfaces and tests; they do not replace InventorAI
@@ -668,18 +677,19 @@ compiler, runtime, dependency, reference-data or output clearance.
   ONE qualified cross-disciplinary relationship -> an inspectable output. It does not depend on the unresolved
   free-language semantic bridge or on production AI. Already recorded, not repeated: MSL / OpenModelica (B),
   FMI / SSP / OMSimulator and OpenMDAO (D), CadQuery (the G1-3/4 row and source leads), FreeCAD (A). Every row
-  below is a CANDIDATE: nothing is installed, run, qualified, adopted or active, and availability on GitHub is
-  not qualification. Licences marked "upstream-declared" were seen through a search index, not inspected at a
+  below identifies a potential use, not production adoption. `kicad-cli` was subsequently exercised only in
+  synthetic proof #933; other tools here remain discovery CANDIDATES. No tool is connected, installed or
+  admitted into the product; availability on GitHub is not qualification. Licences marked "upstream-declared" were seen through a search index, not inspected at a
   pinned revision; a tool's licence is not clearance of its runtime, bundled libraries, outputs or redistribution.
 
   | Tool | Role | Existing InventorAI owner | Licence / IP questions | Trigger |
   |---|---|---|---|---|
-  | [`kicad-cli`](https://docs.kicad.org/10.0/en/cli/cli.html) | Read board geometry from a KiCad PCB file (e.g. `pcb export dxf` of the board-edge layer, `pcb export stats`). Whether either yields reliable outline dimensions is UNCERTAIN. | An input source for the planar-clearance consumer, never its method; Stage-15 component identity; roadmap §8B. | KiCad licence and version at a pinned release; local use on synthetic files differs from bundling or hosting it; a real board file is inventor data. | Experiment G, separately authorized |
+  | [`kicad-cli`](https://github.com/Amirjaferali/inventorai/pull/933) | EXECUTED in an isolated proof: KiCad 7.0.11 `Edge.Cuts` DXF cross-checked with exact source text and ezdxf, for format `20221018` and ONE axis-aligned rectangle only; unsupported cases refused. Not general KiCad support. | Input source candidate for the existing planar-clearance consumer; Stage-15 identity unchanged; roadmap §8B. | Main package GPL-3+ (mixed dependency notices in #933); production hosting, ingestion, retention and redistribution NOT cleared. | Separately authorized inventor-facing source-binding/confirmation consumer, only if selected |
   | [KiCad StepUp](https://www.kicad.org/external-tools/stepup/) ([source](https://github.com/easyw/kicadStepUpMod)) | ECAD <-> MCAD exchange in FreeCAD (board outline and 3D) | Phase-7 export / adapter boundary | Licence at a pinned revision; FreeCAD add-on distribution | A qualified relation needing 3D exchange beyond the DXF reference |
   | [atopile](https://github.com/atopile/atopile) ([docs](https://docs.atopile.io/)) | Lesson for reusable electronic modules and typed interfaces with units and assertions. Its compiler also selects parts, which is out of scope here. | Stage-15 components / interfaces and the Electronics owner, as a design reference only | MIT core upstream-declared; package-registry content has its own terms; part selection would collide with the T6 / BOM block | A qualified typed-interface relation (the CELUS row) |
   | [FMPy](https://github.com/CATIA-Systems/FMPy) | Execute FMI 1 / 2 / 3 FMUs | Specialist and external-tool owners (G1-3/4) | BSD-2 upstream-declared; each FMU's own runtime and licence (B's WAITING item) | D's FMI trigger: a demonstrated need to run an exchanged model |
   | [Eclipse SysON](https://projects.eclipse.org/projects/modeling.syson) | SysML v2 system and relationship modelling (incubating) | Stage 15 stays the relationship owner; at most an exchange format | Eclipse licence at a pinned release | A demonstrated need to exchange the Stage-15 relationships with an MBSE tool; never physical-verification authority |
-- **G. Candidate experiment — PCB source geometry -> planar clearance -> revision-bound CAD (RECOMMENDATION ONLY;
+- **G. Original candidate specification — PCB source geometry -> planar clearance -> revision-bound CAD (HISTORICAL; EXECUTED AS #933;
   working name PCB-OUTLINE-TO-PLANAR-CLEARANCE-PROOF-01).** Steps: (1) a synthetic, version-pinned KiCad PCB file;
   (2) establish whether `kicad-cli` extracts its supported board outline reliably; (3) bind the dimensions and the
   source identity (file SHA-256, KiCad version, command) to the existing Stage-15 component / interface context
@@ -697,6 +707,20 @@ compiler, runtime, dependency, reference-data or output clearance.
   PR #919 (integrated engineering continuation), PR #929 (literal-source pattern). A planar check is never
   PCB-enclosure compatibility, manufacturability, electrical validity or safety; D4, T6, OD-2, provenance, the
   AI / provider and real-data restrictions and source / IP qualification are unchanged.
+  **Execution disposition (2026-11-05):** [PR #933](https://github.com/Amirjaferali/inventorai/pull/933)
+  MERGED at `5cf701e9d6dc122cab94adca9ac3b21359e647ef`; F1–F3 geometry-topology, scratch-DB and fresh-export
+  guards are closed. The source-driven check and CAD worked for the tested synthetic rectangle; this is proof-only,
+  not product upload. A changed board file is NOT detected automatically in the product: the proof harness detected
+  re-presented source mismatch; old CAD was refused only AFTER inventor correction of the declaration. Structured
+  source binding, file intake, privacy/retention and CAD source digest remain absent; no whole-fit claim follows.
+- **H. Next G1 engineering action (CANDIDATE, NOT APPROVED):** Prefer one real inventor-facing, owner-bound
+  engineering input -> qualified check -> inspectable, revision-consistent output, reusing Stage 15 and current
+  specialist/evidence owners. The optional board-source handoff is one candidate, not automatic priority: it needs
+  source attribution and privacy/security/retention decisions and ACE for material persistence semantics. A
+  cross-disciplinary simulation result cannot enter production until its claim-specific qualified method/consumer,
+  relevant load basis (Q-02 remains BLOCKED), execution isolation/IP, evidence/retention authority and Stage-36
+  activation are resolved. Do not infer execution authority from the two merged proofs, reopen the G1 language hold,
+  or create a generic tool/analysis engine.
 
 Unchanged: SCREEN_SUPPORT → Validation Plan STOPPED, PR #890 HOLD, Proof B paused, OD-2, the D4 / T6 boundaries,
 the Arabic obligations, every owner's responsibilities, the roadmap count and every capability status.
