@@ -568,3 +568,71 @@ installed, compiled or simulated; SRC-062 reference trajectories not used.
    mechanism's load profile, the actual controller and validation against measurement.
 Status: QUALIFIED-CANDIDATE (model structure and model-code rights) unchanged; local proof readiness — one open question (tool / library
 execution); use (b) conditions known; use (c) WAITING (artifact inventory). No method or product admission.
+
+## Specialist assignment Q-02 (Owner 2026-11-06) — DC permanent-magnet motor ↔ mechanical load; NOT a campaign run
+
+The campaign stays STOPPED (20 / 20 runs). Identities at the time of research: research `d12f1570596541d24c59064a1fc303af68ab3d3c`, product
+`f73a05dc90b02cddf5cdcfe37d5c961edf7cfc42` (ACTIVE CONTRACT: NONE). Budget used: 1 of 6 searches, 3 of 4 directly inspected sources.
+Reused first: Q-02 / R-01, SRC-004 / SRC-005 and their IP status, DR-1 Option C, the delivered rotational-load method (PR #862), the
+synthetic tool-execution proof (PR #934, OpenModelica 1.27.1 on MSL 8ae3d35 — execution evidence only, not scientific validation) and SRC-061.
+
+Supported relations and limits:
+- A — current to torque, τ_m = K_t · i_a. EXPLICIT in SRC-065 (electrical torque = turnsRatio · flux · armature current) and SRC-067 (term
+  K_m · r · i_a). Limits: constant flux (permanent magnet), linear air gap without saturation, no torque ripple, cogging or armature reaction.
+- B — net torque, inertia and acceleration, J_total · dω/dt = Σ τ. EXPLICIT in SRC-065 (J · a = sum of flange torques). Referred inertia
+  (I_R + J · r²) EXPLICIT in SRC-067, for an ideal gearbox without efficiency loss, compliance or backlash. Steady speed as torque balance
+  (dω/dt = 0) is IMPLIED by the equation, not stated.
+- C — combination. SRC-067 Eq. 1 combines A and B explicitly, with a linear viscous friction term, for its own system: PMSM simplified to a
+  DC-equivalent, rotor aerodynamic load, ideal gearbox; its time-constant result assumes L_a = 0. The MSL example (SRC-061) implements a similar [corrected 2026-11-06 from "the same"]
+  combination in model code. A general combined claim for any mechanism is NOT established.
+
+Source-level corrections recorded: SRC-067's notation table gives K_m in "slug ft²" although it is torque per ampere (its text gives
+K_m = c · K_e, c = 0.7374 lb-ft / N·m); SRC-065's AirGapDC documentation describes `quasiStatic` the opposite way to its code (code governs).
+No independent review of this assignment has been received yet.
+
+Status: A and B QUALIFIED-CANDIDATE; C PARTIAL. Q-02 / R-01 stay PARTIAL: the dynamics and referred-inertia part of R-01 now has a clean
+source independent of SRC-004, but R-01's core claim (motor torque must cover the load's breakaway, accelerating and running torque across the
+speed range) still has no clean source; SRC-004 and SRC-005 stay IP-UNRESOLVED. Rejected: the OpenStax GitHub source (non-commercial
+licence, SRC-066), a University of Maryland contractor report, Aerospace Corporation material. Remaining blockers: breakaway / speed-range load
+requirement source, numeric applicability limits, motor and load parameters (measurement or documentation), foreign rights for SRC-067.
+This is not method admission and not a compatibility finding: Mechanical owns load requirements, Electrical / Electronics owns motor and drive
+characteristics, Stage 15 composes declared interface statements; D4 remains blocked.
+
+## Q-02 IP compliance repair and targeted follow-up (Owner 2026-11-06) — NOT a campaign run
+
+The campaign stays STOPPED (20 / 20 runs). Two investigations are preserved here: the specialist assignment above (SRC-065…067) and a
+targeted OpenAlex / Perplexity follow-up on R-01 (8 of 8 searches, 1 new primary source, SRC-068; SRC-004 re-inspected). The claim-level
+evidence types and IP classifications are in `evidence/ip-and-reuse-register.md`, "Q-02 claim-level classification (2026-11-06)".
+
+Preserved scientific findings (exact provenance in the provenance register):
+- Current vs electromagnetic torque (A-1, A-2, A-3): EXPLICIT in SRC-065 (model code) and SRC-067 Eqs. 1–2; constant permanent-magnet flux,
+  linear air gap, no saturation, ripple, cogging or armature reaction; SRC-067's PMSM is a DC-equivalent simplification.
+- Net shaft torque vs angular acceleration (B-1): EXPLICIT in SRC-065 and SRC-067; torque balance at constant speed (B-2) is IMPLIED from it.
+- Reflected inertia (B-3) and gear-ratio conventions: SRC-067 refers the high-speed drive inertia to the rotor side as J·r² (r = "drive system
+  gear ratio"; motor speed = r·Ω IMPLIED by its terms); SRC-004 refers a load inertia to the motor side as I / R² (R = reduction ratio, motor
+  faster, from equal kinetic energy). The two are one relation in two conventions (IMPLIED); both assume an ideal gearbox.
+- Assumptions: friction is linear viscous in SRC-067 (ASSUMPTION), static friction appears only as a breakaway component in SRC-004; no
+  gearbox efficiency, compliance or backlash in any clean relation; no saturation; motor type is permanent-magnet DC (SRC-065) or a
+  DC-equivalent PMSM (SRC-067); induction (SRC-068) and DC (SRC-005) statements are type-specific and IP-UNRESOLVED.
+- Limits of the NASA rotor model (C-1): SRC-067 Eq. 1 is explicit only for its eVTOL rotor drive (aerodynamic torque, ideal gearbox, viscous
+  friction); its time constant (Eqs. 3–5) assumes L_a = 0. It is the authors' simplification of an approach that "follows similar lines" to
+  their Ref. 9 (Mills and Datta, third party, not inspected). REFERENCE-ONLY; never generalized to an arbitrary mechanism.
+- Starting, accelerating and running torque requirements (D-1…D-5): EXPLICIT in SRC-004 only, IP-UNRESOLVED. SRC-004's equation (1) form is
+  UNVERIFIED (not legible in text extraction).
+
+SRC-004 authorship residual (narrowed, NOT cleared): the title page names the author "Research Engineer, Army Air Mobility Research and
+Development Laboratories, NASA Lewis Research Center" and says the paper was "proposed for presentation" at an ASME seminar on 1973-05-30;
+NTRS records the ASME meeting and a GOV_PUBLIC_USE_PERMITTED determination with belongsToUsGov false. A position title and affiliation are not
+documented federal employment, and the NTRS flags are not authorship evidence (contradictions log), so SRC-004 stays IP-UNRESOLVED.
+
+Rejected or not usable (targeted follow-up): see `evidence/abstention-log.md` (2026-11-06 rows).
+
+Remaining motor–mechanism compatibility gaps: no clean source for the load-requirement claims (breakaway, accelerating, running torque over
+the speed range); no clean reflected-load-torque relation including transmission efficiency; motor torque–speed capability covered only by
+type-specific, IP-UNRESOLVED sources (DC: SRC-005; induction: SRC-068); no thermal / duty (continuous vs intermittent rating) source in clean
+form; no compliance, backlash or saturation treatment; motor and load parameters still need measurement or documentation; foreign rights for
+SRC-067 undetermined. Ownership stays DR-1 Option C (Mechanical: load requirements; Electrical / Electronics: motor and drive; Stage 15:
+declared interface statements); D4 remains blocked.
+
+Status: A and B QUALIFIED-CANDIDATE (relation-level, conditional rights); C PARTIAL (rotor-specific, REFERENCE-ONLY); Q-02 / R-01 PARTIAL /
+IP-UNRESOLVED. No method admission, compatibility conclusion, product use or legal clearance.
