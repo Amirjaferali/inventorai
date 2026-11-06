@@ -38,3 +38,4 @@ Append-only. Never bypassed.
 | 2026-10-30 (run 20) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
 | 2026-11-02 (MP-01 review) | openmodelica.org | CONNECT 403 (proxy policy), not retried | OSMC Bylaws v1.9 §1.5 | Recorded as LEAD-SUPPLIED (SRC-064) |
 | 2026-11-02 (MP-01 review) | opensource.org | CONNECT 403 (proxy policy), not retried; MP-01 fetch ceiling (15) then reached | AGPL v3 text, §§2, 4–6, 13 | AGPL reading marked not inspected at source |
+| 2026-11-06 (Q-02 specialist) | openstax.org | CONNECT 403 (proxy policy), not retried | OpenStax University Physics (CC BY 4.0 web edition) | GitHub source repository inspected instead; its licence is non-commercial (SRC-066) |

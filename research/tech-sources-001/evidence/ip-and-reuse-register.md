@@ -207,3 +207,12 @@ NISTIR 8259D lineage, consumer-labelling criteria, the NIST catalog) derives fro
 |---|---|---|---|---|---|
 | SRC-063 (corrected note) | OSMC | tool licence texts | compiler: AGPL v3 or OSMC-PL 1.8; runtime-header files: BSD New or AGPL v3 or OSMC-PL | n/a (tool licence record) | AGPL is not a prohibition on commercial use, distribution or modified network deployment: it attaches obligations (licence and notices, Corresponding Source on conveyance, source offer to network users of a modified version). A product choice to avoid AGPL components is a conservative choice, not a licence prohibition. AGPL text NOT inspected at source in MP-01 (opensource.org refused). |
 | SRC-064 | OSMC bylaws | LEAD-SUPPLIED clause, not inspected | translated code keeps the rights of its originating source (per the supplied clause) | n/a (governance / licence clarification) | with SRC-061 (BSD-3), translated MSL model code would carry BSD-3 terms; the runtime and third-party inventory of a built artifact remains required before distribution or hosting |
+
+### Specialist assignment Q-02 — motor ↔ mechanical load (Owner 2026-11-06; separate from the closed campaign)
+| SRC | Authorship type | Origin of the relied-on statement | Commercial-use basis | IP fitness | Note |
+|---|---|---|---|---|---|
+| SRC-065 | consortium + contributors (Modelica Association) | own library code | clear: BSD 3-Clause (as SRC-061) | `CALCULATION-GRADE` | equations as implemented in model code; notice and disclaimer kept on any redistribution of code; no endorsement |
+| SRC-066 | OpenStax (Rice University) | — (licence file only) | not permitted: CC BY-NC-SA 4.0 on the GitHub source repository | `EXCLUDED` | the openstax.org CC BY 4.0 edition remains uninspected; nothing reused |
+| SRC-067 | government (both authors NASA Ames; paper states "This is a work of the U.S. Government and is not subject to copyright protection in the U.S.") | authors' own simplified model (cites a similar prior approach, Ref. 9) | clear in the U.S. (17 U.S.C. 105); foreign rights not determined | `CALCULATION-GRADE` (conditional) | relation only, InventorAI's own wording, attribution kept, no figures or tables copied, no NASA / VFS endorsement; conference presentation at VFS noted |
+
+SRC-004 and SRC-005 stay `IP-UNRESOLVED`; nothing here changes their status.

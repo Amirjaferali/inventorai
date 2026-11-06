@@ -568,3 +568,32 @@ installed, compiled or simulated; SRC-062 reference trajectories not used.
    mechanism's load profile, the actual controller and validation against measurement.
 Status: QUALIFIED-CANDIDATE (model structure and model-code rights) unchanged; local proof readiness — one open question (tool / library
 execution); use (b) conditions known; use (c) WAITING (artifact inventory). No method or product admission.
+
+## Specialist assignment Q-02 (Owner 2026-11-06) — DC permanent-magnet motor ↔ mechanical load; NOT a campaign run
+
+The campaign stays STOPPED (20 / 20 runs). Identities at the time of research: research `d12f1570596541d24c59064a1fc303af68ab3d3c`, product
+`f73a05dc90b02cddf5cdcfe37d5c961edf7cfc42` (ACTIVE CONTRACT: NONE). Budget used: 1 of 6 searches, 3 of 4 directly inspected sources.
+Reused first: Q-02 / R-01, SRC-004 / SRC-005 and their IP status, DR-1 Option C, the delivered rotational-load method (PR #862), the
+synthetic tool-execution proof (PR #934, OpenModelica 1.27.1 on MSL 8ae3d35 — execution evidence only, not scientific validation) and SRC-061.
+
+Supported relations and limits:
+- A — current to torque, τ_m = K_t · i_a. EXPLICIT in SRC-065 (electrical torque = turnsRatio · flux · armature current) and SRC-067 (term
+  K_m · r · i_a). Limits: constant flux (permanent magnet), linear air gap without saturation, no torque ripple, cogging or armature reaction.
+- B — net torque, inertia and acceleration, J_total · dω/dt = Σ τ. EXPLICIT in SRC-065 (J · a = sum of flange torques). Referred inertia
+  (I_R + J · r²) EXPLICIT in SRC-067, for an ideal gearbox without efficiency loss, compliance or backlash. Steady speed as torque balance
+  (dω/dt = 0) is IMPLIED by the equation, not stated.
+- C — combination. SRC-067 Eq. 1 combines A and B explicitly, with a linear viscous friction term, for its own system: PMSM simplified to a
+  DC-equivalent, rotor aerodynamic load, ideal gearbox; its time-constant result assumes L_a = 0. The MSL example (SRC-061) implements the same
+  combination in model code. A general combined claim for any mechanism is NOT established.
+
+Source-level corrections recorded: SRC-067's notation table gives K_m in "slug ft²" although it is torque per ampere (its text gives
+K_m = c · K_e, c = 0.7374 lb-ft / N·m); SRC-065's AirGapDC documentation describes `quasiStatic` the opposite way to its code (code governs).
+No independent review of this assignment has been received yet.
+
+Status: A and B QUALIFIED-CANDIDATE; C PARTIAL. Q-02 / R-01 stay PARTIAL: the dynamics and referred-inertia part of R-01 now has a clean
+source independent of SRC-004, but R-01's core claim (motor torque must cover the load's breakaway, accelerating and running torque across the
+speed range) still has no clean source; SRC-004 and SRC-005 stay IP-UNRESOLVED. Rejected: the OpenStax GitHub source (non-commercial
+licence, SRC-066), a University of Maryland contractor report, Aerospace Corporation material. Remaining blockers: breakaway / speed-range load
+requirement source, numeric applicability limits, motor and load parameters (measurement or documentation), foreign rights for SRC-067.
+This is not method admission and not a compatibility finding: Mechanical owns load requirements, Electrical / Electronics owns motor and drive
+characteristics, Stage 15 composes declared interface statements; D4 remains blocked.
