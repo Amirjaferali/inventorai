@@ -1,0 +1,551 @@
+{
+ "D_identity": {
+  "B1_repeat_same_identity": true,
+  "B1_repeat_same_numbers": true,
+  "B2_differs_from_B1": true
+ },
+ "N1_sensitivity": {
+  "B1": {
+   "delta_max_abs_ia_A": "0.000002555951",
+   "delta_peak_dip_rad_s": "1.7638800E-7",
+   "delta_t_rec_s": "0.0",
+   "same_outcomes": true,
+   "verdict": "NUMERICALLY STABLE",
+   "within_bounds": true
+  },
+  "B2": {
+   "delta_max_abs_ia_A": "0.000002555951",
+   "delta_peak_dip_rad_s": "2.1561100E-7",
+   "delta_t_rec_s": null,
+   "same_outcomes": true,
+   "verdict": "NUMERICALLY STABLE",
+   "within_bounds": true
+  }
+ },
+ "image_inventory": {
+  "installed_packages": 222,
+  "msl_licence": "BSD-3-Clause (MSL LICENSE, sha256 4f708e2d...; SRC-061)",
+  "omc_packages": [
+   "libomc 1.27.1-1",
+   "libomcsimulation 1.27.1-1",
+   "omc 1.27.1-1",
+   "omc-common 1.27.1-1"
+  ],
+  "openmodelica_copyright_notices": {
+   "libomc": {
+    "licence_statement": "THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.2.",
+    "sha256": "a091ec1d67fe3bcbd8a0452129e1637c3e861ff731f8bdce40a45f2bc4d9996b"
+   },
+   "libomcsimulation": {
+    "licence_statement": "THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.2.",
+    "sha256": "a091ec1d67fe3bcbd8a0452129e1637c3e861ff731f8bdce40a45f2bc4d9996b"
+   },
+   "omc": {
+    "licence_statement": "THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.2.",
+    "sha256": "a091ec1d67fe3bcbd8a0452129e1637c3e861ff731f8bdce40a45f2bc4d9996b"
+   },
+   "omc-common": {
+    "licence_statement": "THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.2.",
+    "sha256": "a091ec1d67fe3bcbd8a0452129e1637c3e861ff731f8bdce40a45f2bc4d9996b"
+   }
+  },
+  "package_list": "image_packages.txt"
+ },
+ "isolation": {
+  "capabilities": "all dropped (inheritable and bounding), no_new_privs",
+  "environment": "cleared: HOME, TMPDIR, PATH and LANG only",
+  "filesystem": "read-only image root after pivot_root, host root detached; MSL read-only; one writable work directory; 2 GiB tmpfs /tmp",
+  "host_uid": 65534,
+  "limits": [
+   "--cpu=1500",
+   "--as=12000000000",
+   "--fsize=2000000000",
+   "--nofile=4096",
+   "--nproc=2048",
+   "timeout 1800s"
+  ],
+  "namespaces": "user, mount, pid, net, ipc, uts (unshare, unprivileged)",
+  "network": "own network namespace with only a down loopback interface"
+ },
+ "preregistration_sha256": "58b167ec8f11828fa06fd7e6db99231fa79c87ac26e7b1666dc05b67b49ac85c",
+ "proof": "MP01-SPEED-CONTROLLED-DCPM-PROOF-01",
+ "runs": {
+  "A_smoke": {
+   "analysis": {
+    "IaMax_A": "150",
+    "K1": {
+     "outcome": "MET",
+     "peak_dip_rad_s": "0.98336585227515",
+     "recovery_after_load_s": "0.0",
+     "t_rec_s": "0.8",
+     "w_end_rad_s": "149.225650994261"
+    },
+    "K2": {
+     "at_time_s": "0.2059",
+     "margin_A": "-9.098786601888",
+     "max_abs_ia_A": "159.098786601888",
+     "max_abs_ia_after_load_step_A": "151.43439408004",
+     "outcome": "NOT MET"
+    },
+    "X1_exploratory": {
+     "J_total": "0.29999999999999998",
+     "loadInertia_a_end": "0.00000351504619781432",
+     "loadTorque_tau_end": "-63.6619772367581",
+     "note": "exploratory only, not a gate (pre-registration X1)",
+     "residual_Nm": "4.0655704070300923956E-14",
+     "tauElectrical_end": "63.661978291272",
+     "tauShaft_end": "63.6619777640151"
+    },
+    "exploratory_post_hoc": {
+     "max_speed_controller_output_Nm": "95.4929658551372",
+     "max_va_V": "119.19150171121",
+     "note": "not pre-registered; reported only to describe the response, never as a gate",
+     "t_rec_band_0.5pct_s": "0.8137"
+    },
+    "grid_resolution_s": 0.0001,
+    "model_derived_parameters": {
+     "driveData.IaMax": "150",
+     "driveData.JL": "0.14999999999999999",
+     "driveData.Tiw": "0.01",
+     "driveData.VBat": "120",
+     "driveData.kPhi": "0.63661977236758149",
+     "driveData.kpw": "60",
+     "driveData.motorData.Jr": "0.14999999999999999",
+     "driveData.motorData.wNominal": "149.22565104551515",
+     "driveData.tauMax": "95.492965855137228",
+     "driveData.tauNominal": "63.661977236758148"
+    },
+    "points": 10008,
+    "wNominal_rad_s": "149.22565104551515"
+   },
+   "csv_sha256": "20a18276a5d2899b9129e11f6fb38f94d6f9f0d75c3e068ee2a6fca14c704734",
+   "log_tail": "true\ntrue\ntrue\nrecord SimulationResult\n    resultFile = \"/work/Modelica.Electrical.Machines.Examples.ControlledDCDrives.SpeedControlledDCPM_res.mat\",\n    simulationOptions = \"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-6, method = 'dassl', fileNamePrefix = 'Modelica.Electrical.Machines.Examples.ControlledDCDrives.SpeedControlledDCPM', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\",\n    messages = \"LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.\nLOG_SUCCESS       | info    | The simulation finished successfully.\n\",\n    timeFrontend = 0.254973465,\n    timeBackend = 0.0844245,\n    timeSimCode = 0.015674512,\n    timeTemplates = 0.034104767,\n    timeCompile = 0.796651354,\n    timeSimulation = 0.052178157,\n    timeTotal = 1.238164615\nend SimulationResult;\n\"Modelica.Electrical.Machines.Examples.ControlledDCDrives.SpeedControlledDCPM_res.mat\"\nPARAM driveData.tauNominal=63.661977236758148\n\nPARAM driveData.IaMax=150\n\nPARAM driveData.tauMax=95.492965855137228\n\nPARAM driveData.kPhi=0.63661977236758149\n\nPARAM driveData.kpw=60\n\nPARAM driveData.Tiw=0.01\n\nPARAM driveData.JL=0.14999999999999999\n\nPARAM driveData.motorData.Jr=0.14999999999999999\n\nPARAM driveData.motorData.wNominal=149.22565104551515\n\nPARAM driveData.VBat=120\n\ntrue\n\nOMC_VERSION=OpenModelica 1.27.1\n\nMSL_VERSION=4.1.0\n\nEXIT=0\n",
+   "mat_sha256": "7800c6613b26ca825cc45525d670434965ad08dc53789eef155c0545d929eb6d",
+   "netdev": "lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0",
+   "omc_exit_ok": true,
+   "result_written": true,
+   "returncode": 0,
+   "simulation_options": "\"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-6, method = 'dassl', fileNamePrefix = 'Modelica.Electrical.Machines.Examples.ControlledDCDrives.SpeedControlledDCPM', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\"",
+   "solver_ok": true
+  },
+  "B1_primary_1": {
+   "analysis": {
+    "IaMax_A": "150",
+    "K1": {
+     "outcome": "MET",
+     "peak_dip_rad_s": "0.98336585227318",
+     "recovery_after_load_s": "0.0",
+     "t_rec_s": "0.8",
+     "w_end_rad_s": "149.225651006157"
+    },
+    "K2": {
+     "at_time_s": "0.2059",
+     "margin_A": "-9.098786601883",
+     "max_abs_ia_A": "159.098786601883",
+     "max_abs_ia_after_load_step_A": "151.434389303366",
+     "outcome": "NOT MET"
+    },
+    "X1_exploratory": {
+     "J_total": "0.29999999999999998",
+     "loadInertia_a_end": "0.0000022639013271449",
+     "loadTorque_tau_end": "-63.6619772367581",
+     "note": "exploratory only, not a gate (pre-registration X1)",
+     "residual_Nm": "1.8565300452780265429E-15",
+     "tauElectrical_end": "63.6619779159285",
+     "tauShaft_end": "63.6619775763433"
+    },
+    "exploratory_post_hoc": {
+     "max_speed_controller_output_Nm": "95.4929658551372",
+     "max_va_V": "119.19150171134",
+     "note": "not pre-registered; reported only to describe the response, never as a gate",
+     "t_rec_band_0.5pct_s": "0.8137"
+    },
+    "grid_resolution_s": 0.0001,
+    "model_derived_parameters": {
+     "driveData.IaMax": "150",
+     "driveData.JL": "0.14999999999999999",
+     "driveData.Tiw": "0.01",
+     "driveData.VBat": "120",
+     "driveData.kPhi": "0.63661977236758138",
+     "driveData.kpw": "60",
+     "driveData.motorData.Jr": "0.14999999999999999",
+     "driveData.motorData.wNominal": "149.22565104551518",
+     "driveData.tauMax": "95.492965855137214",
+     "driveData.tauNominal": "63.661977236758133"
+    },
+    "points": 10008,
+    "wNominal_rad_s": "149.22565104551518"
+   },
+   "csv_sha256": "ab48a8c808f470e05a031a5e573969f0bc9393982a60fafbda3d4c6e59ac5305",
+   "inputs": {
+    "IaNominal_A": "100",
+    "JL_kgm2": "0.15",
+    "Jr_kgm2": "0.15",
+    "Js_kgm2": "0.15",
+    "La_H": "0.0015",
+    "Ra_ohm": "0.05",
+    "VaNominal_V": "100",
+    "load_step_time_s": "0.8",
+    "load_torque_factor": "1.0",
+    "speed_reference_step_time_s": "0.2",
+    "wNominal_rpm": "1425"
+   },
+   "log_tail": "true\ntrue\ntrue\ntrue\nrecord SimulationResult\n    resultFile = \"/work/MP01_B1_res.mat\",\n    simulationOptions = \"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-6, method = 'dassl', fileNamePrefix = 'MP01_B1', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\",\n    messages = \"LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.\nLOG_SUCCESS       | info    | The simulation finished successfully.\n\",\n    timeFrontend = 0.049950462,\n    timeBackend = 0.08122380200000001,\n    timeSimCode = 0.016811964000000002,\n    timeTemplates = 0.030010049,\n    timeCompile = 0.83713141,\n    timeSimulation = 0.060022517000000004,\n    timeTotal = 1.075315219\nend SimulationResult;\n\"MP01_B1_res.mat\"\nPARAM driveData.tauNominal=63.661977236758133\n\nPARAM driveData.IaMax=150\n\nPARAM driveData.tauMax=95.492965855137214\n\nPARAM driveData.kPhi=0.63661977236758138\n\nPARAM driveData.kpw=60\n\nPARAM driveData.Tiw=0.01\n\nPARAM driveData.JL=0.14999999999999999\n\nPARAM driveData.motorData.Jr=0.14999999999999999\n\nPARAM driveData.motorData.wNominal=149.22565104551518\n\nPARAM driveData.VBat=120\n\ntrue\n\nOMC_VERSION=OpenModelica 1.27.1\n\nMSL_VERSION=4.1.0\n\nEXIT=0\n",
+   "mat_sha256": "c76f37f78f3ff4fcd21c21fa8ae28c6009be953403a019c8fefdd57fd70c73cf",
+   "model_sha256": "5b96b56b2d27d54f353c20c8211f3b18248203d6e5b200f5b7ceac8631d5e648",
+   "netdev": "lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0",
+   "omc_exit_ok": true,
+   "result_identity": "978becf375ff8dd732f3d3670d89159fdac5dbf05747b9b574fef913d62a8126",
+   "result_written": true,
+   "returncode": 0,
+   "settings": {
+    "intervals": 10000,
+    "method": "dassl",
+    "start_s": 0,
+    "stop_s": 1.0,
+    "tolerance": 1e-06
+   },
+   "simulation_options": "\"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-6, method = 'dassl', fileNamePrefix = 'MP01_B1', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\"",
+   "solver_ok": true
+  },
+  "B1_primary_2": {
+   "analysis": {
+    "IaMax_A": "150",
+    "K1": {
+     "outcome": "MET",
+     "peak_dip_rad_s": "0.98336585227318",
+     "recovery_after_load_s": "0.0",
+     "t_rec_s": "0.8",
+     "w_end_rad_s": "149.225651006157"
+    },
+    "K2": {
+     "at_time_s": "0.2059",
+     "margin_A": "-9.098786601883",
+     "max_abs_ia_A": "159.098786601883",
+     "max_abs_ia_after_load_step_A": "151.434389303366",
+     "outcome": "NOT MET"
+    },
+    "X1_exploratory": {
+     "J_total": "0.29999999999999998",
+     "loadInertia_a_end": "0.0000022639013271449",
+     "loadTorque_tau_end": "-63.6619772367581",
+     "note": "exploratory only, not a gate (pre-registration X1)",
+     "residual_Nm": "1.8565300452780265429E-15",
+     "tauElectrical_end": "63.6619779159285",
+     "tauShaft_end": "63.6619775763433"
+    },
+    "exploratory_post_hoc": {
+     "max_speed_controller_output_Nm": "95.4929658551372",
+     "max_va_V": "119.19150171134",
+     "note": "not pre-registered; reported only to describe the response, never as a gate",
+     "t_rec_band_0.5pct_s": "0.8137"
+    },
+    "grid_resolution_s": 0.0001,
+    "model_derived_parameters": {
+     "driveData.IaMax": "150",
+     "driveData.JL": "0.14999999999999999",
+     "driveData.Tiw": "0.01",
+     "driveData.VBat": "120",
+     "driveData.kPhi": "0.63661977236758138",
+     "driveData.kpw": "60",
+     "driveData.motorData.Jr": "0.14999999999999999",
+     "driveData.motorData.wNominal": "149.22565104551518",
+     "driveData.tauMax": "95.492965855137214",
+     "driveData.tauNominal": "63.661977236758133"
+    },
+    "points": 10008,
+    "wNominal_rad_s": "149.22565104551518"
+   },
+   "csv_sha256": "ab48a8c808f470e05a031a5e573969f0bc9393982a60fafbda3d4c6e59ac5305",
+   "inputs": {
+    "IaNominal_A": "100",
+    "JL_kgm2": "0.15",
+    "Jr_kgm2": "0.15",
+    "Js_kgm2": "0.15",
+    "La_H": "0.0015",
+    "Ra_ohm": "0.05",
+    "VaNominal_V": "100",
+    "load_step_time_s": "0.8",
+    "load_torque_factor": "1.0",
+    "speed_reference_step_time_s": "0.2",
+    "wNominal_rpm": "1425"
+   },
+   "log_tail": "true\ntrue\ntrue\ntrue\nrecord SimulationResult\n    resultFile = \"/work/MP01_B1_res.mat\",\n    simulationOptions = \"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-6, method = 'dassl', fileNamePrefix = 'MP01_B1', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\",\n    messages = \"LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.\nLOG_SUCCESS       | info    | The simulation finished successfully.\n\",\n    timeFrontend = 0.050443571000000006,\n    timeBackend = 0.07917644800000001,\n    timeSimCode = 0.016551688000000002,\n    timeTemplates = 0.031588566000000005,\n    timeCompile = 0.765475028,\n    timeSimulation = 0.057487558,\n    timeTotal = 1.00095488\nend SimulationResult;\n\"MP01_B1_res.mat\"\nPARAM driveData.tauNominal=63.661977236758133\n\nPARAM driveData.IaMax=150\n\nPARAM driveData.tauMax=95.492965855137214\n\nPARAM driveData.kPhi=0.63661977236758138\n\nPARAM driveData.kpw=60\n\nPARAM driveData.Tiw=0.01\n\nPARAM driveData.JL=0.14999999999999999\n\nPARAM driveData.motorData.Jr=0.14999999999999999\n\nPARAM driveData.motorData.wNominal=149.22565104551518\n\nPARAM driveData.VBat=120\n\ntrue\n\nOMC_VERSION=OpenModelica 1.27.1\n\nMSL_VERSION=4.1.0\n\nEXIT=0\n",
+   "mat_sha256": "c76f37f78f3ff4fcd21c21fa8ae28c6009be953403a019c8fefdd57fd70c73cf",
+   "model_sha256": "5b96b56b2d27d54f353c20c8211f3b18248203d6e5b200f5b7ceac8631d5e648",
+   "netdev": "lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0",
+   "omc_exit_ok": true,
+   "result_identity": "978becf375ff8dd732f3d3670d89159fdac5dbf05747b9b574fef913d62a8126",
+   "result_written": true,
+   "returncode": 0,
+   "settings": {
+    "intervals": 10000,
+    "method": "dassl",
+    "start_s": 0,
+    "stop_s": 1.0,
+    "tolerance": 1e-06
+   },
+   "simulation_options": "\"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-6, method = 'dassl', fileNamePrefix = 'MP01_B1', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\"",
+   "solver_ok": true
+  },
+  "B1_sensitivity_1": {
+   "analysis": {
+    "IaMax_A": "150",
+    "K1": {
+     "outcome": "MET",
+     "peak_dip_rad_s": "0.98336602866118",
+     "recovery_after_load_s": "0.0",
+     "t_rec_s": "0.8",
+     "w_end_rad_s": "149.225651014866"
+    },
+    "K2": {
+     "at_time_s": "0.2059",
+     "margin_A": "-9.098784045932",
+     "max_abs_ia_A": "159.098784045932",
+     "max_abs_ia_after_load_step_A": "151.434726414728",
+     "outcome": "NOT MET"
+    },
+    "X1_exploratory": {
+     "J_total": "0.29999999999999998",
+     "loadInertia_a_end": "3.1451918403036E-7",
+     "loadTorque_tau_end": "-63.6619772367581",
+     "note": "exploratory only, not a gate (pre-registration X1)",
+     "residual_Nm": "4.479089200629038368061E-14",
+     "tauElectrical_end": "63.6619773311139",
+     "tauShaft_end": "63.661977283936"
+    },
+    "exploratory_post_hoc": {
+     "max_speed_controller_output_Nm": "95.4929658551372",
+     "max_va_V": "119.191493397773",
+     "note": "not pre-registered; reported only to describe the response, never as a gate",
+     "t_rec_band_0.5pct_s": "0.8137"
+    },
+    "grid_resolution_s": 0.0001,
+    "model_derived_parameters": {
+     "driveData.IaMax": "150",
+     "driveData.JL": "0.14999999999999999",
+     "driveData.Tiw": "0.01",
+     "driveData.VBat": "120",
+     "driveData.kPhi": "0.63661977236758138",
+     "driveData.kpw": "60",
+     "driveData.motorData.Jr": "0.14999999999999999",
+     "driveData.motorData.wNominal": "149.22565104551518",
+     "driveData.tauMax": "95.492965855137214",
+     "driveData.tauNominal": "63.661977236758133"
+    },
+    "points": 10008,
+    "wNominal_rad_s": "149.22565104551518"
+   },
+   "csv_sha256": "0207909755f9b8e81e403978bb3494b519ce21f5ba50e92abff4277c0b7cd814",
+   "inputs": {
+    "IaNominal_A": "100",
+    "JL_kgm2": "0.15",
+    "Jr_kgm2": "0.15",
+    "Js_kgm2": "0.15",
+    "La_H": "0.0015",
+    "Ra_ohm": "0.05",
+    "VaNominal_V": "100",
+    "load_step_time_s": "0.8",
+    "load_torque_factor": "1.0",
+    "speed_reference_step_time_s": "0.2",
+    "wNominal_rpm": "1425"
+   },
+   "log_tail": "true\ntrue\ntrue\ntrue\nrecord SimulationResult\n    resultFile = \"/work/MP01_B1_res.mat\",\n    simulationOptions = \"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-8, method = 'dassl', fileNamePrefix = 'MP01_B1', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\",\n    messages = \"LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.\nLOG_SUCCESS       | info    | The simulation finished successfully.\n\",\n    timeFrontend = 0.048720224000000006,\n    timeBackend = 0.07911848,\n    timeSimCode = 0.015500218000000001,\n    timeTemplates = 0.039336537000000005,\n    timeCompile = 0.880960397,\n    timeSimulation = 0.058085298,\n    timeTotal = 1.121876191\nend SimulationResult;\n\"MP01_B1_res.mat\"\nPARAM driveData.tauNominal=63.661977236758133\n\nPARAM driveData.IaMax=150\n\nPARAM driveData.tauMax=95.492965855137214\n\nPARAM driveData.kPhi=0.63661977236758138\n\nPARAM driveData.kpw=60\n\nPARAM driveData.Tiw=0.01\n\nPARAM driveData.JL=0.14999999999999999\n\nPARAM driveData.motorData.Jr=0.14999999999999999\n\nPARAM driveData.motorData.wNominal=149.22565104551518\n\nPARAM driveData.VBat=120\n\ntrue\n\nOMC_VERSION=OpenModelica 1.27.1\n\nMSL_VERSION=4.1.0\n\nEXIT=0\n",
+   "mat_sha256": "1250ebfbc411ce01bddf036e9d2a333ad666f807d898bf8871721866bf28b202",
+   "model_sha256": "5b96b56b2d27d54f353c20c8211f3b18248203d6e5b200f5b7ceac8631d5e648",
+   "netdev": "lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0",
+   "omc_exit_ok": true,
+   "result_identity": "cde036989ed50592a6e7290442e442c3ce59a7436f0ee0b4c139c9dbf541e520",
+   "result_written": true,
+   "returncode": 0,
+   "settings": {
+    "intervals": 10000,
+    "method": "dassl",
+    "start_s": 0,
+    "stop_s": 1.0,
+    "tolerance": 1e-08
+   },
+   "simulation_options": "\"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-8, method = 'dassl', fileNamePrefix = 'MP01_B1', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\"",
+   "solver_ok": true
+  },
+  "B2_primary_1": {
+   "analysis": {
+    "IaMax_A": "150",
+    "K1": {
+     "outcome": "NOT MET",
+     "peak_dip_rad_s": "6.27126768237118",
+     "recovery_after_load_s": null,
+     "t_rec_s": null,
+     "w_end_rad_s": "142.954383363144"
+    },
+    "K2": {
+     "at_time_s": "0.2059",
+     "margin_A": "-9.098786601883",
+     "max_abs_ia_A": "159.098786601883",
+     "max_abs_ia_after_load_step_A": "151.785297641457",
+     "outcome": "NOT MET"
+    },
+    "X1_exploratory": {
+     "J_total": "0.29999999999999998",
+     "loadInertia_a_end": "-21.2206873583665",
+     "loadTorque_tau_end": "-101.859163578813",
+     "note": "exploratory only, not a gate (pre-registration X1)",
+     "residual_Nm": "4.9575586252833E-14",
+     "tauElectrical_end": "95.4929573713031",
+     "tauShaft_end": "98.6760604750581"
+    },
+    "exploratory_post_hoc": {
+     "max_speed_controller_output_Nm": "95.4929658551372",
+     "max_va_V": "119.430250076178",
+     "note": "not pre-registered; reported only to describe the response, never as a gate",
+     "t_rec_band_0.5pct_s": null
+    },
+    "grid_resolution_s": 0.0001,
+    "model_derived_parameters": {
+     "driveData.IaMax": "150",
+     "driveData.JL": "0.14999999999999999",
+     "driveData.Tiw": "0.01",
+     "driveData.VBat": "120",
+     "driveData.kPhi": "0.63661977236758138",
+     "driveData.kpw": "60",
+     "driveData.motorData.Jr": "0.14999999999999999",
+     "driveData.motorData.wNominal": "149.22565104551518",
+     "driveData.tauMax": "95.492965855137214",
+     "driveData.tauNominal": "63.661977236758133"
+    },
+    "points": 10008,
+    "wNominal_rad_s": "149.22565104551518"
+   },
+   "csv_sha256": "a4c1c20fce23d2692ec9a8ba992eb2a3115fda2c9b7f43bee19919d86e14734c",
+   "inputs": {
+    "IaNominal_A": "100",
+    "JL_kgm2": "0.15",
+    "Jr_kgm2": "0.15",
+    "Js_kgm2": "0.15",
+    "La_H": "0.0015",
+    "Ra_ohm": "0.05",
+    "VaNominal_V": "100",
+    "load_step_time_s": "0.8",
+    "load_torque_factor": "1.6",
+    "speed_reference_step_time_s": "0.2",
+    "wNominal_rpm": "1425"
+   },
+   "log_tail": "true\ntrue\ntrue\ntrue\nrecord SimulationResult\n    resultFile = \"/work/MP01_B2_res.mat\",\n    simulationOptions = \"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-6, method = 'dassl', fileNamePrefix = 'MP01_B2', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\",\n    messages = \"LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.\nLOG_SUCCESS       | info    | The simulation finished successfully.\n\",\n    timeFrontend = 0.049671242000000004,\n    timeBackend = 0.076863234,\n    timeSimCode = 0.015503908,\n    timeTemplates = 0.033635299,\n    timeCompile = 0.868595699,\n    timeSimulation = 0.053265025,\n    timeTotal = 1.097701408\nend SimulationResult;\n\"MP01_B2_res.mat\"\nPARAM driveData.tauNominal=63.661977236758133\n\nPARAM driveData.IaMax=150\n\nPARAM driveData.tauMax=95.492965855137214\n\nPARAM driveData.kPhi=0.63661977236758138\n\nPARAM driveData.kpw=60\n\nPARAM driveData.Tiw=0.01\n\nPARAM driveData.JL=0.14999999999999999\n\nPARAM driveData.motorData.Jr=0.14999999999999999\n\nPARAM driveData.motorData.wNominal=149.22565104551518\n\nPARAM driveData.VBat=120\n\ntrue\n\nOMC_VERSION=OpenModelica 1.27.1\n\nMSL_VERSION=4.1.0\n\nEXIT=0\n",
+   "mat_sha256": "d280a0a1f8e48be37ea8bf0753baa6d7ad0aa133209eaadf219f89c5a3aa5bf4",
+   "model_sha256": "1c9075b0c31b06421c41c5b2ee4752d913fe7c0d80b1281eadb2d8334b32db3f",
+   "netdev": "lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0",
+   "omc_exit_ok": true,
+   "result_identity": "c5d354e8982917f947208329a50fd8cfe4918729570676649a1a704ac5e0c17b",
+   "result_written": true,
+   "returncode": 0,
+   "settings": {
+    "intervals": 10000,
+    "method": "dassl",
+    "start_s": 0,
+    "stop_s": 1.0,
+    "tolerance": 1e-06
+   },
+   "simulation_options": "\"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-6, method = 'dassl', fileNamePrefix = 'MP01_B2', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\"",
+   "solver_ok": true
+  },
+  "B2_sensitivity_1": {
+   "analysis": {
+    "IaMax_A": "150",
+    "K1": {
+     "outcome": "NOT MET",
+     "peak_dip_rad_s": "6.27126746676018",
+     "recovery_after_load_s": null,
+     "t_rec_s": null,
+     "w_end_rad_s": "142.954383578755"
+    },
+    "K2": {
+     "at_time_s": "0.2059",
+     "margin_A": "-9.098784045932",
+     "max_abs_ia_A": "159.098784045932",
+     "max_abs_ia_after_load_step_A": "151.785292529805",
+     "outcome": "NOT MET"
+    },
+    "X1_exploratory": {
+     "J_total": "0.29999999999999998",
+     "loadInertia_a_end": "-21.220698982663",
+     "loadTorque_tau_end": "-101.859163578813",
+     "note": "exploratory only, not a gate (pre-registration X1)",
+     "residual_Nm": "-4.24413979653E-16",
+     "tauElectrical_end": "95.4929538840141",
+     "tauShaft_end": "98.6760587314136"
+    },
+    "exploratory_post_hoc": {
+     "max_speed_controller_output_Nm": "95.4929658551372",
+     "max_va_V": "119.430288268747",
+     "note": "not pre-registered; reported only to describe the response, never as a gate",
+     "t_rec_band_0.5pct_s": null
+    },
+    "grid_resolution_s": 0.0001,
+    "model_derived_parameters": {
+     "driveData.IaMax": "150",
+     "driveData.JL": "0.14999999999999999",
+     "driveData.Tiw": "0.01",
+     "driveData.VBat": "120",
+     "driveData.kPhi": "0.63661977236758138",
+     "driveData.kpw": "60",
+     "driveData.motorData.Jr": "0.14999999999999999",
+     "driveData.motorData.wNominal": "149.22565104551518",
+     "driveData.tauMax": "95.492965855137214",
+     "driveData.tauNominal": "63.661977236758133"
+    },
+    "points": 10008,
+    "wNominal_rad_s": "149.22565104551518"
+   },
+   "csv_sha256": "f757188d33ae47ec9513d06ab121e291e98268be698a98c6a8a797385dee917e",
+   "inputs": {
+    "IaNominal_A": "100",
+    "JL_kgm2": "0.15",
+    "Jr_kgm2": "0.15",
+    "Js_kgm2": "0.15",
+    "La_H": "0.0015",
+    "Ra_ohm": "0.05",
+    "VaNominal_V": "100",
+    "load_step_time_s": "0.8",
+    "load_torque_factor": "1.6",
+    "speed_reference_step_time_s": "0.2",
+    "wNominal_rpm": "1425"
+   },
+   "log_tail": "true\ntrue\ntrue\ntrue\nrecord SimulationResult\n    resultFile = \"/work/MP01_B2_res.mat\",\n    simulationOptions = \"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-8, method = 'dassl', fileNamePrefix = 'MP01_B2', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\",\n    messages = \"LOG_SUCCESS       | info    | The initialization finished successfully without homotopy method.\nLOG_SUCCESS       | info    | The simulation finished successfully.\n\",\n    timeFrontend = 0.084964932,\n    timeBackend = 0.09194291900000001,\n    timeSimCode = 0.017420083,\n    timeTemplates = 0.031851574,\n    timeCompile = 0.834435393,\n    timeSimulation = 0.056489504,\n    timeTotal = 1.117268389\nend SimulationResult;\n\"MP01_B2_res.mat\"\nPARAM driveData.tauNominal=63.661977236758133\n\nPARAM driveData.IaMax=150\n\nPARAM driveData.tauMax=95.492965855137214\n\nPARAM driveData.kPhi=0.63661977236758138\n\nPARAM driveData.kpw=60\n\nPARAM driveData.Tiw=0.01\n\nPARAM driveData.JL=0.14999999999999999\n\nPARAM driveData.motorData.Jr=0.14999999999999999\n\nPARAM driveData.motorData.wNominal=149.22565104551518\n\nPARAM driveData.VBat=120\n\ntrue\n\nOMC_VERSION=OpenModelica 1.27.1\n\nMSL_VERSION=4.1.0\n\nEXIT=0\n",
+   "mat_sha256": "c64603563c114f9f6556f360863b3b783eb223c2b8dde50c6fa70884311e5c0f",
+   "model_sha256": "1c9075b0c31b06421c41c5b2ee4752d913fe7c0d80b1281eadb2d8334b32db3f",
+   "netdev": "lo:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0",
+   "omc_exit_ok": true,
+   "result_identity": "d33823d5c55c2d7d0b610894154d93605fb2b873bc99466d97e0903110f72cbc",
+   "result_written": true,
+   "returncode": 0,
+   "settings": {
+    "intervals": 10000,
+    "method": "dassl",
+    "start_s": 0,
+    "stop_s": 1.0,
+    "tolerance": 1e-08
+   },
+   "simulation_options": "\"startTime = 0.0, stopTime = 1.0, numberOfIntervals = 10000, tolerance = 1e-8, method = 'dassl', fileNamePrefix = 'MP01_B2', options = '', outputFormat = 'mat', variableFilter = '.*', cflags = '', simflags = ''\"",
+   "solver_ok": true
+  },
+  "C_refusal": {
+   "model_written": false,
+   "omc_invoked": false,
+   "reason": "missing required input(s): JL_kgm2",
+   "refused": true
+  }
+ },
+ "tool": {
+  "blobs_verified": true,
+  "config_digest": "sha256:b258212dc7d7af95baf9f6224f6eadc52432e819a400de39b9aaa206817ae59c",
+  "image": "openmodelica/openmodelica:v1.27.1-minimal",
+  "index_digest": "sha256:ac9a0223e69b8055d444b42f58ccb9680342b56848c68b81385bf83d7c0ba824",
+  "layers": [
+   "sha256:20c3783cc497b5b0df1fc5f92bd64c3d2fbb24057c88692c8fda205b6ea8a2f2",
+   "sha256:9018b7e1a56596c5bdfeaf7aeff9bb18796b7f2b9a4f71bbf12d4b1a65967df6"
+  ],
+  "linux_amd64_manifest": "sha256:1fa776fd2f03cdcfc03db6f6ac69888dd48c8eca442034495b178dc73b96dc40",
+  "msl_commit": "8ae3d35c24e519cb2996cab20f3b13daf2b0c50a",
+  "omc_version": "OpenModelica 1.27.1"
+ }
+}
