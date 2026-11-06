@@ -123,14 +123,19 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_OFFER_EXPIRY') }}</p>
   <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_NOT_VERIFIED') }}</p>
 </div>
-{% elif v.material and v.material.source %}
+{% elif v.material and v.material.source and source_on %}
 <p class="pcc-small notice" data-pcc-source-correction-note>{{ pcc_t('UI_PCC_SRC_CORRECTION_NOTE') }}</p>
+{% elif v.material and v.material.source %}
+<p class="pcc-small notice" data-pcc-source-paused-note>{{ pcc_t('UI_PCC_SRC_PAUSED_NOTE') }}</p>
 {% endif %}
 <form method="POST" action="{{ url_for('planar_clearance_save', sid=sid, interface_id=v.interface_id) }}" data-pcc-form>
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <input type="hidden" name="pcc_submission" value="{{ submission }}">
   <input type="hidden" name="declaration_id" value="{{ v.record.declaration_id if v.record else '' }}">
   <input type="hidden" name="expected_head" value="{{ v.record.head_revision_no if v.record else 'none' }}">
+  {% if v.material and v.material.source and not source_on %}
+  <label class="inline" data-pcc-source-unlink-ack><input type="checkbox" name="source_unlink_ack" value="{{ v.record.revision_id }}"> {{ pcc_t('UI_PCC_SRC_UNLINK_ACK') }}</label>
+  {% endif %}
   {% if offer %}
   <input type="hidden" name="source_token" value="{{ offer.token }}">
   <fieldset data-pcc-source-axis><legend>{{ pcc_t('UI_PCC_SRC_AXIS_PROMPT') }}</legend>

@@ -12413,6 +12413,15 @@ UI_STRINGS = {
     "UI_PCC_SRC_CORRECTION_NOTE": {
         "en": "This declaration is linked to an inspected file. Changing only the region or the clearance keeps the link. Changing the board, its dimensions, the enclosure or an applicability answer without inspecting the file again saves a declaration that is no longer linked to the file.",
         "ar": "هذا التصريح مرتبط بملف مفحوص. تغيير المنطقة أو الخلوص وحدهما يُبقي الربط. أما تغيير اللوحة أو أبعادها أو العلبة أو إحدى إجابات قابلية التطبيق دون فحص الملف مجددًا فيحفظ تصريحًا لم يعد مرتبطًا بالملف."},
+    "UI_PCC_SRC_PAUSED_NOTE": {
+        "en": "This declaration is linked to an inspected file, but file-linked declarations are currently turned off. Any correction you save now - even of the region or the clearance only - will be saved WITHOUT the file link. The earlier file-linked revision stays unchanged in the history.",
+        "ar": "هذا التصريح مرتبط بملف مفحوص، لكن التصريحات المرتبطة بملف متوقفة حاليًا. أي تصحيح تحفظه الآن - حتى لو اقتصر على المنطقة أو الخلوص - سيُحفظ دون ربط بالملف. وتبقى المراجعة السابقة المرتبطة بالملف كما هي في السجل."},
+    "UI_PCC_SRC_UNLINK_ACK": {
+        "en": "I understand that this correction will no longer carry the file link.",
+        "ar": "أفهم أن هذا التصحيح لن يحمل الربط بالملف بعد الآن."},
+    "UI_PCC_SRC_MSG_UNLINK_ACK": {
+        "en": "This correction would remove the file link, and that was not confirmed for the current version of the declaration, so nothing was saved. Tick the confirmation and save again.",
+        "ar": "هذا التصحيح سيزيل الربط بالملف، ولم يُؤكَّد ذلك للنسخة الحالية من التصريح، فلم يُحفظ شيء. ضع علامة التأكيد ثم احفظ مجددًا."},
     "UI_PCC_SRC_MSG_OFF": {
         "en": "File-linked declarations are not enabled, so no file was inspected and nothing was saved.",
         "ar": "التصريحات المرتبطة بملف غير مفعّلة، فلم يُفحص أي ملف ولم يُحفظ شيء."},

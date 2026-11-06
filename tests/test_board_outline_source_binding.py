@@ -577,13 +577,113 @@ def test_w14_compatible_rollback_reads_v2_and_writes_only_v1(client, on):
     assert page.status_code == 200 and 'data-pcc-agreement="EXACT"' in body
     assert "data-pcc-source-form" not in body
     assert view_model.clearance_view(_snap(sid), ifc, appmod._PCC_BINDING)["record"]["digest"] == digest
-    resp, _ = _save(client, sid, ifc, ids, page, values=("84", "50", "88", "56", "2"))
+    ack = _ack_value(body)
+    resp, _ = _save(client, sid, ifc, ids, page, values=("84", "50", "88", "56", "2"),
+                    extra={"source_unlink_ack": ack})
     assert resp.status_code == 200
     record = _snap(sid)["ledger"].records[0]
     assert record.current.source is None and len(_bindings(sid)) == 1     # no carry-forward
     appmod.app.config["PCC_SOURCE_BINDING_WRITES"] = True          # re-upgrade
     _linked(client, sid, ifc, ids, values=("84", "50", "88", "56", "2"))
     assert len(_bindings(sid)) == 2
+    assert _snap(sid)["ledger"].records[0].current.source is not None
+
+
+def _ack_value(body):
+    m = re.search(r'name="source_unlink_ack" value="([^"]+)"', body)
+    return m.group(1) if m else None
+
+
+def _paused(client, sid, ifc, ids, values=("84", "50", "86", "56", "2")):
+    """A file-linked head, then v2 writes turned OFF (the rollback target)."""
+    _linked(client, sid, ifc, ids, values=values)
+    appmod.app.config["PCC_SOURCE_BINDING_WRITES"] = False
+    return _snap(sid)["ledger"].records[0]
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_w20_the_correction_disclosure_follows_the_write_mode(client, on, lang):
+    sid, ifc, ids = _project(client, lang=lang)
+    _linked(client, sid, ifc, ids)
+    body = _body(client.get(_url(sid, ifc)))                         # writes ON
+    assert ui_text.text("UI_PCC_SRC_CORRECTION_NOTE", lang) in body
+    assert ui_text.text("UI_PCC_SRC_PAUSED_NOTE", lang) not in body
+    assert _ack_value(body) is None                                   # carry-forward needs no ack
+    record = _paused(client, sid, ifc, ids)
+    body = _body(client.get(_url(sid, ifc)))                         # writes OFF
+    assert ui_text.text("UI_PCC_SRC_CORRECTION_NOTE", lang) not in body   # no false promise
+    assert ui_text.text("UI_PCC_SRC_PAUSED_NOTE", lang) in body
+    assert ui_text.text("UI_PCC_SRC_UNLINK_ACK", lang) in body
+    assert _ack_value(body) == record.current_revision.revision_id
+    ack = re.search(r'<input type="checkbox" name="source_unlink_ack"[^>]*>', body).group(0)
+    assert "checked" not in ack                                       # never pre-acknowledged
+
+
+def test_w21_missing_or_stale_acknowledgement_saves_nothing(client, on):
+    sid, ifc, ids = _project(client)
+    record = _paused(client, sid, ifc, ids)
+    before = _dump()
+    for extra in ({}, {"source_unlink_ack": ""}, {"source_unlink_ack": "pcr-" + "0" * 32},
+                  {"source_unlink_ack": [record.current_revision.revision_id] * 2}):
+        page = client.get(_url(sid, ifc))
+        resp, _ = _save(client, sid, ifc, ids, page, values=("84", "50", "88", "56", "2"),
+                        extra=extra)
+        assert resp.status_code == 409, extra
+        assert ui_text.text("UI_PCC_SRC_MSG_UNLINK_ACK", "en") in _body(resp)
+        assert _dump() == before
+    # an acknowledgement given for an EARLIER head is stale after a later file-linked revision
+    appmod.app.config["PCC_SOURCE_BINDING_WRITES"] = True
+    old_ack = record.current_revision.revision_id
+    resp, _ = _save(client, sid, ifc, ids, client.get(_url(sid, ifc)),
+                    values=("84", "50", "90", "56", "2"))                # carried forward (v2)
+    assert resp.status_code == 200
+    appmod.app.config["PCC_SOURCE_BINDING_WRITES"] = False
+    before = _dump()
+    resp, _ = _save(client, sid, ifc, ids, client.get(_url(sid, ifc)),
+                    values=("84", "50", "91", "56", "2"), extra={"source_unlink_ack": old_ack})
+    assert resp.status_code == 409 and _dump() == before
+
+
+def test_w22_an_acknowledged_correction_is_v1_and_history_keeps_the_binding(client, on):
+    sid, ifc, ids = _project(client)
+    record = _paused(client, sid, ifc, ids)
+    page = client.get(_url(sid, ifc))
+    resp, _ = _save(client, sid, ifc, ids, page, values=("84", "50", "88", "56", "2"),
+                    extra={"source_unlink_ack": _ack_value(_body(page))})
+    assert resp.status_code == 200 and "data-pcc-notice" in _body(resp)
+    after = _snap(sid)["ledger"].records[0]
+    assert after.current.source is None
+    assert after.current.declaration_version == pcc.DECLARATION_VERSION
+    assert after.revisions[0] == record.revisions[0]                  # earlier v2 revision untouched
+    assert after.revisions[0].material.source == record.current.source
+    assert len(_bindings(sid)) == 1
+    # the head is now v1: no further acknowledgement is asked or required
+    page = client.get(_url(sid, ifc))
+    body = _body(page)
+    assert _ack_value(body) is None and "data-pcc-source-paused-note" not in body
+    resp, _ = _save(client, sid, ifc, ids, page, values=("84", "50", "89", "56", "2"))
+    assert resp.status_code == 200
+
+
+def test_w23_manual_v1_and_writes_on_paths_are_unchanged(client, on):
+    sid, ifc, ids = _project(client)
+    appmod.app.config["PCC_SOURCE_BINDING_WRITES"] = False
+    resp, _ = _save(client, sid, ifc, ids, client.get(_url(sid, ifc)))   # manual v1 declare
+    assert resp.status_code == 200
+    resp, _ = _save(client, sid, ifc, ids, client.get(_url(sid, ifc)),
+                    values=("84", "50", "88", "56", "2"))                # manual v1 correct
+    assert resp.status_code == 200 and _bindings(sid) == []
+    appmod.app.config["PCC_SOURCE_BINDING_WRITES"] = True
+    sid, ifc, ids = _project(client)
+    _linked(client, sid, ifc, ids)
+    resp, _ = _save(client, sid, ifc, ids, client.get(_url(sid, ifc)),
+                    values=("84", "50", "88", "56", "1"))                # carry-forward, no ack
+    assert resp.status_code == 200
+    assert _snap(sid)["ledger"].records[0].current.source.carry_forward_from is not None
+    # a stray acknowledgement field changes nothing while writes are on
+    resp, _ = _save(client, sid, ifc, ids, client.get(_url(sid, ifc)),
+                    values=("84", "50", "88", "56", "2"), extra={"source_unlink_ack": "x"})
+    assert resp.status_code == 200
     assert _snap(sid)["ledger"].records[0].current.source is not None
 
 

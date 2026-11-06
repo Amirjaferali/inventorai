@@ -11906,6 +11906,7 @@ _PCC_REFUSAL_MESSAGES = (
     (_subsystem_model.PlanarClearanceUnchanged, "UI_PCC_MSG_UNCHANGED"),
     (_subsystem_model.PlanarClearanceUnknown, "UI_PCC_MSG_STALE"),
     (_subsystem_model.PlanarClearanceSourceMismatch, "UI_PCC_SRC_MSG_MISMATCH"),
+    (_subsystem_model.PlanarClearanceUnlinkNotAcknowledged, "UI_PCC_SRC_MSG_UNLINK_ACK"),
 )
 
 
@@ -12030,6 +12031,22 @@ def planar_clearance_save(sid, interface_id):
         return _pcc_render(sid, interface_id, status=exc.status, error=exc.key,
                            draft=_pcc_draft())
 
+    unlink_acks = request.form.getlist("source_unlink_ack")
+    unlink_ack = unlink_acks[0] if len(unlink_acks) == 1 else None
+
+    def require_unlink_ack(ledger):
+        """Writes OFF: a correction of a CURRENTLY file-linked declaration saves
+        it source-free (v1) only after the inventor acknowledged that for the
+        current revision (the form names its revision id; missing or stale ->
+        nothing is saved). The earlier binding stays in history untouched."""
+        if writes_on or raw_head == "none":
+            return
+        record = ledger.record_for(declaration_id)
+        if (record is not None and not record.withdrawn
+                and record.current.source is not None
+                and unlink_ack != record.current_revision.revision_id):
+            raise _subsystem_model.PlanarClearanceUnlinkNotAcknowledged("not acknowledged")
+
     def material_from(snapshot, source=None):
         board, enclosure = fields["board"], fields["enclosure"]
         (brev, bep), (erev, eep) = fields["expected"][board], fields["expected"][enclosure]
@@ -12042,6 +12059,7 @@ def planar_clearance_save(sid, interface_id):
     def build(snapshot):
         material = material_from(snapshot)
         ledger = snapshot["ledger"]
+        require_unlink_ack(ledger)
         if source_req is not None:
             _pcc_source_check(ledger, interface_id, source_req)
             material = material_from(snapshot, source_req["source"])
@@ -12063,6 +12081,7 @@ def planar_clearance_save(sid, interface_id):
             ledger, declaration_id, int(raw_head), material)
 
     def precondition(snapshot):
+        require_unlink_ack(snapshot["ledger"])
         if source_req is not None:
             _pcc_source_check(snapshot["ledger"], interface_id, source_req, final=True)
 

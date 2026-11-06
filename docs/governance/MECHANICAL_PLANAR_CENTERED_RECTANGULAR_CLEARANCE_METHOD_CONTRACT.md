@@ -205,7 +205,11 @@ every formula, role, unit, outcome and the 128 KiB request cap are unchanged.
   deployment verification.
 - **Rollback procedure (established before any v2 write).** The supported rollback target is THIS build with v2
   writes OFF (`INVENTORAI_PCC_SOURCE_BINDING_WRITES` unset): it reads every v2 history correctly, offers no
-  inspection and writes only v1 revisions (no carry-forward). Re-enabling writes resumes v2. The pre-increment build
+  inspection and writes only v1 revisions (no carry-forward). There, correcting a CURRENTLY file-linked
+  declaration requires the inventor's explicit acknowledgement - bound to the current revision id and verified
+  server-side, including inside the serialized write - that the new revision will no longer carry the file link;
+  a missing or stale acknowledgement saves nothing. The page states that mode's consequence instead of the
+  carry-forward note. Re-enabling writes resumes v2. The pre-increment build
   (560cfa7) is NOT a supported target: it ignores the binding table, reads a v2 revision as NEEDS RECONFIRMATION
   (method changed), shows no evaluation or CAD file, and a correction it writes is v1, so the file link ends there
   (pinned by `tests/test_board_outline_source_binding_rollback.py`). Bindings are insert-only and are removed only

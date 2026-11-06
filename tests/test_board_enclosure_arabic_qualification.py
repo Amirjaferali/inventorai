@@ -87,8 +87,8 @@ def test_c01_every_key_has_english_and_arabic_and_the_english_only_notice_is_gon
     # 120 + 15 region-bound keys (BOARD-ENCLOSURE-CONDITIONAL-REGION-BOUND-01)
     # + 14 CAD-download keys (BOARD-ENCLOSURE-CAD-DOWNLOAD-01)
     # + 16 literal-source aid keys (G1-PCC-LITERAL-SOURCE-AID-01)
-    # + 51 board-file source keys (BOARD-OUTLINE-SOURCE-BINDING-01)
-    assert len(keys) == 216 and not ui_text.has_string("UI_PCC_ENGLISH_ONLY")
+    # + 54 board-file source keys (BOARD-OUTLINE-SOURCE-BINDING-01)
+    assert len(keys) == 219 and not ui_text.has_string("UI_PCC_ENGLISH_ONLY")
     for key in keys:
         entry = ui_text.UI_STRINGS[key]
         assert set(entry) == {"en", "ar"}, key

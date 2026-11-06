@@ -1887,6 +1887,12 @@ class PlanarClearanceNotEligible(PlanarClearanceError):
     interaction (or are not active components of this project)."""
 
 
+class PlanarClearanceUnlinkNotAcknowledged(PlanarClearanceError):
+    """With file-linked writes off, a correction of a file-linked declaration
+    would save it without its file link, and the inventor has not explicitly
+    acknowledged that for the CURRENT revision (missing or stale)."""
+
+
 class PlanarClearanceSourceMismatch(PlanarClearanceError):
     """A file-linked declaration no longer matches what was inspected (the
     board, its revision or participation, or the declaration history changed),
