@@ -85,7 +85,16 @@ def dxf_bytes(model):
 
 
 def companion(model, dxf_sha256, writer_version, generated_at):
-    """The companion record (dict) bound to the DXF by its SHA-256."""
+    """The companion record (dict) bound to the DXF by its SHA-256. A file-linked
+    declaration adds ONE ``source`` object (BOARD-OUTLINE-SOURCE-BINDING-01); a
+    source-free companion is unchanged."""
+    record = _companion(model, dxf_sha256, writer_version, generated_at)
+    if model.get("source") is not None:
+        record["source"] = model["source"]
+    return record
+
+
+def _companion(model, dxf_sha256, writer_version, generated_at):
     return {
         "handoff_format": model["handoff_format"],
         "adapter": {"id": ADAPTER_ID, "version": ADAPTER_VERSION,

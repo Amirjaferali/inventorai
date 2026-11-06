@@ -12340,6 +12340,169 @@ UI_STRINGS = {
     "UI_PCC_BOUND_MEANING_6": {
         "en": "Nothing is changed automatically: your declared values, the result above and the sketch stay as they are.",
         "ar": "لا يتغيّر شيء تلقائيًا: تبقى القيم التي صرّحتَ بها والنتيجة أعلاه والرسم كما هي."},
+    # BOARD-OUTLINE-SOURCE-BINDING-01: the optional board-file inspection and the file link.
+    "UI_PCC_SRC_HEADING": {
+        "en": "Inspect a KiCad board file (optional)",
+        "ar": "فحص ملف لوحة من KiCad (اختياري)"},
+    "UI_PCC_SRC_INTRO": {
+        "en": "If your board was drawn in KiCad 10.0.8, InventorAI can read the board outline from its .kicad_pcb file (board-file format 20260206) and show it to you. Only one rectangle drawn on the Edge.Cuts layer is read; any other outline is refused, never approximated. Choose the board and the enclosure first, then the file. Nothing is saved by inspecting.",
+        "ar": "إذا رُسمت لوحتك في KiCad 10.0.8، يستطيع InventorAI قراءة حدود اللوحة من ملفها ‎.kicad_pcb‎ (صيغة ملف اللوحة 20260206) وعرضها عليك. لا يُقرأ إلا مستطيل واحد مرسوم على طبقة Edge.Cuts؛ وأي حدود أخرى تُرفض ولا تُقرَّب أبدًا. اختر اللوحة والعلبة أولًا، ثم الملف. الفحص وحده لا يحفظ شيئًا."},
+    "UI_PCC_SRC_PRIVACY": {
+        "en": "Privacy: the file is read once, in memory, to measure its outline, and is not kept. If you then save a file-linked declaration, InventorAI keeps only the file's SHA-256 fingerprint, its size, the measured outline and the reader version with your declaration — never the file, its name or its contents. The existing access, retention and deletion rules for your project apply.",
+        "ar": "الخصوصية: يُقرأ الملف مرة واحدة في الذاكرة لقياس حدوده، ولا يُحتفظ به. وإذا حفظتَ بعد ذلك تصريحًا مرتبطًا بالملف، فلا يحتفظ InventorAI مع تصريحك إلا ببصمة SHA-256 للملف وحجمه والحدود المقيسة وإصدار القارئ — ولا يحتفظ أبدًا بالملف ولا باسمه ولا بمحتواه. وتسري على ذلك قواعد الوصول والاحتفاظ والحذف القائمة لمشروعك."},
+    "UI_PCC_SRC_FILE_LABEL": {
+        "en": "Board file (.kicad_pcb, up to 124 KiB)",
+        "ar": "ملف اللوحة (‎.kicad_pcb‎، حتى 124 KiB)"},
+    "UI_PCC_SRC_INSPECT": {
+        "en": "Inspect the file",
+        "ar": "فحص الملف"},
+    "UI_PCC_SRC_OFFER_HEADING": {
+        "en": "Outline read from the file",
+        "ar": "الحدود المقروءة من الملف"},
+    "UI_PCC_SRC_OFFER_OUTLINE": {
+        "en": "File outline, along the file's own X and Y:",
+        "ar": "حدود الملف على محورَي الملف نفسه، X و Y:"},
+    "UI_PCC_SRC_OFFER_FINGERPRINT": {
+        "en": "File fingerprint (SHA-256, first 12 characters):",
+        "ar": "بصمة الملف (SHA-256، أول 12 حرفًا):"},
+    "UI_PCC_SRC_OFFER_NOTE": {
+        "en": "Nothing is saved yet. To link your declaration to this file, choose below how the file's axes map onto the board, enter the board dimensions you declare and save. The comparison always uses the dimensions you declare; the file outline is shown beside them.",
+        "ar": "لم يُحفظ شيء بعد. لربط تصريحك بهذا الملف، اختر أدناه كيف يقابل محورا الملف محورَي اللوحة، وأدخل أبعاد اللوحة التي تصرّح بها ثم احفظ. تستخدم المقارنة دائمًا الأبعاد التي تصرّح بها، وتُعرض حدود الملف بجانبها."},
+    "UI_PCC_SRC_OFFER_EXPIRY": {
+        "en": "This offer can be saved within 30 minutes, once.",
+        "ar": "يمكن حفظ هذا العرض خلال 30 دقيقة، مرة واحدة فقط."},
+    "UI_PCC_SRC_AXIS_PROMPT": {
+        "en": "How do the file's axes map onto the board?",
+        "ar": "كيف يقابل محورا الملف محورَي اللوحة؟"},
+    "UI_PCC_SRC_AXIS_file_x_is_board_x": {
+        "en": "The file's X is board X",
+        "ar": "محور X في الملف هو X للوحة"},
+    "UI_PCC_SRC_AXIS_file_x_is_board_y": {
+        "en": "The file's X is board Y (turned a quarter turn)",
+        "ar": "محور X في الملف هو Y للوحة (مدار ربع دورة)"},
+    "UI_PCC_SRC_LINKED": {
+        "en": "File-linked declaration (source inspected)",
+        "ar": "تصريح مرتبط بملف (فُحص المصدر)"},
+    "UI_PCC_SRC_FILE_OUTLINE": {
+        "en": "File outline:",
+        "ar": "حدود الملف:"},
+    "UI_PCC_SRC_DECLARED_BOARD": {
+        "en": "Your declared board:",
+        "ar": "اللوحة كما صرّحتَ بها:"},
+    "UI_PCC_SRC_CALC_USES": {
+        "en": "Calculation uses your declared dimensions.",
+        "ar": "يستخدم الحساب الأبعاد التي صرّحتَ بها."},
+    "UI_PCC_SRC_AGREE_EXACT": {
+        "en": "The file outline and your declared board dimensions are exactly the same.",
+        "ar": "حدود الملف وأبعاد اللوحة التي صرّحتَ بها متطابقة تمامًا."},
+    "UI_PCC_SRC_AGREE_DIFFERS": {
+        "en": "The file outline and your declared board differ on:",
+        "ar": "تختلف حدود الملف عن اللوحة التي صرّحتَ بها في:"},
+    "UI_PCC_SRC_CARRIED": {
+        "en": "The link was carried forward from the previous revision: only the region or the clearance changed since the file was inspected.",
+        "ar": "نُقل الربط من المراجعة السابقة: لم يتغير منذ فحص الملف إلا المنطقة أو الخلوص."},
+    "UI_PCC_SRC_IDENTITY": {
+        "en": "File fingerprint (SHA-256):",
+        "ar": "بصمة الملف (SHA-256):"},
+    "UI_PCC_SRC_READER": {
+        "en": "Read with:",
+        "ar": "قُرئ باستخدام:"},
+    "UI_PCC_SRC_NOT_VERIFIED": {
+        "en": "Inspecting the file only reads one rectangle from its Edge.Cuts layer. It does not verify the board, the file's accuracy, the fit or anything else; your declaration stays your own statement.",
+        "ar": "فحص الملف يقرأ فقط مستطيلًا واحدًا من طبقة Edge.Cuts فيه. ولا يتحقق من اللوحة ولا من دقة الملف ولا من الملاءمة ولا من أي شيء آخر؛ ويبقى تصريحك بيانًا منك."},
+    "UI_PCC_SRC_CORRECTION_NOTE": {
+        "en": "This declaration is linked to an inspected file. Changing only the region or the clearance keeps the link. Changing the board, its dimensions, the enclosure or an applicability answer without inspecting the file again saves a declaration that is no longer linked to the file.",
+        "ar": "هذا التصريح مرتبط بملف مفحوص. تغيير المنطقة أو الخلوص وحدهما يُبقي الربط. أما تغيير اللوحة أو أبعادها أو العلبة أو إحدى إجابات قابلية التطبيق دون فحص الملف مجددًا فيحفظ تصريحًا لم يعد مرتبطًا بالملف."},
+    "UI_PCC_SRC_PAUSED_NOTE": {
+        "en": "This declaration is linked to an inspected file, but file-linked declarations are currently turned off. Any correction you save now - even of the region or the clearance only - will be saved WITHOUT the file link. The earlier file-linked revision stays unchanged in the history.",
+        "ar": "هذا التصريح مرتبط بملف مفحوص، لكن التصريحات المرتبطة بملف متوقفة حاليًا. أي تصحيح تحفظه الآن - حتى لو اقتصر على المنطقة أو الخلوص - سيُحفظ دون ربط بالملف. وتبقى المراجعة السابقة المرتبطة بالملف كما هي في السجل."},
+    "UI_PCC_SRC_UNLINK_ACK": {
+        "en": "I understand that this correction will no longer carry the file link.",
+        "ar": "أفهم أن هذا التصحيح لن يحمل الربط بالملف بعد الآن."},
+    "UI_PCC_SRC_MSG_UNLINK_ACK": {
+        "en": "This correction would remove the file link, and that was not confirmed for the current version of the declaration, so nothing was saved. Tick the confirmation and save again.",
+        "ar": "هذا التصحيح سيزيل الربط بالملف، ولم يُؤكَّد ذلك للنسخة الحالية من التصريح، فلم يُحفظ شيء. ضع علامة التأكيد ثم احفظ مجددًا."},
+    "UI_PCC_SRC_MSG_OFF": {
+        "en": "File-linked declarations are not enabled, so no file was inspected and nothing was saved.",
+        "ar": "التصريحات المرتبطة بملف غير مفعّلة، فلم يُفحص أي ملف ولم يُحفظ شيء."},
+    "UI_PCC_SRC_MSG_INVALID": {
+        "en": "The file offer was not recognised, so nothing was saved. Inspect the file again.",
+        "ar": "لم يُتعرَّف على عرض الملف، فلم يُحفظ شيء. افحص الملف مجددًا."},
+    "UI_PCC_SRC_MSG_EXPIRED": {
+        "en": "The file offer has expired, so nothing was saved. Inspect the file again.",
+        "ar": "انتهت صلاحية عرض الملف، فلم يُحفظ شيء. افحص الملف مجددًا."},
+    "UI_PCC_SRC_MSG_AXIS": {
+        "en": "Choose how the file's axes map onto the board before saving. Nothing was saved.",
+        "ar": "اختر كيف يقابل محورا الملف محورَي اللوحة قبل الحفظ. لم يُحفظ شيء."},
+    "UI_PCC_SRC_MSG_MISMATCH": {
+        "en": "The board, the enclosure or the declaration changed since the file was inspected, or this inspection was already used, so nothing was saved. Inspect the file again.",
+        "ar": "تغيّرت اللوحة أو العلبة أو التصريح منذ فحص الملف، أو سبق استخدام هذا الفحص، فلم يُحفظ شيء. افحص الملف مجددًا."},
+    "UI_PCC_SRC_MSG_ONE_FILE": {
+        "en": "Choose exactly one board file. Nothing was inspected or saved.",
+        "ar": "اختر ملف لوحة واحدًا فقط. لم يُفحص أو يُحفظ شيء."},
+    "UI_PCC_SRC_MSG_PICK": {
+        "en": "Choose the board and the enclosure (two different current participants) before the file. Nothing was inspected or saved.",
+        "ar": "اختر اللوحة والعلبة (مشاركَين حاليَّين مختلفين) قبل الملف. لم يُفحص أو يُحفظ شيء."},
+    "UI_PCC_SRC_MSG_FAILED": {
+        "en": "The file could not be inspected now. Nothing was saved.",
+        "ar": "تعذّر فحص الملف الآن. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_TOO_LARGE": {
+        "en": "The file was not used: The file is larger than 124 KiB. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: الملف أكبر من 124 KiB. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_EMPTY": {
+        "en": "The file was not used: The file is empty. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: الملف فارغ. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_NOT_UTF8": {
+        "en": "The file was not used: The file is not UTF-8 text. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: الملف ليس نصًا بترميز UTF-8. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_CONTROL_CHARACTER": {
+        "en": "The file was not used: The file contains characters a KiCad board file does not. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: يحتوي الملف على محارف لا يحتويها ملف لوحة KiCad. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_MALFORMED": {
+        "en": "The file was not used: The file is not a well-formed KiCad board file. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: الملف ليس ملف لوحة KiCad سليم البنية. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_TOO_DEEP": {
+        "en": "The file was not used: The file is nested more deeply than this reader accepts. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: تداخل البنية في الملف أعمق مما يقبله هذا القارئ. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_TOO_MANY_TOKENS": {
+        "en": "The file was not used: The file is more complex than this reader accepts. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: الملف أعقد مما يقبله هذا القارئ. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_ATOM_TOO_LONG": {
+        "en": "The file was not used: The file contains a value longer than this reader accepts. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: يحتوي الملف على قيمة أطول مما يقبله هذا القارئ. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_NOT_KICAD_BOARD": {
+        "en": "The file was not used: The file is not a KiCad board file. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: الملف ليس ملف لوحة KiCad. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_VERSION_MISSING": {
+        "en": "The file was not used: The file does not state its board-file format. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: لا يذكر الملف صيغة ملف اللوحة. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_VERSION_NOT_ACCEPTED": {
+        "en": "The file was not used: The file's board-file format is not 20260206 (KiCad 10.0.8). Other KiCad versions are not supported. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: صيغة ملف اللوحة ليست 20260206 (KiCad 10.0.8). إصدارات KiCad الأخرى غير مدعومة. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_FIELD_NOT_ALLOWED": {
+        "en": "The file was not used: The board outline carries a setting this reader does not accept (for example a rotation). Nothing was saved.",
+        "ar": "لم يُستخدم الملف: تحمل حدود اللوحة إعدادًا لا يقبله هذا القارئ (مثل الدوران). لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_FIELD_MALFORMED": {
+        "en": "The file was not used: A board outline setting is missing, repeated or not in the expected form. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: أحد إعدادات حدود اللوحة مفقود أو مكرر أو ليس بالشكل المتوقع. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_NUMBER_NOT_PLAIN": {
+        "en": "The file was not used: A board outline coordinate is not a plain decimal number in the accepted range. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: أحد إحداثيات حدود اللوحة ليس عددًا عشريًا بسيطًا ضمن النطاق المقبول. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_OUTLINE_MISSING": {
+        "en": "The file was not used: The file has no outline on the Edge.Cuts layer. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: لا يحتوي الملف على حدود على طبقة Edge.Cuts. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_TOO_MANY_OUTLINE_SHAPES": {
+        "en": "The file was not used: The Edge.Cuts layer holds more shapes than one rectangle. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: تحتوي طبقة Edge.Cuts على أشكال أكثر من مستطيل واحد. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_UNSUPPORTED_OUTLINE": {
+        "en": "The file was not used: The Edge.Cuts layer holds a shape other than straight lines or one rectangle (for example an arc, a rounded corner, a cut-out or a footprint outline). Nothing was saved.",
+        "ar": "لم يُستخدم الملف: تحتوي طبقة Edge.Cuts على شكل غير الخطوط المستقيمة أو المستطيل الواحد (مثل قوس أو زاوية مدوّرة أو فتحة أو حدود مكوّن). لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_NOT_ONE_RECTANGLE": {
+        "en": "The file was not used: The Edge.Cuts layer does not hold exactly one closed, axis-aligned rectangle. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: لا تحتوي طبقة Edge.Cuts على مستطيل واحد مغلق موازٍ للمحاور بالضبط. لم يُحفظ شيء."},
+    "UI_PCC_SRC_REFUSED_DIMENSION_NOT_REPRESENTABLE": {
+        "en": "The file was not used: The outline dimensions have more than four decimal places or are too large to declare exactly; nothing is rounded. Nothing was saved.",
+        "ar": "لم يُستخدم الملف: لأبعاد الحدود أكثر من أربع منازل عشرية أو هي أكبر من أن يُصرَّح بها بدقة؛ ولا يُقرَّب شيء. لم يُحفظ شيء."},
     # BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (method contract §10A): the outbound CAD reference download.
     "UI_PCC_CAD_HEADING": {
         "en": "CAD reference download",

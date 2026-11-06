@@ -26,6 +26,20 @@
       <td>{% if item.entered %}<bdi dir="ltr"><span data-pcc-entered>{{ item.text }}</span> mm</bdi>{% else %}<span data-pcc-value-state="{{ 'unknown' if item.unknown else 'not_entered' }}">{{ pcc_value(item.text) }}</span>{% endif %}</td></tr>
     {% endfor %}
   </table>
+  {#- BOARD-OUTLINE-SOURCE-BINDING-01: a file-linked declaration shows the file
+      outline beside the declared board; the agreement is derived on read and
+      the calculation always uses the declared values. -#}
+  {% if m.source %}{% set src = m.source %}
+  <div class="pcc-source" data-pcc-source-link data-pcc-agreement="{{ src.agreement }}">
+    <p><strong>{{ pcc_t('UI_PCC_SRC_LINKED') }}</strong></p>
+    <p data-pcc-source-dims>{{ pcc_t('UI_PCC_SRC_FILE_OUTLINE') }} <bdi dir="ltr" data-pcc-file-outline>{{ src.file_board.board_x }} × {{ src.file_board.board_y }} mm</bdi>. {{ pcc_t('UI_PCC_SRC_DECLARED_BOARD') }} <bdi dir="ltr" data-pcc-declared-outline>{{ pcc_value(src.declared_board.board_x) }} × {{ pcc_value(src.declared_board.board_y) }}{% if src.declared_board.board_x and src.declared_board.board_y %} mm{% endif %}</bdi>. {{ pcc_t('UI_PCC_SRC_CALC_USES') }}</p>
+    {% if src.agreement == 'EXACT' %}<p class="pcc-small" data-pcc-source-exact>{{ pcc_t('UI_PCC_SRC_AGREE_EXACT') }}</p>
+    {% else %}<p class="pcc-small" data-pcc-source-differs>{{ pcc_t('UI_PCC_SRC_AGREE_DIFFERS') }} {% for axis in src.changed_axes %}<bdi dir="ltr" data-pcc-changed-axis="{{ axis }}">{{ axis|upper }}</bdi>{% if not loop.last %}{{ '، ' if pcc_lang == 'ar' else ', ' }}{% endif %}{% endfor %}</p>{% endif %}
+    {% if src.carried_forward %}<p class="pcc-small" data-pcc-source-carried>{{ pcc_t('UI_PCC_SRC_CARRIED') }}</p>{% endif %}
+    <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_IDENTITY') }} <bdi dir="ltr" data-pcc-source-sha>{{ src.sha256 }}</bdi> · <bdi dir="ltr">{{ src.size }} B</bdi> · {{ pcc_t('UI_PCC_SRC_READER') }} <bdi dir="ltr">{{ src.format_id }} · {{ src.reader_id }} · {{ src.rule_id }} · {{ src.axis_assignment }}</bdi></p>
+    <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_NOT_VERIFIED') }}</p>
+  </div>
+  {% endif %}
   <dl class="pcc-dl" data-pcc-basis>
     {% for b in m.basis %}
     <dt>{{ pcc_t('UI_PCC_BASIS_' ~ b.field) }}</dt>
