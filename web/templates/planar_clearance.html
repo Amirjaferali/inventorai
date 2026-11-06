@@ -88,11 +88,55 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <p class="pcc-small" data-pcc-aid-manual>{{ pcc_t('UI_PCC_AID_MANUAL') }}</p>
 </div>
 {% endif %}
+{#- BOARD-OUTLINE-SOURCE-BINDING-01: ONE optional inspection of ONE KiCad 10.0.8
+    board file, shown only while file-linked declarations are enabled. The board
+    and the enclosure are chosen before the file; inspecting saves nothing. -#}
+{% if source_on %}
+<div class="pcc-box" data-pcc-source-intake>
+  <h3>{{ pcc_t('UI_PCC_SRC_HEADING') }}</h3>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_INTRO') }}</p>
+  <p class="pcc-small" data-pcc-source-privacy>{{ pcc_t('UI_PCC_SRC_PRIVACY') }}</p>
+  <form method="POST" enctype="multipart/form-data" action="{{ url_for('planar_clearance_board_source', sid=sid, interface_id=v.interface_id) }}" data-pcc-source-form>
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <label for="pcc-src-board">{{ pcc_t('UI_PCC_PICK_BOARD') }}</label>
+    <select id="pcc-src-board" name="board_component_id">
+      <option value="">{{ pcc_t('UI_PCC_PICK_NONE') }}</option>
+      {% for opt in v.options %}<option value="{{ opt.id }}"{% if form.board == opt.id %} selected{% endif %}>{{ opt.name }}</option>{% endfor %}
+    </select>
+    <label for="pcc-src-enclosure">{{ pcc_t('UI_PCC_PICK_ENCLOSURE') }}</label>
+    <select id="pcc-src-enclosure" name="enclosure_component_id">
+      <option value="">{{ pcc_t('UI_PCC_PICK_NONE') }}</option>
+      {% for opt in v.options %}<option value="{{ opt.id }}"{% if form.enclosure == opt.id %} selected{% endif %}>{{ opt.name }}</option>{% endfor %}
+    </select>
+    <label for="pcc-src-file">{{ pcc_t('UI_PCC_SRC_FILE_LABEL') }}</label>
+    <input type="file" id="pcc-src-file" name="board_file" accept=".kicad_pcb">
+    <br><button type="submit">{{ pcc_t('UI_PCC_SRC_INSPECT') }}</button>
+  </form>
+</div>
+{% endif %}
+{% if offer %}
+<div class="pcc-box" data-pcc-source-offer>
+  <h3>{{ pcc_t('UI_PCC_SRC_OFFER_HEADING') }}</h3>
+  <p>{{ pcc_t('UI_PCC_SRC_OFFER_OUTLINE') }} <bdi dir="ltr" data-pcc-offer-outline>X = {{ offer.file_x }} mm, Y = {{ offer.file_y }} mm</bdi></p>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_OFFER_FINGERPRINT') }} <bdi dir="ltr">{{ offer.sha256_short }}</bdi> · <bdi dir="ltr">{{ offer.size }} B</bdi></p>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_OFFER_NOTE') }}</p>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_OFFER_EXPIRY') }}</p>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_SRC_NOT_VERIFIED') }}</p>
+</div>
+{% elif v.material and v.material.source %}
+<p class="pcc-small notice" data-pcc-source-correction-note>{{ pcc_t('UI_PCC_SRC_CORRECTION_NOTE') }}</p>
+{% endif %}
 <form method="POST" action="{{ url_for('planar_clearance_save', sid=sid, interface_id=v.interface_id) }}" data-pcc-form>
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <input type="hidden" name="pcc_submission" value="{{ submission }}">
   <input type="hidden" name="declaration_id" value="{{ v.record.declaration_id if v.record else '' }}">
   <input type="hidden" name="expected_head" value="{{ v.record.head_revision_no if v.record else 'none' }}">
+  {% if offer %}
+  <input type="hidden" name="source_token" value="{{ offer.token }}">
+  <fieldset data-pcc-source-axis><legend>{{ pcc_t('UI_PCC_SRC_AXIS_PROMPT') }}</legend>
+    {% for a in axis_assignments %}<label class="inline"><input type="radio" name="source_axis" value="{{ a }}"> {{ pcc_t('UI_PCC_SRC_AXIS_' ~ a) }}</label>{% endfor %}
+  </fieldset>
+  {% endif %}
   {% for opt in v.options %}
   <input type="hidden" name="rev_{{ opt.id }}" value="{{ opt.revision }}">
   <input type="hidden" name="epoch_{{ opt.id }}" value="{{ opt.epoch }}">

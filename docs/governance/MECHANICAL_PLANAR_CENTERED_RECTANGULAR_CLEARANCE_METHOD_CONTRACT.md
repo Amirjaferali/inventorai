@@ -165,6 +165,52 @@ declaration version, stored schema or outcome, and admits no AI or scientific au
   descriptions, basis notes and every other free text stay preserved and never become a dimension, an unknown or an
   applicability answer (§14); the aid only proposes field contents that the inventor then confirms by submitting.
 
+## 5B. File-linked declaration (optional board-file inspection; BOARD-OUTLINE-SOURCE-BINDING-01)
+
+Optional and OFF by default. The method, its identity, its declaration constant (`planar-clearance-declaration/1`),
+every formula, role, unit, outcome and the 128 KiB request cap are unchanged.
+
+- **Inspection (writes nothing durable).** ONE POST, `/session/<sid>/interface-clearance/<interface_id>/board-source`,
+  behind the central project authorization and the CSRF guard. The inventor chooses the board and the enclosure
+  (two distinct current participants) before the file. A route-scoped request class buffers that endpoint's file
+  in memory (never a temporary file) and accepts at most 16 multipart parts; every other endpoint keeps the
+  framework defaults. The pure reader `engine/planar_clearance_board_source.py` admits ONLY KiCad 10.0.8 board-file
+  format `20260206` and ONLY one `gr_rect`, or four `gr_line` forming one closed axis-aligned rectangle (F1), at the
+  top level on `Edge.Cuts`, with the closed observed field shapes; SHA-256 is taken over the raw bytes; anything
+  else gets ONE closed refusal code and no echo of file content. No KiCad executable, network or KiCad 7 claim.
+- **Offer.** The page shows the outline along the file's own axes and a signed inspection token (purpose
+  `pcc-board-source/1`, 30 minutes, random nonce) binding the project, interaction, board and enclosure identities,
+  revisions and participation generations, the interaction's latest declaration event (count and revision id,
+  withdrawal included), the file's SHA-256, size and outline and the format / reader / rule identities. No token
+  registry; the token travels only in the form body.
+- **Save.** Only the inventor's own save writes, with values they declare and an axis assignment they choose
+  (`file_x_is_board_x` / `file_x_is_board_y`, bound by the save). Every token binding is re-checked when staging and
+  again inside the serialized write. The revision is `planar-clearance-declaration/2` and its ONE binding row
+  (`planar_clearance_source_bindings`: SHA-256, size, format / reader / rule ids, outline, axis assignment,
+  inspection time and the HASH of the nonce, UNIQUE so an inspection is used once) is written in the same
+  transaction. The exact-retry comparison includes the binding; reusing an inspection under a different submission
+  is refused. A region- or clearance-only correction carries the binding forward (`carry_forward_from`); any other
+  correction without a fresh inspection is source-free (v1); a withdrawal adds no binding.
+- **Read.** EXACT / DIFFERS is derived on every read by exact decimal comparison under the axis assignment (84 equals
+  84.0); a value not entered or unknown never counts as EXACT. The page, report and PDF show "File outline: … mm.
+  Your declared board: … mm. Calculation uses your declared dimensions." The calculation always uses the DECLARED
+  values; provenance stays OWNER_STATED / UNVALIDATED; inspection is not verification. The CAD companion of a
+  current v2 revision carries a `source` object (its hash is not the DXF hash); v1 companions and v1-only snapshot
+  digests are unchanged; a v2 digest includes the binding, so earlier download links go stale. A missing,
+  orphaned, malformed or misplaced binding, or a missing insert-only trigger, makes the snapshot UNAVAILABLE and
+  refuses writes, evaluation and CAD.
+- **Privacy.** The raw file, its name and the token are never stored, logged or echoed; only the identity,
+  measurements, reader metadata and the association are retained with the declaration, under the project's
+  existing authorization, retention and deletion controls. No claim is made about proxy or WSGI buffering before
+  deployment verification.
+- **Rollback procedure (established before any v2 write).** The supported rollback target is THIS build with v2
+  writes OFF (`INVENTORAI_PCC_SOURCE_BINDING_WRITES` unset): it reads every v2 history correctly, offers no
+  inspection and writes only v1 revisions (no carry-forward). Re-enabling writes resumes v2. The pre-increment build
+  (560cfa7) is NOT a supported target: it ignores the binding table, reads a v2 revision as NEEDS RECONFIRMATION
+  (method changed), shows no evaluation or CAD file, and a correction it writes is v1, so the file link ends there
+  (pinned by `tests/test_board_outline_source_binding_rollback.py`). Bindings are insert-only and are removed only
+  together with their revision.
+
 ## 6. Numeric domain and numerical acceptance
 
 - **Grammar (representation policy, NOT physical ratings).** A strict unsigned ASCII decimal of one to six integer

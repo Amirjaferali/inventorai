@@ -3,6 +3,8 @@ InventorAI Web Interface (Phase H-A)
 Thin web shell only. Engine called as library.
 SESSION_STORE: in-memory, non-production, temporary.
 """
+import dataclasses as _dataclasses
+import io
 import json
 import os
 import re
@@ -422,6 +424,7 @@ from engine import mechanical_planar_clearance as _pcc
 from engine import mechanical_planar_clearance_method as _pcc_method
 from web import planar_clearance as _pcc_view
 from engine import planar_clearance_cad_export as _pcc_cad  # BOARD-ENCLOSURE-CAD-DOWNLOAD-01 (outbound only)
+from engine import planar_clearance_board_source as _pcc_src  # BOARD-OUTLINE-SOURCE-BINDING-01 (inbound only)
 from jinja2 import pass_context as _jinja_pass_context
 
 # --- G-SC0 Bounded Security Containment: runtime security configuration -------
@@ -462,7 +465,39 @@ def _resolve_secret_key():
     return secrets.token_hex(32)
 
 
+class _InventorAIRequest(Flask.request_class):
+    """BOARD-OUTLINE-SOURCE-BINDING-01: ONE request class whose only change is
+    route-scoped. For the board-source intake endpoint ONLY (matched before any
+    ``before_request`` hook, so before the CSRF guard reads the form) a file part
+    is buffered in memory - never a temporary file - and at most 16 multipart
+    parts are accepted. The app-wide 128 KiB body cap applies unchanged; every
+    other endpoint keeps the framework defaults."""
+    _BOARD_SOURCE_MAX_PARTS = 16
+
+    def _is_board_source_intake(self):
+        rule = getattr(self, "url_rule", None)
+        return rule is not None and rule.endpoint == "planar_clearance_board_source"
+
+    @property
+    def max_form_parts(self):
+        if self._is_board_source_intake():
+            return self._BOARD_SOURCE_MAX_PARTS
+        return Flask.request_class.max_form_parts.fget(self)
+
+    @max_form_parts.setter
+    def max_form_parts(self, value):
+        Flask.request_class.max_form_parts.fset(self, value)
+
+    def _get_file_stream(self, total_content_length, content_type, filename=None,
+                         content_length=None):
+        if self._is_board_source_intake():
+            return io.BytesIO()
+        return super()._get_file_stream(total_content_length, content_type,
+                                        filename=filename, content_length=content_length)
+
+
 app = Flask(__name__)
+app.request_class = _InventorAIRequest
 app.secret_key = _resolve_secret_key()
 # P5-2: authenticated-session cookie hardening (contract §6). The signed-cookie
 # session (name "session") is DISTINCT from the project `sid`. HttpOnly + SameSite
@@ -483,6 +518,13 @@ app.config.update(
     # production proxy limit.
     MAX_CONTENT_LENGTH=128 * 1024,
 )
+# BOARD-OUTLINE-SOURCE-BINDING-01: writing file-linked (v2) planar clearance
+# declarations is OFF unless explicitly enabled. With it off this build still
+# READS v2 histories correctly (the supported rollback target) and offers no file
+# inspection. Enabling it is an Owner decision, never implied by a passing test.
+app.config.setdefault(
+    "PCC_SOURCE_BINDING_WRITES",
+    os.environ.get("INVENTORAI_PCC_SOURCE_BINDING_WRITES", "").strip() == "1")
 # P10-SEC1: ONE centralized provider-neutral response-hardening seam. Every
 # response (HTML, JSON, redirects, 4xx/5xx, static files, /health) receives the
 # same bounded security-header set. The CSP is the smallest policy supported by
@@ -11676,7 +11718,8 @@ def _pcc_form_from_material(material):
     }
 
 
-def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=None):
+def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=None,
+                offer=None):
     """Render the page from CURRENT durable truth (ONE snapshot). An
     unreadable snapshot renders UNAVAILABLE, never "nothing recorded"."""
     view = None
@@ -11706,6 +11749,9 @@ def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=No
     response = make_response(render_template(
         "planar_clearance.html", sid=sid, v=view, form=form, error=error, aid=aid,
         notice=notice, pcc_lang=_current_ui_lang(), cad_ready=_pcc_view.cad_eligible(view),
+        source_on=_pcc_source_writes_enabled(), offer=offer,
+        source_max_kib=_pcc_src.MAX_FILE_BYTES // 1024,
+        axis_assignments=_subsystem_model.PCC_SOURCE_AXIS_ASSIGNMENTS,
         submission=_fresh_submission_identity(sid, _PCC_SAVE_DOMAIN),
         withdraw_submission=_fresh_submission_identity(sid, _PCC_WITHDRAW_DOMAIN),
         value_roles=_pcc.VALUE_ROLES, value_max=_pcc.MAX_VALUE_CHARS,
@@ -11859,6 +11905,7 @@ _PCC_REFUSAL_MESSAGES = (
     (_subsystem_model.PlanarClearanceAlreadyWithdrawn, "UI_PCC_MSG_ALREADY_WITHDRAWN"),
     (_subsystem_model.PlanarClearanceUnchanged, "UI_PCC_MSG_UNCHANGED"),
     (_subsystem_model.PlanarClearanceUnknown, "UI_PCC_MSG_STALE"),
+    (_subsystem_model.PlanarClearanceSourceMismatch, "UI_PCC_SRC_MSG_MISMATCH"),
 )
 
 
@@ -11870,7 +11917,8 @@ def _pcc_refusal_key(exc):
     return "UI_PCC_MSG_REJECTED"
 
 
-def _pcc_write(sid, interface_id, action, build, same):
+def _pcc_write(sid, interface_id, action, build, same, allow_source=False,
+               precondition=None):
     """The shared confirm-by-reload write path of the save and withdraw
     POSTs. ``build(snapshot)`` stages ONE revision against durable truth;
     ``same(stored)`` says whether a committed revision is exactly this
@@ -11926,7 +11974,8 @@ def _pcc_write(sid, interface_id, action, build, same):
     except Exception:
         return _pcc_render(sid, interface_id, status=503, error="UI_PCC_MSG_NOT_SAVED")
     try:
-        _outcome, stored = store.append_planar_clearance_revision(sid, revision, key)
+        _outcome, stored = store.append_planar_clearance_revision(
+            sid, revision, key, allow_source=allow_source, precondition=precondition)
     except _PlanarClearanceRejected as exc:
         return _pcc_render(sid, interface_id, status=409, error=_pcc_refusal_key(exc),
                            draft=_pcc_draft() if action == "save" else None)
@@ -11969,24 +12018,65 @@ def planar_clearance_save(sid, interface_id):
     except ValueError:
         return _pcc_render(sid, interface_id, status=400, error="UI_PCC_MSG_REJECTED",
                            draft=_pcc_draft())
-    def material_from(snapshot):
+    # BOARD-OUTLINE-SOURCE-BINDING-01: an optional inspection token links this
+    # save to ONE inspected file (v2); its bindings are re-checked below and
+    # again inside the serialized write. Without a token the save is source-free
+    # (v1), except a region- / clearance-only correction of a file-linked head,
+    # which carries the binding forward while v2 writes are enabled.
+    writes_on = _pcc_source_writes_enabled()
+    try:
+        source_req = _pcc_source_request(sid, interface_id, fields, writes_on)
+    except _PccSourceRefused as exc:
+        return _pcc_render(sid, interface_id, status=exc.status, error=exc.key,
+                           draft=_pcc_draft())
+
+    def material_from(snapshot, source=None):
         board, enclosure = fields["board"], fields["enclosure"]
         (brev, bep), (erev, eep) = fields["expected"][board], fields["expected"][enclosure]
         return _subsystem_model.planar_clearance_material(
             snapshot["inventory"], snapshot["interfaces"], snapshot["participations"],
             snapshot["epochs"], interface_id, board, enclosure, brev, erev, bep, eep,
-            fields["region"], fields["values"], fields["basis"], fields["answers"])
+            fields["region"], fields["values"], fields["basis"], fields["answers"],
+            source=source)
 
     def build(snapshot):
         material = material_from(snapshot)
+        ledger = snapshot["ledger"]
+        if source_req is not None:
+            _pcc_source_check(ledger, interface_id, source_req)
+            material = material_from(snapshot, source_req["source"])
+        elif writes_on and raw_head != "none":
+            record = ledger.record_for(declaration_id)
+            if (record is not None and not record.withdrawn
+                    and record.head_revision_no == int(raw_head)
+                    and _subsystem_model.carry_forward_allowed(record.current, material)):
+                head = record.current
+                if _dataclasses.replace(head, source=None, declaration_version=
+                                        material.declaration_version) == material:
+                    raise _subsystem_model.PlanarClearanceUnchanged("nothing changed")
+                material = material_from(snapshot, _dataclasses.replace(
+                    head.source, nonce_hash=None,
+                    carry_forward_from=record.current_revision.revision_id))
         if raw_head == "none":
-            return _subsystem_model.declared_planar_clearance(snapshot["ledger"], material)
+            return _subsystem_model.declared_planar_clearance(ledger, material)
         return _subsystem_model.corrected_planar_clearance(
-            snapshot["ledger"], declaration_id, int(raw_head), material)
+            ledger, declaration_id, int(raw_head), material)
+
+    def precondition(snapshot):
+        if source_req is not None:
+            _pcc_source_check(snapshot["ledger"], interface_id, source_req, final=True)
+
+    def same_source(m):
+        if source_req is not None:
+            return (m.source is not None
+                    and m.source.nonce_hash == source_req["source"].nonce_hash
+                    and m.source == source_req["source"])
+        return m.source is None or m.source.carry_forward_from is not None
 
     def same(stored):
         m = stored.material
         return (m is not None and stored.interface_id == interface_id
+                and same_source(m)
                 and m.board_component_id == fields["board"]
                 and m.enclosure_component_id == fields["enclosure"]
                 and m.region_description == fields["region"]
@@ -11997,7 +12087,8 @@ def planar_clearance_save(sid, interface_id):
                      (stored.declaration_id == declaration_id
                       and stored.revision_no == int(raw_head) + 1)))
 
-    return _pcc_write(sid, interface_id, "save", build, same)
+    return _pcc_write(sid, interface_id, "save", build, same, allow_source=writes_on,
+                      precondition=precondition)
 
 
 @app.route("/session/<sid>/interface-clearance/<interface_id>/withdraw", methods=["POST"])
@@ -12035,6 +12126,208 @@ def planar_clearance_withdraw(sid, interface_id):
                 and stored.revision_no == int(raw_head) + 1)
 
     return _pcc_write(sid, interface_id, "withdraw", build, same)
+
+
+# --- BOARD-OUTLINE-SOURCE-BINDING-01: ONE optional board-file inspection ----
+# The inventor may have ONE KiCad 10.0.8 board file inspected for the
+# interaction's planar clearance. The intake reads the bytes in memory (the
+# route-scoped request class), the pure reader returns the file outline or a
+# closed refusal code, and nothing durable is written: the page OFFERS the
+# outline with a signed, 30-minute inspection token. Only the inventor's own
+# save - with values they declare and an axis assignment they choose - writes a
+# file-linked (v2) revision, and only while v2 writes are enabled. The raw bytes,
+# the file name and the token are never stored, logged or echoed; only the
+# file's SHA-256, size, measured outline and the reader identities are retained
+# with the declaration. Inspection is not verification.
+_PCC_SOURCE_PURPOSE = "pcc-board-source/1"
+_PCC_SOURCE_TOKEN_SECONDS = 30 * 60
+_PCC_SOURCE_TOKEN_MAX_LEN = 4096
+_PCC_SOURCE_FILE_FIELD = "board_file"
+_PCC_SOURCE_PAYLOAD_KEYS = frozenset({
+    "p", "sid", "ifc", "b", "brev", "bep", "e", "erev", "eep", "h", "sha", "size",
+    "fx", "fy", "fmt", "rdr", "rule", "iat", "exp", "n"})
+
+
+class _PccSourceRefused(Exception):
+    def __init__(self, key, status):
+        super().__init__(key)
+        self.key, self.status = key, status
+
+
+def _pcc_source_writes_enabled():
+    return bool(app.config.get("PCC_SOURCE_BINDING_WRITES", False))
+
+
+def _pcc_source_now():
+    import time as _time
+    return int(_time.time())
+
+
+def _pcc_history_marker(ledger, interface_id):
+    """The interaction's latest declaration event: ``[count, revision_id]``
+    (``"none"`` before any). A withdrawal is an event like any other."""
+    history = ledger.history_for(interface_id)
+    count = sum(len(record.revisions) for record in history)
+    active = ledger.active_for(interface_id)
+    latest = active if active is not None else (history[-1] if history else None)
+    return [count, latest.head.revision_id if latest is not None else "none"]
+
+
+def _pcc_source_sig(body):
+    return _p2a_hmac.new(_answer_secret(), _canonical_message(_PCC_SOURCE_PURPOSE, body),
+                         _p2a_hashlib.sha256).hexdigest()
+
+
+def _pcc_source_issue(payload):
+    body = _p2a_b64.urlsafe_b64encode(json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+        .encode("ascii")).decode("ascii").rstrip("=")
+    return body + "." + _pcc_source_sig(body)
+
+
+def _pcc_nonce_hash(sid, nonce):
+    return _p2a_hashlib.sha256(
+        _canonical_message(_PCC_SOURCE_PURPOSE, "nonce", sid, nonce)).hexdigest()
+
+
+def _pcc_source_verify(sid, interface_id, raw):
+    """The verified payload of ONE inspection token for exactly this project and
+    interaction, or ``_PccSourceRefused``. Stateless; never echoes the token."""
+    invalid = _PccSourceRefused("UI_PCC_SRC_MSG_INVALID", 400)
+    if not isinstance(raw, str) or not raw or len(raw) > _PCC_SOURCE_TOKEN_MAX_LEN:
+        raise invalid
+    body, sep, sig = raw.partition(".")
+    if not sep or not _p2a_hmac.compare_digest(sig.encode("ascii", "replace"),
+                                               _pcc_source_sig(body).encode("ascii")):
+        raise invalid
+    try:
+        payload = json.loads(_p2a_b64.urlsafe_b64decode(body + "=" * (-len(body) % 4)))
+    except Exception:
+        raise invalid
+    if not isinstance(payload, dict) or set(payload) != _PCC_SOURCE_PAYLOAD_KEYS \
+            or payload["p"] != _PCC_SOURCE_PURPOSE or payload["sid"] != sid \
+            or payload["ifc"] != interface_id:
+        raise invalid
+    now = _pcc_source_now()
+    if not isinstance(payload["exp"], int) or not isinstance(payload["iat"], int) \
+            or payload["iat"] > now + 60:
+        raise invalid
+    if now > payload["exp"]:
+        raise _PccSourceRefused("UI_PCC_SRC_MSG_EXPIRED", 409)
+    return payload
+
+
+def _pcc_source_request(sid, interface_id, fields, writes_on):
+    """``None`` (no token: a source-free save) or ``{"payload", "source"}`` for a
+    save that links ONE inspected file; ``_PccSourceRefused`` otherwise."""
+    tokens = request.form.getlist("source_token")
+    if len(tokens) > 1:
+        raise _PccSourceRefused("UI_PCC_MSG_REJECTED", 400)
+    raw = tokens[0] if tokens else ""
+    if not raw:
+        return None
+    if not writes_on:
+        raise _PccSourceRefused("UI_PCC_SRC_MSG_OFF", 409)
+    payload = _pcc_source_verify(sid, interface_id, raw)
+    axes = request.form.getlist("source_axis")
+    if len(axes) != 1 or axes[0] not in _subsystem_model.PCC_SOURCE_AXIS_ASSIGNMENTS:
+        raise _PccSourceRefused("UI_PCC_SRC_MSG_AXIS", 400)
+    expected = fields["expected"]
+    if (fields["board"], fields["enclosure"]) != (payload["b"], payload["e"]) \
+            or expected.get(payload["b"]) != (payload["brev"], payload["bep"]) \
+            or expected.get(payload["e"]) != (payload["erev"], payload["eep"]):
+        raise _PccSourceRefused("UI_PCC_SRC_MSG_MISMATCH", 409)
+    from datetime import datetime as _dt, timezone as _tz
+    source = _subsystem_model.PlanarClearanceSource(
+        kind=_pcc_src.SOURCE_KIND, source_sha256=payload["sha"], source_size=payload["size"],
+        format_id=payload["fmt"], reader_id=payload["rdr"], rule_id=payload["rule"],
+        file_x=payload["fx"], file_y=payload["fy"], axis_assignment=axes[0],
+        inspected_at=_dt.fromtimestamp(payload["iat"], _tz.utc).isoformat(),
+        nonce_hash=_pcc_nonce_hash(sid, payload["n"]), carry_forward_from=None)
+    try:
+        _subsystem_model.check_planar_clearance_source(source)
+    except _subsystem_model.PlanarClearanceError:
+        raise _PccSourceRefused("UI_PCC_SRC_MSG_INVALID", 400)
+    return {"payload": payload, "source": source}
+
+
+def _pcc_source_check(ledger, interface_id, source_req, final=False):
+    """The inspected declaration history position still holds and the
+    inspection was never used (checked when staging and again inside the
+    serialized write)."""
+    if _pcc_history_marker(ledger, interface_id) != source_req["payload"]["h"]:
+        raise _subsystem_model.PlanarClearanceSourceMismatch("the declaration changed")
+    nonce_hash = source_req["source"].nonce_hash
+    for record in ledger.records:
+        for rev in record.revisions:
+            src = rev.material.source if rev.material is not None else None
+            if src is not None and src.nonce_hash == nonce_hash:
+                raise _subsystem_model.PlanarClearanceSourceMismatch("inspection used")
+
+
+@app.route("/session/<sid>/interface-clearance/<interface_id>/board-source", methods=["POST"])
+def planar_clearance_board_source(sid, interface_id):
+    """BOARD-OUTLINE-SOURCE-BINDING-01 - inspect ONE board file and OFFER its
+    outline. Order: request integrity (global CSRF guard; the body is parsed in
+    memory under the 128 KiB cap) -> central authorization -> v2 writes enabled
+    -> exactly one file and two distinct current participants -> the pure
+    reader -> a signed offer. Writes nothing durable."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _subsystem_model.is_valid_interface_id(interface_id):
+        return _deny_project()
+    if not _pcc_source_writes_enabled():
+        return _pcc_render(sid, interface_id, status=404, error="UI_PCC_SRC_MSG_OFF")
+    files = request.files
+    if list(files.keys()) != [_PCC_SOURCE_FILE_FIELD] \
+            or len(files.getlist(_PCC_SOURCE_FILE_FIELD)) != 1:
+        return _pcc_render(sid, interface_id, status=400, error="UI_PCC_SRC_MSG_ONE_FILE")
+    try:
+        board = _pcc_single("board_component_id")
+        enclosure = _pcc_single("enclosure_component_id")
+    except ValueError:
+        return _pcc_render(sid, interface_id, status=400, error="UI_PCC_MSG_REJECTED")
+    try:
+        data = files[_PCC_SOURCE_FILE_FIELD].stream.read(_pcc_src.MAX_FILE_BYTES + 1)
+    except Exception:
+        return _pcc_render(sid, interface_id, status=400, error="UI_PCC_SRC_MSG_ONE_FILE")
+    try:
+        snapshot = _get_store().load_planar_clearance(sid)
+        view = _pcc_view.clearance_view(snapshot, interface_id, _PCC_BINDING)
+    except _ProjectNotFound:
+        return _deny_project()
+    except Exception:
+        return _pcc_render(sid, interface_id, status=503, error="UI_PCC_SRC_MSG_FAILED")
+    if view is None:
+        return _deny_project()
+    options = {opt["id"]: opt for opt in view["options"]}
+    if board == enclosure or board not in options or enclosure not in options:
+        return _pcc_render(sid, interface_id, status=409, error="UI_PCC_SRC_MSG_PICK")
+    try:
+        outline = _pcc_src.read_board_outline(data)
+    except _pcc_src.Refused as exc:
+        return _pcc_render(sid, interface_id, status=422,
+                           error="UI_PCC_SRC_REFUSED_" + exc.code)
+    except Exception:
+        return _pcc_render(sid, interface_id, status=422,
+                           error="UI_PCC_SRC_REFUSED_" + _pcc_src.MALFORMED)
+    now = _pcc_source_now()
+    payload = {
+        "p": _PCC_SOURCE_PURPOSE, "sid": sid, "ifc": interface_id,
+        "b": board, "brev": options[board]["revision"], "bep": options[board]["epoch"],
+        "e": enclosure, "erev": options[enclosure]["revision"],
+        "eep": options[enclosure]["epoch"],
+        "h": _pcc_history_marker(snapshot["ledger"], interface_id),
+        "sha": outline.source_sha256, "size": outline.source_size,
+        "fx": outline.file_x, "fy": outline.file_y, "fmt": outline.format_id,
+        "rdr": outline.reader_id, "rule": outline.rule_id,
+        "iat": now, "exp": now + _PCC_SOURCE_TOKEN_SECONDS, "n": secrets.token_hex(16)}
+    draft = _pcc_form_from_material(view["raw_material"])
+    draft["board"], draft["enclosure"] = board, enclosure
+    offer = {"token": _pcc_source_issue(payload), "file_x": outline.file_x,
+             "file_y": outline.file_y, "sha256_short": outline.source_sha256[:12],
+             "size": outline.source_size, "board_name": options[board]["name"]}
+    return _pcc_render(sid, interface_id, draft=draft, offer=offer)
 
 
 def _deliverable_document_lang():

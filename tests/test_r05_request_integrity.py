@@ -55,6 +55,8 @@ MUTATIONS = (
     # board-enclosure planar clearance declaration of one interaction.
     "/session/<sid>/interface-clearance/<interface_id>",
     "/session/<sid>/interface-clearance/<interface_id>/withdraw",
+    # BOARD-OUTLINE-SOURCE-BINDING-01: inspect ONE board file (writes nothing durable).
+    "/session/<sid>/interface-clearance/<interface_id>/board-source",
     # Stage 15 Slice 3: the inventor's current verification-preparation inputs
     # per declared interaction (current-value planning save).
     "/session/<sid>/interface-preparation",

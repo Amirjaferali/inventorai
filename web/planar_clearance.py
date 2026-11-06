@@ -56,12 +56,46 @@ def _material_view(material, inventory):
         "method_id": material.method_id,
         "method_version": material.method_version,
         "declaration_version": material.declaration_version,
+        "source": source_view(material),
     }
+
+
+def source_view(material):
+    """BOARD-OUTLINE-SOURCE-BINDING-01: the file link of a v2 material as shown,
+    or ``None`` for a source-free one. The agreement (EXACT / DIFFERS) is derived
+    here on every read by exact decimal comparison; the calculation always uses
+    the DECLARED values."""
+    agreement = _sm.planar_clearance_source_agreement(material)
+    if agreement is None:
+        return None
+    state, changed, file_dims, declared = agreement
+    src = material.source
+    return {
+        "kind": src.kind, "sha256": src.source_sha256, "sha256_short": src.source_sha256[:12],
+        "size": src.source_size, "format_id": src.format_id, "reader_id": src.reader_id,
+        "rule_id": src.rule_id, "file_x": src.file_x, "file_y": src.file_y,
+        "axis_assignment": src.axis_assignment, "inspected_at": src.inspected_at,
+        "carried_forward": src.carry_forward_from is not None,
+        "agreement": state, "changed_axes": list(changed),
+        "file_board": {"board_x": file_dims[0], "board_y": file_dims[1]},
+        "declared_board": {"board_x": declared[0], "board_y": declared[1]},
+    }
+
+
+def _source_digest_item(source):
+    return [source.kind, source.source_sha256, source.source_size, source.format_id,
+            source.reader_id, source.rule_id, source.file_x, source.file_y,
+            source.axis_assignment, source.inspected_at, source.nonce_hash,
+            source.carry_forward_from]
 
 
 def snapshot_digest(record):
     """A short identity of the exact revision history shown (revision ids and
     complete material), so a downloaded copy names exactly what it shows."""
+    # BOARD-OUTLINE-SOURCE-BINDING-01: a source-free (v1) revision contributes
+    # exactly what it always did, so every v1-only digest - and every existing
+    # download link - is unchanged byte for byte; a file-linked revision adds its
+    # binding, so a different file is a different digest.
     payload = [[r.revision_id, r.revision_no, r.kind,
                 None if r.material is None else [
                     r.material.board_component_id, r.material.enclosure_component_id,
@@ -72,7 +106,9 @@ def snapshot_digest(record):
                     r.material.region_description, list(r.material.values),
                     list(r.material.basis), list(r.material.applicability),
                     r.material.method_id, r.material.method_version,
-                    r.material.declaration_version]]
+                    r.material.declaration_version]
+                + ([] if r.material is None or r.material.source is None
+                   else [_source_digest_item(r.material.source)])]
                for r in record.revisions]
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"),
                            ensure_ascii=True)
@@ -135,7 +171,7 @@ def cad_handoff_model(project_id, view, text):
         return None
     m, ev, rec = view["material"], view["evaluation"], view["record"]
     artifact = _pcc.load_artifact()
-    return {
+    model = {
         "eligible": True, "handoff_format": CAD_HANDOFF_FORMAT,
         "binding": {
             "project_id": project_id,
@@ -167,6 +203,23 @@ def cad_handoff_model(project_id, view, text):
         "region_bound_statements": list(artifact["region_bound"]["statements"]),
         "guide": {lang: [text(key, lang) for key in CAD_GUIDE_KEYS] for lang in ("en", "ar")},
     }
+    src = m.get("source")
+    if src is not None:
+        # BOARD-OUTLINE-SOURCE-BINDING-01: only a file-linked (v2) declaration
+        # carries this object; a source-free companion is unchanged. The source
+        # file's hash is NOT the DXF's hash.
+        model["source"] = {
+            "kind": src["kind"], "sha256": src["sha256"], "size_bytes": src["size"],
+            "format_id": src["format_id"], "reader_id": src["reader_id"],
+            "rule_id": src["rule_id"], "axis_assignment": src["axis_assignment"],
+            "carried_forward": src["carried_forward"],
+            "agreement": src["agreement"], "changed_axes": src["changed_axes"],
+            "file_outline_mm": src["file_board"], "declared_board_mm": src["declared_board"],
+            "note": ("the file outline was inspected and offered; the comparison uses the "
+                     "inventor's declared values; inspection is not verification and the "
+                     "file itself is not retained"),
+        }
+    return model
 
 
 def cad_bundle_filename(model):
