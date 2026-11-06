@@ -659,11 +659,14 @@ compiler, runtime, dependency, reference-data or output clearance.
   This is executed tool/model evidence, NOT motor validation, admitted method, product integration, or clearance
   to host/distribute models or FMUs. Original 1.27.2 pairing remains untested; Q-02 load authority, D4,
   result retention, tool runtime/security and relevant rights/Stage-36 triggers remain unchanged.
-- **C. Historical conditional continuation, now superseded by #933 and #934 (RECOMMENDATION ONLY for new work).**
-  The bounded CAD/source and one-model synthetic proofs have executed; neither automatically selects an
-  inventor-facing increment or authorizes a production simulator runner. Choose a real consumer and resolve
-  the existing-owner, input/provenance, method-admission, privacy, security, IP and activation requirements
-  before product coding.
+- **C. Conditional continuation (RECOMMENDATION ONLY).** After the Owner accepts the CAD proof, scope the smallest
+  useful inventor-facing handoff under G1. A separate one-model local simulation proof (MP-01's corrected outline)
+  may be proposed only when its inputs, applicable claims, execution route and rights are ready. Neither the
+  product step nor the model proof is authorized by this record.
+  **C disposition (2026-11-06; historical text above preserved):** the bounded CAD/source and one-model synthetic
+  proofs have executed (#933, #934); neither automatically selects an inventor-facing increment or authorizes a
+  production simulator runner. Choose a real consumer and resolve the existing-owner, input/provenance,
+  method-admission, privacy, security, IP and activation requirements before product coding.
 - **D. Future-use triggers, not stack dependencies.** DCPM_Cooling only for an actual qualified thermal need;
   FMI / SSP / OMSimulator only for demonstrated multi-tool or model exchange; PyBaMM / CoolProp only for a concrete
   missing capability. NASA / OpenMDAO lessons inform owner interfaces and tests; they do not replace InventorAI
