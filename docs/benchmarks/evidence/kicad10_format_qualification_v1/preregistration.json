@@ -1,0 +1,55 @@
+{
+ "proof": "KICAD10-FORMAT-QUALIFICATION-PROOF-01",
+ "status": "FROZEN BEFORE THE IMAGE IS RETRIEVED OR RUN",
+ "synthetic_only": true,
+ "question": "Which board-file format does KiCad 10.0.8 write, and can the PR #933 bounded admission rule accept its single-rectangle Edge.Cuts outline exactly while never admitting unsupported geometry?",
+ "tool": {
+  "image": "kicad/kicad:10.0.8",
+  "index_digest": "sha256:3f4a01786dfbe803a65f345c3342b765db9add913f5e9448f8356793714ddc34",
+  "linux_amd64_manifest": "sha256:05f6ac957e351bbbd9e1f9c996be997f61948ed9f94e0c3cab336bfcaf60161c",
+  "verification": "the index and the amd64 manifest must hash to these digests and every config and layer blob to its own digest before unpacking; otherwise the proof is BLOCKED"
+ },
+ "reuse": {
+  "readers_and_rules": "scripts/pcb_outline_planar_clearance_proof.py (PR #933): S-expression reader, F1 topology rule, own DXF group-code reader, ezdxf reading, F3 export freshness",
+  "sandbox": "scripts/mp01_sandbox/inner.sh, prepare.sh pattern and unpack.py (PR #934): host uid 65534 with no host capabilities and no_new_privs, unprivileged user/mount/pid/net/ipc/uts namespaces, prlimit limits, read-only image root after pivot_root, no network, cleared environment; inner.sh is reused unchanged, its read-only mount carries the proof inputs"
+ },
+ "admission_rule": {
+  "format_version": "accepted only if it is the exact (version ...) value KiCad 10.0.8 is observed to write for the fixtures; every other version is refused",
+  "geometry": "exactly one Edge.Cuts outline: one gr_rect, or exactly four gr_line forming four distinct proper sides of one closed axis-aligned rectangle (the #933 F1 rule); no Edge.Cuts graphics inside a footprint",
+  "child_field_allowlist": {
+   "gr_rect": ["start", "end", "stroke", "fill", "layer", "uuid", "tstamp", "locked"],
+   "gr_line": ["start", "end", "stroke", "layer", "uuid", "tstamp", "locked"],
+   "rule": "any other child field on an Edge.Cuts shape, including angle, rotation or any transform, refuses and its name is recorded; a bare atom child is recorded and refuses unless it is in the allowlist"
+  },
+  "value_of_record": "the exact decimals of the board file text, only when the three readings agree",
+  "tolerance_mm": "1e-9 (this proof's measurement tolerance, not a method tolerance)"
+ },
+ "readings": [
+  "R1: the board file text through the bounded admission rule",
+  "R2: KiCad 10's own Edge.Cuts DXF export in mm through the #933 group-code reader",
+  "R3: the same export through ezdxf 1.4.2"
+ ],
+ "fixtures": {
+  "upgraded": "each PR #933 KiCad 7 fixture loaded and saved by KiCad 10.0.8 pcbnew",
+  "native": "the same geometries generated natively by KiCad 10.0.8 pcbnew Python: 84 x 50 rectangle, the same rectangle as four lines, revised 80 x 50, and the controls it can express",
+  "text_controls": "a KiCad 10 supported board edited to add an angle field to a gr_line, an unknown geometry field on a gr_rect, and a different (version ...) value; each must refuse",
+  "envelope": "KiCad 10 boards with 0, 5, 20, 40 and 100 synthetic footprints"
+ },
+ "gates": {
+  "G1_supported": "every supported fixture: R1, R2 and R3 agree within the tolerance on exactly 84 x 50 (or 80 x 50 for the revised board), and the format version is recorded",
+  "G2_controls": "no control (rounded corners, L shape, cut-out, two boards, open outline, no outline, rotated rectangle, doubled lines, inch export, angle field, unknown field, other version, unfamiliar structure) is ADMITTED by R1; what each reader observed is recorded; KiCad may legitimately export unsupported geometry and that is not a failure",
+  "G3_freshness": "an export counts only when kicad-cli exits 0 and writes a new file at a path cleared beforehand; the file's SHA-256 binds what is read",
+  "G4_geometry_determinism": "re-exporting a supported fixture gives the same geometry within the tolerance"
+ },
+ "observations_not_gates": {
+  "O1_byte_determinism": "raw DXF bytes of repeated exports are compared; harmless metadata differences are classified as such; unexplained differences are investigated and reported",
+  "O2_envelope": "file sizes against the unchanged 128 KiB request cap, and reader tokens, depth and time"
+ },
+ "outcome": {
+  "PASS": "G1 to G4 hold and the format version is recorded",
+  "PARTIAL": "KiCad 10 writes constructs the rule does not recognise for a supported geometry: recorded and refused, never approximated",
+  "BLOCKED": "the image cannot be retrieved, verified or run safely, or the readings disagree; recorded, no tool or version substituted"
+ },
+ "scope": "qualifies only the exact observed KiCad 10.0.8 output format and the constructs observed in these fixtures; nothing about other KiCad 10.x releases, other versions or arbitrary PCB files",
+ "boundaries": "synthetic only; no product change, upload route, reader admission, provider call, merge or deployment; the 128 KiB cap is not changed; BOARD-OUTLINE-SOURCE-BINDING-01 stays BLOCKED"
+}
