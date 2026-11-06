@@ -741,6 +741,453 @@ def decide(scored, refs, judged):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# PROSPECTIVE EVIDENCE-TRACED ASSESSMENT METHOD (v2) — G1-1/2 qualification repair
+# ─────────────────────────────────────────────────────────────────────────────
+# Authority: Owner / Execution Lead instruction "G1-1/2 PROSPECTIVE EVALUATION
+# IMPLEMENTATION" (2026-11-06). PROSPECTIVE ONLY. Everything above this banner — the
+# frozen candidate instructions, schema, references, criteria, thresholds, review
+# questions, attestation, `score_case`, `review_items`, `check_assessment` and `decide` —
+# is the v1 method of the one executed run (evidence `2f6925bd`) and is NOT changed; v1
+# stays the only basis of that run's result (INCOMPLETE_REVIEW). This section reuses the
+# v1 validator and per-case scorer (`validate`, `score_case`: the same automatic K1-K5 /
+# G6 results and the same review-item ids) and replaces only how the human-judged G1 /
+# G3 / G4 items are labelled, evidenced and credited, adds a predeclared central-outcome
+# rule, and keeps assessment modes apart:
+#   * DIAGNOSTIC — an evidence-traced assessment by an agent, an AI-assisted human or a
+#     human, for learning about the instrument; its result is never a qualification;
+#   * FORMAL — only a HUMAN reviewer under the UNCHANGED v1 attestation, on annotations
+#     declared before any output existed. An AI-assisted formal basis is NOT available:
+#     adopting one is an open Owner decision.
+# A pointer check proves only that the cited text exists in the reply at that place: it
+# never proves that the text satisfies the reference item. That stays the attributed
+# assessor's judgment. Nothing here is imported by the product; no provider is called.
+METHOD_V2_ID = "g1-component-concept-evidence-traced-method"
+METHOD_V2_VERSION = "2.0"
+EVALUATION_ID_V2 = "g1-component-concept-qualification-02"
+V1_PREREGISTRATION_SHA256 = "97b5d9e17b49b57b2038da2bc305556e96d6fb68568c95cc11da4483a3eaec0c"
+
+MODE_DIAGNOSTIC, MODE_FORMAL = "DIAGNOSTIC", "FORMAL"
+ASSESSOR_KINDS = ("AGENT", "AI_ASSISTED_HUMAN", "HUMAN")
+INSUFFICIENT_EVIDENCE, DISPUTED = "INSUFFICIENT_EVIDENCE", "DISPUTED"
+INTENT_CLEAR, INTENT_AMBIGUOUS = "CLEAR", "AMBIGUOUS"
+G1_V2 = ("ADDRESSED", "OPEN_DECISION_DISCLOSED", "ACKNOWLEDGED_ONLY", "MISSING",
+         "INVENTED_DETAIL")
+G4_COVERED, G4_PARTIAL = "REFERENCE_CHOICE_COVERED", "REFERENCE_CHOICE_PARTIAL"
+G4_OTHER_VALID = "DIFFERENT_VALID_ALTERNATIVE"
+G4_V2 = (G4_COVERED, G4_PARTIAL, G4_OTHER_VALID, "NOT_RELEVANT", "ABSENT")
+
+REVIEW_QUESTIONS_V2 = dict(REVIEW_QUESTIONS)
+REVIEW_QUESTIONS_V2.update({
+    "G1": ("Match this reference function by MEANING across the whole reply (functions, component "
+           "roles, relationships, alternatives, missing information, questions), never by its "
+           "local id. ADDRESSED: the meaning is present and at least one role, relationship or "
+           "flow provisionally performs it (open implementation choices are fine). "
+           "OPEN_DECISION_DISCLOSED: the meaning is present and the reply says the MEANS depends "
+           "on a named, unresolved fact or choice, with nothing performing it yet. "
+           "ACKNOWLEDGED_ONLY: the need is only mentioned (context, a generic part, a general "
+           "missing-information line). MISSING: nothing. INVENTED_DETAIL: answered with "
+           "unsupported specifications. The model's own `resolution` field is never evidence. "
+           "For an operating-context need (e.g. outdoors), the exposure itself must be "
+           "represented: power, range or general 'conditions' do not represent it, and no "
+           "proven protection or rating is required.", G1_V2),
+    "G3": ("Does a SPECIFIC missing-information item, clarification question or alternative name "
+           "this same unknown fact or decision? A general statement recognises only the unknowns "
+           "it actually names; one element counts for several unknowns only if it names each.",
+           ("RECOGNIZED", "NOT_RECOGNIZED")),
+    "G4": ("For the reference's PREDECLARED choice and its two options: does one alternatives "
+           "entry offer options for the same functional purpose that cover BOTH options "
+           "(REFERENCE_CHOICE_COVERED), only one of them (REFERENCE_CHOICE_PARTIAL), or does the "
+           "reply instead offer a different but legitimate alternative for another purpose or "
+           "another dimension (DIFFERENT_VALID_ALTERNATIVE: recorded as valid, not a model "
+           "failure, but no reference-coverage credit)? NOT_RELEVANT: unnecessary, contradictory "
+           "or unsupported options. ABSENT: no alternatives.", G4_V2),
+})
+CREDITED_V2 = {"G1": ("ADDRESSED",), "G3": ("RECOGNIZED",), "G4": (G4_COVERED,)}
+# Labels that must cite reply evidence (a claim that something IS in the reply).
+_EVIDENCE_REQUIRED = {"G1": ("ADDRESSED", "OPEN_DECISION_DISCLOSED", "ACKNOWLEDGED_ONLY",
+                             "INVENTED_DETAIL"),
+                      "G3": ("RECOGNIZED",), "G4": (G4_COVERED, G4_PARTIAL, G4_OTHER_VALID,
+                                                    "NOT_RELEVANT"),
+                      "K1": (FAILURE,), "K2": (FAILURE,), "K3": (FAILURE,),
+                      "G5": ("CLARIFIED", "COMMITTED_DESIGN")}
+# Where the evidence for a label may come from (None: anywhere in the reply).
+_EVIDENCE_SECTIONS = {("G3", "RECOGNIZED"): ("missing_information", "clarification_questions",
+                                             "alternatives"),
+                      ("G4", G4_COVERED): ("alternatives",), ("G4", G4_PARTIAL): ("alternatives",),
+                      ("G4", G4_OTHER_VALID): ("alternatives",),
+                      ("G5", "CLARIFIED"): ("clarification_questions",)}
+_POINTER = re.compile(r"(stated|functions|component_types|relationships|alternatives|"
+                      r"missing_information|clarification_questions|excluded_by_inventor)"
+                      r"\[(0|[1-9][0-9]?)\](?:\.options\[(0|[1-9][0-9]?)\])?\Z")
+POINTER_RULE = ("A pointer names ONE reply element: `functions[i]` (its text), `stated[i]` (text), "
+                "`excluded_by_inventor[i]` (text), `component_types[i]` (type), `relationships[i]` "
+                "(rendered '<from> <KIND> <to>' with each end replaced by its component type or "
+                "function text, so no model-local id appears), `alternatives[i].options[j]`, "
+                "`missing_information[i]`, `clarification_questions[i]`. Its quote must equal that "
+                "text exactly. A verified quote proves the text is there, not that it satisfies "
+                "the reference item.")
+ANNOTATION_RULE = (
+    "Method annotations are part of the reference and are declared, and blind-adjudicated, "
+    "BEFORE any output is seen: per case `intent` (CLEAR or AMBIGUOUS); `central` — the "
+    "function ids that together are the inventor's intended outcome (required for a CLEAR "
+    "POSITIVE case); `context_needs` — {function id: terms naming the operating exposure}; "
+    "`unknown_terms` — {unknown id: terms}; `choices` — the predeclared trade-offs, each "
+    "{for_meaning, options: [A, B]}. Terms are a NECESSARY lexical guard on credited evidence, "
+    "never sufficient. Annotations written after outputs were seen are diagnostic only.")
+CRITERIA_V2 = dict(CRITERIA)
+CRITERIA_V2.update({
+    "G1": "Essential-function coverage over the POSITIVE cases, by meaning: credited are "
+          "ADDRESSED, and OPEN_DECISION_DISCLOSED only where the reference allows the function to "
+          "remain unresolved; ACKNOWLEDGED_ONLY, MISSING and INVENTED_DETAIL never. At least 80% "
+          "overall and at least two-thirds per case (thresholds unchanged), AND every central "
+          "function of a CLEAR-intent case credited (central-outcome rule).",
+    "G3": "Unknown recognition: at least 70% of all reference unknowns RECOGNIZED by a specific, "
+          "evidenced element that names them (threshold unchanged).",
+    "G4": "Reference-choice coverage: at least 4 of the 6 POSITIVE cases REFERENCE_CHOICE_COVERED "
+          "(threshold unchanged); a DIFFERENT_VALID_ALTERNATIVE is reported as legitimate but "
+          "earns no reference-coverage credit.",
+})
+DECISION_RULE_V2 = (
+    "The v1 rule with these prospective changes: the human-judged G1 / G3 / G4 items use the v2 "
+    "labels and credit table; every credited (and every evidence-claiming) judgment cites "
+    "verified reply pointers; a CLEAR-intent POSITIVE case whose central function is not "
+    "credited fails G1 whatever its coverage ratio, while an ambiguous case that validly asks "
+    "or abstains is judged under G5 and is never a central omission; INSUFFICIENT_EVIDENCE and "
+    "DISPUTED earn nothing and keep the review incomplete. DIAGNOSTIC mode reports the computed "
+    "outcome only as DIAGNOSTIC_ONLY. FORMAL mode needs a HUMAN reviewer under the v1 "
+    "attestation and annotations declared before outputs; PRELIMINARY_GO there still only "
+    "supports considering one provisional, unpersisted concept-presentation design for separate "
+    "authorization, never production activation.")
+SEMANTIC_BASIS = ("Pointer checks verify only that each cited quotation exists at its place in the "
+                  "reply. Whether that evidence satisfies a reference item is the judgment of the "
+                  "named assessor and is attributed to them; it is never established by the "
+                  "pointer check.")
+
+
+def preregistration_v2():
+    return {"method_id": METHOD_V2_ID, "method_version": METHOD_V2_VERSION,
+            "evaluation_id": EVALUATION_ID_V2,
+            "v1_preregistration_sha256": V1_PREREGISTRATION_SHA256,
+            "criteria": CRITERIA_V2, "decision_rule": DECISION_RULE_V2,
+            "review_questions": REVIEW_QUESTIONS_V2,
+            "credited": CREDITED_V2, "pointer_rule": POINTER_RULE,
+            "annotation_rule": ANNOTATION_RULE, "semantic_basis": SEMANTIC_BASIS,
+            "modes": [MODE_DIAGNOSTIC, MODE_FORMAL], "assessor_kinds": list(ASSESSOR_KINDS),
+            "attestation_formal": ATTESTATION}
+
+
+def preregistration_v2_digest():
+    return _sha(preregistration_v2())
+
+
+def _terms_ok(terms):
+    return isinstance(terms, list) and terms and all(isinstance(t, str) and t.strip()
+                                                     for t in terms)
+
+
+def check_annotations(annotations, refs, formal=False):
+    """Validated method annotations {case_id: annotation} for `refs`; PackError otherwise."""
+    if not isinstance(annotations, dict) or set(annotations) != {"declared_before_outputs",
+                                                                 "provenance", "cases"}:
+        raise PackError("annotations shape")
+    if formal and annotations["declared_before_outputs"] is not True:
+        raise PackError("formal assessment needs annotations declared before any output")
+    cases = annotations["cases"]
+    if not isinstance(cases, dict) or not set(cases) <= set(refs):
+        raise PackError("annotations name unknown cases")
+    keys = {"intent", "central", "context_needs", "unknown_terms", "choices"}
+    for cid, a in cases.items():
+        ref = refs[cid]
+        fids = {f["function_id"] for f in ref["essential_functions"]}
+        uids = {u["unknown_id"] for u in ref["expected_unknowns"]}
+        if not isinstance(a, dict) or set(a) != keys or a["intent"] not in (INTENT_CLEAR,
+                                                                              INTENT_AMBIGUOUS):
+            raise PackError("annotation shape: " + cid)
+        if (ref["group"] == "AMBIGUOUS") != (a["intent"] == INTENT_AMBIGUOUS):
+            raise PackError("intent contradicts the case group: " + cid)
+        if not isinstance(a["central"], list) or not set(a["central"]) <= fids:
+            raise PackError("central functions: " + cid)
+        if ref["group"] == "POSITIVE" and a["intent"] == INTENT_CLEAR and not a["central"]:
+            raise PackError("a clear POSITIVE case needs its central outcome declared: " + cid)
+        for field, ids in (("context_needs", fids), ("unknown_terms", uids)):
+            if not isinstance(a[field], dict) or not set(a[field]) <= ids \
+                    or not all(_terms_ok(t) for t in a[field].values()):
+                raise PackError("%s: %s" % (field, cid))
+        if not isinstance(a["choices"], list) or not all(
+                isinstance(c, dict) and set(c) == {"for_meaning", "options"}
+                and isinstance(c["options"], list) and len(c["options"]) == 2
+                and all(isinstance(o, str) and o.strip() for o in c["options"])
+                for c in a["choices"]):
+            raise PackError("choices: " + cid)
+    return cases
+
+
+def resolve_pointer(reply, pointer):
+    """The exact reply text a pointer names, or PackError. Relationship ends are rendered
+    by their component type / function text, never by a model-local id."""
+    m = _POINTER.match(pointer) if isinstance(pointer, str) else None
+    if not m or not isinstance(reply, dict):
+        raise PackError("pointer grammar")
+    section, i, j = m.group(1), int(m.group(2)), m.group(3)
+    items = reply.get(section)
+    if not isinstance(items, list) or i >= len(items):
+        raise PackError("pointer out of range: " + pointer)
+    item = items[i]
+    if section == "alternatives":
+        if j is None or not isinstance(item.get("options"), list) or int(j) >= len(item["options"]):
+            raise PackError("an alternative pointer names one option: " + pointer)
+        return item["options"][int(j)]
+    if j is not None:
+        raise PackError("options index outside alternatives: " + pointer)
+    if section in ("missing_information", "clarification_questions"):
+        return item
+    if section == "component_types":
+        return item["type"]
+    if section == "relationships":
+        label = {c["id"]: c["type"] for c in reply.get("component_types", [])}
+        label.update({f["id"]: f["text"] for f in reply.get("functions", [])})
+        if item.get("from") not in label or item.get("to") not in label:
+            raise PackError("dangling relationship: " + pointer)
+        return "%s %s %s" % (label[item["from"]], item["kind"], label[item["to"]])
+    return item["text"]
+
+
+def _verified_evidence(reply, evidence):
+    out = []
+    if not isinstance(evidence, list):
+        raise PackError("evidence must be a list")
+    for e in evidence:
+        if not isinstance(e, dict) or set(e) != {"pointer", "quote"}:
+            raise PackError("evidence entry shape")
+        if resolve_pointer(reply, e["pointer"]) != e["quote"]:
+            raise PackError("quotation does not match the reply at " + str(e["pointer"]))
+        out.append(e)
+    return out
+
+
+def _has_term(quotes, terms):
+    low = " ".join(_normalised(q).lower() for q in quotes)
+    return any(_normalised(t).lower() in low for t in terms)
+
+
+def check_assessment_v2(record, scored, replies, refs, annotations, report_sha256, varieties):
+    """Normalised {item_id: label} of ONE v2 assessment record, or PackError. Validates the
+    shape, the mode / assessor / attestation boundary, every pointer and quotation, the
+    evidence each label needs, the declared lexical guards and the G4 option map. It never
+    decides whether evidence semantically satisfies an item (that is the assessor's)."""
+    keys = {"evaluation_id", "method", "report_sha256", "mode", "assessor", "attestation",
+            "attested_on", "judgments"}
+    if not isinstance(record, dict) or set(record) != keys:
+        raise PackError("v2 assessment shape")
+    if record["evaluation_id"] != EVALUATION_ID_V2 \
+            or record["method"] != [METHOD_V2_ID, METHOD_V2_VERSION] \
+            or record["report_sha256"] != report_sha256:
+        raise PackError("v2 assessment is not bound to this method and report")
+    a = record["assessor"]
+    if not isinstance(a, dict) or set(a) != {"kind", "name", "languages"} \
+            or a["kind"] not in ASSESSOR_KINDS \
+            or not (isinstance(a["name"], str) and a["name"].strip()) \
+            or not isinstance(a["languages"], list):
+        raise PackError("assessor shape")
+    if record["mode"] == MODE_FORMAL:
+        if a["kind"] != "HUMAN":
+            raise PackError("FORMAL needs a HUMAN reviewer; an AI-assisted formal basis is an "
+                            "open Owner decision")
+        if record["attestation"] != ATTESTATION or not (
+                isinstance(record["attested_on"], str)
+                and re.fullmatch(r"\d{4}-\d{2}-\d{2}", record["attested_on"])):
+            raise PackError("FORMAL needs the unchanged v1 attestation")
+        if not {_VARIETY_LANGUAGE[v] for v in varieties} <= set(a["languages"]):
+            raise PackError("reviewer competence does not cover the pack's languages")
+        cases = check_annotations(annotations, refs, formal=True)
+    elif record["mode"] == MODE_DIAGNOSTIC:
+        if record["attestation"] is not None or record["attested_on"] is not None:
+            raise PackError("a DIAGNOSTIC record claims no attestation")
+        cases = check_annotations(annotations, refs)
+    else:
+        raise PackError("mode")
+    kinds = {i: k for s in scored for i, k in s["items"].items()}
+    case_of = {i: s["case_id"] for s in scored for i in s["items"]}
+    judged = record["judgments"]
+    if not isinstance(judged, dict) or not set(judged) <= set(kinds):
+        raise PackError("judgment outside the review items")
+    out = {}
+    for item_id, j in judged.items():
+        kind, cid = kinds[item_id], case_of[item_id]
+        if j == NOT_ASSESSED:
+            continue
+        if not isinstance(j, dict) or not {"judgment", "evidence", "rationale"} <= set(j) \
+                or not set(j) <= {"judgment", "evidence", "rationale", "option_map"}:
+            raise PackError("judgment entry shape: " + item_id)
+        label = j["judgment"]
+        if label not in REVIEW_QUESTIONS_V2[kind][1] + (INSUFFICIENT_EVIDENCE,):
+            raise PackError("judgment value: " + item_id)
+        if not (isinstance(j["rationale"], str) and j["rationale"].strip()):
+            raise PackError("every judgment states its rationale: " + item_id)
+        evidence = _verified_evidence(replies.get(cid), j["evidence"])
+        if label in _EVIDENCE_REQUIRED.get(kind, ()) and not evidence:
+            raise PackError("label %s needs reply evidence: %s" % (label, item_id))
+        allowed = _EVIDENCE_SECTIONS.get((kind, label))
+        if allowed and any(e["pointer"].split("[")[0] not in allowed for e in evidence):
+            raise PackError("evidence from the wrong place for %s: %s" % (label, item_id))
+        ann = cases.get(cid)
+        quotes = [e["quote"] for e in evidence]
+        if kind == "G1" and label in ("ADDRESSED", "OPEN_DECISION_DISCLOSED") and ann \
+                and item_id in ann["context_needs"] \
+                and not _has_term(quotes, ann["context_needs"][item_id]):
+            raise PackError("an operating-context need is not credited without evidence naming "
+                            "the exposure: " + item_id)
+        if kind == "G3" and label == "RECOGNIZED" and ann and item_id in ann["unknown_terms"] \
+                and not _has_term(quotes, ann["unknown_terms"][item_id]):
+            raise PackError("the cited evidence does not name this unknown: " + item_id)
+        if kind == "G4":
+            _check_option_map(replies.get(cid), label, j.get("option_map"), item_id)
+        elif "option_map" in j:
+            raise PackError("option_map belongs to G4 only: " + item_id)
+        out[item_id] = label
+    return out
+
+
+def _check_option_map(reply, label, option_map, item_id):
+    if label in (G4_COVERED, G4_PARTIAL):
+        if not isinstance(option_map, dict) or not set(option_map) <= {"A", "B"} or not option_map:
+            raise PackError("REFERENCE_CHOICE labels map the reference options: " + item_id)
+        for p in option_map.values():
+            if not (isinstance(p, str) and ".options[" in p):
+                raise PackError("an option map names alternative options: " + item_id)
+            resolve_pointer(reply, p)
+        if label == G4_COVERED:
+            if set(option_map) != {"A", "B"} or option_map["A"] == option_map["B"] \
+                    or option_map["A"].split(".")[0] != option_map["B"].split(".")[0]:
+                raise PackError("COVERED maps both options within ONE alternatives entry: "
+                                + item_id)
+        elif len(option_map) != 1:
+            raise PackError("PARTIAL maps exactly one reference option: " + item_id)
+    elif option_map is not None:
+        raise PackError("only REFERENCE_CHOICE labels carry an option map: " + item_id)
+
+
+def reconcile_v2(normalised_records):
+    """Merge several validated records: an item all records label alike keeps that label;
+    any disagreement is DISPUTED (never credited), with every position kept."""
+    labels, positions = {}, {}
+    for rec in normalised_records:
+        for item_id, label in rec.items():
+            positions.setdefault(item_id, []).append(label)
+    for item_id, seen in positions.items():
+        labels[item_id] = seen[0] if len(set(seen)) == 1 else DISPUTED
+    return labels, positions
+
+
+def _credited(kind, label, function=None):
+    if kind == "G1" and label == "OPEN_DECISION_DISCLOSED":
+        return bool(function and function["may_be_unresolved"])
+    return label in CREDITED_V2.get(kind, ())
+
+
+_UNRESOLVED = (NOT_ASSESSED, INSUFFICIENT_EVIDENCE, DISPUTED)
+
+
+def case_findings_v2(scored_case, ref, annotation, labels):
+    """Per-case v2 findings: function labels and credit, the central-outcome status, unknown
+    credit and the reference-choice class. Pure; used by `decide_v2` and diagnostics."""
+    cid = scored_case["case_id"]
+    fns = {f["function_id"]: f for f in ref["essential_functions"]}
+    label = lambda item_id: scored_case["auto"].get(item_id, labels.get(item_id, NOT_ASSESSED))
+    functions = {fid: {"label": label(fid), "credited": _credited("G1", label(fid), f)}
+                 for fid, f in fns.items() if fid in scored_case["items"]
+                 or fid in scored_case["auto"]}
+    central = "NOT_APPLICABLE"
+    if annotation and annotation["intent"] == INTENT_CLEAR and annotation["central"] \
+            and ref["group"] == "POSITIVE":
+        if scored_case["status"] != V_VALID:
+            central = "NOT_EVALUATED_NO_CONCEPT"        # G6 / K-rules govern a non-concept
+        elif any(not functions[f]["credited"] and functions[f]["label"] in _UNRESOLVED
+                 for f in annotation["central"]):
+            central = "UNDETERMINED"
+        elif all(functions[f]["credited"] for f in annotation["central"]):
+            central = "REPRESENTED"
+        else:
+            central = "OMITTED"
+    unknowns = {u["unknown_id"]: {"label": label(u["unknown_id"]),
+                                  "credited": label(u["unknown_id"]) == "RECOGNIZED"}
+                for u in ref["expected_unknowns"]}
+    choice = label("%s:G4" % cid) if ref["group"] == "POSITIVE" else None
+    return {"case_id": cid, "functions": functions, "central": central,
+            "unknowns": unknowns, "choice": choice}
+
+
+def decide_v2(scored, refs, annotations, labels, mode):
+    """The v2 decision over one complete run's v1 per-case scores and normalised v2 labels.
+    DIAGNOSTIC reports DIAGNOSTIC_ONLY with the computed outcome; FORMAL applies the rule."""
+    if [s["case_id"] for s in scored] != list(CASE_IDS):
+        return {"verdict": "INCOMPLETE"}
+    if any(s["status"] == V_ERROR for s in scored):
+        return {"verdict": "INCOMPLETE"}
+    cases = annotations["cases"]
+    kinds = {i: k for s in scored for i, k in s["items"].items()}
+    findings = [case_findings_v2(s, refs[s["case_id"]], cases.get(s["case_id"]), labels)
+                for s in scored]
+    answer = {}
+    for s in scored:
+        answer.update(s["auto"])
+        for item_id in s["items"]:
+            answer[item_id] = labels.get(item_id, NOT_ASSESSED)
+    critical = sorted({k for s in scored for k in s["critical"]}
+                      | {kinds[i] for i, a in answer.items()
+                         if kinds.get(i) in ("K1", "K2", "K3") and a == FAILURE})
+    pos = [r for r in refs.values() if r["group"] == "POSITIVE"]
+    by_case = {f["case_id"]: f for f in findings}
+
+    def graded(optimistic):
+        def got(kind, item_id, function=None):
+            a = answer[item_id]
+            return _credited(kind, a, function) or (optimistic and a in _UNRESOLVED)
+
+        def ok(a, good):
+            return a in good or (optimistic and a in _UNRESOLVED)
+        fns = [f for r in pos for f in r["essential_functions"]]
+        unknowns = [u["unknown_id"] for r in refs.values() for u in r["expected_unknowns"]]
+        amb = [r["case_id"] for r in refs.values() if r["group"] == "AMBIGUOUS"]
+        central_ok = all(by_case[r["case_id"]]["central"] not in ("OMITTED",)
+                         and (optimistic or by_case[r["case_id"]]["central"] != "UNDETERMINED")
+                         for r in pos)
+        return {
+            "G1": (sum(got("G1", f["function_id"], f) for f in fns) >= 0.8 * len(fns) and all(
+                sum(got("G1", f["function_id"], f) for f in r["essential_functions"])
+                >= (2 / 3) * len(r["essential_functions"]) for r in pos) and central_ok),
+            "G2": sum(ok(answer["%s:G2" % r["case_id"]], {"COHERENT"}) for r in pos) >= 5,
+            "G3": sum(got("G3", u) for u in unknowns) >= 0.7 * len(unknowns),
+            "G4": sum(got("G4", "%s:G4" % r["case_id"]) for r in pos) >= 4,
+            "G5": (sum(ok(answer["%s:G5" % c], {"CLARIFIED"}) for c in amb) >= 2
+                   and not any(answer["%s:G5" % c] == "COMMITTED_DESIGN" for c in amb)),
+            "G6": all(s.get("concept_delivered") for s in scored if s["group"] in CONCEPT_GROUPS),
+        }
+    final, reachable = graded(False), graded(True)
+    unresolved = sorted(i for i, a in answer.items() if a in _UNRESOLVED)
+    if critical or not all(reachable.values()):
+        outcome = "NO_GO"
+    elif unresolved:
+        outcome = "INCOMPLETE_REVIEW"
+    else:
+        outcome = "PRELIMINARY_GO" if all(final.values()) else "NO_GO"
+    result = {"critical": critical, "graded": final, "graded_reachable": reachable,
+              "unresolved": unresolved,
+              "central_omitted": sorted(f["case_id"] for f in findings
+                                        if f["central"] == "OMITTED"),
+              "different_valid_alternatives": sorted(
+                  f["case_id"] for f in findings if f["choice"] == G4_OTHER_VALID),
+              "semantic_basis": SEMANTIC_BASIS, "pack_disclosure": PACK_DISCLOSURE,
+              "method": [METHOD_V2_ID, METHOD_V2_VERSION]}
+    if mode == MODE_FORMAL:
+        result["verdict"] = outcome
+    else:
+        result.update(verdict="DIAGNOSTIC_ONLY", diagnostic_outcome=outcome,
+                      qualification="NOT A QUALIFICATION: diagnostic mode")
+    return result
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Provider scope, budget and the guarded single run (mirrors campaign 02)
 # ─────────────────────────────────────────────────────────────────────────────
 AUTHORIZED_RUN_MANIFEST_SHA256 = None   # named by the Owner at run time; never committed
