@@ -6,13 +6,17 @@ with the pinned OpenModelica v1.27.1-minimal image, under the criteria frozen in
 before any simulation). Proof-only: nothing in `engine/` or `web/` imports it, it adds no
 dependency, and no result enters the product.
 
-Isolation (no privileged daemon, no bare chroot): every `omc` run is started by host uid
-65534 with every capability dropped and `no_new_privs`, inside fresh user, mount, pid, net,
-ipc and uts namespaces (`unshare`), with CPU, address-space, file-size, open-file and process
-limits (`prlimit`) and a wall-clock timeout. `scripts/mp01_sandbox/inner.sh` then builds a
-read-only root from the image's unpacked, digest-verified layers, mounts the MSL checkout
-read-only and one work directory read-write, pivots into it and drops the host root. The
-network namespace has only a down loopback interface, and the environment is cleared.
+Isolation (no privileged daemon, no bare chroot): every `omc` run is launched by host uid
+65534 holding no host capabilities and with `no_new_privs`, and creates fresh user, mount,
+pid, net, ipc and uts namespaces (`unshare`), under CPU, address-space, file-size, open-file
+and process limits (`prlimit`) and a wall-clock timeout. Inside its own user namespace the
+process is that namespace's root (uid 0, mapped to host uid 65534), with capabilities that
+apply only within that namespace. `scripts/mp01_sandbox/inner.sh` builds a root from the
+image's unpacked, digest-verified layers, remounted read-only, mounts the MSL checkout
+read-only and one work directory read-write, pivots into it and detaches the host root. The
+namespace root could undo the read-only remount, but the image files belong to host root,
+which is not mapped into the namespace, so host permissions still refuse writes. The network
+namespace has only an idle loopback, and the environment is cleared.
 
 What it is not: engineering validation of any motor, load or controller. A successful
 compiler or solver exit proves nothing about a real drive; every value is synthetic.

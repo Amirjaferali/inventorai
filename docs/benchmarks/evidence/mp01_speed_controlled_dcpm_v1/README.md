@@ -38,9 +38,12 @@ validation of any motor, load or controller, and nothing here enters the product
 
 ## Isolation (no privileged daemon, no bare chroot)
 Every `omc` run was started as follows:
-- **Process:** started by host uid 65534 with every capability dropped (inheritable and
-  bounding) and `no_new_privs` set.
+- **Process:** launched by host uid 65534 holding no host capabilities (inheritable and
+  bounding sets cleared) and with `no_new_privs` set.
 - **Namespaces:** fresh user, mount, pid, net, ipc and uts namespaces (`unshare`, unprivileged).
+  Inside its own user namespace, `omc` runs as that namespace's root (uid 0, mapped to host
+  uid 65534). Its capabilities apply only within that namespace; it holds no capability over
+  the host.
 - **Limits:** `prlimit` CPU 1500 s, address space 12 GB, file size 2 GB, 4096 open files,
   2048 processes; plus a 1800 s timeout.
 - **Filesystem:** `scripts/mp01_sandbox/inner.sh` builds a root from the unpacked image,
@@ -51,7 +54,9 @@ Every `omc` run was started as follows:
   - the MSL checkout, read-only;
   - one writable work directory.
 
-  It then runs `pivot_root` and detaches the host root.
+  It then runs `pivot_root` and detaches the host root. The namespace root could undo the
+  read-only remount, but the image files belong to host root, which is not mapped into the
+  namespace, so host permissions still refuse writes.
 - **Network:** each run's network table (`netdev`) shows only an idle loopback, and `omc`'s own
   attempt to fetch its package index failed name resolution.
 - **Environment:** cleared, so no project secrets and no inventor data are present. The
@@ -67,6 +72,9 @@ Every `omc` run was started as follows:
 The record's own model-derived values were read with `val()`: tauNominal 63.662 N·m,
 tauMax 95.493 N·m, IaMax 150 A, kPhi 0.6366 V·s/rad, kpw 60, Tiw 0.01 s.
 
+A is pre-registered as a smoke run only, so its K1 and K2 values are informative; the gates
+apply to B1 and B2.
+
 | Case | K1: speed back within ±2 % within 0.15 s of the load step | Peak speed dip | K2: max \|ia\| ≤ IaMax = 150 A |
 |---|---|---|---|
 | A | MET (never left the band) | 0.983 rad/s (0.66 %) | **NOT MET**: 159.10 A at t = 0.2059 s |
@@ -78,7 +86,8 @@ tauMax 95.493 N·m, IaMax 150 A, kPhi 0.6366 V·s/rad, kpw 60, Tiw 0.01 s.
   acceleration, not after the load step. The record's 1.5 × IaNominal limit is applied to the
   speed controller's output, and from it to the current reference; the actual armature current
   still overshoots by about 6 %. After the load step, |ia| peaks at 151.4 A (A and B1) and
-  151.8 A (B2).
+  151.8 A (B2). These after-load values (`max_abs_ia_after_load_step_A`) are descriptive
+  only, not part of the gate.
 - **K1 doesn't discriminate for B1:** the ±2 % band is wider than the 0.66 % dip.
   - As a post-hoc, exploratory measure only, B1 returns within ±0.5 % at 0.8137 s.
 - **In B2, the load exceeds the drive's torque limit:**
@@ -86,7 +95,7 @@ tauMax 95.493 N·m, IaMax 150 A, kPhi 0.6366 V·s/rad, kpw 60, Tiw 0.01 s.
   - the shaft keeps decelerating at about −21.2 rad/s²;
   - the speed doesn't recover.
 - **Exploratory torque balance (X1, not a gate):** tauElectrical + tauLoad − (Jr + JL)·a,
-  at 1.0 s, is about 1e-14 N·m in every case.
+  at 1.0 s, is between 4e-16 and 5e-14 N·m in every case.
 
 **Numerical sensitivity (N1, tolerance 1e-6 against 1e-8):** both B1 and B2 are NUMERICALLY
 STABLE.
@@ -101,8 +110,12 @@ STABLE.
 - The identity is computed over the image digest, the `omc` version, the MSL commit, the
   wrapper source, the inputs, the settings and the pre-registration.
 
-**Refusal (C):** without `JL_kgm2`, the run is refused before any model is written or `omc`
-is invoked.
+**Refusal (C):** without `JL_kgm2`, the input check raises before any wrapper source text is
+produced, so no model can be written and `omc` is not invoked.
+
+**Identity, a limit:** the result identity is computed from the inputs, so the same identity
+for the B1 repeat holds by construction. That B1 repeats with byte-identical numbers is shown
+separately by the result-file hashes.
 
 ## Files
 | File | Contents |
