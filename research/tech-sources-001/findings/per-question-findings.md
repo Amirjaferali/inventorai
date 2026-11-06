@@ -583,7 +583,7 @@ Supported relations and limits:
   (I_R + J · r²) EXPLICIT in SRC-067, for an ideal gearbox without efficiency loss, compliance or backlash. Steady speed as torque balance
   (dω/dt = 0) is IMPLIED by the equation, not stated.
 - C — combination. SRC-067 Eq. 1 combines A and B explicitly, with a linear viscous friction term, for its own system: PMSM simplified to a
-  DC-equivalent, rotor aerodynamic load, ideal gearbox; its time-constant result assumes L_a = 0. The MSL example (SRC-061) implements the same
+  DC-equivalent, rotor aerodynamic load, ideal gearbox; its time-constant result assumes L_a = 0. The MSL example (SRC-061) implements a similar [corrected 2026-11-06 from "the same"]
   combination in model code. A general combined claim for any mechanism is NOT established.
 
 Source-level corrections recorded: SRC-067's notation table gives K_m in "slug ft²" although it is torque per ampere (its text gives
