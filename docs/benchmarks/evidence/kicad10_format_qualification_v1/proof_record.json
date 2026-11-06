@@ -1,0 +1,1007 @@
+{
+ "accepted_versions": [
+  "20260206"
+ ],
+ "envelope": {
+  "env_0fp": {
+   "admission": [
+    "84",
+    "50"
+   ],
+   "bytes": 2214,
+   "fits_128KiB": true,
+   "max_depth": 4,
+   "seconds": 0.0002,
+   "tokens": 394
+  },
+  "env_100fp": {
+   "admission": [
+    "84",
+    "50"
+   ],
+   "bytes": 505324,
+   "fits_128KiB": false,
+   "max_depth": 6,
+   "seconds": 0.0476,
+   "tokens": 92694
+  },
+  "env_20fp": {
+   "admission": [
+    "84",
+    "50"
+   ],
+   "bytes": 61024,
+   "fits_128KiB": true,
+   "max_depth": 6,
+   "seconds": 0.0057,
+   "tokens": 11154
+  },
+  "env_40fp": {
+   "admission": [
+    "84",
+    "50"
+   ],
+   "bytes": 189244,
+   "fits_128KiB": false,
+   "max_depth": 6,
+   "seconds": 0.0179,
+   "tokens": 34414
+  },
+  "env_5fp": {
+   "admission": [
+    "84",
+    "50"
+   ],
+   "bytes": 12774,
+   "fits_128KiB": true,
+   "max_depth": 6,
+   "seconds": 0.0012,
+   "tokens": 2339
+  }
+ },
+ "fixtures": {
+  "env_0fp": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "618fd379bfc540dffe2ef3b4f9675ed0f4e935ec771ca4074a4b59bd96cc23ec",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "719ff076bcd0bdc3e68ad2c861e9ab61b16afd0bc8b3f46e49f10f0b7018b63a"
+  },
+  "env_100fp": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "618fd379bfc540dffe2ef3b4f9675ed0f4e935ec771ca4074a4b59bd96cc23ec",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "05c5e0a16b1aa0948be0c72a9525833c037844e3c189176131d2fb565384b2ed"
+  },
+  "env_20fp": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "618fd379bfc540dffe2ef3b4f9675ed0f4e935ec771ca4074a4b59bd96cc23ec",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "c6a35b30fd7efbaf1e0212d4f07438b9afa81733ea80083099c9861eb98ede64"
+  },
+  "env_40fp": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "618fd379bfc540dffe2ef3b4f9675ed0f4e935ec771ca4074a4b59bd96cc23ec",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "c159d7aade220878ba5faa64ff573356b5c41891e91426106369fd7bf1eeb908"
+  },
+  "env_5fp": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "618fd379bfc540dffe2ef3b4f9675ed0f4e935ec771ca4074a4b59bd96cc23ec",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "7b08c3530d728bdb2a0d527af135a03ec9cf152a084c2570cda0f3fa422bbee8"
+  },
+  "k10_board_v1": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "618fd379bfc540dffe2ef3b4f9675ed0f4e935ec771ca4074a4b59bd96cc23ec",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "44046051f7e602ed8ec6f90323f54030905d39117556c872a9229d82473f4e8d"
+  },
+  "k10_board_v1_lines": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "e8d0460b62c2cb385745010fdfae713ebd3d9cb4e5d748d4d11e9f563ad55b4f",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "d18dda072a82283897d28b8bd55ee16bf77ce1618d966686d4285634fdd7a072"
+  },
+  "k10_board_v2": {
+   "R1_mm": [
+    "80",
+    "50"
+   ],
+   "R2_mm": [
+    "80",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "80.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "964a6d22b2ab48b485c5e9ace181f0e6ad0170a7aab5a1d380d5846ffb515850",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "80",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "93146e7b96400b69d1c89989c1455cfd848508c21c9221578bad72461dda8007"
+  },
+  "k10_neg_cutout": {
+   "R1_refused": "unsupported Edge.Cuts shape: gr_circle",
+   "R2_refused": "unsupported export entities: CIRCLE, LINE",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "CIRCLE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "unsupported export entities: CIRCLE, LINE"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "a5e35688d010aec9e6ed994e6844b449e187c5a3f73d1d47fcac576b65b6fd92",
+   "format_version": "20260206",
+   "repeat_R2_refused": "unsupported export entities: CIRCLE, LINE",
+   "repeat_bytes_identical": true,
+   "source_sha256": "6c5e54939c9cc8cfcb21a1827f360bf70d59a269e5772680dac4dead7c6f018c"
+  },
+  "k10_neg_l_shape": {
+   "R1_refused": "6 outline segments, not the four of one rectangle",
+   "R2_refused": "6 outline segments, not the four of one rectangle",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "6 outline segments, not the four of one rectangle"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "273287603ed98976f2e86c42b6fa52fc7c3cd089fdd9b2c85edde48585c5f873",
+   "format_version": "20260206",
+   "repeat_R2_refused": "6 outline segments, not the four of one rectangle",
+   "repeat_bytes_identical": true,
+   "source_sha256": "386724d0a93849df4f07e37ecdee4fd634ee1f8bb48e3b9fb5173b15066e13df"
+  },
+  "k10_neg_no_outline": {
+   "R1_refused": "no Edge.Cuts outline",
+   "R2_refused": "no outline in the export",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "unsupported export entities: none"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "33e7721c1ea7268ab6e7de035f9eb36aec1bca4656e331647b409487e785fdc0",
+   "format_version": "20260206",
+   "repeat_R2_refused": "no outline in the export",
+   "repeat_bytes_identical": true,
+   "source_sha256": "7829957e7338e332a94dc7033609c47f00a6f41b9c34c8ad4c085579b7a6338f"
+  },
+  "k10_neg_open_outline": {
+   "R1_refused": "3 outline segments, not the four of one rectangle",
+   "R2_refused": "3 outline segments, not the four of one rectangle",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "3 outline segments, not the four of one rectangle"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "530b5764df7c5dc0af65a8d7fcc92db8c21ec3dc3b371827223841dd5be678d1",
+   "format_version": "20260206",
+   "repeat_R2_refused": "3 outline segments, not the four of one rectangle",
+   "repeat_bytes_identical": true,
+   "source_sha256": "2b60fa8a5982a0c87e983ec8f5c1923f7f8add0ca40a5ae9825db7b46a855253"
+  },
+  "k10_neg_rotated": {
+   "R1_refused": "a segment is not axis-aligned",
+   "R2_refused": "a segment is not axis-aligned",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "a segment is not axis-aligned"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "2938704b5f979e9beff41fec9165e861da9a6f8dd96e13e9cae8f70ed13b676c",
+   "format_version": "20260206",
+   "repeat_R2_refused": "a segment is not axis-aligned",
+   "repeat_bytes_identical": true,
+   "source_sha256": "211ab533b6f3b7e01f2f8a081158edc37e391d0347c17439779906be59e8ac54"
+  },
+  "k10_neg_rounded_corners": {
+   "R1_refused": "unsupported Edge.Cuts shape: gr_arc",
+   "R2_refused": "unsupported export entities: ARC, LINE",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "ARC",
+     "ARC",
+     "ARC",
+     "ARC",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "unsupported export entities: ARC, LINE"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "e503ce900e4dceb184e32d1a123e484514373222ddc8fac471a193af0c9cf066",
+   "format_version": "20260206",
+   "repeat_R2_refused": "unsupported export entities: ARC, LINE",
+   "repeat_bytes_identical": true,
+   "source_sha256": "046e8fa8149bfda5e69b3a99816fdc16139162f1f423d28b86365909f8fbee01"
+  },
+  "k10_neg_two_boards": {
+   "R1_refused": "2 separate rectangles on Edge.Cuts, not one outline",
+   "R2_refused": "8 outline segments, not the four of one rectangle",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "8 outline segments, not the four of one rectangle"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "4ae6b0fc5bcfe4b255416df5c2b5e7acf71044157e28349b0f491f1cac1bc32e",
+   "format_version": "20260206",
+   "repeat_R2_refused": "8 outline segments, not the four of one rectangle",
+   "repeat_bytes_identical": true,
+   "source_sha256": "4936238699ba03a7286719c2357da8820a0a778e5589ca3a9f14596e873742e1"
+  },
+  "txt_angle_on_gr_line": {
+   "R1_refused": "unrecognised field on gr_line: angle",
+   "R2_refused": "KiCad export failed; no output accepted",
+   "R3": {
+    "refused": "export failed"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": false,
+   "format_version": "20260206",
+   "source_sha256": "0d83389d66a837c6fd31733b66d2303203c303929b2614db0bbbb1cdf64e5f81"
+  },
+  "txt_doubled_lines": {
+   "R1_refused": "not two horizontal and two vertical sides",
+   "R2_refused": "not two horizontal and two vertical sides",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "not two horizontal and two vertical sides"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "7990abc7b9597b4fda70bd606bac5980721c3b81e375e9f087d883b2892fd696",
+   "format_version": "20260206",
+   "repeat_R2_refused": "not two horizontal and two vertical sides",
+   "repeat_bytes_identical": true,
+   "source_sha256": "78d398953cc9e7eb7d6e0412ce0c800f4929706f178a374b5ad93c1d4ef4b3cd"
+  },
+  "txt_other_version": {
+   "R1_refused": "board-file format version 20221018 is not an accepted observed version",
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "618fd379bfc540dffe2ef3b4f9675ed0f4e935ec771ca4074a4b59bd96cc23ec",
+   "format_version": "20221018",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "fe9d6189fc1e46a938f172fe3bda32210921a81a20fcf3c5dcf129f074ecdcda"
+  },
+  "txt_unknown_field_on_gr_rect": {
+   "R1_refused": "unrecognised field on gr_rect: rotation",
+   "R2_refused": "KiCad export failed; no output accepted",
+   "R3": {
+    "refused": "export failed"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": false,
+   "format_version": "20260206",
+   "source_sha256": "067197f1fa8c279581e1d8e2146fdb6170f3ca979c94a601bf753c147027fd25"
+  },
+  "up_board_v1": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "618fd379bfc540dffe2ef3b4f9675ed0f4e935ec771ca4074a4b59bd96cc23ec",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "096b72edb3b3a3704a63d2905520b8c25d29566811addd2fd8d3a1063b2487ec"
+  },
+  "up_board_v1_lines": {
+   "R1_mm": [
+    "84",
+    "50"
+   ],
+   "R2_mm": [
+    "84",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "84.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "e8d0460b62c2cb385745010fdfae713ebd3d9cb4e5d748d4d11e9f563ad55b4f",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "84",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "067cc1d3f7c653459ace97b1334ceb26d6cf3a84257f8c9245035bc255802d07"
+  },
+  "up_board_v2": {
+   "R1_mm": [
+    "80",
+    "50"
+   ],
+   "R2_mm": [
+    "80",
+    "50"
+   ],
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "mm": [
+     "80.0",
+     "50.0"
+    ]
+   },
+   "admitted": true,
+   "agree": true,
+   "export_exit_ok": true,
+   "export_sha256": "964a6d22b2ab48b485c5e9ace181f0e6ad0170a7aab5a1d380d5846ffb515850",
+   "format_version": "20260206",
+   "repeat_R2_mm": [
+    "80",
+    "50"
+   ],
+   "repeat_bytes_identical": true,
+   "source_sha256": "70b681685d456e89982082ca7d87eb50b5ec1f48840ae0626a3f42204e12be43"
+  },
+  "up_neg_cutout": {
+   "R1_refused": "unsupported Edge.Cuts shape: gr_circle",
+   "R2_refused": "unsupported export entities: CIRCLE, LINE",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "CIRCLE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "unsupported export entities: CIRCLE, LINE"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "a5e35688d010aec9e6ed994e6844b449e187c5a3f73d1d47fcac576b65b6fd92",
+   "format_version": "20260206",
+   "repeat_R2_refused": "unsupported export entities: CIRCLE, LINE",
+   "repeat_bytes_identical": true,
+   "source_sha256": "2c6bbcb4e4563c72e3e5f17e9ac38c546ebced742cc4fe53093c11840642afe6"
+  },
+  "up_neg_l_shape": {
+   "R1_refused": "6 outline segments, not the four of one rectangle",
+   "R2_refused": "6 outline segments, not the four of one rectangle",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "6 outline segments, not the four of one rectangle"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "273287603ed98976f2e86c42b6fa52fc7c3cd089fdd9b2c85edde48585c5f873",
+   "format_version": "20260206",
+   "repeat_R2_refused": "6 outline segments, not the four of one rectangle",
+   "repeat_bytes_identical": true,
+   "source_sha256": "ba563ec23a5dc1cfc41700ea52374320052ed74ec030ec0e253416f9fba36c07"
+  },
+  "up_neg_no_outline": {
+   "R1_refused": "no Edge.Cuts outline",
+   "R2_refused": "no outline in the export",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "unsupported export entities: none"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "33e7721c1ea7268ab6e7de035f9eb36aec1bca4656e331647b409487e785fdc0",
+   "format_version": "20260206",
+   "repeat_R2_refused": "no outline in the export",
+   "repeat_bytes_identical": true,
+   "source_sha256": "d2c7c5de0362899596814b891f9d29c8efdf5b8b6ac1e30419bdc36634dc1f55"
+  },
+  "up_neg_open_outline": {
+   "R1_refused": "3 outline segments, not the four of one rectangle",
+   "R2_refused": "3 outline segments, not the four of one rectangle",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "3 outline segments, not the four of one rectangle"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "530b5764df7c5dc0af65a8d7fcc92db8c21ec3dc3b371827223841dd5be678d1",
+   "format_version": "20260206",
+   "repeat_R2_refused": "3 outline segments, not the four of one rectangle",
+   "repeat_bytes_identical": true,
+   "source_sha256": "937d58a2fdd224f1f39e7786b034dec212e5c5d0a8b816da2aee0021eb642d0c"
+  },
+  "up_neg_rotated": {
+   "R1_refused": "a segment is not axis-aligned",
+   "R2_refused": "a segment is not axis-aligned",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "a segment is not axis-aligned"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "2938704b5f979e9beff41fec9165e861da9a6f8dd96e13e9cae8f70ed13b676c",
+   "format_version": "20260206",
+   "repeat_R2_refused": "a segment is not axis-aligned",
+   "repeat_bytes_identical": true,
+   "source_sha256": "1014c46fb04698c2bbfd0df1e29ab77e94e189eb5756be794f01d7546db9e4c1"
+  },
+  "up_neg_rounded_corners": {
+   "R1_refused": "unsupported Edge.Cuts shape: gr_arc",
+   "R2_refused": "unsupported export entities: ARC, LINE",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "ARC",
+     "ARC",
+     "ARC",
+     "ARC",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "unsupported export entities: ARC, LINE"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "e503ce900e4dceb184e32d1a123e484514373222ddc8fac471a193af0c9cf066",
+   "format_version": "20260206",
+   "repeat_R2_refused": "unsupported export entities: ARC, LINE",
+   "repeat_bytes_identical": true,
+   "source_sha256": "76aa117969ff6e453af1b984c43fa128d4141af486353a810b455b8db807582b"
+  },
+  "up_neg_two_boards": {
+   "R1_refused": "2 separate rectangles on Edge.Cuts, not one outline",
+   "R2_refused": "8 outline segments, not the four of one rectangle",
+   "R3": {
+    "dxfversion": "AC1018",
+    "entities": [
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE",
+     "LINE"
+    ],
+    "insunits": 4,
+    "measurement": 1,
+    "refused": "8 outline segments, not the four of one rectangle"
+   },
+   "admitted": false,
+   "agree": false,
+   "export_exit_ok": true,
+   "export_sha256": "4ae6b0fc5bcfe4b255416df5c2b5e7acf71044157e28349b0f491f1cac1bc32e",
+   "format_version": "20260206",
+   "repeat_R2_refused": "8 outline segments, not the four of one rectangle",
+   "repeat_bytes_identical": true,
+   "source_sha256": "99fca340dcab41b524f9a56595dd0ee7cd0c3e72cf645842482f5a47d9ad0c93"
+  }
+ },
+ "image_inventory": {
+  "image_label_licence": "GPL-3.0-or-later",
+  "image_label_source": "https://gitlab.com/kicad/kicad-ci/kicad-cli-docker",
+  "installed_packages": 634,
+  "kicad_copyright_notice": null,
+  "kicad_packages": [],
+  "os": "Debian GNU/Linux 13 (trixie)",
+  "package_list": "image_packages.txt"
+ },
+ "isolation": "the #934 sandbox runner, unchanged (see the module docstring)",
+ "kicad_cli_help_raw_sha256": "2afe40f4b51f8592bc2786179a70261f751a27746d8c02e7ececfe762488b0e5",
+ "observed_format_versions": [
+  "20260206"
+ ],
+ "preregistration_sha256": "31206692fb43144dff022e973f7387bcf1356342280008f9a38e7c962126cf43",
+ "proof": "KICAD10-FORMAT-QUALIFICATION-PROOF-01",
+ "sessions": {
+  "export": {
+   "kicad_cli_version": "10.0.8",
+   "returncode": 0,
+   "status": {
+    "exports/env_0fp": 0,
+    "exports/env_100fp": 0,
+    "exports/env_20fp": 0,
+    "exports/env_40fp": 0,
+    "exports/env_5fp": 0,
+    "exports/k10_board_v1": 0,
+    "exports/k10_board_v1_inch": 0,
+    "exports/k10_board_v1_lines": 0,
+    "exports/k10_board_v2": 0,
+    "exports/k10_neg_cutout": 0,
+    "exports/k10_neg_l_shape": 0,
+    "exports/k10_neg_no_outline": 0,
+    "exports/k10_neg_open_outline": 0,
+    "exports/k10_neg_rotated": 0,
+    "exports/k10_neg_rounded_corners": 0,
+    "exports/k10_neg_two_boards": 0,
+    "exports/txt_angle_on_gr_line": 3,
+    "exports/txt_doubled_lines": 0,
+    "exports/txt_other_version": 0,
+    "exports/txt_unknown_field_on_gr_rect": 3,
+    "exports/up_board_v1": 0,
+    "exports/up_board_v1_lines": 0,
+    "exports/up_board_v2": 0,
+    "exports/up_neg_cutout": 0,
+    "exports/up_neg_l_shape": 0,
+    "exports/up_neg_no_outline": 0,
+    "exports/up_neg_open_outline": 0,
+    "exports/up_neg_rotated": 0,
+    "exports/up_neg_rounded_corners": 0,
+    "exports/up_neg_two_boards": 0,
+    "exports_repeat/env_0fp": 0,
+    "exports_repeat/env_100fp": 0,
+    "exports_repeat/env_20fp": 0,
+    "exports_repeat/env_40fp": 0,
+    "exports_repeat/env_5fp": 0,
+    "exports_repeat/k10_board_v1": 0,
+    "exports_repeat/k10_board_v1_lines": 0,
+    "exports_repeat/k10_board_v2": 0,
+    "exports_repeat/k10_neg_cutout": 0,
+    "exports_repeat/k10_neg_l_shape": 0,
+    "exports_repeat/k10_neg_no_outline": 0,
+    "exports_repeat/k10_neg_open_outline": 0,
+    "exports_repeat/k10_neg_rotated": 0,
+    "exports_repeat/k10_neg_rounded_corners": 0,
+    "exports_repeat/k10_neg_two_boards": 0,
+    "exports_repeat/txt_angle_on_gr_line": 3,
+    "exports_repeat/txt_doubled_lines": 0,
+    "exports_repeat/txt_other_version": 0,
+    "exports_repeat/txt_unknown_field_on_gr_rect": 3,
+    "exports_repeat/up_board_v1": 0,
+    "exports_repeat/up_board_v1_lines": 0,
+    "exports_repeat/up_board_v2": 0,
+    "exports_repeat/up_neg_cutout": 0,
+    "exports_repeat/up_neg_l_shape": 0,
+    "exports_repeat/up_neg_no_outline": 0,
+    "exports_repeat/up_neg_open_outline": 0,
+    "exports_repeat/up_neg_rotated": 0,
+    "exports_repeat/up_neg_rounded_corners": 0,
+    "exports_repeat/up_neg_two_boards": 0
+   }
+  },
+  "generate": {
+   "log": "'IFF file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows icon file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows cursor file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows animated cursor file'\n01:14:26: Debug: Adding duplicate image handler for 'TGA file'\n01:14:26: Debug: Adding duplicate image handler for 'XPM file'\n01:14:26: Debug: Adding duplicate image handler for 'PNG file'\n01:14:26: Debug: Adding duplicate image handler for 'JPEG file'\n01:14:26: Debug: Adding duplicate image handler for 'TIFF file'\n01:14:26: Debug: Adding duplicate image handler for 'GIF file'\n01:14:26: Debug: Adding duplicate image handler for 'PNM file'\n01:14:26: Debug: Adding duplicate image handler for 'PCX file'\n01:14:26: Debug: Adding duplicate image handler for 'IFF file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows icon file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows cursor file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows animated cursor file'\n01:14:26: Debug: Adding duplicate image handler for 'TGA file'\n01:14:26: Debug: Adding duplicate image handler for 'XPM file'\n01:14:26: Debug: Adding duplicate image handler for 'PNG file'\n01:14:26: Debug: Adding duplicate image handler for 'JPEG file'\n01:14:26: Debug: Adding duplicate image handler for 'TIFF file'\n01:14:26: Debug: Adding duplicate image handler for 'GIF file'\n01:14:26: Debug: Adding duplicate image handler for 'PNM file'\n01:14:26: Debug: Adding duplicate image handler for 'PCX file'\n01:14:26: Debug: Adding duplicate image handler for 'IFF file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows icon file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows cursor file'\n01:14:26: Debug: Adding duplicate image handler for 'Windows animated cursor file'\n01:14:26: Debug: Adding duplicate image handler for 'TGA file'\n01:14:26: Debug: Adding duplicate image handler for 'XPM file'\nPCBNEW_VERSION=10.0.8\nGEN_DONE\nEXIT=0\n",
+   "returncode": 0
+  }
+ },
+ "text_controls_edited": {
+  "txt_angle_on_gr_line": true,
+  "txt_doubled_lines": true,
+  "txt_other_version": true,
+  "txt_unknown_field_on_gr_rect": true
+ },
+ "tool": {
+  "blobs_verified": true,
+  "config_digest": "sha256:435c07bf74fcd24dcb5ad20540c96451ae3d6f8cd1abffea796981acc9921c02",
+  "image": "kicad/kicad:10.0.8",
+  "index_digest": "sha256:3f4a01786dfbe803a65f345c3342b765db9add913f5e9448f8356793714ddc34",
+  "layers": [
+   "sha256:cb55723b1d3a9f4189365b821950d6405d856a2551bbeb5f4c7625e35fa1e72e",
+   "sha256:1f61b104e0c6f3b5da17f2e781fc944f48de453e44e2573b13ca3d50734ae336",
+   "sha256:95b2506f5681911dbfb167c0eaacd648516ce95d313d2a4f2e9ccf2ba8d75d95",
+   "sha256:dfafcdbbb653984e44474487cea7ac45b365b4693d8fa9160b8f020bddbee44b",
+   "sha256:6ca25f79eb5feaff38f9db0f54c742b1a6e2974495536df415cbcf91f25d73e8",
+   "sha256:d8b8cb89be51af2d474ec3d88e15d1df98b97a86a7f9ca3dc9d49f1bc1717fdc",
+   "sha256:755d2be61e73e84ae6f72bdb18a05e90992afa6a3dcb1fba2b44ca904746ec88",
+   "sha256:3835b08b0d341e9c6b9ad8580c4647dc63ce29e4a628d8bc99cf0ac007e5d5ee",
+   "sha256:a7e621524a5f64f1718f48eb3600da4b758a8608b1df3d4f7b986c64a1d3f11c",
+   "sha256:8364150fee23fa3c5c4de5c760aa61f196dc4946ef47b5bd76d82f8ce8c737a2",
+   "sha256:4138fe067e31a83ed0be228500d071856f648275db374f4ecf9284a36931ff3a",
+   "sha256:918c8bb7c0474ad6aceca2ee213448ef401eb7ca8b730af44bf25e0ddbc90468",
+   "sha256:2fc424e4212336e22617d80435f0ec8832c04c5429b731637ba8dfd0b55b9a1e"
+  ],
+  "linux_amd64_manifest": "sha256:05f6ac957e351bbbd9e1f9c996be997f61948ed9f94e0c3cab336bfcaf60161c"
+ },
+ "units_control": {
+  "export_exit_ok": true,
+  "reason": "export is not metric ($MEASUREMENT 0)",
+  "refused": true
+ }
+}
