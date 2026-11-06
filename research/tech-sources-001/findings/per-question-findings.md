@@ -597,3 +597,42 @@ licence, SRC-066), a University of Maryland contractor report, Aerospace Corpora
 requirement source, numeric applicability limits, motor and load parameters (measurement or documentation), foreign rights for SRC-067.
 This is not method admission and not a compatibility finding: Mechanical owns load requirements, Electrical / Electronics owns motor and drive
 characteristics, Stage 15 composes declared interface statements; D4 remains blocked.
+
+## Q-02 IP compliance repair and targeted follow-up (Owner 2026-11-06) — NOT a campaign run
+
+The campaign stays STOPPED (20 / 20 runs). Two investigations are preserved here: the specialist assignment above (SRC-065…067) and a
+targeted OpenAlex / Perplexity follow-up on R-01 (8 of 8 searches, 1 new primary source, SRC-068; SRC-004 re-inspected). The claim-level
+evidence types and IP classifications are in `evidence/ip-and-reuse-register.md`, "Q-02 claim-level classification (2026-11-06)".
+
+Preserved scientific findings (exact provenance in the provenance register):
+- Current vs electromagnetic torque (A-1, A-2, A-3): EXPLICIT in SRC-065 (model code) and SRC-067 Eqs. 1–2; constant permanent-magnet flux,
+  linear air gap, no saturation, ripple, cogging or armature reaction; SRC-067's PMSM is a DC-equivalent simplification.
+- Net shaft torque vs angular acceleration (B-1): EXPLICIT in SRC-065 and SRC-067; torque balance at constant speed (B-2) is IMPLIED from it.
+- Reflected inertia (B-3) and gear-ratio conventions: SRC-067 refers the high-speed drive inertia to the rotor side as J·r² (r = "drive system
+  gear ratio"; motor speed = r·Ω IMPLIED by its terms); SRC-004 refers a load inertia to the motor side as I / R² (R = reduction ratio, motor
+  faster, from equal kinetic energy). The two are one relation in two conventions (IMPLIED); both assume an ideal gearbox.
+- Assumptions: friction is linear viscous in SRC-067 (ASSUMPTION), static friction appears only as a breakaway component in SRC-004; no
+  gearbox efficiency, compliance or backlash in any clean relation; no saturation; motor type is permanent-magnet DC (SRC-065) or a
+  DC-equivalent PMSM (SRC-067); induction (SRC-068) and DC (SRC-005) statements are type-specific and IP-UNRESOLVED.
+- Limits of the NASA rotor model (C-1): SRC-067 Eq. 1 is explicit only for its eVTOL rotor drive (aerodynamic torque, ideal gearbox, viscous
+  friction); its time constant (Eqs. 3–5) assumes L_a = 0. It is the authors' simplification of an approach that "follows similar lines" to
+  their Ref. 9 (Mills and Datta, third party, not inspected). REFERENCE-ONLY; never generalized to an arbitrary mechanism.
+- Starting, accelerating and running torque requirements (D-1…D-5): EXPLICIT in SRC-004 only, IP-UNRESOLVED. SRC-004's equation (1) form is
+  UNVERIFIED (not legible in text extraction).
+
+SRC-004 authorship residual (narrowed, NOT cleared): the title page names the author "Research Engineer, Army Air Mobility Research and
+Development Laboratories, NASA Lewis Research Center" and says the paper was "proposed for presentation" at an ASME seminar on 1973-05-30;
+NTRS records the ASME meeting and a GOV_PUBLIC_USE_PERMITTED determination with belongsToUsGov false. A position title and affiliation are not
+documented federal employment, and the NTRS flags are not authorship evidence (contradictions log), so SRC-004 stays IP-UNRESOLVED.
+
+Rejected or not usable (targeted follow-up): see `evidence/abstention-log.md` (2026-11-06 rows).
+
+Remaining motor–mechanism compatibility gaps: no clean source for the load-requirement claims (breakaway, accelerating, running torque over
+the speed range); no clean reflected-load-torque relation including transmission efficiency; motor torque–speed capability covered only by
+type-specific, IP-UNRESOLVED sources (DC: SRC-005; induction: SRC-068); no thermal / duty (continuous vs intermittent rating) source in clean
+form; no compliance, backlash or saturation treatment; motor and load parameters still need measurement or documentation; foreign rights for
+SRC-067 undetermined. Ownership stays DR-1 Option C (Mechanical: load requirements; Electrical / Electronics: motor and drive; Stage 15:
+declared interface statements); D4 remains blocked.
+
+Status: A and B QUALIFIED-CANDIDATE (relation-level, conditional rights); C PARTIAL (rotor-specific, REFERENCE-ONLY); Q-02 / R-01 PARTIAL /
+IP-UNRESOLVED. No method admission, compatibility conclusion, product use or legal clearance.

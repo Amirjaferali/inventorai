@@ -39,3 +39,9 @@ Append-only.
 | 2026-10-30 | R-10 (run 19) | Navy NAVFAC MCM student guide; USDA Forest Service RP NC-73 | Proxy refused ncc.navfac.navy.mil and www.nrs.fs.usda.gov — not inspected |
 | 2026-10-30 | R-11 (run 20) | NIST news release 2019 (draft NISTIR 8259), SP 800-213, NIST consumer IoT labelling criteria, NIST capability catalog | All in the NISTIR 8259 lineage (8259A mixed authorship) — not independent; not registered |
 | 2026-10-30 | R-12 (run 20) | NASA TP-2003-212634, PD-ED-1233, ISS researcher's guide, Goddard outgassing database page | Screening criteria stated by reference to ASTM E 595 (standard-derived) — not relied on for the pass values |
+| 2026-11-06 | R-01 (targeted follow-up) | NTRS 19780012167 (Kansas Univ., grant NSG-1421), 19930010757 (Alabama Univ., NAG8-240), 19940020792 (Carnegie-Mellon), 19980017427 (Memphis Univ.) | University authorship — excluded under the rights screen |
+| 2026-11-06 | R-01 (targeted follow-up) | NTRS 19680008027 (NAS8-5407), 19760015172 (NAS9-14331), 19670026228 (General Dynamics, NAS8-11494), 19900019741 (Ford Aerospace) | Contractor authorship — excluded |
+| 2026-11-06 | R-01 (targeted follow-up) | NTRS 20080023060 (Lockheed Martin, 39th Aerospace Mechanisms Symposium) | Contractor author; its reflected-inertia relation is taken from its own reference [3] — excluded |
+| 2026-11-06 | R-01 (targeted follow-up) | NASA/TM-20230010737 | D²L electromagnetic sizing equation — not the load-torque claim |
+| 2026-11-06 | Q-02 (IP compliance repair) | OpenStax web editions (openstax.org) | Not inspected (host refused); no licence inferred from the GitHub repository or from other OpenStax books |
+| 2026-11-06 | Q-02 (IP compliance repair) | SRC-067 Ref. 9 (Mills and Datta, VFS Annual Forum) | Third-party publication; not inspected and not relied on |
