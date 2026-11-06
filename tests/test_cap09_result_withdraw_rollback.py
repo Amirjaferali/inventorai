@@ -171,7 +171,10 @@ _LATER_CHANGED_TABLES = ("subsystem_interface_observations", "component_prototyp
                          "constraint_acceptance_preparations",
                          "subsystem_temperature_change_declarations",
                          "planar_clearance_revisions",
-                         "subsystem_interface_participation_epochs")
+                         "subsystem_interface_participation_epochs",
+                         # AMENDED at BOARD-OUTLINE-SOURCE-BINDING-01: one more
+                         # additive insert-only table (its own tests pin it).
+                         "planar_clearance_source_bindings")
 
 
 def _schema(path):

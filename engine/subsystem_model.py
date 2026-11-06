@@ -1815,6 +1815,26 @@ MAX_PLANAR_CLEARANCE_REVISION_NO = MAX_PLANAR_CLEARANCE_CORRECTIONS + 1
 MAX_PLANAR_CLEARANCE_TEXT_LENGTH = 300
 MAX_PLANAR_CLEARANCE_VERSION_TEXT = 80
 PLANAR_CLEARANCE_BASIS_FIELDS = ("basis_board", "basis_region", "basis_clearance")
+
+# BOARD-OUTLINE-SOURCE-BINDING-01 - the file-linked declaration shape. A v1
+# declaration is source-free; a v2 declaration carries exactly ONE source binding:
+# the identity, size and measured outline of ONE inspected KiCad board file and
+# how its axes map onto the declared board. The binding is NOT the inventor's
+# value and verifies nothing: the comparison always uses the DECLARED values, and
+# whether the file outline equals them (EXACT / DIFFERS) is derived on read. The
+# Mechanical method and its declaration constant are unchanged.
+PLANAR_CLEARANCE_DECLARATION_V2 = "planar-clearance-declaration/2"
+PLANAR_CLEARANCE_DECLARATION_VERSIONS = (_pcc.DECLARATION_VERSION,
+                                         PLANAR_CLEARANCE_DECLARATION_V2)
+PCC_SOURCE_KIND_KICAD = "kicad_pcb"
+PCC_AXIS_FILE_X_IS_BOARD_X = "file_x_is_board_x"
+PCC_AXIS_FILE_X_IS_BOARD_Y = "file_x_is_board_y"
+PCC_SOURCE_AXIS_ASSIGNMENTS = (PCC_AXIS_FILE_X_IS_BOARD_X, PCC_AXIS_FILE_X_IS_BOARD_Y)
+PCC_SOURCE_MAX_BYTES = 128 * 1024
+_HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
+# Agreement of the file outline with the declared board (derived, never stored).
+PCC_SOURCE_EXACT = "EXACT"
+PCC_SOURCE_DIFFERS = "DIFFERS"
 _PLANAR_CLEARANCE_ID_RE = re.compile(r"^pcd-[0-9a-f]{32}$")
 _PLANAR_CLEARANCE_REVISION_ID_RE = re.compile(r"^pcr-[0-9a-f]{32}$")
 
@@ -1867,6 +1887,136 @@ class PlanarClearanceNotEligible(PlanarClearanceError):
     interaction (or are not active components of this project)."""
 
 
+class PlanarClearanceUnlinkNotAcknowledged(PlanarClearanceError):
+    """With file-linked writes off, a correction of a file-linked declaration
+    would save it without its file link, and the inventor has not explicitly
+    acknowledged that for the CURRENT revision (missing or stale)."""
+
+
+class PlanarClearanceSourceMismatch(PlanarClearanceError):
+    """A file-linked declaration no longer matches what was inspected (the
+    board, its revision or participation, or the declaration history changed),
+    or a source binding is malformed or reused."""
+
+
+@dataclass(frozen=True)
+class PlanarClearanceSource:
+    """ONE source binding of a v2 revision. ``file_x`` / ``file_y`` are the
+    outline dimensions along the FILE's own axes (exact decimal text);
+    ``axis_assignment`` says which declared board axis the file's x maps onto
+    (bound by the save). A fresh inspection carries ``nonce_hash`` (the hash of
+    its single-use inspection nonce, never the token); a carried-forward binding
+    carries ``carry_forward_from`` (the revision whose binding it repeats) and
+    no nonce hash."""
+    kind: str
+    source_sha256: str
+    source_size: int
+    format_id: str
+    reader_id: str
+    rule_id: str
+    file_x: str
+    file_y: str
+    axis_assignment: str
+    inspected_at: str
+    nonce_hash: Optional[str]
+    carry_forward_from: Optional[str]
+
+    def board_dims(self):
+        """The file outline as ``(board_x, board_y)`` under the axis assignment."""
+        if self.axis_assignment == PCC_AXIS_FILE_X_IS_BOARD_Y:
+            return self.file_y, self.file_x
+        return self.file_x, self.file_y
+
+    def same_inspection(self, other):
+        """True when both bindings describe the same inspected outline and axis
+        assignment (the nonce hash / carry-forward link aside)."""
+        keys = ("kind", "source_sha256", "source_size", "format_id", "reader_id",
+                "rule_id", "file_x", "file_y", "axis_assignment", "inspected_at")
+        return all(getattr(self, k) == getattr(other, k) for k in keys)
+
+
+def check_planar_clearance_source(source):
+    """Shape-validate ONE stored or proposed source binding."""
+    if not isinstance(source, PlanarClearanceSource):
+        raise PlanarClearanceError("not a source binding")
+    if source.kind != PCC_SOURCE_KIND_KICAD:
+        raise PlanarClearanceError("unknown source kind")
+    if not isinstance(source.source_sha256, str) or not _HEX64_RE.match(source.source_sha256):
+        raise PlanarClearanceError("source digest malformed")
+    if not _is_count(source.source_size, PCC_SOURCE_MAX_BYTES) or source.source_size < 1:
+        raise PlanarClearanceError("source size malformed")
+    for text in (source.format_id, source.reader_id, source.rule_id, source.inspected_at):
+        if not valid_subsystem_text(text, MAX_PLANAR_CLEARANCE_VERSION_TEXT):
+            raise PlanarClearanceError("source identity malformed")
+    for value in (source.file_x, source.file_y):
+        if not isinstance(value, str) or not _pcc.is_admitted_value("board_x", value):
+            raise PlanarClearanceError("source dimension malformed")
+    if source.axis_assignment not in PCC_SOURCE_AXIS_ASSIGNMENTS:
+        raise PlanarClearanceError("unknown axis assignment")
+    fresh = source.nonce_hash is not None
+    if fresh == (source.carry_forward_from is not None):
+        raise PlanarClearanceError("a binding is either fresh or carried forward")
+    if fresh and (not isinstance(source.nonce_hash, str)
+                  or not _HEX64_RE.match(source.nonce_hash)):
+        raise PlanarClearanceError("nonce hash malformed")
+    if not fresh and not is_valid_planar_clearance_revision_id(source.carry_forward_from):
+        raise PlanarClearanceError("carry-forward link malformed")
+    return source
+
+
+def planar_clearance_source_agreement(material):
+    """``None`` for a source-free material; otherwise ``(state, changed_axes,
+    file_dims, declared_dims)``: EXACT when both declared board dimensions are
+    entered and equal the file outline under the axis assignment by exact
+    decimal comparison (84 == 84.0); DIFFERS otherwise. A value not entered or
+    marked unknown never counts as EXACT (it is listed as changed)."""
+    source = getattr(material, "source", None)
+    if source is None:
+        return None
+    declared = material.values_map()
+    file_dims = source.board_dims()
+    changed = []
+    for axis, role, file_value in (("x", "board_x", file_dims[0]),
+                                   ("y", "board_y", file_dims[1])):
+        value = declared.get(role)
+        parsed = _pcc.parse_value(value) if isinstance(value, str) else None
+        if parsed is None or parsed != _pcc.parse_value(file_value):
+            changed.append(axis)
+    state = PCC_SOURCE_EXACT if not changed else PCC_SOURCE_DIFFERS
+    return (state, tuple(changed), file_dims,
+            (declared.get("board_x"), declared.get("board_y")))
+
+
+# What a region- or clearance-only correction may change (everything else must
+# stay exactly as it was for a binding to be carried forward).
+_PCC_CARRY_VALUE_ROLES = ("region_x", "region_y", _pcc.CLEARANCE_ROLE)
+_PCC_CARRY_BASIS = ("basis_region", "basis_clearance")
+
+
+def carry_forward_allowed(previous, material):
+    """True when a correction to ``material`` may carry ``previous``'s source
+    binding forward: ``previous`` is file-linked and the correction changes only
+    the region (its values, description and note) and / or the clearance (its
+    value and note) - the board and enclosure identities, revisions and
+    participation generations, both declared board dimensions, the board note
+    and every applicability answer stay exactly as they were."""
+    if previous is None or getattr(previous, "source", None) is None:
+        return False
+    keys = ("interface_id", "board_component_id", "enclosure_component_id",
+            "board_component_revision", "enclosure_component_revision",
+            "board_participation_epoch", "enclosure_participation_epoch",
+            "axis_pairing", "applicability", "method_id", "method_version")
+    if any(getattr(previous, k) != getattr(material, k) for k in keys):
+        return False
+    old, new = previous.values_map(), material.values_map()
+    if any(old.get(r) != new.get(r) for r in _pcc.VALUE_ROLES
+           if r not in _PCC_CARRY_VALUE_ROLES):
+        return False
+    ob, nb = previous.basis_map(), material.basis_map()
+    return all(ob.get(f) == nb.get(f) for f in PLANAR_CLEARANCE_BASIS_FIELDS
+               if f not in _PCC_CARRY_BASIS)
+
+
 @dataclass(frozen=True)
 class PlanarClearanceMaterial:
     """The COMPLETE inventor material of one revision. ``values`` follows
@@ -1888,6 +2038,7 @@ class PlanarClearanceMaterial:
     method_id: str
     method_version: str
     declaration_version: str
+    source: Optional["PlanarClearanceSource"] = None
 
     def values_map(self):
         return dict(zip(_pcc.VALUE_ROLES, self.values))
@@ -2048,6 +2199,12 @@ def check_planar_clearance_material(material, interfaces, inventory):
     for text in (material.method_id, material.method_version, material.declaration_version):
         if not valid_subsystem_text(text, MAX_PLANAR_CLEARANCE_VERSION_TEXT):
             raise PlanarClearanceError("version identity malformed")
+    # BOARD-OUTLINE-SOURCE-BINDING-01: v2 carries exactly one binding; every
+    # other declaration shape carries none.
+    if material.declaration_version == PLANAR_CLEARANCE_DECLARATION_V2:
+        check_planar_clearance_source(material.source)
+    elif material.source is not None:
+        raise PlanarClearanceError("a source-free declaration carries a binding")
     return material
 
 
@@ -2088,7 +2245,7 @@ def project_planar_clearance(revisions, interfaces, inventory):
         by_id[rev.declaration_id].append(rev)
     if len(order) > MAX_PLANAR_CLEARANCE_IDENTITIES_PER_PROJECT:
         raise PlanarClearanceError("too many declaration identities")
-    records, active = [], set()
+    records, active, nonces = [], set(), set()
     for declaration_id in order:
         history = sorted(by_id[declaration_id], key=lambda r: r.revision_no)
         if [r.revision_no for r in history] != list(range(len(history))):
@@ -2103,6 +2260,20 @@ def project_planar_clearance(revisions, interfaces, inventory):
             raise PlanarClearanceError("too many corrections")
         if len({r.interface_id for r in history}) != 1:
             raise PlanarClearanceError("declaration changed interaction")
+        previous = None
+        for rev in history:
+            source = rev.material.source if rev.material is not None else None
+            if source is not None:
+                if source.nonce_hash is not None:
+                    if source.nonce_hash in nonces:
+                        raise PlanarClearanceError("an inspection was used twice")
+                    nonces.add(source.nonce_hash)
+                elif (previous is None or previous.revision_id != source.carry_forward_from
+                      or rev.kind != PLANAR_CLEARANCE_CORRECTED
+                      or not carry_forward_allowed(previous.material, rev.material)
+                      or not previous.material.source.same_inspection(source)):
+                    raise PlanarClearanceError("a carried-forward binding is not admissible")
+            previous = rev
         withdrawn = kinds[-1] == PLANAR_CLEARANCE_WITHDRAWN
         interface_id = history[0].interface_id
         if not withdrawn:
@@ -2139,8 +2310,8 @@ def planar_clearance_binding_issues(material, inventory, participations, epochs)
             issues.append((PCC_ISSUE_NOT_PARTICIPATING, role))
         elif epochs.get((material.interface_id, component_id), 0) != epoch:
             issues.append((PCC_ISSUE_PARTICIPATION_CHANGED, role))
-    if (material.method_id, material.method_version, material.declaration_version) != (
-            _pcc.METHOD_ID, _pcc.METHOD_VERSION, _pcc.DECLARATION_VERSION):
+    if (material.method_id, material.method_version) != (_pcc.METHOD_ID, _pcc.METHOD_VERSION) \
+            or material.declaration_version not in PLANAR_CLEARANCE_DECLARATION_VERSIONS:
         issues.append((PCC_ISSUE_METHOD_CHANGED, None))
     return tuple(issues)
 
@@ -2150,7 +2321,7 @@ def planar_clearance_material(inventory, interfaces, participations, epochs,
                               enclosure_component_id, expected_board_revision,
                               expected_enclosure_revision, expected_board_epoch,
                               expected_enclosure_epoch, region_description,
-                              values, basis, applicability):
+                              values, basis, applicability, source=None):
     """Build the COMPLETE material of a new revision against CURRENT durable
     truth: the interaction is this project's; the board and enclosure are two
     distinct ACTIVE components that currently take part in it
@@ -2190,7 +2361,9 @@ def planar_clearance_material(inventory, interfaces, participations, epochs,
         axis_pairing=_pcc.AXIS_PAIRING, region_description=region_description,
         values=tuple(values), basis=tuple(basis), applicability=tuple(applicability),
         method_id=_pcc.METHOD_ID, method_version=_pcc.METHOD_VERSION,
-        declaration_version=_pcc.DECLARATION_VERSION)
+        declaration_version=(_pcc.DECLARATION_VERSION if source is None
+                             else PLANAR_CLEARANCE_DECLARATION_V2),
+        source=source)
     return check_planar_clearance_material(material, interfaces, inventory)
 
 

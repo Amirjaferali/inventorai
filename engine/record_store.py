@@ -2271,6 +2271,75 @@ def _planar_clearance_ddl():
 
 _PLANAR_CLEARANCE_SCHEMA = (_planar_clearance_ddl(),)
 
+# BOARD-OUTLINE-SOURCE-BINDING-01 — ``planar_clearance_source_bindings``: ONE
+# row per file-linked (``planar-clearance-declaration/2``) revision, keyed by
+# that revision and anchored to it by a composite foreign key. It retains only
+# the inspected file's raw-byte SHA-256 and size, the format / reader / rule
+# identities, the outline dimensions along the file's own axes, the axis
+# assignment the inventor saved, the inspection time and EITHER the hash of the
+# single-use inspection nonce (UNIQUE: an inspection is used at most once; never
+# the token itself) OR the revision a region- / clearance-only correction
+# carried the binding forward from. Never the raw file, its name or any token.
+# Insert-only: an UPDATE is refused, and a DELETE is refused while its revision
+# row still exists, so the only removal is together with the revision (ON DELETE
+# CASCADE) — e.g. an authorized complete-project deletion. Additive and
+# idempotent; an existing table or trigger of any other shape is refused.
+# Agreement (EXACT / DIFFERS) is derived on read, never stored. Rollback target:
+# the v2-capable build with v2 writes off (it reads these rows); an older build
+# ignores the table and reads a v2 revision as needing reconfirmation.
+_PCC_SOURCE_COLUMNS = (
+    "project_id", "revision_id", "kind", "source_sha256", "source_size",
+    "format_id", "reader_id", "rule_id", "file_x", "file_y", "axis_assignment",
+    "inspected_at", "nonce_hash", "carry_forward_from")
+
+
+def _pcc_source_ddl():
+    text = ("CHECK (typeof(%s) = 'text' AND length(%s) BETWEEN 1 AND %d "
+            "AND instr(CAST(%s AS BLOB), X'00') = 0)")
+    checks = [
+        "CHECK (kind = '%s')" % _sm.PCC_SOURCE_KIND_KICAD,
+        "CHECK (typeof(source_sha256) = 'text' AND length(source_sha256) = 64 "
+        "AND source_sha256 NOT GLOB '*[^0-9a-f]*')",
+        "CHECK (typeof(source_size) = 'integer' AND source_size BETWEEN 1 AND %d)"
+        % _sm.PCC_SOURCE_MAX_BYTES,
+        "CHECK (axis_assignment IN (%s))"
+        % ", ".join("'%s'" % a for a in _sm.PCC_SOURCE_AXIS_ASSIGNMENTS),
+        "CHECK ((nonce_hash IS NULL) = (carry_forward_from IS NOT NULL))",
+        "CHECK (nonce_hash IS NULL OR (typeof(nonce_hash) = 'text' AND "
+        "length(nonce_hash) = 64 AND nonce_hash NOT GLOB '*[^0-9a-f]*'))",
+        "CHECK (carry_forward_from IS NULL OR (typeof(carry_forward_from) = 'text' "
+        "AND length(carry_forward_from) = 36))",
+    ]
+    checks += [text % (c, c, _sm.MAX_PLANAR_CLEARANCE_VERSION_TEXT, c)
+               for c in ("format_id", "reader_id", "rule_id", "inspected_at")]
+    checks += [text % (c, c, _pcc.MAX_VALUE_CHARS, c) for c in ("file_x", "file_y")]
+    cols = ["project_id TEXT NOT NULL", "revision_id TEXT NOT NULL", "kind TEXT NOT NULL",
+            "source_sha256 TEXT NOT NULL", "source_size INTEGER NOT NULL",
+            "format_id TEXT NOT NULL", "reader_id TEXT NOT NULL", "rule_id TEXT NOT NULL",
+            "file_x TEXT NOT NULL", "file_y TEXT NOT NULL", "axis_assignment TEXT NOT NULL",
+            "inspected_at TEXT NOT NULL", "nonce_hash TEXT", "carry_forward_from TEXT"]
+    keys = ["PRIMARY KEY (project_id, revision_id)",
+            "UNIQUE (nonce_hash)",
+            "FOREIGN KEY (project_id, revision_id) REFERENCES "
+            "planar_clearance_revisions(project_id, revision_id) ON DELETE CASCADE"]
+    return ("CREATE TABLE IF NOT EXISTS planar_clearance_source_bindings (\n    "
+            + ",\n    ".join(cols + keys + checks) + "\n)")
+
+
+_PCC_SOURCE_SCHEMA = (_pcc_source_ddl(),)
+_PCC_SOURCE_TRIGGERS = (
+    ("planar_clearance_source_bindings_no_update",
+     "CREATE TRIGGER planar_clearance_source_bindings_no_update BEFORE UPDATE ON "
+     "planar_clearance_source_bindings BEGIN SELECT RAISE(ABORT, "
+     "'planar clearance source bindings are insert-only'); END"),
+    ("planar_clearance_source_bindings_no_delete",
+     "CREATE TRIGGER planar_clearance_source_bindings_no_delete BEFORE DELETE ON "
+     "planar_clearance_source_bindings WHEN EXISTS (SELECT 1 FROM "
+     "planar_clearance_revisions r WHERE r.project_id = OLD.project_id AND "
+     "r.revision_id = OLD.revision_id) BEGIN SELECT RAISE(ABORT, "
+     "'a source binding is removed only with its revision'); END"),
+)
+
 # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 —
 # ``subsystem_participation_preparations``: the inventor's own notes for ONE
 # participation (ONE component taking part in ONE declared interaction): the
@@ -2683,6 +2752,7 @@ class SqliteRecordStore:
             self._migrate_interface_components(self._conn)
             self._migrate_participation_preparations(self._conn)
             self._migrate_planar_clearance(self._conn)
+            self._migrate_planar_clearance_sources(self._conn)
             self._migrate_constraint_acceptance(self._conn)
             self._migrate_decision_comparison(self._conn)
 
@@ -3071,6 +3141,28 @@ class SqliteRecordStore:
             conn.execute(_PARTICIPATION_EPOCH_TRIGGER)
         elif existing[0] != _PARTICIPATION_EPOCH_TRIGGER:
             raise sqlite3.DatabaseError("the removal-generation trigger has an unrecognised shape")
+
+    def _migrate_planar_clearance_sources(self, conn) -> None:
+        """BOARD-OUTLINE-SOURCE-BINDING-01 forward migration: additively create
+        the source-binding sidecar and its two insert-only triggers, inside the
+        store's one migration transaction, AFTER the revision table it
+        references. Nothing is backfilled; an existing table or trigger of any
+        other shape is refused (``sqlite3.DatabaseError``)."""
+        for stmt in _PCC_SOURCE_SCHEMA:
+            conn.execute(stmt)
+        found = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(planar_clearance_source_bindings)").fetchall())
+        if found != _PCC_SOURCE_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "planar_clearance_source_bindings has an unrecognised shape")
+        for name, sql in _PCC_SOURCE_TRIGGERS:
+            existing = conn.execute(
+                "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
+                (name,)).fetchone()
+            if existing is None:
+                conn.execute(sql)
+            elif existing[0] != sql:
+                raise sqlite3.DatabaseError("a source-binding trigger has an unrecognised shape")
 
     def _migrate_participation_preparations(self, conn) -> None:
         """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 forward
@@ -5022,14 +5114,38 @@ class SqliteRecordStore:
             "SELECT " + self._PLANAR_CLEARANCE_SELECT + " FROM "
             "planar_clearance_revisions WHERE project_id = ? ORDER BY event_seq ASC",
             (project_id,)).fetchall()
+        bindings = self._conn.execute(
+            "SELECT " + ", ".join(_PCC_SOURCE_COLUMNS[1:]) + " FROM "
+            "planar_clearance_source_bindings WHERE project_id = ? ORDER BY revision_id",
+            (project_id,)).fetchall()
         revisions, keys = [], []
         try:
+            sources = {}
+            for row in bindings:
+                named = dict(zip(_PCC_SOURCE_COLUMNS[1:], row))
+                revision_id = named.pop("revision_id")
+                if revision_id in sources:
+                    raise _sm.PlanarClearanceError("two bindings for one revision")
+                sources[revision_id] = _sm.check_planar_clearance_source(
+                    _sm.PlanarClearanceSource(**named))
             for index, row in enumerate(rows):
                 revision, key, seq = self._decode_planar_clearance(row)
                 if seq != index or not isinstance(key, str) or not key:
                     raise _sm.PlanarClearanceError("event order malformed")
+                source = sources.pop(revision.revision_id, None)
+                m = revision.material
+                if (m is not None and m.declaration_version
+                        == _sm.PLANAR_CLEARANCE_DECLARATION_V2) != (source is not None):
+                    # a v2 revision without its binding, or a binding on a
+                    # source-free revision or a withdrawal
+                    raise _sm.PlanarClearanceError("source binding missing or misplaced")
+                if source is not None:
+                    revision = dataclasses.replace(
+                        revision, material=dataclasses.replace(m, source=source))
                 revisions.append(revision)
                 keys.append(key)
+            if sources:
+                raise _sm.PlanarClearanceError("orphaned source binding")
             ledger = _sm.project_planar_clearance(revisions, interfaces, inventory)
         except (_sm.PlanarClearanceError, TypeError, ValueError):
             raise PlanarClearanceCorrupt("planar clearance history is malformed") from None
@@ -5043,6 +5159,12 @@ class SqliteRecordStore:
             (_PARTICIPATION_EPOCH_TRIGGER_NAME,)).fetchone()
         if trigger is None or trigger[0] != _PARTICIPATION_EPOCH_TRIGGER:
             raise PlanarClearanceCorrupt("the removal-generation trigger is missing")
+        for name, sql in _PCC_SOURCE_TRIGGERS:
+            found = self._conn.execute(
+                "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
+                (name,)).fetchone()
+            if found is None or found[0] != sql:
+                raise PlanarClearanceCorrupt("a source-binding trigger is missing")
         subsystems = self.load_project_subsystems(project_id)
         interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
         inventory, _d, _k, _r, _rk = self._component_history(project_id, subsystems)
@@ -5088,7 +5210,8 @@ class SqliteRecordStore:
         return snapshot["_revisions"][keys.index(submission_key)]
 
     def append_planar_clearance_revision(self, project_id: str, revision,
-                                         submission_key: str) -> tuple:
+                                         submission_key: str, *, allow_source=False,
+                                         precondition=None) -> tuple:
         """Atomically append ONE declaration, correction or terminal withdrawal
         and return ``(outcome, stored_revision)``:
         ``PLANAR_CLEARANCE_EXACT_REPLAY`` with the already-committed revision
@@ -5109,9 +5232,22 @@ class SqliteRecordStore:
         after a withdrawal). Any refusal raises ``PlanarClearanceRejected``
         carrying the semantic owner's cause; nothing is written. Full rollback
         on any failure. IR-01: never writes on top of an unresolved
-        connection."""
+        connection.
+
+        BOARD-OUTLINE-SOURCE-BINDING-01: a file-linked (v2) revision is written
+        only when the caller passes ``allow_source=True`` (v2 writes are off by
+        default) and is inserted with its ONE binding row in the same
+        transaction; ``precondition(snapshot)``, when given, runs inside the
+        serialized write against the same durable snapshot and refuses by
+        raising a ``PlanarClearanceError`` (e.g. the inspected history position
+        changed)."""
         if not isinstance(revision, _sm.PlanarClearanceRevision):
             raise PlanarClearanceRejected("not a planar clearance revision")
+        source = revision.material.source if revision.material is not None else None
+        if source is not None and not allow_source:
+            raise PlanarClearanceRejected(
+                "file-linked declarations are not enabled",
+                cause=_sm.PlanarClearanceSourceMismatch("v2 writes are off"))
         if not isinstance(submission_key, str) or not submission_key:
             raise PlanarClearanceRejected("a submission identity is required")
         self._refuse_uncommitted_reads()      # IR-01: never write on top of it
@@ -5140,7 +5276,7 @@ class SqliteRecordStore:
                         m.enclosure_component_id, m.board_component_revision,
                         m.enclosure_component_revision, m.board_participation_epoch,
                         m.enclosure_participation_epoch, m.region_description,
-                        m.values, m.basis, m.applicability)
+                        m.values, m.basis, m.applicability, source=m.source)
                     if rebuilt != m or revision.interface_id != m.interface_id:
                         raise _sm.PlanarClearanceStale("the material is not current")
                     if revision.kind == _sm.PLANAR_CLEARANCE_DECLARED:
@@ -5157,6 +5293,8 @@ class SqliteRecordStore:
                     raise _sm.PlanarClearanceError("revision identity reused")
                 _sm.project_planar_clearance(revisions + (revision,),
                                              snap["interfaces"], snap["inventory"])
+                if precondition is not None:
+                    precondition(snap)
             except _sm.PlanarClearanceError as exc:
                 raise PlanarClearanceRejected("the revision is not admissible",
                                               cause=exc) from None
@@ -5166,6 +5304,13 @@ class SqliteRecordStore:
                 + ", ".join("?" * len(_PLANAR_CLEARANCE_COLUMNS)) + ")",
                 self._encode_planar_clearance(project_id, revision, submission_key,
                                               len(revisions)))
+            if source is not None:
+                self._conn.execute(
+                    "INSERT INTO planar_clearance_source_bindings ("
+                    + ", ".join(_PCC_SOURCE_COLUMNS) + ") VALUES ("
+                    + ", ".join("?" * len(_PCC_SOURCE_COLUMNS)) + ")",
+                    (project_id, revision.revision_id)
+                    + tuple(getattr(source, c) for c in _PCC_SOURCE_COLUMNS[2:]))
         return PLANAR_CLEARANCE_INSERTED, revision
 
     # --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value) -

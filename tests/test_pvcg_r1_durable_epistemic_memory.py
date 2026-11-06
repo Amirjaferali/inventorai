@@ -541,6 +541,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       # payload, no disposition, never replayed; no result is
                       # stored) — not a ledger.
                       "planar_clearance_revisions",
+                      # BOARD-OUTLINE-SOURCE-BINDING-01: the insert-only source
+                      # binding of a file-linked planar clearance revision (no
+                      # disposition, never replayed) — not a ledger.
+                      "planar_clearance_source_bindings",
                       # COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the append-only
                       # correction / withdrawal history of declared components
                       # (component-local, no disposition) — not a ledger.

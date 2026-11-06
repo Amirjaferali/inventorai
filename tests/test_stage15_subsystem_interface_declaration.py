@@ -1144,6 +1144,8 @@ def test_focus_is_immutable_and_no_focus_route_exists(client):
     # STAGE15-OBSERVATION-WITHDRAW-01 exactly one withdrawal POST; still no
     # focus route. AMENDED at COMPONENT-INTERFACE-PARTICIPATION-01: exactly one
     # participation POST (the components taking part in one interaction).
+    # AMENDED at BOARD-OUTLINE-SOURCE-BINDING-01: exactly one board-file
+    # inspection POST that writes nothing durable.
     # AMENDED at BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: exactly one planar
     # clearance page (GET + declare / correct POST) and one withdrawal POST.
     # AMENDED at BOARD-ENCLOSURE-CAD-DOWNLOAD-01: exactly one read-only GET, the
@@ -1151,6 +1153,7 @@ def test_focus_is_immutable_and_no_focus_route_exists(client):
     assert sorted({r for r in rules if "interface" in r}) == [
         "/session/<sid>/declare-interface",
         "/session/<sid>/interface-clearance/<interface_id>",
+        "/session/<sid>/interface-clearance/<interface_id>/board-source",
         "/session/<sid>/interface-clearance/<interface_id>/cad.zip",
         "/session/<sid>/interface-clearance/<interface_id>/withdraw",
         "/session/<sid>/interface-observation",
