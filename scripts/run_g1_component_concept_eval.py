@@ -833,7 +833,9 @@ ANNOTATION_RULE = (
     "POSITIVE case); `context_needs` — {function id: terms naming the operating exposure}; "
     "`unknown_terms` — {unknown id: terms}; `choices` — the predeclared trade-offs, each "
     "{for_meaning, options: [A, B]}. Terms are a NECESSARY lexical guard on credited evidence, "
-    "never sufficient. Annotations written after outputs were seen are diagnostic only.")
+    "never sufficient; they match whole words within one quotation, so inflected or prefixed "
+    "forms (e.g. an Arabic article or conjunction) must be listed. Annotations written after "
+    "outputs were seen are diagnostic only.")
 CRITERIA_V2 = dict(CRITERIA)
 CRITERIA_V2.update({
     "G1": "Essential-function coverage over the POSITIVE cases, by meaning: credited are "
@@ -898,13 +900,20 @@ def annotations_digest(annotations):
     return _sha(annotations["cases"])
 
 
-def check_formal_freeze(annotations, run_manifest):
-    """FORMAL needs proof that the annotations existed before any output: the run's own
-    manifest (the existing frozen-manifest mechanism, authenticated by the caller with the
-    report) must be a v2 manifest naming this method and these exact annotations. No such
-    manifest exists yet (no v2 run is authorized), so no formal qualification can be claimed
-    until a separately authorized v2 run records it; `declared_before_outputs` alone is a
-    declaration, not proof."""
+def check_formal_freeze(annotations, run_report, report_sha256, authorized_manifest_sha256):
+    """FORMAL needs proof that the annotations existed before any output, through the
+    existing frozen-manifest mechanism: the assessed report must be exactly the run report
+    (its digest equals the record's `report_sha256`), its manifest must be the one the Owner
+    authorized by SHA-256 before the run (`campaign_authorized`), and that manifest must be a
+    v2 manifest naming this method, the v2 pre-registration and these exact annotations. No
+    such manifest exists yet (no v2 run is authorized), so no formal qualification can be
+    claimed until a separately authorized v2 run records it; `declared_before_outputs` alone
+    is a declaration, not proof."""
+    if not isinstance(run_report, dict) or _digest(run_report) != report_sha256 \
+            or not campaign_authorized(run_report.get("manifest"), authorized_manifest_sha256):
+        raise PackError("FORMAL needs a v2 run manifest that froze these annotations before any "
+                        "output (the authorized manifest of this exact report)")
+    run_manifest = run_report["manifest"]
     if not isinstance(run_manifest, dict) \
             or run_manifest.get("evaluation_id") != EVALUATION_ID_V2 \
             or run_manifest.get("method") != [METHOD_V2_ID, METHOD_V2_VERSION] \
@@ -1021,13 +1030,22 @@ class AssessedLabels(dict):
     def __init__(self, labels, mode, assessor_kinds, annotations_sha256, seal=None):
         if seal is not _SEAL:
             raise PackError("assessed labels come only from a validated record")
-        super().__init__(labels)
-        self.mode, self.assessor_kinds = mode, tuple(assessor_kinds)
-        self.annotations_sha256 = annotations_sha256
+        dict.__init__(self, labels)
+        object.__setattr__(self, "_meta", (mode, tuple(assessor_kinds), annotations_sha256))
+
+    mode = property(lambda self: self._meta[0])
+    assessor_kinds = property(lambda self: self._meta[1])
+    annotations_sha256 = property(lambda self: self._meta[2])
+
+    def _read_only(self, *_a, **_k):
+        raise PackError("validated labels are read-only")
+
+    __setattr__ = __delattr__ = __setitem__ = __delitem__ = _read_only
+    update = pop = popitem = clear = setdefault = _read_only
 
 
 def check_assessment_v2(record, scored, replies, refs, annotations, report_sha256, varieties,
-                        run_manifest=None):
+                        run_report=None, authorized_manifest_sha256=None):
     """Normalised {item_id: label} of ONE v2 assessment record, or PackError. Validates the
     shape, the mode / assessor / attestation boundary, every pointer and quotation, the
     evidence each label needs, the declared lexical guards and the G4 option map. It never
@@ -1058,7 +1076,7 @@ def check_assessment_v2(record, scored, replies, refs, annotations, report_sha25
         if not {_VARIETY_LANGUAGE[v] for v in varieties} <= set(a["languages"]):
             raise PackError("reviewer competence does not cover the pack's languages")
         cases = check_annotations(annotations, refs, formal=True)
-        check_formal_freeze(annotations, run_manifest)
+        check_formal_freeze(annotations, run_report, report_sha256, authorized_manifest_sha256)
     elif record["mode"] == MODE_DIAGNOSTIC:
         if record["attestation"] is not None or record["attested_on"] is not None:
             raise PackError("a DIAGNOSTIC record claims no attestation")

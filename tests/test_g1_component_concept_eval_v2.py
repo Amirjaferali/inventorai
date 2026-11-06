@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FIXTURE = json.loads((ROOT / "tests" / "fixtures" / "g1_component_concept_v2_diagnostic.json")
                      .read_text(encoding="utf-8"))
 RUN_COMMIT = "2f6925bd2232d3c4bda7fb3119dacd897d3bc3dc"
-V2_PREREGISTRATION_SHA256 = "c48f762a91e227ce0f2177ba6338fc032b751cfec148937dc3ffd8de1440fda4"
+V2_PREREGISTRATION_SHA256 = "1b7bb3edae124151b4f49baee7ceca8965f7b8f8fc9b30bfddb53ec1fb5897a0"
 # sha256 of each v1 definition's source at the PR base 44cfdbc (byte-identical v1 method)
 V1_SOURCES = {
     "schema": "3d4e8c0a40c0751ea7a70a1a2e637b5485ef84fac63b55bf8bf93348e931737a",
@@ -422,8 +422,11 @@ def _full_run(pack, override=None, mode=cc.MODE_FORMAL, assessor=None, annotatio
               "mode": mode, "assessor": assessor or HUMAN,
               "attestation": cc.ATTESTATION if formal else None,
               "attested_on": "2026-11-06" if formal else None, "judgments": judged}
-    labels = cc.check_assessment_v2(record, scored, replies, refs, ann, "r" * 64, _varieties(pack),
-                                    run_manifest=_v2_manifest(ann))
+    report, authorized = _v2_report(ann)
+    record["report_sha256"] = cc._digest(report)
+    labels = cc.check_assessment_v2(record, scored, replies, refs, ann, cc._digest(report),
+                                    _varieties(pack), run_report=report,
+                                    authorized_manifest_sha256=authorized if formal else None)
     return scored, refs, ann, labels
 
 
@@ -432,6 +435,12 @@ def _v2_manifest(ann):
     return {"evaluation_id": cc.EVALUATION_ID_V2, "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION],
             "preregistration_v2_sha256": cc.preregistration_v2_digest(),
             "annotations_sha256": cc.annotations_digest(ann)}
+
+
+def _v2_report(ann, manifest=None):
+    """A SYNTHETIC report carrying a manifest, and the SHA-256 an Owner would have named."""
+    manifest = manifest or _v2_manifest(ann)
+    return {"manifest": manifest, "rows": []}, cc._digest(manifest)
 
 
 def test_the_central_rule_blocks_credit_but_never_penalises_valid_clarification(pack):
@@ -506,6 +515,11 @@ def test_the_decision_mode_comes_only_from_validated_records(pack):
     with pytest.raises(cc.PackError, match="annotations the labels were validated against"):
         cc.decide_v2(scored, refs, other, formal)
     _s, _r, _a, agent = _full_run(pack, mode=cc.MODE_DIAGNOSTIC, assessor=dict(HUMAN, kind="AGENT"))
+    for mutate in (lambda: setattr(agent, "mode", cc.MODE_FORMAL),
+                   lambda: agent.__setitem__("Q07-F1", "ADDRESSED"),
+                   lambda: agent.update({}), lambda: agent.pop("Q07-F1")):
+        with pytest.raises(cc.PackError, match="read-only"):
+            mutate()
     assert cc.decide_v2(scored, refs, ann, agent)["verdict"] == "DIAGNOSTIC_ONLY"
     merged, _pos = cc.reconcile_v2([formal, agent])            # mixing never yields FORMAL
     assert merged.mode == cc.MODE_DIAGNOSTIC
@@ -539,17 +553,32 @@ def test_formal_needs_a_manifest_that_froze_the_annotations_before_outputs(pack)
               "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION], "report_sha256": "r" * 64,
               "mode": cc.MODE_FORMAL, "assessor": HUMAN, "attestation": cc.ATTESTATION,
               "attested_on": "2026-11-06", "judgments": _full_judgments(pack, replies, scored)}
-    run = lambda manifest: cc.check_assessment_v2(record, scored, replies, refs, ann, "r" * 64,
-                                                  _varieties(pack), run_manifest=manifest)
-    v1_manifest = json.loads(subprocess.run(
+    def run(manifest, authorized=None, report=None):
+        report = report or {"manifest": manifest, "rows": []}
+        rec = dict(record, report_sha256=cc._digest(report))
+        return cc.check_assessment_v2(rec, scored, replies, refs, ann, cc._digest(report),
+                                      _varieties(pack), run_report=report,
+                                      authorized_manifest_sha256=authorized or (
+                                          cc._digest(manifest) if manifest else None))
+    v1_report = json.loads(subprocess.run(
         ["git", "show", "%s:docs/benchmarks/evidence/g1_component_concept_v1/run_report.json"
-         % RUN_COMMIT], cwd=ROOT, capture_output=True, check=True).stdout)["manifest"]
+         % RUN_COMMIT], cwd=ROOT, capture_output=True, check=True).stdout)
     edited = copy.deepcopy(ann)
     edited["cases"]["Q07"]["central"] = [refs["Q07"]["essential_functions"][1]["function_id"]]
-    for manifest in (None, v1_manifest, _v2_manifest(edited),
+    for manifest in (None, v1_report["manifest"], _v2_manifest(edited),
                      dict(_v2_manifest(ann), preregistration_v2_sha256="0" * 64)):
         with pytest.raises(cc.PackError, match="froze these annotations"):
             run(manifest)                                   # declared_before_outputs alone is no proof
+    with pytest.raises(cc.PackError, match="froze these annotations"):
+        run(v1_report["manifest"], authorized=v1_report["manifest_sha256"], report=v1_report)
+    # a correct-looking manifest is not enough: it must be the Owner-authorized one of THIS report
+    with pytest.raises(cc.PackError, match="froze these annotations"):
+        run(_v2_manifest(ann), authorized="0" * 64)
+    good = {"manifest": _v2_manifest(ann), "rows": []}
+    with pytest.raises(cc.PackError, match="froze these annotations"):
+        cc.check_assessment_v2(dict(record, report_sha256="r" * 64), scored, replies, refs, ann,
+                               "r" * 64, _varieties(pack), run_report=good,
+                               authorized_manifest_sha256=cc._digest(good["manifest"]))
     assert run(_v2_manifest(ann)).mode == cc.MODE_FORMAL
 
 
