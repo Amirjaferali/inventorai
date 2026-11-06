@@ -22,7 +22,8 @@ from engine.idea_state import (
 from engine.session_reconstruction import (
     ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_T2G3,
-    ENGINE_CONTRACT_VERSION_XG1, GAP_BOUND_REPLAY_VERSIONS,
+    ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_DV1,
+    GAP_BOUND_REPLAY_VERSIONS,
     RECONSTRUCTION_VERSION, ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS, UNAPPLIED_ANSWERS_ATTR,
     _replays_into_own_gap, reconstruct_readonly_state)
@@ -126,9 +127,12 @@ def _corrected(c, appmod, version, answers, prefix, replacement):
 # ==========================================================================
 def test_exactly_one_sixth_version_is_added_for_new_projects():
     assert XG1 == "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1"
-    assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == PRIOR_VERSIONS + (XG1,)
-    assert sr.CURRENT_ENGINE_CONTRACT_VERSION == XG1
-    assert GAP_BOUND_REPLAY_VERSIONS == (XG1,)
+    # The displayed-variant relevance repair (DV1) is the seventh version; it
+    # is now what new projects record and it carries the gap-bound replay.
+    assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == PRIOR_VERSIONS + (
+        XG1, ENGINE_CONTRACT_VERSION_DV1)
+    assert sr.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_DV1
+    assert GAP_BOUND_REPLAY_VERSIONS == (XG1, ENGINE_CONTRACT_VERSION_DV1)
 
 
 def test_the_new_version_inherits_t2g3_and_nr1_unchanged():
@@ -139,7 +143,8 @@ def test_the_new_version_inherits_t2g3_and_nr1_unchanged():
         state.engine_contract_version = version
         assert t2g_rule_level(state, MC) == level
     assert ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS == (
-        ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3, XG1)
+        ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3, XG1,
+        ENGINE_CONTRACT_VERSION_DV1)
     assert nr.is_routing_aware(XG1)
     import web.app as appmod
     for version in (ENGINE_CONTRACT_VERSION_T2G3, XG1):
@@ -148,13 +153,15 @@ def test_the_new_version_inherits_t2g3_and_nr1_unchanged():
 
 
 def test_a_real_start_records_the_new_version(client):
+    # The newest version (DV1) carries this gap-bound replay unchanged.
     c, appmod, db = client
     _login(c, appmod)
     r = c.post("/start", data={"idea": SEED, "domain_confirm": EE})
     sid = r.headers["Location"].rsplit("/", 1)[-1]
     assert appmod._get_store().load_reconstruction_inputs(sid)[
-        "engine_contract_version"] == XG1
-    assert _live(appmod, sid).engine_contract_version == XG1
+        "engine_contract_version"] == ENGINE_CONTRACT_VERSION_DV1
+    assert _live(appmod, sid).engine_contract_version == ENGINE_CONTRACT_VERSION_DV1
+    assert ENGINE_CONTRACT_VERSION_DV1 in GAP_BOUND_REPLAY_VERSIONS
 
 
 # ==========================================================================

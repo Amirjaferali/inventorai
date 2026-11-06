@@ -1076,11 +1076,14 @@ def integrate_response(
     gap_type: str,
     question: str,
     response: str,
+    served_index: int | None = None,
 ) -> tuple[str, str]:
     """
     Update IdeaState based on response.
     Returns (transition_result, reason).
     transition_result: PASS | WARN | BLOCK
+    served_index: the gap counter when the question was served, handed to the
+    W2-C supplemental relevance (None keeps its own counter read).
     """
     quality = assess_response(response, state.domain)
     # PVCG-R2-I (authoritative contract PVCG_R2_C_GAP_RELEVANCE_HARDENING_
@@ -1106,7 +1109,8 @@ def integrate_response(
     if not relevant:
         try:
             from engine.intent_serving import supplemental_relevance
-            relevant = supplemental_relevance(state, gap_type, response)
+            relevant = supplemental_relevance(state, gap_type, response,
+                                              served_index=served_index)
         except Exception:
             pass
     # T2-G (`T2G-VERSIONED-IMPLEMENT-01`) — SATISFACTION ELIGIBILITY, kept
@@ -1154,7 +1158,8 @@ def integrate_response(
             def _relevant_sentence(sentence):
                 if addresses_gap(sentence, gap_type):
                     return True
-                if supplemental_relevance(state, gap_type, sentence):
+                if supplemental_relevance(state, gap_type, sentence,
+                                          served_index=served_index):
                     return True
                 return any(matches_committed_intent(sentence, question_id)
                            for question_id in variant_ids)
@@ -1478,6 +1483,18 @@ def update_direction(state: IdeaState, prev_level: int) -> None:
 # 6. Main loop step
 # ─────────────────────────────────────────────
 
+def _displayed_variant_index(state: IdeaState, gap_type: str | None) -> int | None:
+    """The served gap's counter before ``run_iteration`` moves it, under
+    `DISPLAYED_VARIANT_RELEVANCE_VERSIONS` only; None otherwise (the earlier
+    versions' counter read stands)."""
+    from engine.session_reconstruction import DISPLAYED_VARIANT_RELEVANCE_VERSIONS
+    if gap_type is None or getattr(state, "engine_contract_version", None) \
+            not in DISPLAYED_VARIANT_RELEVANCE_VERSIONS:
+        return None
+    gap = state.get_gap(gap_type)
+    return gap.iterations_open if gap is not None else 0
+
+
 def run_iteration(state: IdeaState, response: str) -> dict:
     """
     Execute one full iteration of the progression loop.
@@ -1491,6 +1508,11 @@ def run_iteration(state: IdeaState, response: str) -> dict:
     # answer is integrated into the gap it answered. Without routing,
     # selection never reads the counters, so this order is byte-identical.
     gap_type = select_next_gap(state)
+    # Displayed-variant relevance repair: the counter of the served gap as the
+    # question was served, read before the counters move. Only the versions in
+    # DISPLAYED_VARIANT_RELEVANCE_VERSIONS hand it to integrate_response;
+    # every earlier version keeps reading the moved counter.
+    served_index = _displayed_variant_index(state, gap_type)
 
     # Update gap iteration counters. A gap whose mandatory Owner questioning is
     # exhausted by routing is not being questioned, so its counter stays put
@@ -1626,7 +1648,8 @@ def run_iteration(state: IdeaState, response: str) -> dict:
                             path=state.path)
 
         # Integrate response
-        transition, reason = integrate_response(state, gap_type, question, response)
+        transition, reason = integrate_response(state, gap_type, question, response,
+                                                served_index=served_index)
 
         # Check transition
         can, t_reason = evaluate_transition(state)
