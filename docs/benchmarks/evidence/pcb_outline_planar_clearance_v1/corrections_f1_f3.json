@@ -1,0 +1,83 @@
+{
+ "accepted_evidence_unchanged": "fixtures, exports, cad_v1.zip, cad_v2.zip, proof_record.json and the CLI help are byte-identical to fc12824; this run wrote only to a scratch folder",
+ "corrected_from_head": "fc12824cd11122faf657fc2f697bb798bac32883",
+ "correction": "PR #933 F1-F3 proof-guard corrections",
+ "date": "2026-11-05",
+ "f1_doubled_lines_case": {
+  "corrected_result": "refused: not two horizontal and two vertical sides",
+  "fc12824_result_mm": [
+   "84",
+   "50"
+  ]
+ },
+ "f3_real_kicad_rerun_into_scratch": {
+  "board_v1": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "95810445fefccd52a30ece6b0ae7ad29067cd84425cd7330ca7f0457c1983ff3"
+  },
+  "board_v1_inch_export": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "20f10bfb8bb12dc9971acc49e2ecab10a0e6a532ac695d116504fea1f26eb4e4"
+  },
+  "board_v1_lines": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "95810445fefccd52a30ece6b0ae7ad29067cd84425cd7330ca7f0457c1983ff3"
+  },
+  "board_v2": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "1498cfb96329720ba20d17d2dda848c2b0eb48941ad2bdf820affa2eb02884a7"
+  },
+  "neg_cutout": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "e1efd2c0b811c0015ee41934997eafe6827118878ea667c005e8c2e332858a22"
+  },
+  "neg_l_shape": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "69d4bb6cf62f6ccfba460b344a9fa57c39bea9f14d1eea80cba78dc3b1775064"
+  },
+  "neg_no_outline": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "c7e0eb174ddfff7c5a02582eb80495da569aff2c37bc184ff823d8f2b995724e"
+  },
+  "neg_open_outline": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "7a6c6bb3749042c9f4efed3052fcdd1a4f3369719c3af75763f94bc49c9d9e7c"
+  },
+  "neg_rotated": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "625da735c310ee979474746193714cc496da01a4a86f6336c81b160f249b7c42"
+  },
+  "neg_rounded_corners": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "6b54c4d011a507ba42b451b6d2db4874c59121d4f783dd6e21de2064c56b85ce"
+  },
+  "neg_two_boards": {
+   "equals_accepted_record": true,
+   "exit": 0,
+   "ok": true,
+   "output_sha256": "451e0c341e8bd2e7d0da4598fc9cc841018a712755dff8d72600e4a89e52f036"
+  }
+ },
+ "kicad_cli_sha256": "390de70be2e43114fec97941fe3f72dcd70a254c03303a116369ba58a93d14a0",
+ "tool": "kicad-cli 7.0.11"
+}

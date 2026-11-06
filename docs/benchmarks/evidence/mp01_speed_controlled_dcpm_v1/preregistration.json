@@ -1,0 +1,90 @@
+{
+ "proof": "MP01-SPEED-CONTROLLED-DCPM-PROOF-01",
+ "status": "FROZEN BEFORE ANY SIMULATION",
+ "synthetic_only": true,
+ "research_basis": "TECH-SOURCES-001 MP-01, research/tech-sources-001 @ d12f1570596541d24c59064a1fc303af68ab3d3c (disposition ACCEPTED WITH NARROW CORRECTIONS); QUALIFIED-CANDIDATE for model structure and model-code rights only",
+ "tool": {
+  "image": "openmodelica/openmodelica:v1.27.1-minimal",
+  "index_digest": "sha256:ac9a0223e69b8055d444b42f58ccb9680342b56848c68b81385bf83d7c0ba824",
+  "linux_amd64_manifest": "sha256:1fa776fd2f03cdcfc03db6f6ac69888dd48c8eca442034495b178dc73b96dc40",
+  "deviation": "MP-01 proposed OpenModelica v1.27.2 (commit 4f2b2b1); that build is not reachable from the proof environment, so this isolated proof is re-pinned to the official v1.27.1-minimal image by Owner decision. 1.27.1 and 1.27.2 are not claimed to be numerically interchangeable; every result here belongs to 1.27.1 only."
+ },
+ "library": {
+  "name": "Modelica Standard Library",
+  "tag": "v4.1.0",
+  "commit": "8ae3d35c24e519cb2996cab20f3b13daf2b0c50a",
+  "files_sha256": {
+   "Modelica/Electrical/Machines/Examples/ControlledDCDrives/SpeedControlledDCPM.mo": "15f7b12131c16544615426ebdd3fdc4618163f833cc07ac5c3fbdd3c70b86054",
+   "Modelica/Electrical/Machines/Examples/ControlledDCDrives/Utilities/PartialControlledDCPM.mo": "f5a619e43ce13b40eea90a7af891add9e32375f3888b9596c9fe3b15f993a8f0",
+   "Modelica/Electrical/Machines/Examples/ControlledDCDrives/Utilities/DriveDataDCPM.mo": "ac24081f424a20c132d1ecc30388db61069d3f94b5cd5dc8c71028da662e20e0",
+   "LICENSE": "4f708e2d4bdebaeb13896d3796ebf9f4eac0ddc31dc6cd391dff4aa76c63e2eb"
+  }
+ },
+ "model": "Modelica.Electrical.Machines.Examples.ControlledDCDrives.SpeedControlledDCPM (unchanged; used as is for A and extended, never edited, for B-D)",
+ "inputs": {
+  "_classes": "(i) required independent input, declared explicitly; (ii) explicitly accepted synthetic assumption; (iii) model-derived by the record's own formulas from (i) / (ii). A missing (i) or (ii) value refuses before translation; nothing falls back silently to a record default.",
+  "required": {
+   "VaNominal_V": {"value": "100", "class": "i"},
+   "IaNominal_A": {"value": "100", "class": "i"},
+   "wNominal_rpm": {"value": "1425", "class": "i"},
+   "Ra_ohm": {"value": "0.05", "class": "i"},
+   "La_H": {"value": "0.0015", "class": "i"},
+   "Jr_kgm2": {"value": "0.15", "class": "i"},
+   "Js_kgm2": {"value": "0.15", "class": "i"},
+   "JL_kgm2": {"value": "0.15", "class": "i"},
+   "load_torque_step_Nm": {"value": "per case", "class": "i"},
+   "load_step_time_s": {"value": "0.8", "class": "i"},
+   "speed_reference_step_time_s": {"value": "0.2", "class": "i"}
+  },
+  "assumptions": {
+   "TaRef_K_and_TaNominal_K": {"value": "293.15", "class": "ii", "note": "fixed operating temperature, alpha20a = 0: no thermal model"},
+   "losses": {"value": "friction, core, stray-load and brush losses all zero", "class": "ii", "note": "electrical dissipation in Ra and the source resistance remains"},
+   "supply": {"value": "VBat = 1.2 * VaNominal = 120 V, source resistance = 0.05 * VBat / IaNominal = 0.06 ohm", "class": "ii", "note": "a constant voltage source with an inner resistance; not a battery model"},
+   "inverter": {"value": "ideal averaging (useIdealInverter = true), fS = 2 kHz", "class": "ii"},
+   "speed_reference": {"value": "step to wNominal through the model's first-order prefilter", "class": "ii"}
+  },
+  "model_derived": ["Ra at TaNominal", "ViNominal", "PNominal", "tauNominal", "kPhi", "IaMax = 1.5 * IaNominal", "tauMax = kPhi * IaMax", "aMax", "kpI", "TiI", "Tsigma", "Tsub", "kpw", "Tiw", "Tfw"]
+ },
+ "controller_semantics": "The record's own tuning rules (absolute optimum for the current loop, symmetrical optimum for the speed loop) are applied once to the declared base inputs. Between the compared cases only the load-torque magnitude changes; inertia, every controller parameter and every other input are held identical, so no retuning takes place.",
+ "cases": {
+  "A_smoke": "the unchanged example, its own annotation settings, run only to check that the pinned tool and library load, translate and simulate it",
+  "B1_base": "wrapper, load_torque_step = 1.0 * tauNominal (the example's own load, below the declared torque limit tauMax = 1.5 * tauNominal)",
+  "B2_changed_load": "wrapper, load_torque_step = 1.6 * tauNominal (above the declared torque limit), everything else identical to B1",
+  "C_refusal": "wrapper input set with JL_kgm2 removed: must refuse before translation, with no model written or compiled",
+  "D_identity": "B1 run twice gives the same result identity and the same numbers; B2 gives a different identity"
+ },
+ "simulation": {
+  "start_s": 0, "stop_s": 1.0, "output_interval_s": 0.0001, "method": "dassl",
+  "tolerance_primary": 1e-6, "tolerance_sensitivity": 1e-8,
+  "note": "the example annotation sets only StopTime and Interval; Interval is an output interval, not a fixed integration step; the resolved solver, tolerance, interval and horizon are recorded from the run"
+ },
+ "criteria": {
+  "measurement": "computed by the harness from the result file's time grid (output points plus event points); grid resolution 1e-4 s is reported as the timing uncertainty",
+  "K1_speed_recovery": {
+   "signal": "speedSensor.w (rad/s)",
+   "reference": "wNominal (rad/s), the commanded step height",
+   "band": "|w - wNominal| <= 0.02 * wNominal",
+   "recovery_time": "t_rec = earliest t >= 0.8 s such that the band holds at every result point in [t, 1.0 s]; undefined if the band does not hold at 1.0 s",
+   "gate": "MET when t_rec is defined and t_rec - 0.8 s <= 0.15 s; otherwise NOT MET",
+   "also_reported": "peak speed dip max(wNominal - w) over [0.8 s, 1.0 s]"
+  },
+  "K2_armature_current_limit": {
+   "signal": "dcpm.ia (A)",
+   "limit": "IaMax = 1.5 * IaNominal (model-derived)",
+   "gate": "MET when max |ia| over [0 s, 1.0 s] <= IaMax; otherwise NOT MET",
+   "also_reported": "max |ia| and its margin to IaMax"
+  },
+  "X1_torque_balance_EXPLORATORY": {
+   "status": "exploratory only, NOT a pass gate",
+   "definition": "the residual of the rigid-shaft balance tauElectrical + tauLoad - (Jr + JL) * dw/dt, with friction and other losses zero by assumption; sign conventions are taken from the flange-based connection of the example, and the result is reported, not judged",
+   "reason": "a gate would need the exact flange torque conventions, the stator inertia treatment and the acceleration estimate to be qualified first"
+  },
+  "N1_numerical_sensitivity": {
+   "comparison": "B1 and B2 at tolerance 1e-6 versus 1e-8",
+   "bounds": "|delta t_rec| <= 0.001 s; |delta peak dip| <= 0.001 * wNominal; |delta max|ia|| <= 0.005 * IaMax",
+   "consequence": "a criterion outcome counts only if its quantities stay within these bounds; otherwise it is reported as NUMERICALLY SENSITIVE, never as met"
+  }
+ },
+ "result_identity": "SHA-256 over: image manifest digest, the omc version string, the MSL commit, the wrapper model source, the canonical input set, the simulation settings and this pre-registration's SHA-256",
+ "boundaries": "isolated, non-privileged execution with no network, no project secrets and no inventor data; a successful compiler or solver exit is not engineering validation; synthetic values are not a real motor, load or controller; nothing enters the product"
+}
