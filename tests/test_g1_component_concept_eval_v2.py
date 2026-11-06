@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FIXTURE = json.loads((ROOT / "tests" / "fixtures" / "g1_component_concept_v2_diagnostic.json")
                      .read_text(encoding="utf-8"))
 RUN_COMMIT = "2f6925bd2232d3c4bda7fb3119dacd897d3bc3dc"
-V2_PREREGISTRATION_SHA256 = "549e5368d9d5efdf3695abf3d4a585b0d11fcd955d1fbb1b8a0a8278da1f05b2"
+V2_PREREGISTRATION_SHA256 = "c48f762a91e227ce0f2177ba6338fc032b751cfec148937dc3ffd8de1440fda4"
 # sha256 of each v1 definition's source at the PR base 44cfdbc (byte-identical v1 method)
 V1_SOURCES = {
     "schema": "3d4e8c0a40c0751ea7a70a1a2e637b5485ef84fac63b55bf8bf93348e931737a",
@@ -159,18 +159,19 @@ def test_q07_detection_communication_and_notification_match_by_meaning(pack):
     assert ev[0]["pointer"] == "functions[0]"                       # reference F3 <- reply F1
 
 
-@pytest.mark.parametrize("pointers", [
-    ("component_types[4]",),                                         # "Power source"
-    ("functions[3]", "component_types[4]"),                          # "Supply power ..."
-    ("missing_information[1]",),                                     # general "conditions"
+@pytest.mark.parametrize("label, pointers", [
+    ("ADDRESSED", ("component_types[4]",)),                          # "Power source"
+    ("ADDRESSED", ("functions[3]", "component_types[4]")),           # "Supply power ..."
+    ("ADDRESSED", ("component_types[4]", "missing_information[1]")),  # + general "conditions"
+    ("OPEN_DECISION_DISCLOSED", ("missing_information[1]",)),
+    ("OPEN_DECISION_DISCLOSED", ("missing_information[3]",)),        # power at the mailbox
 ])
-def test_outdoor_operation_is_not_credited_from_power_or_general_conditions(pack, pointers):
+def test_outdoor_operation_is_not_credited_from_power_or_general_conditions(pack, label, pointers):
     reply = FIXTURE["replies"]["Q07"]
     judged = copy.deepcopy(FIXTURE["assessment"]["judgments"])
-    for label in ("ADDRESSED", "OPEN_DECISION_DISCLOSED"):
-        judged["Q07-F4"] = _judgment(label, _ev(reply, *pointers))
-        with pytest.raises(cc.PackError, match="operating-context"):
-            _diag(pack, judgments=judged)
+    judged["Q07-F4"] = _judgment(label, _ev(reply, *pointers))
+    with pytest.raises(cc.PackError, match="operating-context"):
+        _diag(pack, judgments=judged)
 
 
 def _with_weather_role(reply):
@@ -340,6 +341,7 @@ def test_valid_pointers_never_imply_semantic_correctness(pack):
 # ── 5. modes, reviewer basis, central rule, unresolved judgments ────────────
 def test_diagnostic_and_formal_modes_stay_apart(pack):
     human = {"kind": "HUMAN", "name": "Reviewer", "languages": ["en", "ar-egyptian"]}
+    assert _diag(pack)[1].mode == cc.MODE_DIAGNOSTIC
     with pytest.raises(cc.PackError, match="FORMAL needs a HUMAN"):
         _diag(pack, mode=cc.MODE_FORMAL, attestation=cc.ATTESTATION, attested_on="2026-11-06")
     with pytest.raises(cc.PackError, match="FORMAL needs a HUMAN"):
@@ -355,37 +357,102 @@ def test_diagnostic_and_formal_modes_stay_apart(pack):
         _diag(pack, attestation=cc.ATTESTATION, attested_on="2026-11-06")
 
 
-def _full_run(pack, replace=None):
+HUMAN = {"kind": "HUMAN", "name": "Reviewer", "languages": ["en", "ar-msa", "ar-gulf", "ar-egyptian"]}
+
+
+def _full_replies(pack):
     cases, refs = pack
     replies = {c["case_id"]: _oracle(c, refs[c["case_id"]]) for c in cases}
-    replies.update(replace or {})
-    scored = [cc.score_case(replies[c["case_id"]], c, refs[c["case_id"]]) for c in cases]
-    labels = {}
+    for cid, r in replies.items():
+        if refs[cid]["group"] == "POSITIVE":
+            r["alternatives"] = [{"for_function": "F1", "options": ["option one", "option two"]}]
+    return replies
+
+
+def _full_judgments(pack, replies, scored):
+    _cases, refs = pack
+    out = {}
     for s in scored:
+        cid, ref, reply = s["case_id"], refs[s["case_id"]], replies[s["case_id"]]
+        fpos = {f["function_id"]: i for i, f in enumerate(ref["essential_functions"])}
+        upos = {u["unknown_id"]: i for i, u in enumerate(ref["expected_unknowns"])}
         for item_id, kind in s["items"].items():
-            labels[item_id] = {"K1": cc.CLEAR, "K2": cc.CLEAR, "K3": cc.CLEAR, "G1": "ADDRESSED",
-                               "G2": "COHERENT", "G3": "RECOGNIZED", "G4": cc.G4_COVERED,
-                               "G5": "CLARIFIED"}[kind]
-    ann = {"declared_before_outputs": True, "provenance": "synthetic test",
-           "cases": {cid: {"intent": "AMBIGUOUS" if r["group"] == "AMBIGUOUS" else "CLEAR",
-                           "central": [r["essential_functions"][0]["function_id"]]
-                           if r["group"] == "POSITIVE" else [],
-                           "context_needs": {}, "unknown_terms": {}, "choices": []}
-                     for cid, r in refs.items()}}
-    cc.check_annotations(ann, refs, formal=True)
+            if kind in ("K1", "K2", "K3"):
+                out[item_id] = _judgment(cc.CLEAR, [])
+            elif kind == "G2":
+                out[item_id] = _judgment("COHERENT", [])
+            elif kind == "G1":
+                i = fpos[item_id]
+                out[item_id] = _judgment("ADDRESSED", _ev(reply, "functions[%d]" % i,
+                                                          "component_types[%d]" % i))
+            elif kind == "G3":
+                out[item_id] = _judgment("RECOGNIZED",
+                                         _ev(reply, "missing_information[%d]" % upos[item_id]))
+            elif kind == "G4":
+                out[item_id] = _judgment(
+                    cc.G4_COVERED, _ev(reply, "alternatives[0].options[0]", "alternatives[0].options[1]"),
+                    option_map={"A": "alternatives[0].options[0]", "B": "alternatives[0].options[1]"})
+            elif kind == "G5":
+                out[item_id] = _judgment("CLARIFIED", _ev(reply, "clarification_questions[0]"))
+    return out
+
+
+def _full_annotations(refs):
+    return {"declared_before_outputs": True, "provenance": "synthetic test",
+            "cases": {cid: {"intent": "AMBIGUOUS" if r["group"] == "AMBIGUOUS" else "CLEAR",
+                            "central": [r["essential_functions"][0]["function_id"]]
+                            if r["group"] == "POSITIVE" else [],
+                            "context_needs": {}, "unknown_terms": {},
+                            "choices": [{"for_meaning": "x", "options": ["a", "b"]}]
+                            if r["group"] == "POSITIVE" else []}
+                      for cid, r in refs.items()}}
+
+
+def _full_run(pack, override=None, mode=cc.MODE_FORMAL, assessor=None, annotations=None):
+    """A complete synthetic run validated through a real v2 record (FORMAL HUMAN by default)."""
+    cases, refs = pack
+    replies = _full_replies(pack)
+    scored = [cc.score_case(replies[c["case_id"]], c, refs[c["case_id"]]) for c in cases]
+    judged = _full_judgments(pack, replies, scored)
+    judged.update(override or {})
+    ann = annotations or _full_annotations(refs)
+    formal = mode == cc.MODE_FORMAL
+    record = {"evaluation_id": cc.EVALUATION_ID_V2,
+              "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION], "report_sha256": "r" * 64,
+              "mode": mode, "assessor": assessor or HUMAN,
+              "attestation": cc.ATTESTATION if formal else None,
+              "attested_on": "2026-11-06" if formal else None, "judgments": judged}
+    labels = cc.check_assessment_v2(record, scored, replies, refs, ann, "r" * 64, _varieties(pack),
+                                    run_manifest=_v2_manifest(ann))
     return scored, refs, ann, labels
+
+
+def _v2_manifest(ann):
+    """SYNTHETIC test stand-in for a future v2 run manifest (no v2 run exists)."""
+    return {"evaluation_id": cc.EVALUATION_ID_V2, "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION],
+            "preregistration_v2_sha256": cc.preregistration_v2_digest(),
+            "annotations_sha256": cc.annotations_digest(ann)}
 
 
 def test_the_central_rule_blocks_credit_but_never_penalises_valid_clarification(pack):
     scored, refs, ann, labels = _full_run(pack)
-    assert cc.decide_v2(scored, refs, ann, labels, cc.MODE_FORMAL)["verdict"] == "PRELIMINARY_GO"
-    diag = cc.decide_v2(scored, refs, ann, labels, cc.MODE_DIAGNOSTIC)
+    assert cc.decide_v2(scored, refs, ann, labels)["verdict"] == "PRELIMINARY_GO"
+    _s, _r, _a, diag_labels = _full_run(pack, mode=cc.MODE_DIAGNOSTIC,
+                                        assessor=dict(HUMAN, kind="AGENT"))
+    diag = cc.decide_v2(scored, refs, ann, diag_labels)
     assert diag["verdict"] == "DIAGNOSTIC_ONLY" and diag["diagnostic_outcome"] == "PRELIMINARY_GO"
     assert "NOT A QUALIFICATION" in diag["qualification"]
     central = ann["cases"]["Q07"]["central"][0]
-    labels_missing = dict(labels, **{central: "MISSING"})
-    d = cc.decide_v2(scored, refs, ann, labels_missing, cc.MODE_FORMAL)
+    _s, _r, _a, missing = _full_run(pack, override={central: _judgment("MISSING", [])})
+    d = cc.decide_v2(scored, refs, ann, missing)
     assert d["verdict"] == "NO_GO" and d["central_omitted"] == ["Q07"] and not d["graded"]["G1"]
+    # a decided omission is not hidden by another central function still being unassessed
+    ann2 = copy.deepcopy(ann)
+    other = refs["Q07"]["essential_functions"][1]["function_id"]
+    ann2["cases"]["Q07"]["central"] = [central, other]
+    _s, _r, _a, mixed = _full_run(pack, override={central: _judgment("MISSING", []),
+                                                  other: cc.NOT_ASSESSED}, annotations=ann2)
+    assert cc.decide_v2(scored, refs, ann2, mixed)["central_omitted"] == ["Q07"]
     # an AMBIGUOUS case that validly asks is judged under G5 and is never a central omission
     for s in scored:
         if s["group"] == "AMBIGUOUS":
@@ -401,19 +468,137 @@ def test_the_central_rule_blocks_credit_but_never_penalises_valid_clarification(
         cc.check_annotations(bad, refs)
 
 
+def test_formal_needs_complete_annotations_and_declared_choices(pack):
+    _cases, refs = pack
+    ann = _full_annotations(refs)
+    partial = dict(ann, cases={})
+    with pytest.raises(cc.PackError, match="every case"):
+        _full_run(pack, annotations=partial)
+    no_choice = copy.deepcopy(ann)
+    no_choice["cases"]["Q07"]["choices"] = []
+    with pytest.raises(cc.PackError, match="reference choice declared"):
+        _full_run(pack, annotations=no_choice)
+    # diagnostic annotations may be partial, but no reference-choice credit without a choice
+    with pytest.raises(cc.PackError, match="predeclared choice"):
+        _full_run(pack, mode=cc.MODE_DIAGNOSTIC, assessor=dict(HUMAN, kind="AGENT"),
+                  annotations=no_choice)
+    # removing an applicable case's annotation cannot produce PRELIMINARY_GO on either path:
+    # the formal labels refuse other annotations, and the decision rule itself fails closed
+    scored, refs, ann_full, labels = _full_run(pack)
+    without_q07 = dict(ann_full, cases={k: v for k, v in ann_full["cases"].items() if k != "Q07"})
+    with pytest.raises(cc.PackError, match="annotations the labels were validated against"):
+        cc.decide_v2(scored, refs, without_q07, labels)
+    _s, _r, _a, diag = _full_run(pack, mode=cc.MODE_DIAGNOSTIC, assessor=dict(HUMAN, kind="AGENT"),
+                                 annotations=without_q07,
+                                 override={"Q07:G4": _judgment("ABSENT", [])})
+    d = cc.decide_v2(scored, refs, without_q07, diag)
+    assert d["diagnostic_outcome"] != "PRELIMINARY_GO" and not d["graded"]["G1"]
+
+
+def test_the_decision_mode_comes_only_from_validated_records(pack):
+    scored, refs, ann, formal = _full_run(pack)
+    with pytest.raises(cc.PackError, match="labels from check_assessment_v2"):
+        cc.decide_v2(scored, refs, ann, dict(formal))
+    with pytest.raises(cc.PackError, match="validated record"):
+        cc.AssessedLabels(dict(formal), cc.MODE_FORMAL, ["HUMAN"], formal.annotations_sha256)
+    other = copy.deepcopy(ann)
+    other["cases"]["Q07"]["central"] = []
+    with pytest.raises(cc.PackError, match="annotations the labels were validated against"):
+        cc.decide_v2(scored, refs, other, formal)
+    _s, _r, _a, agent = _full_run(pack, mode=cc.MODE_DIAGNOSTIC, assessor=dict(HUMAN, kind="AGENT"))
+    assert cc.decide_v2(scored, refs, ann, agent)["verdict"] == "DIAGNOSTIC_ONLY"
+    merged, _pos = cc.reconcile_v2([formal, agent])            # mixing never yields FORMAL
+    assert merged.mode == cc.MODE_DIAGNOSTIC
+    assert cc.decide_v2(scored, refs, ann, merged)["verdict"] == "DIAGNOSTIC_ONLY"
+    with pytest.raises(cc.PackError, match="only validated records"):
+        cc.reconcile_v2([dict(formal)])
+
+
 def test_insufficient_evidence_and_disputes_earn_nothing(pack):
     scored, refs, ann, labels = _full_run(pack)
     item = "Q07-F1"
-    a, b = dict(labels), dict(labels, **{item: "MISSING"})
-    merged, positions = cc.reconcile_v2([a, b])
+    _s, _r, _a, other = _full_run(pack, override={item: _judgment("MISSING", [])})
+    merged, positions = cc.reconcile_v2([labels, other])
+    assert merged.mode == cc.MODE_FORMAL
     assert merged[item] == cc.DISPUTED and positions[item] == ["ADDRESSED", "MISSING"]
-    d = cc.decide_v2(scored, refs, ann, merged, cc.MODE_FORMAL)
+    d = cc.decide_v2(scored, refs, ann, merged)
     assert d["verdict"] == "INCOMPLETE_REVIEW" and item in d["unresolved"]
-    d = cc.decide_v2(scored, refs, ann, dict(labels, **{item: cc.INSUFFICIENT_EVIDENCE}),
-                     cc.MODE_FORMAL)
+    _s, _r, _a, insufficient = _full_run(
+        pack, override={item: _judgment(cc.INSUFFICIENT_EVIDENCE, [], "cannot tell")})
+    d = cc.decide_v2(scored, refs, ann, insufficient)
     assert d["verdict"] == "INCOMPLETE_REVIEW" and not d["graded"]["G1"]
-    # a disputed G4 never becomes reference-coverage credit
     assert not cc._credited("G4", cc.DISPUTED) and not cc._credited("G1", cc.DISPUTED)
+
+
+def test_formal_needs_a_manifest_that_froze_the_annotations_before_outputs(pack):
+    cases, refs = pack
+    replies = _full_replies(pack)
+    scored = [cc.score_case(replies[c["case_id"]], c, refs[c["case_id"]]) for c in cases]
+    ann = _full_annotations(refs)
+    record = {"evaluation_id": cc.EVALUATION_ID_V2,
+              "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION], "report_sha256": "r" * 64,
+              "mode": cc.MODE_FORMAL, "assessor": HUMAN, "attestation": cc.ATTESTATION,
+              "attested_on": "2026-11-06", "judgments": _full_judgments(pack, replies, scored)}
+    run = lambda manifest: cc.check_assessment_v2(record, scored, replies, refs, ann, "r" * 64,
+                                                  _varieties(pack), run_manifest=manifest)
+    v1_manifest = json.loads(subprocess.run(
+        ["git", "show", "%s:docs/benchmarks/evidence/g1_component_concept_v1/run_report.json"
+         % RUN_COMMIT], cwd=ROOT, capture_output=True, check=True).stdout)["manifest"]
+    edited = copy.deepcopy(ann)
+    edited["cases"]["Q07"]["central"] = [refs["Q07"]["essential_functions"][1]["function_id"]]
+    for manifest in (None, v1_manifest, _v2_manifest(edited),
+                     dict(_v2_manifest(ann), preregistration_v2_sha256="0" * 64)):
+        with pytest.raises(cc.PackError, match="froze these annotations"):
+            run(manifest)                                   # declared_before_outputs alone is no proof
+    assert run(_v2_manifest(ann)).mode == cc.MODE_FORMAL
+
+
+def test_relationship_ends_on_stated_items_render_by_their_text(pack):
+    reply = copy.deepcopy(FIXTURE["replies"]["Q07"])
+    reply["relationships"].append({"from": "S2", "kind": "MECHANICAL", "to": "C1"})
+    assert cc.validate(reply, "x" * 0 + "I'd like something that tells me when there's new mail in "
+                       "the mailbox at the end of my long driveway, so I stop walking out there "
+                       "for nothing.")["status"] == cc.V_VALID
+    i = len(reply["relationships"]) - 1
+    assert cc.resolve_pointer(reply, "relationships[%d]" % i) == (
+        "The mailbox is at the end of a long driveway. MECHANICAL Mail-detection sensor")
+
+
+def test_g1_credit_needs_the_performing_role_and_terms_match_whole_words(pack):
+    reply = FIXTURE["replies"]["Q07"]
+    for pointers in (("missing_information[0]",), ("stated[0]",), ("functions[1]",)):
+        judged = copy.deepcopy(FIXTURE["assessment"]["judgments"])
+        judged["Q07-F1"] = _judgment("ADDRESSED", _ev(reply, *pointers))
+        with pytest.raises(cc.PackError, match="role or relationship"):
+            _diag(pack, judgments=judged)
+    judged = copy.deepcopy(FIXTURE["assessment"]["judgments"])
+    judged["Q07-F1"] = _judgment("OPEN_DECISION_DISCLOSED", _ev(reply, "functions[1]"))
+    with pytest.raises(cc.PackError, match="open decision is named"):
+        _diag(pack, judgments=judged)
+    assert not cc._has_term(["Connect a drain pipe"], ["rain"])
+    assert not cc._has_term(["outdoor", "use"], ["outdoor use"])
+    assert cc._has_term(["Protect it from rain."], ["rain"])
+
+
+def test_malformed_annotations_and_assessors_are_refused_not_crashed(pack):
+    _cases, refs = pack
+    ann = _full_annotations(refs)
+    bad = copy.deepcopy(ann)
+    bad["cases"]["Q07"]["central"] = [["x"]]
+    with pytest.raises(cc.PackError):
+        cc.check_annotations(bad, refs)
+    with pytest.raises(cc.PackError):
+        _full_run(pack, assessor=dict(HUMAN, languages=[["en"]]))
+    cases, refs = pack
+    by_id = {c["case_id"]: c for c in cases}
+    scored = [cc.score_case(FIXTURE["replies"][c], by_id[c], refs[c]) for c in sorted(FIXTURE["replies"])]
+    record = {"evaluation_id": cc.EVALUATION_ID_V2, "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION],
+              "report_sha256": "r" * 64, "mode": cc.MODE_DIAGNOSTIC,
+              "assessor": FIXTURE["assessment"]["assessor"], "attestation": None,
+              "attested_on": None, "judgments": {}}
+    with pytest.raises(cc.PackError, match="not the scored cases"):
+        cc.check_assessment_v2(record, scored, dict(FIXTURE["replies"], Q99={}), refs,
+                               FIXTURE["annotations"], "r" * 64, ["en"])
 
 
 def test_open_decision_credit_needs_the_reference_permission(pack):

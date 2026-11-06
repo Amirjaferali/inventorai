@@ -853,9 +853,16 @@ DECISION_RULE_V2 = (
     "verified reply pointers; a CLEAR-intent POSITIVE case whose central function is not "
     "credited fails G1 whatever its coverage ratio, while an ambiguous case that validly asks "
     "or abstains is judged under G5 and is never a central omission; INSUFFICIENT_EVIDENCE and "
-    "DISPUTED earn nothing and keep the review incomplete. DIAGNOSTIC mode reports the computed "
-    "outcome only as DIAGNOSTIC_ONLY. FORMAL mode needs a HUMAN reviewer under the v1 "
-    "attestation and annotations declared before outputs; PRELIMINARY_GO there still only "
+    "DISPUTED earn nothing and keep the review incomplete. ADDRESSED cites the role or "
+    "relationship that performs the function; OPEN_DECISION_DISCLOSED cites where the open "
+    "decision is named; reference-choice credit needs a predeclared choice. The mode comes only "
+    "from validated records: DIAGNOSTIC mode reports the computed outcome only as "
+    "DIAGNOSTIC_ONLY. FORMAL mode needs every record to be a HUMAN reviewer's under the v1 "
+    "attestation, and annotations for every case, with a declared choice for every POSITIVE "
+    "case, frozen before any output by a v2 run manifest that records their digest (no such "
+    "manifest exists until a v2 run is separately authorized, so no formal claim is possible "
+    "before then); a POSITIVE case without a declared central outcome never passes G1. "
+    "PRELIMINARY_GO there still only "
     "supports considering one provisional, unpersisted concept-presentation design for separate "
     "authorization, never production activation.")
 SEMANTIC_BASIS = ("Pointer checks verify only that each cited quotation exists at its place in the "
@@ -885,6 +892,28 @@ def _terms_ok(terms):
                                                      for t in terms)
 
 
+def annotations_digest(annotations):
+    """The identity a future v2 run manifest must record (`annotations_sha256`) BEFORE any
+    provider request, exactly as the v1 manifest already binds the pack and pre-registration."""
+    return _sha(annotations["cases"])
+
+
+def check_formal_freeze(annotations, run_manifest):
+    """FORMAL needs proof that the annotations existed before any output: the run's own
+    manifest (the existing frozen-manifest mechanism, authenticated by the caller with the
+    report) must be a v2 manifest naming this method and these exact annotations. No such
+    manifest exists yet (no v2 run is authorized), so no formal qualification can be claimed
+    until a separately authorized v2 run records it; `declared_before_outputs` alone is a
+    declaration, not proof."""
+    if not isinstance(run_manifest, dict) \
+            or run_manifest.get("evaluation_id") != EVALUATION_ID_V2 \
+            or run_manifest.get("method") != [METHOD_V2_ID, METHOD_V2_VERSION] \
+            or run_manifest.get("preregistration_v2_sha256") != preregistration_v2_digest() \
+            or run_manifest.get("annotations_sha256") != annotations_digest(annotations):
+        raise PackError("FORMAL needs a v2 run manifest that froze these annotations before any "
+                        "output")
+
+
 def check_annotations(annotations, refs, formal=False):
     """Validated method annotations {case_id: annotation} for `refs`; PackError otherwise."""
     if not isinstance(annotations, dict) or set(annotations) != {"declared_before_outputs",
@@ -895,6 +924,8 @@ def check_annotations(annotations, refs, formal=False):
     cases = annotations["cases"]
     if not isinstance(cases, dict) or not set(cases) <= set(refs):
         raise PackError("annotations name unknown cases")
+    if formal and set(cases) != set(refs):
+        raise PackError("formal assessment needs annotations for every case")
     keys = {"intent", "central", "context_needs", "unknown_terms", "choices"}
     for cid, a in cases.items():
         ref = refs[cid]
@@ -905,7 +936,8 @@ def check_annotations(annotations, refs, formal=False):
             raise PackError("annotation shape: " + cid)
         if (ref["group"] == "AMBIGUOUS") != (a["intent"] == INTENT_AMBIGUOUS):
             raise PackError("intent contradicts the case group: " + cid)
-        if not isinstance(a["central"], list) or not set(a["central"]) <= fids:
+        if not isinstance(a["central"], list) or not all(isinstance(f, str) for f in a["central"]) \
+                or not set(a["central"]) <= fids:
             raise PackError("central functions: " + cid)
         if ref["group"] == "POSITIVE" and a["intent"] == INTENT_CLEAR and not a["central"]:
             raise PackError("a clear POSITIVE case needs its central outcome declared: " + cid)
@@ -919,6 +951,8 @@ def check_annotations(annotations, refs, formal=False):
                 and all(isinstance(o, str) and o.strip() for o in c["options"])
                 for c in a["choices"]):
             raise PackError("choices: " + cid)
+        if ref["group"] == "POSITIVE" and formal and not a["choices"]:
+            raise PackError("a POSITIVE case needs its reference choice declared: " + cid)
     return cases
 
 
@@ -946,6 +980,7 @@ def resolve_pointer(reply, pointer):
     if section == "relationships":
         label = {c["id"]: c["type"] for c in reply.get("component_types", [])}
         label.update({f["id"]: f["text"] for f in reply.get("functions", [])})
+        label.update({x["id"]: x["text"] for x in reply.get("stated", [])})   # v1 admits S ends
         if item.get("from") not in label or item.get("to") not in label:
             raise PackError("dangling relationship: " + pointer)
         return "%s %s %s" % (label[item["from"]], item["kind"], label[item["to"]])
@@ -966,11 +1001,33 @@ def _verified_evidence(reply, evidence):
 
 
 def _has_term(quotes, terms):
-    low = " ".join(_normalised(q).lower() for q in quotes)
-    return any(_normalised(t).lower() in low for t in terms)
+    """True when ONE quotation contains a declared term as a whole word or phrase."""
+    for q in quotes:
+        low = _normalised(q).lower()
+        if any(re.search(r"(?<!\w)%s(?!\w)" % re.escape(_normalised(t).lower()), low)
+               for t in terms):
+            return True
+    return False
 
 
-def check_assessment_v2(record, scored, replies, refs, annotations, report_sha256, varieties):
+_SEAL = object()
+
+
+class AssessedLabels(dict):
+    """Normalised {item_id: label} that remembers the validated mode and assessor kind of
+    the record(s) it came from. Only `check_assessment_v2` and `reconcile_v2` create one;
+    `decide_v2` takes its mode from here, never from its caller."""
+
+    def __init__(self, labels, mode, assessor_kinds, annotations_sha256, seal=None):
+        if seal is not _SEAL:
+            raise PackError("assessed labels come only from a validated record")
+        super().__init__(labels)
+        self.mode, self.assessor_kinds = mode, tuple(assessor_kinds)
+        self.annotations_sha256 = annotations_sha256
+
+
+def check_assessment_v2(record, scored, replies, refs, annotations, report_sha256, varieties,
+                        run_manifest=None):
     """Normalised {item_id: label} of ONE v2 assessment record, or PackError. Validates the
     shape, the mode / assessor / attestation boundary, every pointer and quotation, the
     evidence each label needs, the declared lexical guards and the G4 option map. It never
@@ -987,7 +1044,8 @@ def check_assessment_v2(record, scored, replies, refs, annotations, report_sha25
     if not isinstance(a, dict) or set(a) != {"kind", "name", "languages"} \
             or a["kind"] not in ASSESSOR_KINDS \
             or not (isinstance(a["name"], str) and a["name"].strip()) \
-            or not isinstance(a["languages"], list):
+            or not isinstance(a["languages"], list) \
+            or not all(isinstance(x, str) for x in a["languages"]):
         raise PackError("assessor shape")
     if record["mode"] == MODE_FORMAL:
         if a["kind"] != "HUMAN":
@@ -1000,12 +1058,15 @@ def check_assessment_v2(record, scored, replies, refs, annotations, report_sha25
         if not {_VARIETY_LANGUAGE[v] for v in varieties} <= set(a["languages"]):
             raise PackError("reviewer competence does not cover the pack's languages")
         cases = check_annotations(annotations, refs, formal=True)
+        check_formal_freeze(annotations, run_manifest)
     elif record["mode"] == MODE_DIAGNOSTIC:
         if record["attestation"] is not None or record["attested_on"] is not None:
             raise PackError("a DIAGNOSTIC record claims no attestation")
         cases = check_annotations(annotations, refs)
     else:
         raise PackError("mode")
+    if not isinstance(replies, dict) or set(replies) != {s["case_id"] for s in scored}:
+        raise PackError("the replies are not the scored cases")
     kinds = {i: k for s in scored for i, k in s["items"].items()}
     case_of = {i: s["case_id"] for s in scored for i in s["items"]}
     judged = record["judgments"]
@@ -1030,7 +1091,17 @@ def check_assessment_v2(record, scored, replies, refs, annotations, report_sha25
         allowed = _EVIDENCE_SECTIONS.get((kind, label))
         if allowed and any(e["pointer"].split("[")[0] not in allowed for e in evidence):
             raise PackError("evidence from the wrong place for %s: %s" % (label, item_id))
+        sections = {e["pointer"].split("[")[0] for e in evidence}
+        if kind == "G1" and label == "ADDRESSED" \
+                and not sections & {"component_types", "relationships"}:
+            raise PackError("ADDRESSED cites the role or relationship that performs it: " + item_id)
+        if kind == "G1" and label == "OPEN_DECISION_DISCLOSED" and not sections & {
+                "missing_information", "clarification_questions", "alternatives"}:
+            raise PackError("OPEN_DECISION_DISCLOSED cites where the open decision is named: "
+                            + item_id)
         ann = cases.get(cid)
+        if kind == "G4" and label in (G4_COVERED, G4_PARTIAL) and not (ann and ann["choices"]):
+            raise PackError("reference-choice credit needs a predeclared choice: " + item_id)
         quotes = [e["quote"] for e in evidence]
         if kind == "G1" and label in ("ADDRESSED", "OPEN_DECISION_DISCLOSED") and ann \
                 and item_id in ann["context_needs"] \
@@ -1045,7 +1116,8 @@ def check_assessment_v2(record, scored, replies, refs, annotations, report_sha25
         elif "option_map" in j:
             raise PackError("option_map belongs to G4 only: " + item_id)
         out[item_id] = label
-    return out
+    return AssessedLabels(out, record["mode"], [a["kind"]], annotations_digest(annotations),
+                          seal=_SEAL)
 
 
 def _check_option_map(reply, label, option_map, item_id):
@@ -1069,14 +1141,24 @@ def _check_option_map(reply, label, option_map, item_id):
 
 def reconcile_v2(normalised_records):
     """Merge several validated records: an item all records label alike keeps that label;
-    any disagreement is DISPUTED (never credited), with every position kept."""
+    any disagreement is DISPUTED (never credited), with every position kept. The merge is
+    FORMAL only when every record is a validated FORMAL HUMAN record."""
+    if not normalised_records or not all(isinstance(r, AssessedLabels)
+                                         for r in normalised_records):
+        raise PackError("only validated records are reconciled")
+    if len({r.annotations_sha256 for r in normalised_records}) != 1:
+        raise PackError("records validated against different annotations are not reconciled")
+    formal = all(r.mode == MODE_FORMAL and set(r.assessor_kinds) == {"HUMAN"}
+                 for r in normalised_records)
     labels, positions = {}, {}
     for rec in normalised_records:
         for item_id, label in rec.items():
             positions.setdefault(item_id, []).append(label)
     for item_id, seen in positions.items():
         labels[item_id] = seen[0] if len(set(seen)) == 1 else DISPUTED
-    return labels, positions
+    kinds = [k for r in normalised_records for k in r.assessor_kinds]
+    return (AssessedLabels(labels, MODE_FORMAL if formal else MODE_DIAGNOSTIC, kinds,
+                           normalised_records[0].annotations_sha256, seal=_SEAL), positions)
 
 
 def _credited(kind, label, function=None):
@@ -1102,13 +1184,13 @@ def case_findings_v2(scored_case, ref, annotation, labels):
             and ref["group"] == "POSITIVE":
         if scored_case["status"] != V_VALID:
             central = "NOT_EVALUATED_NO_CONCEPT"        # G6 / K-rules govern a non-concept
-        elif any(not functions[f]["credited"] and functions[f]["label"] in _UNRESOLVED
+        elif any(not functions[f]["credited"] and functions[f]["label"] not in _UNRESOLVED
                  for f in annotation["central"]):
-            central = "UNDETERMINED"
+            central = "OMITTED"                          # a decided omission wins
         elif all(functions[f]["credited"] for f in annotation["central"]):
             central = "REPRESENTED"
         else:
-            central = "OMITTED"
+            central = "UNDETERMINED"
     unknowns = {u["unknown_id"]: {"label": label(u["unknown_id"]),
                                   "credited": label(u["unknown_id"]) == "RECOGNIZED"}
                 for u in ref["expected_unknowns"]}
@@ -1117,9 +1199,16 @@ def case_findings_v2(scored_case, ref, annotation, labels):
             "unknowns": unknowns, "choice": choice}
 
 
-def decide_v2(scored, refs, annotations, labels, mode):
-    """The v2 decision over one complete run's v1 per-case scores and normalised v2 labels.
-    DIAGNOSTIC reports DIAGNOSTIC_ONLY with the computed outcome; FORMAL applies the rule."""
+def decide_v2(scored, refs, annotations, labels):
+    """The v2 decision over one complete run's v1 per-case scores and validated v2 labels.
+    The mode comes from the validated record(s): FORMAL only for FORMAL HUMAN records,
+    otherwise DIAGNOSTIC (DIAGNOSTIC_ONLY with the computed outcome, never a qualification)."""
+    if not isinstance(labels, AssessedLabels):
+        raise PackError("decide_v2 takes labels from check_assessment_v2 / reconcile_v2 only")
+    if labels.annotations_sha256 != annotations_digest(annotations):
+        raise PackError("decide_v2 needs the annotations the labels were validated against")
+    mode = MODE_FORMAL if (labels.mode == MODE_FORMAL
+                           and set(labels.assessor_kinds) == {"HUMAN"}) else MODE_DIAGNOSTIC
     if [s["case_id"] for s in scored] != list(CASE_IDS):
         return {"verdict": "INCOMPLETE"}
     if any(s["status"] == V_ERROR for s in scored):
@@ -1128,6 +1217,9 @@ def decide_v2(scored, refs, annotations, labels, mode):
     kinds = {i: k for s in scored for i, k in s["items"].items()}
     findings = [case_findings_v2(s, refs[s["case_id"]], cases.get(s["case_id"]), labels)
                 for s in scored]
+    for f, s in zip(findings, scored):
+        if s["group"] == "POSITIVE" and cases.get(s["case_id"]) is None:
+            f["central"] = "UNDETERMINED"                # no declared central outcome
     answer = {}
     for s in scored:
         answer.update(s["auto"])
