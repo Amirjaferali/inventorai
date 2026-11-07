@@ -1605,13 +1605,24 @@ def aggregate(report, assessment, authorized_manifest_sha256, journal_lines):
 # verified merge provenance). Matching a hash and preceding the run are reported as two
 # separate facts, and FORMAL stays refused (`FORMAL_UNAVAILABLE`) whatever this returns.
 # The exposed v1 packs (whose replies were examined while the method was developed) are
-# refused here: they stay diagnostic evidence only. The v2 decision rule is defined over the
-# v1 frame (cases Q01-Q16, the v1 group balance), so a future pack must keep that frame.
+# refused here by content, not only by file digest: their pack ids, and any case whose idea
+# text is the same as, or near (difflib ratio >= MAX_SIMILARITY) to, an exposed case. They stay
+# diagnostic evidence only. The v2 decision rule is defined over the v1 frame (cases Q01-Q16,
+# the v1 group balance), so a future pack must keep that frame.
+# Further limits, stated: the journal and the report are both written by whoever runs the
+# evaluation, with no provider attestation; git commit order is ancestry, not wall-clock
+# chronology; and outputs kept anywhere outside the bound evidence paths are not detected.
 V2_AUTHORIZATION_KIND = "inventorai-g1-component-concept-v2-run-authorization"
 V2_PACK_FILES = ("inputs", "reference", "annotations")
 EXPOSED_PACK_SHA256 = frozenset({INPUT_SHA256, REFERENCE_SHA256, DEV_INPUT_SHA256,
                                  DEV_REFERENCE_SHA256})
+EXPOSED_PACK_IDS = frozenset({PACK_ID, DEV_PACK_ID})
 OWNER_IDENTITY_NOT_AUTHENTICATED = "NOT_AUTHENTICATED_BY_THIS_VERIFIER"
+# The exact keys a `_run_cases` attempt record carries beside the row's own fields. A report
+# row's `attempt` must be exactly these, so it can never stand in for the row's reply or status.
+_ATTEMPT_KEYS = frozenset({"attempt", "sent", "http_status", "response_id", "requested_model",
+                           "returned_model", "response_status", "incomplete_reason", "usage",
+                           "latency_ms", "reserved_usd", "measured_cost_usd", "bound_usd"})
 V2_FORMAL_BLOCKERS = (
     "OWNER_IDENTITY: the authorization record is ordered before the run, but who made it is "
     "not authenticated; that needs an Owner-chosen trust anchor (for example a pinned GitHub "
@@ -1673,7 +1684,7 @@ def _git(repo, *args, binary=False):
     import subprocess
     try:
         out = subprocess.run(["git", "-C", repo, *args], capture_output=True, check=True)
-    except (OSError, subprocess.CalledProcessError):
+    except (OSError, ValueError, subprocess.CalledProcessError):
         raise PackError("repository evidence unavailable: git " + args[0])
     return out.stdout if binary else out.stdout.decode("utf-8")
 
@@ -1682,7 +1693,7 @@ def _git_ok(repo, *args):
     import subprocess
     try:
         return subprocess.run(["git", "-C", repo, *args], capture_output=True).returncode == 0
-    except OSError:
+    except (OSError, ValueError):
         raise PackError("repository evidence unavailable")
 
 
@@ -1696,18 +1707,41 @@ def _committed(repo, commit, path):
 def _commit_id(repo, ref):
     if not (isinstance(ref, str) and re.fullmatch(r"[0-9a-f]{40}", ref)):
         raise PackError("a commit is named by its full 40-character id")
-    if not _git_ok(repo, "cat-file", "-e", ref + "^{commit}"):
-        raise PackError("commit not in this repository")
+    if not _git_ok(repo, "cat-file", "-e", ref) \
+            or _git(repo, "cat-file", "-t", ref).strip() != "commit":
+        raise PackError("not a commit object in this repository")
     return ref
+
+
+def _exposed_ideas():
+    """The idea texts of the exposed packs, read from their digest-pinned files."""
+    texts = []
+    for path, sha in ((INPUT_PATH, INPUT_SHA256), (DEV_INPUT_PATH, DEV_INPUT_SHA256)):
+        texts += [_normalised(c["idea_text"]).lower() for c in _load(path, sha)["cases"]]
+    return texts
+
+
+def _refuse_exposed(files_bytes, inputs, reference, cases):
+    exposed = "an exposed pack is diagnostic evidence only, never a qualification"
+    if any(hashlib.sha256(files_bytes[k]).hexdigest() in EXPOSED_PACK_SHA256
+           for k in ("inputs", "reference")) \
+            or inputs.get("pack_id") in EXPOSED_PACK_IDS \
+            or reference.get("pack_id") in EXPOSED_PACK_IDS:
+        raise PackError(exposed)
+    pool = _exposed_ideas()
+    for c in cases:
+        text = _normalised(c["idea_text"]).lower()
+        if any(text == e or difflib.SequenceMatcher(None, text, e).ratio() >= MAX_SIMILARITY
+               for e in pool):
+            raise PackError(exposed + ": " + c["case_id"])
 
 
 def _v2_pack(files_bytes):
     """Cases, references, annotations and varieties of a v2 pack, in the v1 frame the
-    v2 decision rule is defined over. Refuses an exposed pack."""
+    v2 decision rule is defined over. Refuses an exposed pack, by file, identity and content."""
     inputs, reference, annotations = (_v2_json(files_bytes[k]) for k in V2_PACK_FILES)
-    for k in ("inputs", "reference"):
-        if hashlib.sha256(files_bytes[k]).hexdigest() in EXPOSED_PACK_SHA256:
-            raise PackError("an exposed pack is diagnostic evidence only, never a qualification")
+    if not all(isinstance(x, dict) for x in (inputs, reference, annotations)):
+        raise PackError("pack files are malformed")
     if not (isinstance(inputs, dict) and isinstance(reference, dict)) \
             or inputs.get("synthetic_only") is not True \
             or inputs.get("status") != FROZEN_STATUS or reference.get("status") != FROZEN_STATUS \
@@ -1715,6 +1749,7 @@ def _v2_pack(files_bytes):
         raise PackError("pack identity")
     cases, refs = inputs.get("cases"), reference.get("cases")
     if not isinstance(cases, list) or not isinstance(refs, list) \
+            or not all(isinstance(x, dict) for x in cases + refs) \
             or [c.get("case_id") for c in cases] != list(CASE_IDS) \
             or [r.get("case_id") for r in refs] != list(CASE_IDS):
         raise PackError("the v2 decision rule needs the cases Q01-Q16 in order")
@@ -1727,6 +1762,7 @@ def _v2_pack(files_bytes):
                and c["idea_text"].strip() for c in cases) \
             or not all(isinstance(r, dict) and set(r) == ref_keys for r in refs):
         raise PackError("pack case or reference shape")
+    _refuse_exposed(files_bytes, inputs, reference, cases)
     refs = {r["case_id"]: r for r in refs}
     if {g: sum(r.get("group") == g for r in refs.values()) for g in GROUPS} != GROUPS:
         raise PackError("the v2 decision rule needs the v1 group balance")
@@ -1752,11 +1788,13 @@ def _v2_rows_match_journal(report, journal_lines):
                 raise PackError("report row is malformed")
             continue
         if set(r) != _ROW_KEYS | {"attempt"} or not isinstance(r["attempt"], dict) \
+                or set(r["attempt"]) != _ATTEMPT_KEYS \
                 or (r["reply"] is None) == (status == P_RESPONDED):
             raise PackError("report row is malformed")
-        attempted.append(c01._canonical({"event": "attempt", "case_id": r["case_id"],
-                                         "provider_status": status, "error_kind": r["error_kind"],
-                                         "reply": r["reply"], **r["attempt"]}))
+        # The row's own fields are written LAST, so the attempt record cannot replace them.
+        attempted.append(c01._canonical({**r["attempt"], "event": "attempt",
+                                         "case_id": r["case_id"], "provider_status": status,
+                                         "error_kind": r["error_kind"], "reply": r["reply"]}))
     if report.get("requests") != len(attempted):
         raise PackError("report request count does not match its rows")
     try:
@@ -1772,9 +1810,10 @@ def _v2_rows_match_journal(report, journal_lines):
 
 
 class VerifiedRunV2:
-    """A v2 run whose evidence chain `verify_v2_run` checked from committed content.
-    Read-only; only `verify_v2_run` creates one. Everything an assessment needs comes from
-    here, never from the assessment's caller."""
+    """A v2 run whose evidence chain `verify_v2_run` checked from committed content, for
+    INSPECTION. Its public accessors return copies, but a Python object cannot be made
+    tamper-proof against its own process, so `assess_v2_run` never trusts one handed to it:
+    it re-verifies the chain from the repository itself."""
 
     def __init__(self, fields, seal=None):
         if seal is not _SEAL:
@@ -1787,7 +1826,7 @@ class VerifiedRunV2:
             value = object.__getattribute__(self, "_fields")[name]
         except KeyError:
             raise AttributeError(name)
-        return copy.deepcopy(value)        # a caller can never alter the verified content
+        return copy.deepcopy(value)        # accessors return copies
 
     def __setattr__(self, *_a):
         raise PackError("a verified run is read-only")
@@ -1797,7 +1836,21 @@ class VerifiedRunV2:
 
 def verify_v2_run(repo, authorization_commit, authorization_path, evidence_commit):
     """Verify one prospective v2 run's evidence chain from committed content, or PackError.
-    Returns a `VerifiedRunV2`. Never authenticates who made the authorization record."""
+    Returns a `VerifiedRunV2`. Never authenticates who made the authorization record. Any
+    malformed input is a refusal, never a crash."""
+    try:
+        return _verify_v2_run(repo, authorization_commit, authorization_path, evidence_commit)
+    except PackError:
+        raise
+    except (AttributeError, KeyError, TypeError, ValueError, UnicodeError):
+        raise PackError("run evidence is malformed")
+
+
+def _descends_from(repo, ancestor, commit):
+    return commit != ancestor and _git_ok(repo, "merge-base", "--is-ancestor", ancestor, commit)
+
+
+def _verify_v2_run(repo, authorization_commit, authorization_path, evidence_commit):
     auth = _commit_id(repo, authorization_commit)
     evid = _commit_id(repo, evidence_commit)
     if auth == evid or not _git_ok(repo, "merge-base", "--is-ancestor", auth, evid):
@@ -1813,8 +1866,15 @@ def verify_v2_run(repo, authorization_commit, authorization_path, evidence_commi
         raise PackError("authorization record shape")
     paths = record["evidence"]
     for path in paths.values():
-        if not isinstance(path, str) or _committed(repo, auth, path) is not None \
-                or _git(repo, "rev-list", auth, "--", path).strip():
+        if not isinstance(path, str) or path == authorization_path \
+                or _committed(repo, auth, path) is not None:
+            raise PackError("run evidence existed at or before the authorization: one run only")
+        # Every commit, on any branch, that ever touched this evidence path must come AFTER
+        # the authorization (descend from it): evidence made on a side branch and merged in
+        # later is refused, as the v1 one-run rule refuses evidence anywhere in history.
+        touching = set(_git(repo, "rev-list", "--full-history", "--all", "--", path).split()) \
+            | set(_git(repo, "rev-list", "--full-history", evid, "--", path).split())
+        if not touching or not all(_descends_from(repo, auth, c) for c in touching):
             raise PackError("run evidence existed at or before the authorization: one run only")
     report_raw = _committed(repo, evid, paths["report"])
     journal_raw = _committed(repo, evid, paths["journal"])
@@ -1829,6 +1889,8 @@ def verify_v2_run(repo, authorization_commit, authorization_path, evidence_commi
         raise PackError("report is not the authorized run")
     if manifest.get("evidence") != paths:
         raise PackError("the manifest and the authorization name different evidence")
+    if manifest.get("model") != PRICING["model"] or manifest.get("model") != MODEL:
+        raise PackError("no recorded price basis for this model")
     revision = manifest.get("code_revision")
     _commit_id(repo, revision)
     if not _git_ok(repo, "merge-base", "--is-ancestor", revision, auth):
@@ -1866,13 +1928,13 @@ def verify_v2_run(repo, authorization_commit, authorization_path, evidence_commi
         seal=_SEAL)
 
 
-def assess_verified_v2(verified, record):
-    """One assessment of a VERIFIED v2 run. The scored replies, references, annotations and
-    report digest come from the verified run, never from the caller; the record is checked
-    by the unchanged `check_assessment_v2` (FORMAL is refused there) and decided by the
-    unchanged `decide_v2`. The evidence status and the FORMAL blockers are always reported."""
-    if not isinstance(verified, VerifiedRunV2):
-        raise PackError("assessment needs a run verified by verify_v2_run")
+def assess_v2_run(repo, authorization_commit, authorization_path, evidence_commit, record):
+    """One assessment of a v2 run, verified HERE from the repository (no in-memory object is
+    trusted). The scored replies, references, annotations and report digest come from that
+    verification, never from the caller; the record is checked by the unchanged
+    `check_assessment_v2` (FORMAL is refused there) and decided by the unchanged `decide_v2`.
+    The evidence status and the FORMAL blockers are always reported."""
+    verified = verify_v2_run(repo, authorization_commit, authorization_path, evidence_commit)
     evidence = {"authorization": dict(verified.authorization),
                 "manifest_sha256": verified.manifest_sha256,
                 "report_sha256": verified.report_sha256,

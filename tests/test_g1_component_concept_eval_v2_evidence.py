@@ -1,4 +1,4 @@
-"""G1-1/2 v2 prospective run-evidence verification (`verify_v2_run`, `assess_verified_v2`).
+"""G1-1/2 v2 prospective run-evidence verification (`verify_v2_run`, `assess_v2_run`).
 
 Synthetic only, offline, no provider: every run here is produced by the REAL v1 producer
 (`_run_cases`) driven by an offline fake transport, committed into a throwaway git
@@ -13,6 +13,7 @@ verifier cannot authenticate who made the authorization record.
 import copy
 import io
 import json
+import re
 import socket
 import subprocess
 from pathlib import Path
@@ -60,11 +61,22 @@ def _commit(repo, message):
 
 
 def _synthetic_pack():
-    """The v1 held-out pack's content under a NEW identity, so it is not an exposed file."""
+    """A NEW synthetic pack in the v1 frame: a new pack id and new idea wording for every
+    case (unrelated to every exposed case; it keeps only the reference's exclusion and
+    unsupported-claim terms and any figures, so the reference stays consistent). The
+    reference structure is the v1 one the v2 decision rule is defined over."""
     inputs = json.loads((ROOT / cc.INPUT_PATH).read_text(encoding="utf-8"))
     reference = json.loads((ROOT / cc.REFERENCE_PATH).read_text(encoding="utf-8"))
     inputs["pack_id"] = reference["pack_id"] = PACK_ID
     refs = {r["case_id"]: r for r in reference["cases"]}
+    for c in inputs["cases"]:
+        r = refs[c["case_id"]]
+        terms = [a for x in r["exclusions"] + r["unsupported_claims"] for a in x["any_of"]]
+        figures = re.findall(r"\d+(?:[.,]\d+)?", cc._normalised(c["idea_text"]))
+        c["idea_text"] = ("Verifier-only synthetic fixture %s, written for evidence-chain tests; "
+                          "it names %s%s." % (c["case_id"], ", ".join(terms) or "no special terms",
+                                              (" and the figures " + ", ".join(figures))
+                                              if figures else ""))
     return inputs, reference, _full_annotations(refs)
 
 
@@ -120,6 +132,11 @@ def _verify(c, authorization=None, evidence=None, path=AUTH_PATH):
                             evidence or c["evidence"])
 
 
+def _assess(c, record, evidence=None):
+    return cc.assess_v2_run(str(c["repo"]), c["authorization"], AUTH_PATH,
+                            evidence or c["evidence"], record)
+
+
 def _record(c, verified, mode=cc.MODE_DIAGNOSTIC, assessor=None):
     pack = (c["cases"], c["refs"])
     judged = _full_judgments(pack, verified.replies, verified.scored)
@@ -155,7 +172,7 @@ def test_a_complete_chain_verifies_and_reports_each_fact_separately(chain):
         "manifest_matches_authorized_hash": True, "authorization_recorded_before_run": True,
         "authorization_commit": chain["authorization"], "evidence_commit": chain["evidence"],
         "owner_identity": cc.OWNER_IDENTITY_NOT_AUTHENTICATED}
-    result = cc.assess_verified_v2(verified, _record(chain, verified))
+    result = _assess(chain, _record(chain, verified))
     assert result["verdict"] == "DIAGNOSTIC_ONLY"
     assert result["qualification"] == "NOT A QUALIFICATION: diagnostic mode"
     assert result["evidence"]["formal_blockers"] == list(cc.V2_FORMAL_BLOCKERS)
@@ -182,21 +199,21 @@ def test_the_manifest_binds_method_revision_pack_prompt_and_configuration(chain)
 def test_a_fully_verified_chain_never_yields_a_formal_qualification(chain):
     verified = _verify(chain)
     with pytest.raises(cc.PackError, match="FORMAL qualification is unavailable"):
-        cc.assess_verified_v2(verified, _record(chain, verified, mode=cc.MODE_FORMAL))
+        _assess(chain, _record(chain, verified, mode=cc.MODE_FORMAL))
 
 
 @pytest.mark.parametrize("assessor", [AGENT, dict(HUMAN, kind="AI_ASSISTED_HUMAN")])
 def test_an_invalid_formal_basis_is_refused(chain, assessor):
     verified = _verify(chain)
     with pytest.raises(cc.PackError, match="FORMAL needs a HUMAN"):
-        cc.assess_verified_v2(verified, _record(chain, verified, cc.MODE_FORMAL, assessor))
+        _assess(chain, _record(chain, verified, cc.MODE_FORMAL, assessor))
 
 
 def test_a_diagnostic_record_claiming_an_attestation_is_refused(chain):
     verified = _verify(chain)
     record = dict(_record(chain, verified), attestation=cc.ATTESTATION)
     with pytest.raises(cc.PackError, match="claims no attestation"):
-        cc.assess_verified_v2(verified, record)
+        _assess(chain, record)
 
 
 # ==========================================================================
@@ -326,7 +343,8 @@ def test_a_pack_reference_changed_after_the_authorization_is_refused(chain):
         _verify(chain, evidence=_commit(chain["repo"], "reference rewritten"))
 
 
-def _chain_with(tmp_path, annotations=None, inputs=None, reference=None, name="variant"):
+def _chain_with(tmp_path, annotations=None, inputs=None, reference=None, name="variant",
+                produce_refs=None):
     repo = tmp_path / name
     repo.mkdir()
     _git(repo, "init", "-q")
@@ -349,7 +367,7 @@ def _chain_with(tmp_path, annotations=None, inputs=None, reference=None, name="v
                              "evidence": manifest["evidence"]})
     auth = _commit(repo, "authorization")
     case_list = json.loads(files["inputs"][1])["cases"]
-    refs = {r["case_id"]: r for r in json.loads(files["reference"][1])["cases"]}
+    refs = produce_refs or {r["case_id"]: r for r in json.loads(files["reference"][1])["cases"]}
     report, journal = _produce(manifest, case_list, refs)
     _write(repo, manifest["evidence"]["report"], report)
     _write(repo, manifest["evidence"]["journal"], journal)
@@ -460,21 +478,28 @@ def test_the_verified_run_is_sealed_and_read_only(chain):
     verified.replies["Q01"] = None
     assert verified.scored[0]["status"] != "TAMPERED"
     assert verified.replies["Q01"] is not None
+    assert "cannot be made tamper-proof" in " ".join(cc.VerifiedRunV2.__doc__.split())
 
 
-def test_only_a_verified_run_can_be_assessed(chain):
+def test_assessment_re_verifies_and_never_trusts_an_object(chain):
+    """There is no entry point that accepts replies, scores or a VerifiedRunV2: the
+    assessment takes repository coordinates and verifies them itself, so a forged or
+    mutated in-memory object (even through its private storage) never reaches it."""
+    import inspect
+    assert not hasattr(cc, "assess_verified_v2")
+    assert list(inspect.signature(cc.assess_v2_run).parameters) == [
+        "repo", "authorization_commit", "authorization_path", "evidence_commit", "record"]
     verified = _verify(chain)
-    record = _record(chain, verified)
-    for fake in (None, {"scored": verified.scored}, chain["report"]):
-        with pytest.raises(cc.PackError, match="verified by verify_v2_run"):
-            cc.assess_verified_v2(fake, record)
+    object.__getattribute__(verified, "_fields")["replies"]["Q01"] = None   # tamper in memory
+    result = _assess(chain, _record(chain, _verify(chain)))
+    assert result["verdict"] == "DIAGNOSTIC_ONLY"
 
 
 def test_a_record_bound_to_another_report_is_refused(chain):
     verified = _verify(chain)
     record = dict(_record(chain, verified), report_sha256="f" * 64)
     with pytest.raises(cc.PackError, match="not bound to this method and report"):
-        cc.assess_verified_v2(verified, record)
+        _assess(chain, record)
 
 
 # ==========================================================================
@@ -500,9 +525,10 @@ def test_an_incomplete_run_is_reported_incomplete_never_scored_as_success(tmp_pa
     assert report["stopped_on"] is not None
     _write(repo, manifest["evidence"]["report"], report)
     _write(repo, manifest["evidence"]["journal"], journal)
-    verified = cc.verify_v2_run(str(repo), auth, AUTH_PATH, _commit(repo, "evidence"))
+    evid = _commit(repo, "evidence")
+    verified = cc.verify_v2_run(str(repo), auth, AUTH_PATH, evid)
     assert verified.complete is False
-    result = cc.assess_verified_v2(verified, None)
+    result = cc.assess_v2_run(str(repo), auth, AUTH_PATH, evid, None)
     assert result["verdict"] == "INCOMPLETE"
     assert result["evidence"]["formal_blockers"] == list(cc.V2_FORMAL_BLOCKERS)
 
@@ -522,7 +548,8 @@ def test_nothing_in_the_product_imports_the_verifier():
     for folder in ("engine", "web"):
         for path in (ROOT / folder).rglob("*.py"):
             text = path.read_text(encoding="utf-8")
-            assert "verify_v2_run" not in text and "run_g1_component_concept_eval" not in text
+            assert "verify_v2_run" not in text and "assess_v2_run" not in text
+            assert "run_g1_component_concept_eval" not in text
 
 
 def test_a_record_and_manifest_naming_different_evidence_is_refused(tmp_path):
@@ -548,3 +575,139 @@ def test_a_record_and_manifest_naming_different_evidence_is_refused(tmp_path):
     _write(repo, elsewhere["journal"], journal)
     with pytest.raises(cc.PackError, match="name different evidence"):
         cc.verify_v2_run(str(repo), auth, AUTH_PATH, _commit(repo, "evidence"))
+
+
+# ==========================================================================
+# 9. Review regressions (B1-B3, N1, N3, N4)
+# ==========================================================================
+def test_an_attempt_record_cannot_stand_in_for_the_rows_reply(chain):
+    """B1: a row whose own reply is forged while its `attempt` carries the journal's reply."""
+    report = copy.deepcopy(chain["report"])
+    row = report["rows"][0]
+    row["attempt"]["reply"] = row["reply"]
+    row["reply"] = dict(row["reply"], outcome=cc.ABSTAIN)
+    with pytest.raises(cc.PackError, match="report row is malformed"):
+        _verify(chain, evidence=_new_evidence(chain, report=report))
+
+
+def test_an_attempt_record_cannot_stand_in_for_the_rows_status(chain):
+    report = copy.deepcopy(chain["report"])
+    row = report["rows"][1]
+    row["attempt"].update(provider_status=row["provider_status"], reply=row["reply"])
+    row["provider_status"], row["reply"] = cc.P_REFUSAL, None
+    with pytest.raises(cc.PackError, match="report row is malformed"):
+        _verify(chain, evidence=_new_evidence(chain, report=report))
+
+
+def test_run_evidence_made_on_a_side_branch_before_authorization_is_refused(tmp_path):
+    """B2: evidence committed on a branch from the candidate, before the pack and the
+    record existed, then merged in after the authorization."""
+    repo = tmp_path / "side"
+    repo.mkdir()
+    _git(repo, "init", "-q", "-b", "main")
+    _write(repo, "candidate.txt", b"x\n")
+    candidate = _commit(repo, "candidate")
+    inputs, reference, annotations = _synthetic_pack()
+    files = _files(inputs, reference, annotations)
+    manifest = cc.run_manifest_v2(candidate, cc.MODEL, PACK_ID, files)
+    refs = {r["case_id"]: r for r in reference["cases"]}
+    report, journal = _produce(manifest, inputs["cases"], refs)
+    _git(repo, "checkout", "-q", "-b", "side")
+    _write(repo, manifest["evidence"]["report"], report)
+    _write(repo, manifest["evidence"]["journal"], journal)
+    _commit(repo, "outputs first, on a side branch")
+    _git(repo, "checkout", "-q", "main")
+    for path, data in files.values():
+        _write(repo, path, data)
+    _write(repo, AUTH_PATH, {"kind": cc.V2_AUTHORIZATION_KIND,
+                             "manifest_sha256": cc._digest(manifest),
+                             "evidence": manifest["evidence"]})
+    auth = _commit(repo, "authorization")
+    _git(repo, "merge", "-q", "--no-edit", "side")
+    merged = _git(repo, "rev-parse", "HEAD")
+    with pytest.raises(cc.PackError, match="existed at or before the authorization"):
+        cc.verify_v2_run(str(repo), auth, AUTH_PATH, merged)
+
+
+@pytest.mark.parametrize("variant", ["reformatted", "renamed_id", "exposed_id_new_text"])
+def test_exposed_content_is_refused_however_it_is_repackaged(tmp_path, variant):
+    """B3: the exposed pack is refused by content and identity, not only by file bytes."""
+    inputs = json.loads((ROOT / cc.INPUT_PATH).read_text(encoding="utf-8"))
+    reference = json.loads((ROOT / cc.REFERENCE_PATH).read_text(encoding="utf-8"))
+    if variant == "renamed_id":
+        inputs["pack_id"] = reference["pack_id"] = "a-new-looking-identity"
+    if variant == "exposed_id_new_text":
+        inputs, reference, _a = _synthetic_pack()
+        inputs["pack_id"] = reference["pack_id"] = cc.PACK_ID
+    refs = {r["case_id"]: r for r in reference["cases"]}
+    annotations = _full_annotations(refs)
+    inputs_bytes = json.dumps(inputs, ensure_ascii=False, indent=3).encode("utf-8")
+    reference_bytes = json.dumps(reference, ensure_ascii=False, indent=3).encode("utf-8")
+    repo, auth, evid = _chain_with(tmp_path, annotations=annotations, inputs=inputs_bytes,
+                                   reference=reference_bytes)
+    with pytest.raises(cc.PackError, match="exposed pack is diagnostic evidence only"):
+        cc.verify_v2_run(str(repo), auth, AUTH_PATH, evid)
+
+
+def test_the_positive_fixture_is_not_exposed_content():
+    inputs, _reference, _a = _synthetic_pack()
+    pool = cc._exposed_ideas()
+    for c in inputs["cases"]:
+        text = cc._normalised(c["idea_text"]).lower()
+        assert text not in pool
+        assert max(cc.difflib.SequenceMatcher(None, text, e).ratio() for e in pool) \
+            < cc.MAX_SIMILARITY
+
+
+def test_a_manifest_without_a_recorded_price_basis_is_refused(tmp_path):
+    """N1: the v1 run boundary's model rule, applied to the v2 manifest."""
+    repo = tmp_path / "model"
+    repo.mkdir()
+    _git(repo, "init", "-q")
+    _write(repo, "candidate.txt", b"x\n")
+    candidate = _commit(repo, "candidate")
+    inputs, reference, annotations = _synthetic_pack()
+    files = _files(inputs, reference, annotations)
+    for path, data in files.values():
+        _write(repo, path, data)
+    manifest = cc.run_manifest_v2(candidate, "some-unpriced-model", PACK_ID, files)
+    _write(repo, AUTH_PATH, {"kind": cc.V2_AUTHORIZATION_KIND,
+                             "manifest_sha256": cc._digest(manifest),
+                             "evidence": manifest["evidence"]})
+    auth = _commit(repo, "authorization")
+    refs = {r["case_id"]: r for r in reference["cases"]}
+    report, journal = _produce(manifest, inputs["cases"], refs)
+    _write(repo, manifest["evidence"]["report"], report)
+    _write(repo, manifest["evidence"]["journal"], journal)
+    with pytest.raises(cc.PackError, match="no recorded price basis"):
+        cc.verify_v2_run(str(repo), auth, AUTH_PATH, _commit(repo, "evidence"))
+
+
+def test_an_annotated_tag_is_not_a_commit(chain):
+    """N3: an object that merely peels to a commit is refused."""
+    _git(chain["repo"], "tag", "-a", "auth-tag", "-m", "t", chain["authorization"])
+    tag = _git(chain["repo"], "rev-parse", "auth-tag")
+    assert tag != chain["authorization"]
+    with pytest.raises(cc.PackError, match="not a commit object"):
+        _verify(chain, authorization=tag)
+
+
+@pytest.mark.parametrize("journal, path", [
+    (b"\xff\xfe not text", AUTH_PATH),
+    (None, "a\x00b"),
+])
+def test_malformed_input_is_a_refusal_never_a_crash(chain, journal, path):
+    """N4: undecodable evidence and NUL in a path are PackError, not another exception."""
+    evidence = _new_evidence(chain, journal=journal) if journal is not None else None
+    with pytest.raises(cc.PackError):
+        _verify(chain, evidence=evidence, path=path)
+
+
+def test_malformed_pack_content_is_a_refusal_never_a_crash(tmp_path):
+    inputs, reference, annotations = _synthetic_pack()
+    good = {r["case_id"]: copy.deepcopy(r) for r in reference["cases"]}
+    reference["cases"][0]["essential_functions"] = ["not a function record"]
+    repo, auth, evid = _chain_with(tmp_path, inputs=inputs, reference=reference,
+                                   produce_refs=good)
+    with pytest.raises(cc.PackError):
+        cc.verify_v2_run(str(repo), auth, AUTH_PATH, evid)
