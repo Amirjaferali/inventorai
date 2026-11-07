@@ -1581,6 +1581,310 @@ def aggregate(report, assessment, authorized_manifest_sha256, journal_lines):
                 report_sha256=_digest(report), spend=report.get("spend"))
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# G1-1/2 v2: prospective run-evidence verification (PREPARATION ONLY — no run here)
+# ─────────────────────────────────────────────────────────────────────────────
+# A future prospective v2 evaluation must be inspectable as ONE chain:
+#   Owner authorization record -> exact frozen manifest -> pre-output annotations ->
+#   execution journal -> report -> scored replies -> attributed review -> bounded verdict.
+# `verify_v2_run` checks that chain from COMMITTED repository content only (never the
+# working tree, never caller-supplied replies or scores):
+#   * the manifest binds the v2 method / version and pre-registration, the exact candidate
+#     revision, the pack files (inputs, reference, annotations) by path and digest, the
+#     prompt / schema / payloads and the run configuration;
+#   * an authorization record naming that manifest digest was committed BEFORE the run: its
+#     commit is a strict ancestor of the evidence commit, it is unchanged there, the pack
+#     files already existed in it with the bound digests, and no run evidence existed at or
+#     before it (the v1 one-run rule);
+#   * the report's attempted rows equal its journal records (the v1 `_check_report` rules);
+#   * scored replies are derived from that report, and the assessment is checked against
+#     them through the UNCHANGED v2 owners (`check_assessment_v2`, `decide_v2`).
+# What it does NOT establish, stated rather than implied: that the Owner, and not someone
+# else, made the authorization record. Git authorship is not authentication, and this
+# offline verifier holds no trust anchor (e.g. a pinned GitHub web-flow key or GitHub-
+# verified merge provenance). Matching a hash and preceding the run are reported as two
+# separate facts, and FORMAL stays refused (`FORMAL_UNAVAILABLE`) whatever this returns.
+# The exposed v1 packs (whose replies were examined while the method was developed) are
+# refused here: they stay diagnostic evidence only. The v2 decision rule is defined over the
+# v1 frame (cases Q01-Q16, the v1 group balance), so a future pack must keep that frame.
+V2_AUTHORIZATION_KIND = "inventorai-g1-component-concept-v2-run-authorization"
+V2_PACK_FILES = ("inputs", "reference", "annotations")
+EXPOSED_PACK_SHA256 = frozenset({INPUT_SHA256, REFERENCE_SHA256, DEV_INPUT_SHA256,
+                                 DEV_REFERENCE_SHA256})
+OWNER_IDENTITY_NOT_AUTHENTICATED = "NOT_AUTHENTICATED_BY_THIS_VERIFIER"
+V2_FORMAL_BLOCKERS = (
+    "OWNER_IDENTITY: the authorization record is ordered before the run, but who made it is "
+    "not authenticated; that needs an Owner-chosen trust anchor (for example a pinned GitHub "
+    "web-flow key or GitHub-verified merge provenance)",
+    "FRESH_PACK: no genuinely held-out v2 pack with blind, pre-output adjudicated annotations "
+    "exists; the exposed Q01-Q16 evidence is diagnostic only",
+    "AUTHORIZED_RUN: no Owner-authorized v2 run exists, and no v2 execution path is built",
+    "HUMAN_REVIEW: FORMAL needs a HUMAN reviewer under the unchanged v1 attestation",
+    "METHOD: this method version refuses FORMAL in every case (FORMAL_UNAVAILABLE)",
+)
+
+
+def run_manifest_v2(code_revision, model, pack_id, files):
+    """The v2 run manifest. ``files`` maps each of `V2_PACK_FILES` to (repository path,
+    exact bytes); the manifest binds each path and digest, the annotations digest, the
+    v2 method and pre-registration, the payloads every case would send and the run
+    configuration. Pure: reads nothing."""
+    if not (isinstance(code_revision, str) and code_revision.strip()):
+        raise PackError("manifest needs a code revision")
+    if not isinstance(files, dict) or set(files) != set(V2_PACK_FILES):
+        raise PackError("manifest needs the inputs, reference and annotations files")
+    inputs, _reference, annotations = (_v2_json(files[k][1]) for k in V2_PACK_FILES)
+    cases = inputs.get("cases") if isinstance(inputs, dict) else None
+    if not isinstance(cases, list) or not isinstance(annotations, dict) \
+            or "cases" not in annotations:
+        raise PackError("pack files are malformed")
+    evidence = "docs/benchmarks/evidence/%s" % pack_id
+    return {"evaluation_id": EVALUATION_ID_V2, "method": [METHOD_V2_ID, METHOD_V2_VERSION],
+            "preregistration_v2_sha256": preregistration_v2_digest(),
+            "v1_preregistration_sha256": V1_PREREGISTRATION_SHA256, "pack_id": pack_id,
+            "pack": {k: {"path": files[k][0],
+                         "sha256": hashlib.sha256(files[k][1]).hexdigest()}
+                     for k in V2_PACK_FILES},
+            "annotations_sha256": annotations_digest(annotations),
+            "instructions_sha256": _sha(INSTRUCTIONS), "schema_sha256": _sha(schema()),
+            "payloads_sha256": _digest([payload(c, model) for c in cases]),
+            "code_revision": code_revision, "model": model, "endpoint": toa.ENDPOINT,
+            "max_output_tokens": MAX_OUTPUT_TOKENS,
+            "max_provider_requests": MAX_PROVIDER_REQUESTS, "retries": RETRIES,
+            "store": False, "tools": "none", "stop_rule": STOP_RULE, "synthetic_only": True,
+            "budget": {"ceiling_usd": CEILING_USD, "pricing": PRICING,
+                       "price_verification": PRICE_VERIFICATION, "reservation": RESERVATION},
+            "evidence": {"journal": evidence + "/run_journal.jsonl",
+                         "report": evidence + "/run_report.json"},
+            "one_run_policy": ("Exactly one run: no run evidence may exist at or before the "
+                               "authorization record; an interrupted run is incomplete and is "
+                               "never rerun.")}
+
+
+def _v2_json(raw):
+    try:
+        return json.loads(raw.decode("utf-8"))
+    except (AttributeError, UnicodeDecodeError, ValueError):
+        raise PackError("pack file is not readable JSON")
+
+
+def _git(repo, *args, binary=False):
+    """Committed repository content only. Any failure is a refusal."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "-C", repo, *args], capture_output=True, check=True)
+    except (OSError, subprocess.CalledProcessError):
+        raise PackError("repository evidence unavailable: git " + args[0])
+    return out.stdout if binary else out.stdout.decode("utf-8")
+
+
+def _git_ok(repo, *args):
+    import subprocess
+    try:
+        return subprocess.run(["git", "-C", repo, *args], capture_output=True).returncode == 0
+    except OSError:
+        raise PackError("repository evidence unavailable")
+
+
+def _committed(repo, commit, path):
+    """The exact bytes of ``path`` at ``commit``, or None when it does not exist there."""
+    if not _git_ok(repo, "cat-file", "-e", "%s:%s" % (commit, path)):
+        return None
+    return _git(repo, "show", "%s:%s" % (commit, path), binary=True)
+
+
+def _commit_id(repo, ref):
+    if not (isinstance(ref, str) and re.fullmatch(r"[0-9a-f]{40}", ref)):
+        raise PackError("a commit is named by its full 40-character id")
+    if not _git_ok(repo, "cat-file", "-e", ref + "^{commit}"):
+        raise PackError("commit not in this repository")
+    return ref
+
+
+def _v2_pack(files_bytes):
+    """Cases, references, annotations and varieties of a v2 pack, in the v1 frame the
+    v2 decision rule is defined over. Refuses an exposed pack."""
+    inputs, reference, annotations = (_v2_json(files_bytes[k]) for k in V2_PACK_FILES)
+    for k in ("inputs", "reference"):
+        if hashlib.sha256(files_bytes[k]).hexdigest() in EXPOSED_PACK_SHA256:
+            raise PackError("an exposed pack is diagnostic evidence only, never a qualification")
+    if not (isinstance(inputs, dict) and isinstance(reference, dict)) \
+            or inputs.get("synthetic_only") is not True \
+            or inputs.get("status") != FROZEN_STATUS or reference.get("status") != FROZEN_STATUS \
+            or inputs.get("pack_id") != reference.get("pack_id"):
+        raise PackError("pack identity")
+    cases, refs = inputs.get("cases"), reference.get("cases")
+    if not isinstance(cases, list) or not isinstance(refs, list) \
+            or [c.get("case_id") for c in cases] != list(CASE_IDS) \
+            or [r.get("case_id") for r in refs] != list(CASE_IDS):
+        raise PackError("the v2 decision rule needs the cases Q01-Q16 in order")
+    case_keys = {"case_id", "language", "variety", "synthetic", "idea_text"}
+    ref_keys = {"case_id", "group", "expected_outcome", "essential_functions",
+                "expected_unknowns", "exclusions", "meaningful_choice", "unsupported_claims",
+                "notes"}
+    if not all(isinstance(c, dict) and set(c) == case_keys and c["synthetic"] is True
+               and c["variety"] in VARIETIES and isinstance(c["idea_text"], str)
+               and c["idea_text"].strip() for c in cases) \
+            or not all(isinstance(r, dict) and set(r) == ref_keys for r in refs):
+        raise PackError("pack case or reference shape")
+    refs = {r["case_id"]: r for r in refs}
+    if {g: sum(r.get("group") == g for r in refs.values()) for g in GROUPS} != GROUPS:
+        raise PackError("the v2 decision rule needs the v1 group balance")
+    if annotations.get("declared_before_outputs") is not True:
+        raise PackError("annotations were not declared before outputs")
+    check_annotations(annotations, refs)
+    return cases, refs, annotations, [c.get("variety") for c in cases], inputs["pack_id"]
+
+
+def _v2_rows_match_journal(report, journal_lines):
+    """The v1 `_check_report` row and journal rules, applied to a v2 report."""
+    rows = report.get("rows")
+    if not isinstance(rows, list) or not all(isinstance(r, dict) for r in rows) \
+            or [r.get("case_id") for r in rows] != list(CASE_IDS):
+        raise PackError("report rows are not the pack's cases in order")
+    attempted = []
+    for r in rows:
+        status = r.get("provider_status")
+        if status not in _PROVIDER_STATUSES:
+            raise PackError("report row status is malformed")
+        if status == P_NOT_ATTEMPTED:
+            if set(r) != _ROW_KEYS or r["reply"] is not None:
+                raise PackError("report row is malformed")
+            continue
+        if set(r) != _ROW_KEYS | {"attempt"} or not isinstance(r["attempt"], dict) \
+                or (r["reply"] is None) == (status == P_RESPONDED):
+            raise PackError("report row is malformed")
+        attempted.append(c01._canonical({"event": "attempt", "case_id": r["case_id"],
+                                         "provider_status": status, "error_kind": r["error_kind"],
+                                         "reply": r["reply"], **r["attempt"]}))
+    if report.get("requests") != len(attempted):
+        raise PackError("report request count does not match its rows")
+    try:
+        records = [json.loads(line) for line in journal_lines if line.strip()]
+    except (TypeError, ValueError):
+        raise PackError("journal is unreadable")
+    if not all(isinstance(x, dict) for x in records):
+        raise PackError("journal is malformed")
+    if [x for x in records if x.get("event") == "attempt"] != attempted \
+            or len([x for x in records if x.get("event") == "reserved"]) != len(attempted):
+        raise PackError("report rows do not match the run journal")
+    return rows
+
+
+class VerifiedRunV2:
+    """A v2 run whose evidence chain `verify_v2_run` checked from committed content.
+    Read-only; only `verify_v2_run` creates one. Everything an assessment needs comes from
+    here, never from the assessment's caller."""
+
+    def __init__(self, fields, seal=None):
+        if seal is not _SEAL:
+            raise PackError("a verified run comes only from verify_v2_run")
+        object.__setattr__(self, "_fields", dict(fields))
+
+    def __getattr__(self, name):
+        import copy
+        try:
+            value = object.__getattribute__(self, "_fields")[name]
+        except KeyError:
+            raise AttributeError(name)
+        return copy.deepcopy(value)        # a caller can never alter the verified content
+
+    def __setattr__(self, *_a):
+        raise PackError("a verified run is read-only")
+
+    __delattr__ = __setattr__
+
+
+def verify_v2_run(repo, authorization_commit, authorization_path, evidence_commit):
+    """Verify one prospective v2 run's evidence chain from committed content, or PackError.
+    Returns a `VerifiedRunV2`. Never authenticates who made the authorization record."""
+    auth = _commit_id(repo, authorization_commit)
+    evid = _commit_id(repo, evidence_commit)
+    if auth == evid or not _git_ok(repo, "merge-base", "--is-ancestor", auth, evid):
+        raise PackError("the authorization record must be committed before the run evidence")
+    raw = _committed(repo, auth, authorization_path)
+    if raw is None or _committed(repo, evid, authorization_path) != raw:
+        raise PackError("the authorization record is missing or changed after authorization")
+    record = _v2_json(raw)
+    if not isinstance(record, dict) or set(record) != {"kind", "manifest_sha256", "evidence"} \
+            or record["kind"] != V2_AUTHORIZATION_KIND \
+            or not isinstance(record["evidence"], dict) \
+            or set(record["evidence"]) != {"journal", "report"}:
+        raise PackError("authorization record shape")
+    paths = record["evidence"]
+    for path in paths.values():
+        if not isinstance(path, str) or _committed(repo, auth, path) is not None \
+                or _git(repo, "rev-list", auth, "--", path).strip():
+            raise PackError("run evidence existed at or before the authorization: one run only")
+    report_raw = _committed(repo, evid, paths["report"])
+    journal_raw = _committed(repo, evid, paths["journal"])
+    if report_raw is None or journal_raw is None:
+        raise PackError("the run evidence is missing")
+    report = _v2_json(report_raw)
+    manifest = report.get("manifest") if isinstance(report, dict) else None
+    if not isinstance(manifest, dict) or report.get("manifest_sha256") != _digest(manifest):
+        raise PackError("report manifest does not match its digest")
+    hash_match = campaign_authorized(manifest, record["manifest_sha256"])
+    if not hash_match:
+        raise PackError("report is not the authorized run")
+    if manifest.get("evidence") != paths:
+        raise PackError("the manifest and the authorization name different evidence")
+    revision = manifest.get("code_revision")
+    _commit_id(repo, revision)
+    if not _git_ok(repo, "merge-base", "--is-ancestor", revision, auth):
+        raise PackError("the candidate revision is not fixed before the authorization")
+    pack = manifest.get("pack")
+    if not isinstance(pack, dict) or set(pack) != set(V2_PACK_FILES):
+        raise PackError("manifest pack shape")
+    files = {}
+    for k in V2_PACK_FILES:
+        path = pack[k].get("path") if isinstance(pack[k], dict) else None
+        data = _committed(repo, auth, path) if isinstance(path, str) else None
+        if data is None or _committed(repo, evid, path) != data:
+            raise PackError("pack file missing at the authorization or changed after it: " + k)
+        files[k] = (path, data)
+    cases, refs, annotations, varieties, pack_id = _v2_pack({k: v[1] for k, v in files.items()})
+    if manifest != run_manifest_v2(revision, manifest.get("model"), pack_id, files):
+        raise PackError("manifest does not describe this method, pack, prompt and configuration")
+    rows = _v2_rows_match_journal(report, journal_raw.decode("utf-8").splitlines())
+    complete = not any(r["provider_status"] in _STOPS + (P_NOT_ATTEMPTED,) for r in rows)
+    by_id = {c["case_id"]: c for c in cases}
+    scored, replies = [], {}
+    for r in rows:
+        reply = r["reply"] if r["provider_status"] == P_RESPONDED else None
+        replies[r["case_id"]] = reply
+        scored.append(score_case(reply, by_id[r["case_id"]], refs[r["case_id"]]))
+    return VerifiedRunV2({
+        "manifest_sha256": report["manifest_sha256"], "report_sha256": _digest(report),
+        "annotations_sha256": annotations_digest(annotations), "complete": complete,
+        "stopped_on": report.get("stopped_on"), "scored": scored, "replies": replies,
+        "refs": refs, "annotations": annotations, "varieties": varieties,
+        "authorization": {"manifest_matches_authorized_hash": hash_match,
+                          "authorization_recorded_before_run": True,
+                          "authorization_commit": auth, "evidence_commit": evid,
+                          "owner_identity": OWNER_IDENTITY_NOT_AUTHENTICATED}},
+        seal=_SEAL)
+
+
+def assess_verified_v2(verified, record):
+    """One assessment of a VERIFIED v2 run. The scored replies, references, annotations and
+    report digest come from the verified run, never from the caller; the record is checked
+    by the unchanged `check_assessment_v2` (FORMAL is refused there) and decided by the
+    unchanged `decide_v2`. The evidence status and the FORMAL blockers are always reported."""
+    if not isinstance(verified, VerifiedRunV2):
+        raise PackError("assessment needs a run verified by verify_v2_run")
+    evidence = {"authorization": dict(verified.authorization),
+                "manifest_sha256": verified.manifest_sha256,
+                "report_sha256": verified.report_sha256,
+                "formal_blockers": list(V2_FORMAL_BLOCKERS)}
+    if not verified.complete:
+        return {"verdict": "INCOMPLETE", "stopped_on": verified.stopped_on, "evidence": evidence}
+    labels = check_assessment_v2(record, verified.scored, verified.replies, verified.refs,
+                                 verified.annotations, verified.report_sha256, verified.varieties)
+    return dict(decide_v2(verified.scored, verified.refs, verified.annotations, labels),
+                evidence=evidence)
+
+
 def plan():
     out = {"evaluation_id": EVALUATION_ID, "model": MODEL, "endpoint": toa.ENDPOINT,
            "instructions_sha256": _sha(INSTRUCTIONS), "schema_sha256": _sha(schema()),
