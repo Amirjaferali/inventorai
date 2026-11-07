@@ -629,13 +629,19 @@ def test_run_evidence_made_on_a_side_branch_before_authorization_is_refused(tmp_
         cc.verify_v2_run(str(repo), auth, AUTH_PATH, merged)
 
 
-@pytest.mark.parametrize("variant", ["reformatted", "renamed_id", "exposed_id_new_text"])
+@pytest.mark.parametrize("variant", ["reformatted", "renamed_id", "exposed_id_new_text",
+                                     "padded"])
 def test_exposed_content_is_refused_however_it_is_repackaged(tmp_path, variant):
     """B3: the exposed pack is refused by content and identity, not only by file bytes."""
     inputs = json.loads((ROOT / cc.INPUT_PATH).read_text(encoding="utf-8"))
     reference = json.loads((ROOT / cc.REFERENCE_PATH).read_text(encoding="utf-8"))
     if variant == "renamed_id":
         inputs["pack_id"] = reference["pack_id"] = "a-new-looking-identity"
+    if variant == "padded":
+        inputs["pack_id"] = reference["pack_id"] = "a-new-looking-identity"
+        for c in inputs["cases"]:
+            c["idea_text"] += (" Extra padding sentences written only to lower the similarity "
+                               "ratio of this copy below the threshold. " * 4)
     if variant == "exposed_id_new_text":
         inputs, reference, _a = _synthetic_pack()
         inputs["pack_id"] = reference["pack_id"] = cc.PACK_ID

@@ -1606,7 +1606,8 @@ def aggregate(report, assessment, authorized_manifest_sha256, journal_lines):
 # separate facts, and FORMAL stays refused (`FORMAL_UNAVAILABLE`) whatever this returns.
 # The exposed v1 packs (whose replies were examined while the method was developed) are
 # refused here by content, not only by file digest: their pack ids, and any case whose idea
-# text is the same as, or near (difflib ratio >= MAX_SIMILARITY) to, an exposed case. They stay
+# text is the same as, contains, is contained in, or is near (difflib ratio >= MAX_SIMILARITY)
+# to, an exposed case. A determined paraphrase can never be excluded by such a rule. They stay
 # diagnostic evidence only. The v2 decision rule is defined over the v1 frame (cases Q01-Q16,
 # the v1 group balance), so a future pack must keep that frame.
 # Further limits, stated: the journal and the report are both written by whoever runs the
@@ -1731,7 +1732,8 @@ def _refuse_exposed(files_bytes, inputs, reference, cases):
     pool = _exposed_ideas()
     for c in cases:
         text = _normalised(c["idea_text"]).lower()
-        if any(text == e or difflib.SequenceMatcher(None, text, e).ratio() >= MAX_SIMILARITY
+        if any(text == e or e in text or text in e
+               or difflib.SequenceMatcher(None, text, e).ratio() >= MAX_SIMILARITY
                for e in pool):
             raise PackError(exposed + ": " + c["case_id"])
 
