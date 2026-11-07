@@ -1638,6 +1638,27 @@ information, not execution authority.
   - **CANDIDATES / decisions:** The most recent recommendation to qualify a sensor-to-controller Embedded / Firmware path is NOT authorized and does not override (g1) ordering. The Owner declined D4 activation. Pressure calculation and automated experiment-result comparison remain BLOCKED within their examined scopes; the planar-moment eligibility extension is DELIVERED (#860), not a next candidate. Do not reinstate any without its named trigger or a new Owner decision.
   - **BLOCKED / DEFERRED:** apply block (h), the current Deferred Obligations Register and the live active contract for canonical reasons and reopening triggers (including Sensors C3, Embedded 28-T2, Power Electronics 28-T3, preliminary motion, CAP-13 D-7, T2-G/R2, D4 and T6). Technology labels alone confer no permission or method.
   - **NEXT-LOOP:** for an Owner-approved planned action that is genuinely blocked, record its exact blocker and reopening trigger in the existing owner, then examine the first independent eligible action remaining in (g1)'s dependency order after bounded PCRA/SFR. If none is eligible, return ONE specific material Owner decision rather than selecting a random increment. Every candidate is a recommendation until separately authorized; no automatic product selection, coding, merge or deployment.
+  - **POST-#938/#939 G1-1/2 RESUME (2026-11-07; continuity, not authority):**
+    #938 delivered evidence-traced DIAGNOSTIC assessment only; FORMAL is still
+    unavailable pending a separately authorized prospective v2 run and authenticated
+    assessment chain. The exposed Q01–Q16 verdict remains INCOMPLETE_REVIEW.
+    #939 delivered the T2-G-4 pending-choice false-credit guard for NEW projects
+    only; wider R2 remains OPEN and #890 remains HOLD. The synthetic Q10 trace
+    found NO admitted answer target for an independent AI-origin clarification;
+    UQTR correctly binds replies to the governed question actually served.
+    The reviewed REUSE/EXTEND placement for a POSSIBLE later handoff is ONE
+    transient, non-assessing, session-bound clarification exchange in the
+    existing UQTR/session owner, with no AI question or reply in the answered
+    ledger, no R2 credit, Stage-15 adoption or #893 canonical assertion.
+    **NEXT CANDIDATE, NOT APPROVED:** first qualify the proposed prompt's
+    content, attribution and evidence basis and obtain separate Owner product
+    admission; a provider call, real-data transfer, implementation, merge and
+    deployment are NOT authorized. Only after the relevant triggers could a
+    fixed synthetic Q10 exchange be considered, followed separately by a
+    governed inventor-confirmation / engineering handoff (OD-2 if needed).
+    If the qualification or admission path is blocked, preserve its trigger
+    and use (g1)/NEXT-LOOP after PCRA/SFR to consider the next independent
+    eligible evidence task, not an automatically selected product increment.
   - This checkpoint is a concise pointer for successors, not another roadmap, register, boot sequence, or requirement for a post-merge governance PR.
 
   (h) **Gate results since PR #828 and reopening triggers.** Each item reopens only on its named
