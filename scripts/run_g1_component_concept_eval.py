@@ -1949,6 +1949,109 @@ def assess_v2_run(repo, authorization_commit, authorization_path, evidence_commi
                 evidence=evidence)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Optional, offline signature INSPECTION for a future, Owner-signed v2 mandate.
+# This does NOT authorize a run, authenticate that the signer is the Owner or
+# relax FORMAL_UNAVAILABLE. The trusted fingerprint MUST be independently
+# obtained and fixed by the Owner, outside an executor-supplied manifest.
+# Git ancestry alone does not establish real-world publication time.
+# ─────────────────────────────────────────────────────────────────────────────
+def inspect_v2_detached_authorization(repo, authorization_commit, authorization_path,
+                                      evidence_commit, signature_path, trusted_public_key,
+                                      trusted_fingerprint):
+    """Inspect a detached OpenPGP signature of the committed authorization record.
+
+    Reuses verify_v2_run for ordering, manifest, pack and evidence integrity.
+    Accepts a PUBLIC certificate and a full externally trusted fingerprint,
+    not a private key. An agent supplying both still cannot establish Owner
+    identity: that trust-anchor attribution is a separate Owner-controlled fact.
+    The signature must already exist in the authorization commit and remain
+    unchanged at the evidence commit. No provider, git fetch or network access.
+    """
+    import subprocess
+    import tempfile
+    from pathlib import Path
+
+    verified = verify_v2_run(repo, authorization_commit, authorization_path, evidence_commit)
+    if not isinstance(trusted_fingerprint, str) or not re.fullmatch(
+            r"[0-9A-Fa-f]{40}", trusted_fingerprint):
+        raise PackError("a full, independently trusted 40-hex fingerprint is required")
+    expected = trusted_fingerprint.upper()
+    if isinstance(trusted_public_key, str):
+        trusted_public_key = trusted_public_key.encode("utf-8")
+    if not isinstance(trusted_public_key, bytes) or not (
+            100 <= len(trusted_public_key) <= 65536):
+        raise PackError("an externally supplied public certificate is required")
+    if not isinstance(signature_path, str) or not re.fullmatch(
+            r"[A-Za-z0-9_./-]{1,255}", signature_path) or ".." in signature_path.split("/") \
+            or signature_path.startswith("/") or signature_path == authorization_path:
+        raise PackError("invalid detached signature path")
+    raw_record = _committed(repo, authorization_commit, authorization_path)
+    signature = _committed(repo, authorization_commit, signature_path)
+    if raw_record is None or signature is None or not (100 <= len(signature) <= 16384) \
+            or _committed(repo, evidence_commit, signature_path) != signature:
+        raise PackError("the signature must precede the run and remain unchanged")
+    if len(raw_record) > 65536:
+        raise PackError("authorization record too large")
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="g1-v2-public-key-") as directory:
+            home = Path(directory)
+            signed_file, signature_file = home / "authorization.json", home / "authorization.sig"
+            signed_file.write_bytes(raw_record)
+            signature_file.write_bytes(signature)
+            env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "LC_ALL": "C",
+                   "GNUPGHOME": str(home)}
+
+            def gpg(*args, input_bytes=None):
+                return subprocess.run(["gpg", "--batch", "--no-tty",
+                                       "--homedir", str(home), *args],
+                                      input=input_bytes, capture_output=True,
+                                      timeout=20, env=env, check=False)
+
+            imported = gpg("--import", input_bytes=trusted_public_key)
+            if imported.returncode != 0:
+                raise PackError("public certificate could not be imported")
+            listing = gpg("--with-colons", "--fingerprint", "--list-keys")
+            if listing.returncode != 0:
+                raise PackError("public certificate cannot be inspected")
+            rows = [line.split(":") for line in listing.stdout.decode(
+                "ascii", "replace").splitlines()]
+            primary_keys = [row for row in rows if row[0] == "pub"]
+            fingerprint_rows = [row[9].upper() for row in rows
+                                if row[0] == "fpr" and len(row) > 9]
+            if len(primary_keys) != 1 or not fingerprint_rows \
+                    or fingerprint_rows[0] != expected:
+                raise PackError("certificate does not match the independently trusted fingerprint")
+            verified_signature = gpg("--status-fd", "1", "--verify",
+                                     str(signature_file), str(signed_file))
+            status = verified_signature.stdout.decode("ascii", "replace").splitlines()
+            valids = [line.split() for line in status
+                      if line.startswith("[GNUPG:] VALIDSIG ")]
+            if verified_signature.returncode != 0 or len(valids) != 1:
+                raise PackError("invalid detached authorization signature")
+            parts = valids[0]
+            signer = parts[2].upper()
+            primary = parts[-1].upper() if len(parts[-1]) == 40 else signer
+            if primary != expected or not re.fullmatch(r"[0-9A-F]{40}", signer):
+                raise PackError("signature is not from the trusted key")
+    except (OSError, subprocess.TimeoutExpired, UnicodeError) as exc:
+        raise PackError("offline signature inspection unavailable") from exc
+
+    return {
+        "signature_valid": True, "signer_fingerprint": signer,
+        "trusted_primary_fingerprint": expected,
+        "signed_authorization_sha256": hashlib.sha256(raw_record).hexdigest(),
+        "manifest_sha256": verified.manifest_sha256,
+        "authorization_commit": authorization_commit,
+        "evidence_commit": evidence_commit,
+        "owner_identity": OWNER_IDENTITY_NOT_AUTHENTICATED,
+        "publication_time": "NOT_AUTHENTICATED_BY_GIT_ANCESTRY",
+        "qualification": "NOT_A_MODEL_QUALIFICATION",
+        "formal_blockers": list(V2_FORMAL_BLOCKERS),
+    }
+
+
 def plan():
     out = {"evaluation_id": EVALUATION_ID, "model": MODEL, "endpoint": toa.ENDPOINT,
            "instructions_sha256": _sha(INSTRUCTIONS), "schema_sha256": _sha(schema()),
