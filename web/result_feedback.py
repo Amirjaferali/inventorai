@@ -130,10 +130,11 @@ _WARN_QUESTION_OR_SUPPOSITION = (
 )
 
 _WARN_UNDECIDED_CHOICE = (
-    "Your answer has been saved with your project. It says how this part "
-    "works has not been decided or chosen yet, so this point has not moved "
-    "forward. When you know how it works, describe it as a statement; if you "
-    "do not know yet, you can say so."
+    "Your answer has been saved with your project. The parts of it about how "
+    "this works were read as saying that has not been decided or chosen yet, "
+    "so this point has not moved forward. This reading follows fixed wording "
+    "rules and can be wrong: if you have described how it works, write that "
+    "description as its own sentence."
 )
 
 _GENERIC_WARN = (

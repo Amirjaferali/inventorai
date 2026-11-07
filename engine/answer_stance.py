@@ -331,15 +331,21 @@ _T2G4_EN_UNDECIDED_RE = re.compile(
     r"(?:i|we)\s+(?:still\s+)?(?:have\s+not|haven't)\s+(?:yet\s+|really\s+)?"
     + _T2G4_EN_PARTICIPLES +
     r"|(?:i've|we've)\s+(?:still\s+)?not\s+(?:yet\s+)?" + _T2G4_EN_PARTICIPLES +
-    # I did not / don't (yet) decide ...
-    r"|(?:i|we)\s+(?:still\s+)?(?:did\s+not|didn't|do\s+not|don't)\s+(?:yet\s+)?"
+    # I still did not / don't decide ..., I didn't yet choose ... — only with an
+    # explicit pending marker: a bare "I don't choose the flash rate, the
+    # controller sets it" describes automatic operation, not an open choice.
+    r"|(?:i|we)\s+still\s+(?:did\s+not|didn't|do\s+not|don't)\s+"
+    + _T2G4_EN_BASES +
+    r"|(?:i|we)\s+(?:did\s+not|didn't|do\s+not|don't)\s+yet\s+"
     + _T2G4_EN_BASES +
     # I have yet to choose / I still need to work out ...
     r"|(?:i|we)\s+(?:have\s+yet\s+to|still\s+have\s+to|still\s+need\s+to)\s+"
     + _T2G4_EN_BASES +
     # I am still undecided / I'm still choosing ...
     r"|(?:i'm|i\s+am|we're|we\s+are)\s+(?:still\s+)?(?:undecided|deciding|choosing)"
-    r")\b")
+    # "pick(ed) up" means sensing ("we haven't picked up any vibration"), not a
+    # choice, and is never matched.
+    r")\b(?!\s+up\b)")
 
 # Arabic. Matched on a copy of the clause without the declared Arabic marks
 # (`_t2g2_without_arabic_marks`: harakat, shadda and tatweel), so قرّرت and
@@ -357,7 +363,7 @@ _T2G4_AR_UNDECIDED_RE = re.compile(
     # «ما اخترته هو …» is "what I chose is …", a relative clause, not a
     # negation, and is never matched.
     r"|ما\s+" + _T2G4_AR_PENDING + r"(?:قررت|" + _T2G4_AR_ALEF + r"خترت|حددت|حسمت)"
-    r"(?![^\W\d_])(?!\s+(?:هو|هي)(?![^\W\d_]))"
+    r"(?![^\W\d_])(?!\s+(?:هو|هي|كان|كانت)(?![^\W\d_]))"
     r")")
 
 
@@ -1027,9 +1033,10 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
 
     Level 4 (the T2-G-4 engine contract) keeps every level-3 path and refuses
     any clause that opens with a pending decision (`_t2g4_opens_undecided`):
-    the whole-sentence path is not used for a sentence holding such a clause,
-    and the clause path skips that clause, so an asserted clause beside it is
-    still judged on its own. It only ever withholds."""
+    for a sentence holding such a clause, the level-1 test is applied to each
+    of its other contrast clauses instead of the whole sentence, and the clause
+    path skips the pending clause, so an asserted clause beside it is still
+    judged on its own. It only ever withholds."""
     quote_spans = ()
     clause_path = rule_level >= 2
     non_assertive_refusal = rule_level >= 3
@@ -1051,6 +1058,16 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
                 and matches_intent(sentence, question_id) \
                 and _carries_context(sentence, question_id, matches_intent):
             return True
+        if pending:
+            # Level 4: the level-1 test, applied to each contrast clause that is
+            # NOT a pending choice — exactly the reading the whole sentence had
+            # under level 3, minus the pending clause itself.
+            for clause in _t2g2_clauses(sentence):
+                if _t2g4_opens_undecided(clause) or declares_ignorance(clause):
+                    continue
+                if matches_intent(clause, question_id) \
+                        and _carries_context(clause, question_id, matches_intent):
+                    return True
         if clause_path:
             try:
                 if _t2g2_clause_carrier(

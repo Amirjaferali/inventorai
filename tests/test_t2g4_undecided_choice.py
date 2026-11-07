@@ -46,8 +46,9 @@ Q10 = "Flash in daylight too. I haven't chosen how to sense slowing."
 PENDING_ONLY = "I haven't chosen how to sense slowing."
 
 NEW_REASON = "recorded as an undecided choice"
-NOTICE_EN = "It says how this part works has not been decided or chosen yet"
-NOTICE_AR = "وهي تذكر أن طريقة عمل هذا الجزء لم تُحسم أو لم تُختر بعد"
+NOTICE_EN = ("The parts of it about how this works were read as saying that "
+             "has not been decided or chosen yet")
+NOTICE_AR = "وقد قُرئت أجزاؤها المتعلقة بطريقة العمل على أنها تذكر أن ذلك لم يُحسم"
 
 # Pending-choice answers: every mechanism-relevant clause is a pending choice.
 WITHHELD_EN = [
@@ -80,6 +81,19 @@ CREDITED = [
     "switches the LED on.",
     "حساس صغير على العجلة يقيس سرعة دورانها، وعندما تبطئ الدورات تجعل الدائرة "
     "الضوء يومض.",
+    # review F1: a present-tense "I don't choose / pick X" describes automatic
+    # operation, not an open choice
+    "I don't choose the flash rate by hand because the controller sets it from "
+    "the pulse interval measured by the reed switch on the wheel.",
+    "I don't pick the threshold, the controller determines it from the light "
+    "sensor reading and switches the LED on when it drops.",
+    # "pick up" means sensing
+    "We haven't picked up any vibration because the rubber damper absorbs it "
+    "and the sensor sends a clean reading to the controller.",
+    # review F5: a pending clause beside an unknown and an asserted clause
+    "I don't know the exact sensor yet. I haven't chosen the battery, but the "
+    "sensor would notice the problem and respond by switching the relay off "
+    "which cuts the current.",
 ]
 
 
@@ -167,7 +181,8 @@ def test_the_disclosure_follows_the_projects_own_version(client):
     "I have not yet decided which sensor",
     "I’ve not picked the sensor",
     "We still haven't selected a sensor",
-    "I didn't decide how it notices braking",
+    "I didn't yet decide how it notices braking",
+    "I still don't decide how it notices braking",
     "I still need to work out how it senses slowing",
     "We have yet to figure out how the light flashes",
     "I'm still undecided about the sensor",
@@ -192,6 +207,10 @@ def test_a_pending_choice_opening_is_recognised(clause):
     "Supposedly I haven't chosen",
     "ما اخترته هو حساس مغناطيسي",                         # "what I chose is …"
     "ما قررت هو أن الحساس يقرأ العجلة",
+    "ما اخترت كان مفتاح ريد",                             # "what I chose was …"
+    "I don't choose the flash rate by hand",             # automatic operation
+    "We don't pick up vibration",
+    "We haven't picked up any vibration",
     "لم أكن أعرف",
     "",
 ])
@@ -222,6 +241,18 @@ def test_coverage_and_eligibility_read_the_pending_choice_alike():
     mixed = ("I haven't chosen the colour, but the load path runs from the deck "
              "panel into the hinge line and the frame rail carries it.")
     assert st.qualifying_carrier(mixed, q2, MATCH, rule_level=4) is True
+    # review F1: automatic operation keeps its coverage
+    automatic = ("I don't choose the force path by hand, the lever transfers "
+                 "force from the handle to the hinge pin.")
+    assert st.qualifying_carrier(automatic, q2, MATCH, rule_level=3) is True
+    assert st.qualifying_carrier(automatic, q2, MATCH, rule_level=4) is True
+    # review F5: the level-1 reading of the clause beside a pending choice is
+    # kept, so a served question is not re-opened by the new rule
+    beside = ("I haven't chosen the battery, but the sensor would notice the "
+              "problem and respond by switching the relay off which cuts the "
+              "current.")
+    assert st.qualifying_carrier(beside, "N-MC-1", MATCH, rule_level=3) is True
+    assert st.qualifying_carrier(beside, "N-MC-1", MATCH, rule_level=4) is True
 
 
 # ==========================================================================

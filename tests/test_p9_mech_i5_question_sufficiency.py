@@ -226,7 +226,7 @@ _FROZEN_ENGINE_SHA256 = {
     # how ...") gets its own WARN and moves no gap. No classifier, tie,
     # substance, scoring, quality, maturity-gate or gap-type change
     # (pre-T2-G-4 = 0d88f083...d2f0).
-    "engine/progression_loop.py": "d24b5210ee8e74d079a4ad207b3f08b937bde0ea3f3557eed782375e446e765e",
+    "engine/progression_loop.py": "576388a2ae7fa1441978993626ff54937ca38ba52241d166ad53ce6f9eefe01b",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.

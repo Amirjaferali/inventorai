@@ -1255,9 +1255,9 @@ def integrate_response(
     # been decided or chosen yet. Saved verbatim; the gap is left exactly as it
     # was, before every status transition below.
     if undecided_only:
-        return "WARN", (f"{gap_type} recorded as an undecided choice — this "
-                        f"answer says how it works has not been decided yet "
-                        f"and does not state how it works")
+        return "WARN", (f"{gap_type} recorded as an undecided choice — every "
+                        f"mechanism-relevant part of this answer was read as "
+                        f"saying how it works has not been decided yet")
 
     # PVCG-R4-C §10.4 G-1/G-2/G-4 — CLOSED-gap safety guard.
     #
