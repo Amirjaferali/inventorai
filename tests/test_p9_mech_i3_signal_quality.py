@@ -237,7 +237,13 @@ _FROZEN_ENGINE_SHA256 = {
     # inventor-declared project constraint, so it never ends (or starts) the
     # multiple-alternatives transition. No classifier, tie, substance, scoring,
     # quality, maturity-gate or gap-type change (pre-amendment = 10397390...f0).
-    "engine/progression_loop.py": "0d88f08307177ac1c35484155510669b65a5784964a882ad14ec14214691d2f0",
+    # T2-G-4 re-freeze (disclosed; Owner-authorized versioned trust repair):
+    # under the T2-G-4 engine-contract version ONLY, an answer whose every
+    # mechanism-relevant clause opens with a pending choice ("I haven't chosen
+    # how ...") gets its own WARN and moves no gap. No classifier, tie,
+    # substance, scoring, quality, maturity-gate or gap-type change
+    # (pre-T2-G-4 = 0d88f083...d2f0).
+    "engine/progression_loop.py": "d24b5210ee8e74d079a4ad207b3f08b937bde0ea3f3557eed782375e446e765e",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).
