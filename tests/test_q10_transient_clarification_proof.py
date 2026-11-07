@@ -326,3 +326,35 @@ def test_whitespace_in_the_reply_is_kept_exactly(client, enabled):
     assert exchange.response == reply
     assert exchange.response_parts == (
         "Flash in daylight too.", "I haven't chosen how to sense slowing.")
+
+
+# ==========================================================================
+# Review follow-up (N1–N3): pin the session, ledger-anchor and domain bindings
+# ==========================================================================
+def test_a_nonce_copied_into_another_project_still_fails(client, enabled):
+    """The session is inside the signature, not only the per-entry nonce."""
+    c, appmod, _db = client
+    first, second = _bike(c), _bike(c)
+    token = appmod.issue_transient_clarification(first, PROMPT, SOURCE)
+    nonce = token.partition(".")[0]
+    appmod.SESSION_STORE[second]["_transient_clarification"] = nonce
+    assert appmod.accept_transient_clarification(second, token, PROMPT, SOURCE, REPLY) is None
+
+
+def test_a_new_ledger_record_alone_makes_it_stale(client, enabled):
+    """The ledger head is bound even when the served question does not move."""
+    from types import SimpleNamespace
+    c, appmod, _db = client
+    sid = _bike(c)
+    token = appmod.issue_transient_clarification(sid, PROMPT, SOURCE)
+    entry = appmod.SESSION_STORE[sid]
+    identity = appmod._resolve_question_context(entry["state"], None).identity
+    entry["state"].assertions.append(SimpleNamespace(record_id="rec_probe"))
+    assert appmod._resolve_question_context(entry["state"], None).identity == identity
+    assert appmod.accept_transient_clarification(sid, token, PROMPT, SOURCE, REPLY) is None
+
+
+def test_the_token_domain_is_its_own():
+    assert appmod._CLARIFICATION_DOMAIN not in (
+        "p4-1b2a-answer-token", appmod._UQTR_TARGET_DOMAIN)
+    assert appmod._CLARIFICATION_ENTRY_KEY != "answer_token"
