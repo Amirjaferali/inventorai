@@ -1,0 +1,892 @@
+{
+ "annotations": {
+  "cases": {
+   "Q07": {
+    "central": [
+     "Q07-F1",
+     "Q07-F2",
+     "Q07-F3"
+    ],
+    "choices": [
+     {
+      "for_meaning": "How the arrival of new mail is noticed",
+      "options": [
+       "Detect that the mailbox door was opened",
+       "Detect that something is actually lying inside the box"
+      ]
+     }
+    ],
+    "context_needs": {
+     "Q07-F4": [
+      "outdoor",
+      "outside",
+      "weather",
+      "rain",
+      "moisture",
+      "wet",
+      "temperature",
+      "sun",
+      "cold",
+      "heat"
+     ]
+    },
+    "intent": "CLEAR",
+    "unknown_terms": {
+     "Q07-U1": [
+      "how far",
+      "distance",
+      "range"
+     ],
+     "Q07-U2": [
+      "construction",
+      "kind of mailbox",
+      "type of mailbox",
+      "door",
+      "slot",
+      "material"
+     ],
+     "Q07-U3": [
+      "power"
+     ]
+    }
+   },
+   "Q10": {
+    "central": [
+     "Q10-F2",
+     "Q10-F4"
+    ],
+    "choices": [
+     {
+      "for_meaning": "How slowing down is recognised",
+      "options": [
+       "From the bike's own movement",
+       "From the rider using the brake"
+      ]
+     }
+    ],
+    "context_needs": {},
+    "intent": "CLEAR",
+    "unknown_terms": {}
+   },
+   "Q12": {
+    "central": [],
+    "choices": [],
+    "context_needs": {},
+    "intent": "CLEAR",
+    "unknown_terms": {
+     "Q12-U1": [
+      "trip",
+      "duration",
+      "how long"
+     ],
+     "Q12-U2": [
+      "power"
+     ],
+     "Q12-U3": [
+      "how much",
+      "quantity",
+      "capacity",
+      "amount",
+      "volume",
+      "how many",
+      "portion"
+     ]
+    }
+   },
+   "Q13": {
+    "central": [
+     "Q13-F1",
+     "Q13-F3"
+    ],
+    "choices": [
+     {
+      "for_meaning": "How the start of rain is found out",
+      "options": [
+       "Sense actual raindrops on the roof",
+       "Rely on weather forecast information for the place"
+      ]
+     }
+    ],
+    "context_needs": {},
+    "intent": "CLEAR",
+    "unknown_terms": {}
+   }
+  },
+  "declared_before_outputs": false,
+  "provenance": "Written 2026-11-06 by the executor AFTER these outputs were exposed, to exercise the method only. Diagnostic: never usable for a formal assessment."
+ },
+ "assessment": {
+  "assessor": {
+   "kind": "AGENT",
+   "languages": [
+    "en",
+    "ar-egyptian"
+   ],
+   "name": "Claude executor session (diagnostic, not a human reviewer)"
+  },
+  "judgments": {
+   "Q07-F1": {
+    "evidence": [
+     {
+      "pointer": "functions[1]",
+      "quote": "Detect a change that indicates new mail has arrived."
+     },
+     {
+      "pointer": "component_types[0]",
+      "quote": "Mail-detection sensor"
+     },
+     {
+      "pointer": "relationships[0]",
+      "quote": "Mail-detection sensor SIGNAL Control circuit"
+     }
+    ],
+    "judgment": "ADDRESSED",
+    "rationale": "Reply function F2 (not F1) detects the change that indicates new mail; the mail-detection sensor performs it and signals the control circuit."
+   },
+   "Q07-F2": {
+    "evidence": [
+     {
+      "pointer": "functions[2]",
+      "quote": "Send the mailbox status to wherever you want the notification."
+     },
+     {
+      "pointer": "component_types[2]",
+      "quote": "Communication modules"
+     },
+     {
+      "pointer": "relationships[1]",
+      "quote": "Control circuit SIGNAL Communication modules"
+     }
+    ],
+    "judgment": "ADDRESSED",
+    "rationale": "Reply function F3 sends the mailbox status onward; communication modules perform it in the signal chain."
+   },
+   "Q07-F3": {
+    "evidence": [
+     {
+      "pointer": "functions[0]",
+      "quote": "Notify you when there is new mail."
+     },
+     {
+      "pointer": "component_types[3]",
+      "quote": "Notification indicator"
+     },
+     {
+      "pointer": "relationships[2]",
+      "quote": "Communication modules SIGNAL Notification indicator"
+     }
+    ],
+    "judgment": "ADDRESSED",
+    "rationale": "Reply function F1 notifies the inventor; a notification indicator performs it at the end of the chain."
+   },
+   "Q07-F4": {
+    "evidence": [
+     {
+      "pointer": "component_types[4]",
+      "quote": "Power source"
+     },
+     {
+      "pointer": "missing_information[1]",
+      "quote": "Mailbox construction and the conditions along the driveway that may affect sensing or communication."
+     }
+    ],
+    "judgment": "ACKNOWLEDGED_ONLY",
+    "rationale": "Only a power source and general 'conditions along the driveway' affecting sensing or communication; outdoor exposure is not represented at concept level."
+   },
+   "Q07-U1": {
+    "evidence": [],
+    "judgment": "NOT_RECOGNIZED",
+    "rationale": "No element asks how far the mailbox is from the house; the long driveway is stated context, not a recognised unknown."
+   },
+   "Q07-U2": {
+    "evidence": [
+     {
+      "pointer": "missing_information[1]",
+      "quote": "Mailbox construction and the conditions along the driveway that may affect sensing or communication."
+     }
+    ],
+    "judgment": "RECOGNIZED",
+    "rationale": "'Mailbox construction' names the kind of mailbox."
+   },
+   "Q07-U3": {
+    "evidence": [
+     {
+      "pointer": "missing_information[3]",
+      "quote": "What power or connectivity, if any, is available at the mailbox."
+     }
+    ],
+    "judgment": "RECOGNIZED",
+    "rationale": "Names whether power is available at the mailbox."
+   },
+   "Q07:G4": {
+    "evidence": [
+     {
+      "pointer": "alternatives[0].options[0]",
+      "quote": "Sense mail inside the mailbox."
+     },
+     {
+      "pointer": "alternatives[0].options[1]",
+      "quote": "Sense mailbox-door activity as a possible delivery event; opening alone would not establish that mail arrived."
+     }
+    ],
+    "judgment": "REFERENCE_CHOICE_COVERED",
+    "option_map": {
+     "A": "alternatives[0].options[1]",
+     "B": "alternatives[0].options[0]"
+    },
+    "rationale": "One alternatives entry offers mail-inside sensing and door-activity sensing: both reference options."
+   },
+   "Q10:G4": {
+    "evidence": [
+     {
+      "pointer": "alternatives[0].options[0]",
+      "quote": "Sense changes in the bike's motion."
+     },
+     {
+      "pointer": "alternatives[0].options[1]",
+      "quote": "Sense changes in wheel rotation."
+     }
+    ],
+    "judgment": "REFERENCE_CHOICE_PARTIAL",
+    "option_map": {
+     "A": "alternatives[0].options[0]"
+    },
+    "rationale": "Both offered options (bike motion, wheel rotation) are movement-based; the brake-based option is absent."
+   },
+   "Q12-U1": {
+    "evidence": [
+     {
+      "pointer": "missing_information[0]",
+      "quote": "Trip duration, starting food temperature, and the temperature the food must remain below."
+     }
+    ],
+    "judgment": "RECOGNIZED",
+    "rationale": "Names trip duration."
+   },
+   "Q12-U2": {
+    "evidence": [
+     {
+      "pointer": "missing_information[1]",
+      "quote": "Whether the box can use power in the car or must cool without it."
+     }
+    ],
+    "judgment": "RECOGNIZED",
+    "rationale": "Names whether the box can use power in the car."
+   },
+   "Q12-U3": {
+    "evidence": [],
+    "judgment": "NOT_RECOGNIZED",
+    "rationale": "No element names how much food the box must hold; the general missing-information lines name other facts."
+   },
+   "Q13:G4": {
+    "evidence": [
+     {
+      "pointer": "alternatives[0].options[0]",
+      "quote": "تنبيه بصوت في مكان قريب"
+     },
+     {
+      "pointer": "alternatives[0].options[1]",
+      "quote": "إشعار على الهاتف"
+     }
+    ],
+    "judgment": "DIFFERENT_VALID_ALTERNATIVE",
+    "rationale": "Legitimate alternatives for the alert medium (sound nearby or phone notification); the raindrop-sensing versus forecast choice is not offered."
+   }
+  }
+ },
+ "purpose": "DIAGNOSTIC fixture for the prospective evidence-traced method (v2). The four replies are copied unchanged from the one executed G1-1/2 run; that pack and its outputs are EXPOSED, so nothing here is held-out evidence, a qualification, a revised verdict for the original run, engineering validation or progression credit.",
+ "replies": {
+  "Q07": {
+   "alternatives": [
+    {
+     "for_function": "F2",
+     "options": [
+      "Sense mail inside the mailbox.",
+      "Sense mailbox-door activity as a possible delivery event; opening alone would not establish that mail arrived."
+     ]
+    },
+    {
+     "for_function": "F3",
+     "options": [
+      "Send a wireless signal.",
+      "Run a wired connection."
+     ]
+    },
+    {
+     "for_function": "F1",
+     "options": [
+      "Show a visual indicator.",
+      "Give an audible alert."
+     ]
+    }
+   ],
+   "clarification_questions": [
+    "Do you want an alert only when mail is actually inside, or would an alert when the mailbox opens be useful?",
+    "Where would you like to receive the alert, and is power available at the mailbox?"
+   ],
+   "component_types": [
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C1",
+     "serves": [
+      "F2"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Mail-detection sensor"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C2",
+     "serves": [
+      "F2",
+      "F3"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Control circuit"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C3",
+     "serves": [
+      "F3"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Communication modules"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C4",
+     "serves": [
+      "F1"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Notification indicator"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C5",
+     "serves": [
+      "F4"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Power source"
+    }
+   ],
+   "excluded_by_inventor": [],
+   "functions": [
+    {
+     "id": "F1",
+     "origin": "STATED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "tells me when there's new mail in the mailbox",
+     "text": "Notify you when there is new mail."
+    },
+    {
+     "id": "F2",
+     "origin": "AI_PROPOSED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "",
+     "text": "Detect a change that indicates new mail has arrived."
+    },
+    {
+     "id": "F3",
+     "origin": "AI_PROPOSED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "",
+     "text": "Send the mailbox status to wherever you want the notification."
+    },
+    {
+     "id": "F4",
+     "origin": "AI_PROPOSED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "",
+     "text": "Supply power to the mailbox-side parts."
+    }
+   ],
+   "missing_information": [
+    "Whether you need confirmation of mail inside, rather than an alert when the mailbox opens.",
+    "Mailbox construction and the conditions along the driveway that may affect sensing or communication.",
+    "Where you want to receive the alert and what form it should take.",
+    "What power or connectivity, if any, is available at the mailbox."
+   ],
+   "outcome": "RESPONDED",
+   "relationships": [
+    {
+     "from": "C1",
+     "kind": "SIGNAL",
+     "to": "C2"
+    },
+    {
+     "from": "C2",
+     "kind": "SIGNAL",
+     "to": "C3"
+    },
+    {
+     "from": "C3",
+     "kind": "SIGNAL",
+     "to": "C4"
+    },
+    {
+     "from": "C5",
+     "kind": "POWER",
+     "to": "C1"
+    },
+    {
+     "from": "C5",
+     "kind": "POWER",
+     "to": "C2"
+    },
+    {
+     "from": "C5",
+     "kind": "POWER",
+     "to": "C3"
+    }
+   ],
+   "stated": [
+    {
+     "id": "S1",
+     "kind": "FUNCTION",
+     "source_quote": "tells me when there's new mail in the mailbox",
+     "text": "Tell you when there is new mail in the mailbox."
+    },
+    {
+     "id": "S2",
+     "kind": "CONTEXT",
+     "source_quote": "mailbox at the end of my long driveway",
+     "text": "The mailbox is at the end of a long driveway."
+    },
+    {
+     "id": "S3",
+     "kind": "VALUE",
+     "source_quote": "so I stop walking out there for nothing.",
+     "text": "Avoid unnecessary walks to the mailbox."
+    }
+   ]
+  },
+  "Q10": {
+   "alternatives": [
+    {
+     "for_function": "F3",
+     "options": [
+      "Sense changes in the bike's motion.",
+      "Sense changes in wheel rotation."
+     ]
+    }
+   ],
+   "clarification_questions": [
+    "Should the light flash when you slow down during the day, or only when it is dark?",
+    "Do you want the gadget to include its own light?"
+   ],
+   "component_types": [
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C1",
+     "serves": [
+      "F1"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Ambient-light sensor"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C2",
+     "serves": [
+      "F3"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Motion sensor"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C3",
+     "serves": [
+      "F2",
+      "F4"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Control circuit"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C4",
+     "serves": [
+      "F2",
+      "F4"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Light emitter"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C5",
+     "serves": [
+      "F5"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Power source"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C6",
+     "serves": [
+      "F6"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Bike mount"
+    }
+   ],
+   "excluded_by_inventor": [],
+   "functions": [
+    {
+     "id": "F1",
+     "origin": "AI_PROPOSED",
+     "resolution": "PROPOSED",
+     "source_quote": "",
+     "text": "Detect when it gets dark."
+    },
+    {
+     "id": "F2",
+     "origin": "STATED",
+     "resolution": "PROPOSED",
+     "source_quote": "switches its light on by itself when it gets dark",
+     "text": "Switch the light on automatically when it gets dark."
+    },
+    {
+     "id": "F3",
+     "origin": "AI_PROPOSED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "",
+     "text": "Detect when the bike slows down."
+    },
+    {
+     "id": "F4",
+     "origin": "STATED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "makes it flash when I slow down",
+     "text": "Make the light flash when the rider slows down."
+    },
+    {
+     "id": "F5",
+     "origin": "AI_PROPOSED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "",
+     "text": "Supply power to the gadget."
+    },
+    {
+     "id": "F6",
+     "origin": "AI_PROPOSED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "",
+     "text": "Attach the gadget to the bike."
+    }
+   ],
+   "missing_information": [
+    "Whether the light should flash when slowing down in daylight, or only when it is dark.",
+    "What kind of slowing down should trigger flashing.",
+    "How the gadget should be powered and where it should attach to the bike."
+   ],
+   "outcome": "RESPONDED",
+   "relationships": [
+    {
+     "from": "C1",
+     "kind": "SIGNAL",
+     "to": "C3"
+    },
+    {
+     "from": "C2",
+     "kind": "SIGNAL",
+     "to": "C3"
+    },
+    {
+     "from": "C3",
+     "kind": "SIGNAL",
+     "to": "C4"
+    },
+    {
+     "from": "C5",
+     "kind": "POWER",
+     "to": "C3"
+    },
+    {
+     "from": "C5",
+     "kind": "POWER",
+     "to": "C4"
+    },
+    {
+     "from": "C6",
+     "kind": "MECHANICAL",
+     "to": "C4"
+    }
+   ],
+   "stated": [
+    {
+     "id": "S1",
+     "kind": "CONTEXT",
+     "source_quote": "A small gadget for my bike",
+     "text": "A small gadget for a bike."
+    },
+    {
+     "id": "S2",
+     "kind": "FUNCTION",
+     "source_quote": "switches its light on by itself when it gets dark",
+     "text": "Switch its light on automatically when it gets dark."
+    },
+    {
+     "id": "S3",
+     "kind": "FUNCTION",
+     "source_quote": "makes it flash when I slow down",
+     "text": "Make its light flash when the rider slows down."
+    }
+   ]
+  },
+  "Q12": {
+   "alternatives": [
+    {
+     "for_function": "F1",
+     "options": [
+      "An insulated box with a removable cooling medium",
+      "An insulated box with powered cooling"
+     ]
+    }
+   ],
+   "clarification_questions": [
+    "How long are your trips, and can the box use power in the car?",
+    "What food-safety certification do you need, and how will the food be prepared and handled before the trip?"
+   ],
+   "component_types": [
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C1",
+     "serves": [
+      "F1",
+      "F2"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Insulated enclosure"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C2",
+     "serves": [
+      "F1"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Removable cooling medium"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C3",
+     "serves": [
+      "F1"
+     ],
+     "status": "UNVERIFIED",
+     "type": "Powered cooling module"
+    }
+   ],
+   "excluded_by_inventor": [],
+   "functions": [
+    {
+     "id": "F1",
+     "origin": "STATED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "keeps my homemade baby food cold on long car trips",
+     "text": "Keep homemade baby food cold during car trips."
+    },
+    {
+     "id": "F2",
+     "origin": "AI_PROPOSED",
+     "resolution": "PROPOSED",
+     "source_quote": "",
+     "text": "Hold the food inside the box."
+    }
+   ],
+   "missing_information": [
+    "Trip duration, starting food temperature, and the temperature the food must remain below.",
+    "Whether the box can use power in the car or must cool without it.",
+    "The required food-safety certification and how the finished box would be assessed; certification cannot be presumed.",
+    "A guarantee that food will never spoil cannot be established from the box concept; storage and handling conditions also matter."
+   ],
+   "outcome": "RESPONDED",
+   "relationships": [
+    {
+     "from": "C2",
+     "kind": "MECHANICAL",
+     "to": "C1"
+    },
+    {
+     "from": "C3",
+     "kind": "MECHANICAL",
+     "to": "C1"
+    }
+   ],
+   "stated": [
+    {
+     "id": "S1",
+     "kind": "FUNCTION",
+     "source_quote": "keeps my homemade baby food cold on long car trips",
+     "text": "Keep homemade baby food cold on long car trips."
+    },
+    {
+     "id": "S2",
+     "kind": "CONSTRAINT",
+     "source_quote": "it has to be certified food-safe",
+     "text": "The box must be certified food-safe."
+    },
+    {
+     "id": "S3",
+     "kind": "CONSTRAINT",
+     "source_quote": "guaranteed never to let anything spoil",
+     "text": "The box is requested to guarantee that nothing spoils."
+    }
+   ]
+  },
+  "Q13": {
+   "alternatives": [
+    {
+     "for_function": "F2",
+     "options": [
+      "تنبيه بصوت في مكان قريب",
+      "إشعار على الهاتف"
+     ]
+    },
+    {
+     "for_function": "F3",
+     "options": [
+      "بطارية",
+      "مصدر كهرباء متاح في المكان"
+     ]
+    }
+   ],
+   "clarification_questions": [
+    "بتكون قريب من السطح وتقدر تسمع تنبيه، ولا محتاج إشعار على هاتفك؟",
+    "فيه كهرباء متاحة في المكان، ولا تفضّل بطارية؟"
+   ],
+   "component_types": [
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C1",
+     "serves": [
+      "F1"
+     ],
+     "status": "UNVERIFIED",
+     "type": "حساس لرصد المطر"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C2",
+     "serves": [
+      "F1",
+      "F2"
+     ],
+     "status": "UNVERIFIED",
+     "type": "دائرة تحكم"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C3",
+     "serves": [
+      "F2"
+     ],
+     "status": "UNVERIFIED",
+     "type": "وسيلة تنبيه"
+    },
+    {
+     "attribution": "AI_PROPOSED",
+     "id": "C4",
+     "serves": [
+      "F3"
+     ],
+     "status": "UNVERIFIED",
+     "type": "مصدر طاقة"
+    }
+   ],
+   "excluded_by_inventor": [],
+   "functions": [
+    {
+     "id": "F1",
+     "origin": "AI_PROPOSED",
+     "resolution": "PROPOSED",
+     "source_quote": "",
+     "text": "رصد بداية المطر."
+    },
+    {
+     "id": "F2",
+     "origin": "STATED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "تنبهني لما المطرة تبتدي",
+     "text": "تنبيهك لما المطر يبدأ."
+    },
+    {
+     "id": "F3",
+     "origin": "AI_PROPOSED",
+     "resolution": "UNRESOLVED",
+     "source_quote": "",
+     "text": "توفير طاقة لأجزاء التنبيه."
+    }
+   ],
+   "missing_information": [
+    "مكان وجودك عادةً لما الغسيل يكون على السطح، عشان يتحدد شكل التنبيه المناسب.",
+    "مدى توفر الكهرباء في المكان وطريقة تغذية الجهاز بالطاقة."
+   ],
+   "outcome": "RESPONDED",
+   "relationships": [
+    {
+     "from": "C1",
+     "kind": "SIGNAL",
+     "to": "C2"
+    },
+    {
+     "from": "C2",
+     "kind": "SIGNAL",
+     "to": "C3"
+    },
+    {
+     "from": "C4",
+     "kind": "POWER",
+     "to": "C1"
+    },
+    {
+     "from": "C4",
+     "kind": "POWER",
+     "to": "C2"
+    },
+    {
+     "from": "C4",
+     "kind": "POWER",
+     "to": "C3"
+    }
+   ],
+   "stated": [
+    {
+     "id": "S1",
+     "kind": "FUNCTION",
+     "source_quote": "تنبهني لما المطرة تبتدي",
+     "text": "تنبيهك لما المطر يبدأ."
+    },
+    {
+     "id": "S2",
+     "kind": "CONTEXT",
+     "source_quote": "الغسيل من على السطح",
+     "text": "الغسيل موجود على السطح."
+    },
+    {
+     "id": "S3",
+     "kind": "VALUE",
+     "source_quote": "ألحق ألم الغسيل من على السطح قبل ما يتبل",
+     "text": "تريد تلحق تلم الغسيل قبل ما يتبل."
+    }
+   ]
+  }
+ },
+ "source": {
+  "commit": "2f6925bd2232d3c4bda7fb3119dacd897d3bc3dc",
+  "journal": "docs/benchmarks/evidence/g1_component_concept_v1/run_journal.jsonl",
+  "journal_sha256": "952f5beae21824d971ffd92f17ea9349952f994b55ef70fd59f063a9ba5883a5",
+  "reply_sha256": {
+   "Q07": "2f62501cb740b93dc846742c924e2ed9cf606ee008d63d6edef80f46018e2bbb",
+   "Q10": "1879df98afea7a622b88f67030aa19ff4383a8a23f3457a944a34cdb50a8580b",
+   "Q12": "899f86a0fe0e53e6c10e0cc1c153d232923f7c334a14c6edac07a4c1bbd803ac",
+   "Q13": "c303ac884f135cee0133ba484af19a51902df3a36f2af8ae17a7d952d9bfa2ef"
+  }
+ }
+}
