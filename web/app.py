@@ -3834,6 +3834,167 @@ def _verified_answer_target(sid, answer_token, raw):
         return None
 
 
+# --- Q10 synthetic transient clarification proof (TEST-ONLY, OFF by default) ---
+# ONE bounded offline proof that a fixed clarification question and one
+# inventor reply can be exchanged under the UQTR session-binding mechanisms
+# WITHOUT touching canonical invention state. It is NOT a product capability:
+#   * there is no route, template or page integration, and no prompt text lives
+#     here — the caller supplies the exact displayed prompt;
+#   * both helpers refuse unless the app is in TESTING mode AND
+#     UQTR_TRANSIENT_CLARIFICATION_ENABLED is set (False by default);
+#   * the token is its OWN domain-separated HMAC, bound to the session /
+#     project, a digest of the exact prompt, the declared source context and a
+#     server-computed anchor of the governed form state; it is never an answer
+#     token or an answer target, and neither of those verifies as it;
+#   * one pending exchange per live entry, held only in that in-memory entry
+#     and consumed on acceptance; nothing is persisted, assessed or recorded.
+# The returned exchange keeps the AI-origin question and the inventor's
+# verbatim reply apart; the reply's parts are split by sentence punctuation
+# only, which interprets nothing.
+app.config.setdefault("UQTR_TRANSIENT_CLARIFICATION_ENABLED", False)
+_CLARIFICATION_DOMAIN = "uqtr-transient-clarification-test-v1"
+_CLARIFICATION_ENTRY_KEY = "_transient_clarification"
+_CLARIFICATION_SEP = "."
+_CLARIFICATION_SOURCE_FIELDS = frozenset({"case_id", "evidence_ref"})
+_CLARIFICATION_MAX_PROMPT = 500
+_CLARIFICATION_MAX_FIELD = 128
+_CLARIFICATION_TOKEN_MAX_LEN = 256
+CLARIFICATION_QUESTION_ORIGIN = "AI_PROPOSED"
+CLARIFICATION_QUESTION_STATUS = "UNQUALIFIED_SYNTHETIC"
+CLARIFICATION_RESPONSE_ORIGIN = "INVENTOR_STATED"
+CLARIFICATION_RESPONSE_STATUS = "NOT_ASSESSED_NOT_RECORDED"
+_CLARIFICATION_PART_SPLIT_RE = re.compile(r"(?<=[.!?؟])\s+")
+
+
+@_dataclasses.dataclass(frozen=True)
+class TransientClarificationExchange:
+    """The accepted exchange. Transient: returned to the caller only, never
+    stored, assessed, recorded or rendered by the application."""
+    question: str
+    question_origin: str
+    question_status: str
+    response: str
+    response_origin: str
+    response_status: str
+    response_parts: tuple
+
+    def describe(self):
+        """A plain-text rendering for synthetic evidence only."""
+        lines = ['Clarification question (%s, %s): "%s"'
+                 % (self.question_origin, self.question_status, self.question),
+                 'Inventor reply (%s, %s): "%s"'
+                 % (self.response_origin, self.response_status, self.response)]
+        for index, part in enumerate(self.response_parts, 1):
+            lines.append('  Part %d, as written: "%s"' % (index, part))
+        lines.append("InventorAI has not interpreted, checked or recorded "
+                     "these parts.")
+        return "\n".join(lines)
+
+
+def _clarification_enabled():
+    return bool(app.config.get("TESTING")) and bool(
+        app.config.get("UQTR_TRANSIENT_CLARIFICATION_ENABLED"))
+
+
+def _clarification_source(source):
+    """The declared source context in its closed shape, or None."""
+    if not isinstance(source, dict) or set(source) != _CLARIFICATION_SOURCE_FIELDS:
+        return None
+    for value in source.values():
+        if not isinstance(value, str) or not value.strip() \
+                or len(value) > _CLARIFICATION_MAX_FIELD or "\x00" in value:
+            return None
+    return (source["case_id"], source["evidence_ref"])
+
+
+def _clarification_anchor(entry):
+    """The governed form state the clarification was shown against: the
+    effective engine-contract version, the canonical question identity the page
+    serves (resolved exactly as the page resolves it) and the ledger head. Any
+    change makes a pending exchange stale."""
+    state = entry["state"]
+    qctx = _resolve_question_context(state, entry.get("last_result"))
+    assertions = list(getattr(state, "assertions", None) or ())
+    head = assertions[-1].record_id if assertions else ""
+    return (getattr(state, "engine_contract_version", None) or "",
+            qctx.identity or "", str(len(assertions)), head)
+
+
+def _clarification_sig(sid, nonce, prompt, source, anchor):
+    msg = _canonical_message(
+        _CLARIFICATION_DOMAIN, sid, nonce,
+        _p2a_hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
+        source[0], source[1], *anchor)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()
+
+
+def issue_transient_clarification(sid, prompt, source):
+    """Issue the one-use token for ONE displayed clarification prompt, or None
+    (disabled, unauthorized, unknown session, or an invalid prompt / source).
+    Replaces any earlier pending exchange, which therefore goes stale."""
+    try:
+        if not _clarification_enabled() or not _project_authorized(sid):
+            return None
+        entry = SESSION_STORE.get(sid)
+        bound = _clarification_source(source)
+        if entry is None or bound is None or not isinstance(prompt, str) \
+                or not prompt.strip() or len(prompt) > _CLARIFICATION_MAX_PROMPT \
+                or _free_text_error(prompt, "en") is not None:
+            return None
+        nonce = secrets.token_urlsafe(_ANSWER_TOKEN_NONCE_BYTES)
+        sig = _clarification_sig(sid, nonce, prompt, bound,
+                                 _clarification_anchor(entry))
+        entry[_CLARIFICATION_ENTRY_KEY] = nonce
+        return nonce + _CLARIFICATION_SEP + sig
+    except Exception:
+        return None
+
+
+def accept_transient_clarification(sid, token, prompt, source, response):
+    """Accept the inventor's reply to the pending clarification ONCE, or return
+    None. Fails closed, without saying why, on: disabled, unauthorized, unknown
+    session, no pending exchange, a stale / replayed / swapped / modified /
+    cross-project token, an invalid prompt or source, or an empty or invalid
+    reply. Returns BEFORE any answer preparation, assessment or recording: the
+    state, the ledger, the store and every derived view are never read for
+    writing. The reply is kept exactly as submitted."""
+    try:
+        if not _clarification_enabled() or not _project_authorized(sid):
+            return None
+        entry = SESSION_STORE.get(sid)
+        bound = _clarification_source(source)
+        if entry is None or bound is None or not isinstance(prompt, str) \
+                or not isinstance(token, str) \
+                or len(token) > _CLARIFICATION_TOKEN_MAX_LEN \
+                or not isinstance(response, str) or not response.strip() \
+                or _free_text_error(response, "en") is not None:
+            return None
+        nonce, sep, sig = token.partition(_CLARIFICATION_SEP)
+        pending = entry.get(_CLARIFICATION_ENTRY_KEY)
+        if not sep or not nonce or not sig or not isinstance(pending, str) \
+                or not _p2a_hmac.compare_digest(nonce.encode("ascii"),
+                                                pending.encode("ascii")):
+            return None
+        expected = _clarification_sig(sid, nonce, prompt, bound,
+                                      _clarification_anchor(entry))
+        if not _p2a_hmac.compare_digest(sig.encode("ascii"),
+                                        expected.encode("ascii")):
+            return None
+        entry.pop(_CLARIFICATION_ENTRY_KEY, None)          # one use
+        parts = tuple(part for part in
+                      _CLARIFICATION_PART_SPLIT_RE.split(response.strip())
+                      if part)
+        return TransientClarificationExchange(
+            question=prompt, question_origin=CLARIFICATION_QUESTION_ORIGIN,
+            question_status=CLARIFICATION_QUESTION_STATUS,
+            response=response, response_origin=CLARIFICATION_RESPONSE_ORIGIN,
+            response_status=CLARIFICATION_RESPONSE_STATUS,
+            response_parts=parts)
+    except Exception:
+        return None
+
+
 def _leave_criticality_flow(entry):
     """R1: an ACCEPTED new non-criticality interaction leaves the transient
     completion-stage criticality flow (the pre-existing intent), called only
