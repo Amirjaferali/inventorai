@@ -5044,6 +5044,31 @@ UI_STRINGS = {
                "أسئلة جديدة، وهو لا يفهم كتابتك بشكل عام، ولا يُتحقَّق من صحة "
                "فكرتك هندسيًا."),
     },
+    "UI_T2G4_QUESTION_SET": {
+        "en": ("These questions come from a fixed, reviewed set. This version "
+               "chooses which one to show from what your project already "
+               "records, using fixed rules — including recognising some ways "
+               "of saying you do not know something yet, and some short "
+               "explanations or ones written in the same sentence as an "
+               "uncertainty. A description of how your idea works that is "
+               "written only as a question, that starts with \"suppose\" or "
+               "\"imagine\", or that only says you have not decided or chosen "
+               "yet how it works, is saved but not counted as an explanation. "
+               "That recognition covers only certain phrasings, so it will miss "
+               "others. No new questions are generated, it does not understand "
+               "your writing in general, and whether your idea is "
+               "engineering-correct is not checked."),
+        "ar": ("تأتي هذه الأسئلة من مجموعة ثابتة ومراجَعة. ويختار هذا الإصدار "
+               "أيها يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — "
+               "بما في ذلك تمييز بعض صيغ قولك إنك لا تعرف شيئًا بعد، وبعض "
+               "الشروح القصيرة أو المكتوبة في الجملة نفسها مع عبارة عدم "
+               "المعرفة. وإذا وصفت كيف تعمل فكرتك بصيغة سؤال فقط، أو بدأت "
+               "الوصف بكلمة «لنفترض»، أو اكتفيت بالقول إنك لم تقرر أو لم تختر "
+               "بعد كيف تعمل، فإنه يُحفظ لكنه لا يُحتسب شرحًا. ولا يشمل هذا "
+               "التمييز إلا صيغًا معيّنة، لذلك ستفوته صيغ أخرى. ولا تُنشأ أسئلة "
+               "جديدة، وهو لا يفهم كتابتك بشكل عام، ولا يُتحقَّق من صحة فكرتك "
+               "هندسيًا."),
+    },
     # --- T2-D: optional contextual feedback on the displayed question -------
     # Copy describes SAVING TO THIS PROJECT and nothing more. It never promises
     # that a team receives or reviews it, never claims anonymity, never implies
@@ -12737,6 +12762,8 @@ _DEEP_AR = {
     "Your statement that this is not known yet has been saved with your project. It does not describe how the mechanism works, so this point has not moved forward. You can answer it later, or describe the part you do know.": "تم حفظ قولك إن هذا غير معروف بعد مع مشروعك. وهو لا يصف كيف تعمل الآلية، لذلك لم تتقدّم هذه النقطة. يمكنك الإجابة عنها لاحقًا، أو وصف الجزء الذي تعرفه.",
     "Your answer has been saved with your project. Besides what you described, it says part of this is not known yet, and that part is recorded as not known yet. The current demo did not recognize in your answer an explanation of how the mechanism would work, so this point has not moved forward. When you can, add how you expect it to work, in your own words, or leave the unknown part as recorded.": "تم حفظ إجابتك مع مشروعك. إلى جانب ما وصفته، تذكر إجابتك أن جزءًا من هذا غير معروف بعد، وقد سُجّل هذا الجزء على أنه غير معروف بعد. لم يتعرّف العرض التوضيحي الحالي في إجابتك على شرح لكيفية عمل الآلية، لذلك لم تتقدّم هذه النقطة. عندما تستطيع، أضف كيف تتوقّع أن تعمل، بكلماتك الخاصة، أو اترك الجزء غير المعروف كما سُجّل.",
     "Your answer has been saved with your project. It asks about or supposes how the mechanism might work but does not state how it works, so this point has not moved forward. If you know how it works, describe it as a statement; if you do not know yet, you can say so.": "تم حفظ إجابتك مع مشروعك. وهي تسأل عن كيفية عمل الآلية أو تفترضها، لكنها لا تذكر كيف تعمل، لذلك لم تتقدّم هذه النقطة. إذا كنت تعرف كيف تعمل، فصِفها كعبارة تقريرية؛ وإن كنت لا تعرف بعد، يمكنك قول ذلك.",
+    # T2-G-4: the undecided-choice disclosure.
+    "Your answer has been saved with your project. It says how this part works has not been decided or chosen yet, so this point has not moved forward. When you know how it works, describe it as a statement; if you do not know yet, you can say so.": "تم حفظ إجابتك مع مشروعك. وهي تذكر أن طريقة عمل هذا الجزء لم تُحسم أو لم تُختر بعد، لذلك لم تتقدّم هذه النقطة. عندما تعرف كيف يعمل، فصِفه كعبارة تقريرية؛ وإن كنت لا تعرف بعد، يمكنك قول ذلك.",
     "This point cannot move forward yet. Review the result details for the specific reason.": "لا يمكن لهذه النقطة المضي قدمًا بعد. راجِع تفاصيل النتيجة لمعرفة السبب المحدّد.",
 
     # --- 4.9 gap_labels.py GAP_LABELS (heading / guidance / stage_note) ---

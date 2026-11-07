@@ -68,6 +68,7 @@ PF_Q2_TEXT_AR = pnq.get_served_question(PHYSICAL_FEASIBILITY, 1, domain="mechani
 NR1 = SR.ENGINE_CONTRACT_VERSION_NR1
 T2G3 = SR.ENGINE_CONTRACT_VERSION_T2G3
 XG1 = SR.ENGINE_CONTRACT_VERSION_XG1
+T2G4 = SR.ENGINE_CONTRACT_VERSION_T2G4
 T2G2 = SR.ENGINE_CONTRACT_VERSION_T2G2
 
 SEED = ("A folding mechanical wheelchair ramp with a spring latch. The "
@@ -781,21 +782,22 @@ def test_18b_routing_on_a_non_routing_version_fails_closed(client):
 
 
 def test_19_new_routing_aware_project_uses_the_new_behavior(client):
-    # The current stamp (the cross-gap replay repair) carries the NR1 routing
-    # unchanged, as T2-G-3 did.
-    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == XG1
+    # The current stamp (T2-G-4) carries the NR1 routing unchanged, as
+    # T2-G-3 and the cross-gap replay repair did.
+    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == T2G4
     assert nr.is_routing_aware(NR1) and nr.is_routing_aware(T2G3) \
-        and nr.is_routing_aware(XG1)
+        and nr.is_routing_aware(XG1) and nr.is_routing_aware(T2G4)
     sid = _start(client)
-    assert _live(sid).engine_contract_version == XG1
+    assert _live(sid).engine_contract_version == T2G4
     rows = _store().load_need_routing(sid)
     assert [(r.gap_type, r.question_id, r.operation, r.required_input,
              r.after_assertion_seq) for r in rows] == [
         (PHYSICAL_FEASIBILITY, PF_Q2, "ROUTE", "SPECIALIST", -1)]
     assert NR1 in SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS
-    # T2-G-2 rules are carried unchanged, plus the T2-G-3 rule (level 3)
+    # T2-G-2 rules are carried unchanged, plus the T2-G-3 rule and the T2-G-4
+    # undecided-choice rule (level 4)
     from engine.answer_stance import t2g_rule_level
-    assert t2g_rule_level(_live(sid), MECHANISM_COMPLETENESS) == 3
+    assert t2g_rule_level(_live(sid), MECHANISM_COMPLETENESS) == 4
 
 
 def test_20_mechanism_completeness_is_rejected_at_every_boundary(client):
@@ -857,7 +859,7 @@ def test_22_optional_note_binds_to_pf_q2_while_ba_is_primary(client):
     _web_to_ba(client, sid)
     form = _routed_form(client, sid)
     assert _decode(form["answer_target"]) == {
-        "k": "ROUTED_NEED", "q": ID(PF_Q2), "g": PHYSICAL_FEASIBILITY, "v": XG1}
+        "k": "ROUTED_NEED", "q": ID(PF_Q2), "g": PHYSICAL_FEASIBILITY, "v": T2G4}
     before = _facts(_live(sid))
     client.post(f"/session/{sid}", data=dict(
         form, action="provisional_assumption", response=NOTE), answer_binding=False)
