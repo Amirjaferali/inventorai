@@ -792,8 +792,9 @@ def test_signed_authorization_proves_only_signature_not_owner_or_formal(chain, t
                          _record(chain, verified, mode=cc.MODE_FORMAL))
 
 
-@pytest.mark.parametrize("invalid", ["fingerprint", "certificate", "missing_key",
-                                      "invalid_fingerprint", "wrong_signature_path"])
+@pytest.mark.parametrize("invalid", ["fingerprint", "certificate", "wrong_valid_certificate",
+                                      "missing_key", "invalid_fingerprint",
+                                      "wrong_signature_path"])
 def test_signature_inspection_refuses_untrusted_material(chain, tmp_path, invalid):
     s = _signed_chain(chain, tmp_path)
     options = {}
@@ -810,6 +811,20 @@ def test_signature_inspection_refuses_untrusted_material(chain, tmp_path, invali
             capture_output=True, check=True)
         assert b"BEGIN PGP PRIVATE KEY BLOCK" in result.stdout
         options["public"] = result.stdout
+    elif invalid == "wrong_valid_certificate":
+        home = tmp_path / "synthetic-gpg-private"
+        other = "Untrusted second key <other@example.invalid>"
+        subprocess.run(
+            ["gpg", "--batch", "--no-tty", "--homedir", str(home),
+             "--pinentry-mode", "loopback", "--passphrase", "",
+             "--quick-generate-key", other, "ed25519", "sign", "0"],
+            capture_output=True, check=True)
+        certificate = subprocess.run(
+            ["gpg", "--batch", "--no-tty", "--homedir", str(home),
+             "--armor", "--export", other],
+            capture_output=True, check=True).stdout
+        assert certificate != s["public"] and b"BEGIN PGP PUBLIC KEY BLOCK" in certificate
+        options["public"] = certificate
     elif invalid == "missing_key":
         options["public"] = b""
     elif invalid == "invalid_fingerprint":
