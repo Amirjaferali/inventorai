@@ -220,7 +220,13 @@ _FROZEN_ENGINE_SHA256 = {
     # inventor-declared project constraint, so it never ends (or starts) the
     # multiple-alternatives transition. No classifier, tie, substance, scoring,
     # quality, maturity-gate or gap-type change (pre-amendment = 10397390...f0).
-    "engine/progression_loop.py": "0d88f08307177ac1c35484155510669b65a5784964a882ad14ec14214691d2f0",
+    # T2-G-4 re-freeze (disclosed; Owner-authorized versioned trust repair):
+    # under the T2-G-4 engine-contract version ONLY, an answer whose every
+    # mechanism-relevant clause opens with a pending choice ("I haven't chosen
+    # how ...") gets its own WARN and moves no gap. No classifier, tie,
+    # substance, scoring, quality, maturity-gate or gap-type change
+    # (pre-T2-G-4 = 0d88f083...d2f0).
+    "engine/progression_loop.py": "576388a2ae7fa1441978993626ff54937ca38ba52241d166ad53ce6f9eefe01b",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.

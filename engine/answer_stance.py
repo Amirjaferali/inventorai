@@ -293,6 +293,106 @@ _T2G2_INTERROGATIVE = ("?", "؟")
 _T2G3_SUPPOSITION_OPENERS = ("suppose", "imagine", "لنفترض")
 
 
+# ==========================================================================
+# T2-G-4 (undecided-choice false-credit repair) — consulted ONLY at rule level
+# 4, the `ENGINE_CONTRACT_VERSION_T2G4` engine contract. Under every earlier
+# version none of this is read and every result is byte-unchanged.
+#
+# A clause that OPENS with the inventor saying, in the first person, that they
+# have NOT YET DECIDED or CHOSEN something ("I haven't chosen how to sense
+# slowing", "we still need to work out which sensor", "لم أختر بعد",
+# "ما قررت للحين") states a pending choice, not how the mechanism works. The
+# mechanism words inside it are the subject of that pending choice, so they
+# never carry mechanism credit.
+#
+# Bounds, stated rather than hidden:
+#   * a closed set of decision verbs, in a closed set of negated / pending
+#     first-person constructions, recognised ONLY at the start of a clause
+#     (after a contrast boundary or at the start of a sentence). A pending
+#     choice phrased any other way, or placed mid-clause, is not recognised:
+#     the answer is then read exactly as under T2-G-3 (under-recognition keeps
+#     today's credit);
+#   * an AFFIRMATIVE decision ("I chose a wheel magnet: …") is never matched;
+#   * the clause grain is the existing T2-G-2 contrast split, so "and" / "و"
+#     do not separate an asserted explanation from a pending choice in the
+#     same clause — that whole clause is read as pending (under-progress,
+#     disclosed);
+#   * nothing here is a registered explicit-unknown surface: the shared
+#     acknowledged-unknown vocabularies and their other consumers are not
+#     touched, and the acknowledged-unknown track is unchanged.
+# ==========================================================================
+_T2G4_EN_PARTICIPLES = (r"(?:chosen|decided|picked|selected|settled(?:\s+on)?|"
+                        r"determined|worked\s+out|figured\s+out)")
+_T2G4_EN_BASES = (r"(?:choose|decide|pick|select|settle(?:\s+on)?|determine|"
+                  r"work\s+out|figure\s+out)")
+_T2G4_EN_UNDECIDED_RE = re.compile(
+    r"^(?:(?:and|so|also)\s+)?(?:"
+    # I have not (yet) chosen / I haven't decided / I've not picked ...
+    r"(?:i|we)\s+(?:still\s+)?(?:have\s+not|haven't)\s+(?:yet\s+|really\s+)?"
+    + _T2G4_EN_PARTICIPLES +
+    r"|(?:i've|we've)\s+(?:still\s+)?not\s+(?:yet\s+)?" + _T2G4_EN_PARTICIPLES +
+    # I still did not / don't decide ..., I didn't yet choose ... — only with an
+    # explicit pending marker: a bare "I don't choose the flash rate, the
+    # controller sets it" describes automatic operation, not an open choice.
+    r"|(?:i|we)\s+still\s+(?:did\s+not|didn't|do\s+not|don't)\s+"
+    + _T2G4_EN_BASES +
+    r"|(?:i|we)\s+(?:did\s+not|didn't|do\s+not|don't)\s+yet\s+"
+    + _T2G4_EN_BASES +
+    # I have yet to choose / I still need to work out ...
+    r"|(?:i|we)\s+(?:have\s+yet\s+to|still\s+have\s+to|still\s+need\s+to)\s+"
+    + _T2G4_EN_BASES +
+    # I am still undecided / I'm still choosing ...
+    r"|(?:i'm|i\s+am|we're|we\s+are)\s+(?:still\s+)?(?:undecided|deciding|choosing)"
+    # "pick(ed) up" means sensing ("we haven't picked up any vibration"), not a
+    # choice, and is never matched.
+    r")\b(?!\s+up\b)")
+
+# Arabic. Matched on a copy of the clause without the declared Arabic marks
+# (`_t2g2_without_arabic_marks`: harakat, shadda and tatweel), so قرّرت and
+# قررت agree; the alef variants are spelled out as a character class instead
+# of folding the text. The stored answer is never touched.
+_T2G4_AR_ALEF = "[اأإآ]"
+_T2G4_AR_PENDING = r"(?:(?:بعد|للحين|لسه)\s+)?"
+_T2G4_AR_UNDECIDED_RE = re.compile(
+    r"^(?:و)?(?:" + _T2G4_AR_ALEF + r"نا\s+)?"
+    r"(?:(?:لا\s+زلت|ما\s+زلت|لسه|للحين|بعد)\s+)?(?:"
+    # لم + first-person jussive, optionally with an object suffix.
+    r"لم\s+" + _T2G4_AR_PENDING + _T2G4_AR_ALEF + r"(?:قرر|ختر|حدد|حسم)"
+    r"(?:ها|ه|هم)?(?![^\W\d_])"
+    # ما + first-person perfect. No object suffix and not followed by هو / هي:
+    # «ما اخترته هو …» is "what I chose is …", a relative clause, not a
+    # negation, and is never matched.
+    r"|ما\s+" + _T2G4_AR_PENDING + r"(?:قررت|" + _T2G4_AR_ALEF + r"خترت|حددت|حسمت)"
+    r"(?![^\W\d_])(?!\s+(?:هو|هي|كان|كانت)(?![^\W\d_]))"
+    r")")
+
+
+def _t2g4_opens_undecided(clause):
+    """True when ``clause`` OPENS with a first-person negated or pending
+    decision (see the bounds above). Read from the inventor's own text, which
+    is never rewritten; any failure reads False, which keeps the T2-G-3
+    reading."""
+    try:
+        stripped = clause.strip(_T2G2_CLAUSE_EDGE)
+        english = stripped.lower().replace("’", "'")
+        if _T2G4_EN_UNDECIDED_RE.match(english):
+            return True
+        arabic = _t2g2_without_arabic_marks(stripped)
+        return _T2G4_AR_UNDECIDED_RE.match(arabic) is not None
+    except Exception:
+        return False
+
+
+def _t2g4_has_undecided_clause(sentence):
+    """True when any contrast clause of ``sentence`` opens with a pending
+    decision. Any failure reads False (the T2-G-3 reading)."""
+    try:
+        return any(_t2g4_opens_undecided(clause)
+                   for clause in _t2g2_clauses(sentence))
+    except Exception:
+        return False
+
+
 def _english_unknown_markers():
     """The EXISTING registered English explicit-unknown markers, read from
     their owner. Lazy so the import graph stays acyclic in both orders."""
@@ -845,7 +945,7 @@ def _t2g2_concise_pattern(clause, question_id):
 
 
 def _t2g2_clause_carrier(sentence, question_id, matches_intent, terminator="",
-                         quoted=False):
+                         quoted=False, undecided=False):
     """The T2-G-2 addition: judge each contrast clause of the sentence on its
     own, so an explanation that shares a sentence with a recognised unknown is
     not discarded with it, and a concise clause can qualify through the
@@ -867,7 +967,11 @@ def _t2g2_clause_carrier(sentence, question_id, matches_intent, terminator="",
     Ignorance-cued and clause-local hypothetical clauses are skipped as before.
     Every refusal here removes only NEW T2-G-2 support: the level-1 rule has
     already run on the whole sentence in `qualifying_carrier` and is never
-    revisited, so no older or default result can be withdrawn."""
+    revisited, so no older or default result can be withdrawn.
+
+    ``undecided`` (T2-G-4 only, rule level 4) also skips a clause that opens
+    with a pending decision (`_t2g4_opens_undecided`); it is False at every
+    earlier level, where this function is byte-unchanged."""
     if quoted or _t2g2_is_questioned(terminator):
         return False
     clauses = _t2g2_clauses(sentence)
@@ -882,6 +986,8 @@ def _t2g2_clause_carrier(sentence, question_id, matches_intent, terminator="",
             supposed = True
         if declares_ignorance(clause) or _t2g2_is_hypothetical(clause):
             continue
+        if undecided and _t2g4_opens_undecided(clause):
+            continue                      # a pending choice states no mechanism
         if governed:
             continue                      # inside a supposition opened earlier
         if back_reference is not None and index < back_reference:
@@ -923,10 +1029,18 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
     BOTH paths for a whole segment that is a question or opens with a
     qualified supposition cue (`_t2g3_is_non_assertive`): asking whether, or
     supposing that, a mechanism works is not a statement of how it works. It
-    only ever withholds; it never admits anything level 2 refuses."""
+    only ever withholds; it never admits anything level 2 refuses.
+
+    Level 4 (the T2-G-4 engine contract) keeps every level-3 path and refuses
+    any clause that opens with a pending decision (`_t2g4_opens_undecided`):
+    for a sentence holding such a clause, the level-1 test is applied to each
+    of its other contrast clauses instead of the whole sentence, and the clause
+    path skips the pending clause, so an asserted clause beside it is still
+    judged on its own. It only ever withholds."""
     quote_spans = ()
     clause_path = rule_level >= 2
     non_assertive_refusal = rule_level >= 3
+    undecided_refusal = rule_level >= 4
     if clause_path:
         try:
             quote_spans = _t2g2_quote_spans(text)
@@ -939,16 +1053,29 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
     for sentence, terminator, offset in _sentence_records(text):
         if non_assertive_refusal and _t2g3_is_non_assertive(sentence, terminator):
             continue
-        if not declares_ignorance(sentence) and matches_intent(sentence, question_id) \
+        pending = undecided_refusal and _t2g4_has_undecided_clause(sentence)
+        if not pending and not declares_ignorance(sentence) \
+                and matches_intent(sentence, question_id) \
                 and _carries_context(sentence, question_id, matches_intent):
             return True
+        if pending:
+            # Level 4: the level-1 test, applied to each contrast clause that is
+            # NOT a pending choice — exactly the reading the whole sentence had
+            # under level 3, minus the pending clause itself.
+            for clause in _t2g2_clauses(sentence):
+                if _t2g4_opens_undecided(clause) or declares_ignorance(clause):
+                    continue
+                if matches_intent(clause, question_id) \
+                        and _carries_context(clause, question_id, matches_intent):
+                    return True
         if clause_path:
             try:
                 if _t2g2_clause_carrier(
                         sentence, question_id, matches_intent,
                         terminator=terminator,
                         quoted=_t2g2_segment_is_quoted(sentence, offset,
-                                                       quote_spans)):
+                                                       quote_spans),
+                        undecided=undecided_refusal):
                     return True
             except Exception:
                 continue          # conservative: no new support from a failure
@@ -956,7 +1083,7 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
 
 
 def t2g_rule_level(state, gap_type=None, domain=None):
-    """The T-2-G rule level this project runs under: 0, 1, 2 or 3.
+    """The T-2-G rule level this project runs under: 0, 1, 2, 3 or 4.
 
     Read from the project's OWN persisted engine-contract version — never from
     a request field, the UI language, a timestamp or a default. An absent,
@@ -964,18 +1091,21 @@ def t2g_rule_level(state, gap_type=None, domain=None):
     can never silently enable any of this. Level 1 is the accepted T2-G-1 rule
     exactly; level 2 adds the bounded concise/mixed paths for T2-G-2 projects
     only; level 3 adds the T2-G-3 question / supposition refusal for T2-G-3
+    projects only; level 4 adds the T2-G-4 pending-decision refusal for T2-G-4
     projects only. Outside the named gap and domains the level is 0 at every
     version."""
     from engine.session_reconstruction import (
         ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
         ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3,
-        ENGINE_CONTRACT_VERSION_XG1)
+        ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_T2G4)
     # Safe Question Reduction Slice 1: the routing-aware version carries every
     # T2-G-2 rule unchanged (routing is additive to it, not a rule change).
     levels = {ENGINE_CONTRACT_VERSION_T2G1: 1, ENGINE_CONTRACT_VERSION_T2G2: 2,
               ENGINE_CONTRACT_VERSION_NR1: 2, ENGINE_CONTRACT_VERSION_T2G3: 3,
               # The cross-gap replay repair carries every T2-G-3 rule unchanged.
-              ENGINE_CONTRACT_VERSION_XG1: 3}
+              ENGINE_CONTRACT_VERSION_XG1: 3,
+              # T2-G-4 adds the pending-decision refusal on top of level 3.
+              ENGINE_CONTRACT_VERSION_T2G4: 4}
     level = levels.get(getattr(state, "engine_contract_version", None), 0)
     if not level:
         return 0
@@ -1100,3 +1230,46 @@ def non_assertive_without_mechanism(state, gap_type, response,
             return False
         relevant_seen = True
     return relevant_seen
+
+
+def undecided_without_mechanism(state, gap_type, response, is_relevant_sentence):
+    """The T2-G-4 SATISFACTION-ELIGIBILITY veto — never a relevance or quality
+    result, and independent of any registered "I do not know".
+
+    True only when ALL of these hold, each on positive evidence:
+      1. rule level 4 applies (the project's own T2-G-4 version, and the named
+         gap / domain scope);
+      2. at least one clause of the answer opens with a pending decision
+         (`_t2g4_opens_undecided`) and is mechanism-relevant by the caller's
+         own canonical relevance (``is_relevant_sentence``, never
+         reimplemented here);
+      3. EVERY mechanism-relevant part of the answer is such a clause, or a
+         whole sentence that asks or supposes (the T2-G-3 reading).
+
+    The grain is the existing sentence split and, inside a sentence, the
+    existing T2-G-2 contrast split. A relevant sentence none of whose clauses
+    is relevant on its own is read as stating something (today's reading). So
+    an asserted clause or sentence beside a pending choice keeps its credit,
+    and an answer with no pending choice is left to the T2-G-3 veto exactly as
+    before. The answer itself is never edited; the caller saves it verbatim.
+    Any failure reads False, which keeps the T2-G-3 reading."""
+    if t2g_rule_level(state, gap_type=gap_type) < 4:
+        return False
+    try:
+        pending_seen = False
+        for sentence, terminator, _offset in _sentence_records(response):
+            if _t2g3_is_non_assertive(sentence, terminator):
+                continue                  # asks or supposes: states nothing
+            relevant_clauses = [clause for clause in _t2g2_clauses(sentence)
+                                if is_relevant_sentence(clause)]
+            if not relevant_clauses:
+                if is_relevant_sentence(sentence):
+                    return False          # relevant as a whole: a statement
+                continue
+            for clause in relevant_clauses:
+                if not _t2g4_opens_undecided(clause):
+                    return False          # an asserted relevant clause
+                pending_seen = True
+        return pending_seen
+    except Exception:
+        return False

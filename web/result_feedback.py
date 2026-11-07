@@ -129,6 +129,14 @@ _WARN_QUESTION_OR_SUPPOSITION = (
     "statement; if you do not know yet, you can say so."
 )
 
+_WARN_UNDECIDED_CHOICE = (
+    "Your answer has been saved with your project. The parts of it about how "
+    "this works were read as saying that has not been decided or chosen yet, "
+    "so this point has not moved forward. This reading follows fixed wording "
+    "rules and can be wrong: if you have described how it works, write that "
+    "description as its own sentence."
+)
+
 _GENERIC_WARN = (
     "This point cannot move forward yet. Review the result details for the specific reason."
 )
@@ -186,6 +194,9 @@ def get_result_feedback(last_result, statement_beside_unknown=False):
             return _WARN_EXPLICIT_UNKNOWN
         if "recorded as a question or supposition" in reason:
             return _WARN_QUESTION_OR_SUPPOSITION
+        # T2-G-4: checked BEFORE "not addressed" for the same reason.
+        if "recorded as an undecided choice" in reason:
+            return _WARN_UNDECIDED_CHOICE
         if "not addressed" in reason:
             return _WARN_NOT_ADDRESSED
         if "asserted only" in reason:

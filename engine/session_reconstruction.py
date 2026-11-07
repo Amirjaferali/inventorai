@@ -129,12 +129,24 @@ ENGINE_CONTRACT_VERSION_T2G3 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3"
 # `GAP_BOUND_REPLAY_VERSIONS`). Stamped on NEW projects only: every existing
 # project keeps its recorded version and replays exactly as before.
 ENGINE_CONTRACT_VERSION_XG1 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1"
+
+# T2-G-4 (undecided-choice false-credit repair): the SEVENTH supported
+# engine-contract version. It carries every XG1 rule (T2-G-3, NR1 routing and
+# gap-bound replay) unchanged, and is the ONLY version under which a Mechanism
+# Completeness answer whose every mechanism-relevant clause says the inventor
+# has not yet decided or chosen how it works (the bounded opener rule owned by
+# `engine/answer_stance.py`) supplies no mechanism credit. Stamped on NEW
+# projects only: every existing project keeps its recorded version and replays
+# exactly as before; nothing is adopted or migrated automatically.
+ENGINE_CONTRACT_VERSION_T2G4 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4"
 ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS = (ENGINE_CONTRACT_VERSION_NR1,
                                           ENGINE_CONTRACT_VERSION_T2G3,
-                                          ENGINE_CONTRACT_VERSION_XG1)
+                                          ENGINE_CONTRACT_VERSION_XG1,
+                                          ENGINE_CONTRACT_VERSION_T2G4)
 
 # The versions whose replay credits a gap-bound answer only to its own gap.
-GAP_BOUND_REPLAY_VERSIONS = (ENGINE_CONTRACT_VERSION_XG1,)
+GAP_BOUND_REPLAY_VERSIONS = (ENGINE_CONTRACT_VERSION_XG1,
+                             ENGINE_CONTRACT_VERSION_T2G4)
 
 # Both exact versions are supported through the ONE existing progression and
 # reconstruction path — the earlier stamp is NOT replaced, so no valid legacy
@@ -146,11 +158,12 @@ SUPPORTED_ENGINE_CONTRACT_VERSIONS = (
     ENGINE_CONTRACT_VERSION_NR1,
     ENGINE_CONTRACT_VERSION_T2G3,
     ENGINE_CONTRACT_VERSION_XG1,
+    ENGINE_CONTRACT_VERSION_T2G4,
 )
 
 # The version a newly created supported project records. Separate name so the
 # "what do we stamp now" decision is never confused with "what do we support".
-CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_XG1
+CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G4
 
 # Deterministic Path-N support only.
 SUPPORTED_PATH = "N"

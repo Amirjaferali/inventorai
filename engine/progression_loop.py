@@ -1144,6 +1144,7 @@ def integrate_response(
     # to keep crediting). Fail-closed: any failure leaves the answer read as
     # before this rule.
     non_assertive_only = False
+    undecided_only = False
     if relevant and not unknown_only:
         try:
             from engine import answer_stance
@@ -1161,9 +1162,20 @@ def integrate_response(
 
             non_assertive_only = answer_stance.non_assertive_without_mechanism(
                 state, gap_type, response, _relevant_sentence)
+            # T2-G-4 — the same seam, under the T2-G-4 engine contract only: an
+            # answer whose every mechanism-relevant clause is a pending choice
+            # ("I haven't chosen how…") or a question / supposition supplies no
+            # mechanism. Same relevance composition; fail-closed to the T2-G-3
+            # reading.
+            if not non_assertive_only:
+                undecided_only = answer_stance.undecided_without_mechanism(
+                    state, gap_type, response, _relevant_sentence)
         except Exception:
             non_assertive_only = False
+            undecided_only = False
     eligible = relevant and not unknown_only and not non_assertive_only
+    if undecided_only:
+        eligible = False
     evidence = Evidence(
         content=response,
         quality=quality,
@@ -1238,6 +1250,14 @@ def integrate_response(
         return "WARN", (f"{gap_type} recorded as a question or supposition — "
                         f"this answer asks about or supposes the mechanism and "
                         f"does not state how it works")
+
+    # T2-G-4: the answer DID respond, but only by saying how it works has not
+    # been decided or chosen yet. Saved verbatim; the gap is left exactly as it
+    # was, before every status transition below.
+    if undecided_only:
+        return "WARN", (f"{gap_type} recorded as an undecided choice — every "
+                        f"mechanism-relevant part of this answer was read as "
+                        f"saying how it works has not been decided yet")
 
     # PVCG-R4-C §10.4 G-1/G-2/G-4 — CLOSED-gap safety guard.
     #
