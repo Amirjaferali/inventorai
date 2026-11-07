@@ -2012,6 +2012,14 @@ def inspect_v2_detached_authorization(repo, authorization_commit, authorization_
             imported = gpg("--import", input_bytes=trusted_public_key)
             if imported.returncode != 0:
                 raise PackError("public certificate could not be imported")
+            # A public-only trust anchor must never introduce private key
+            # material, even when GPG accepts its otherwise valid packets.
+            secret_listing = gpg("--with-colons", "--list-secret-keys")
+            if secret_listing.returncode != 0 or any(
+                    line.startswith(("sec:", "ssb:"))
+                    for line in secret_listing.stdout.decode(
+                        "ascii", "replace").splitlines()):
+                raise PackError("a public certificate must contain no secret keys")
             listing = gpg("--with-colons", "--fingerprint", "--list-keys")
             if listing.returncode != 0:
                 raise PackError("public certificate cannot be inspected")
