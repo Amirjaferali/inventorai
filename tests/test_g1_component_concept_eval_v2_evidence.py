@@ -717,3 +717,144 @@ def test_malformed_pack_content_is_a_refusal_never_a_crash(tmp_path):
                                    produce_refs=good)
     with pytest.raises(cc.PackError):
         cc.verify_v2_run(str(repo), auth, AUTH_PATH, evid)
+
+
+# ==========================================================================
+# Optional Owner-detached-signature INSPECTION — OFFLINE ONLY.
+# These test keys are generated in disposable temp directories; no real key
+# or Owner identity is asserted by a synthetic signature.
+# ==========================================================================
+def _signed_chain(chain, tmp_path):
+    """Rebuild the fixture with a detached signature committed WITH authorization."""
+    import os
+    import shutil
+    from pathlib import Path
+
+    if not shutil.which("gpg"):
+        pytest.skip("GPG is required for signature-inspection tests")
+    repo = chain["repo"]
+    _git(repo, "reset", "--hard", chain["candidate"])
+    for path, content in chain["files"].values():
+        _write(repo, path, content)
+    _write(repo, AUTH_PATH, chain["record"])
+    raw = (repo / AUTH_PATH).read_bytes()
+    home = tmp_path / "synthetic-gpg-private"
+    home.mkdir(mode=0o700)
+    env = {**os.environ, "GNUPGHOME": str(home)}
+    user = "Synthetic owner for offline test <synthetic@example.invalid>"
+
+    def gpg(*args):
+        return subprocess.run(["gpg", "--batch", "--no-tty", "--homedir", str(home),
+                               *args], capture_output=True, env=env, check=True).stdout
+
+    gpg("--pinentry-mode", "loopback", "--passphrase", "", "--quick-generate-key",
+        user, "ed25519", "sign", "0")
+    cert = gpg("--armor", "--export", user)
+    listing = gpg("--with-colons", "--fingerprint", "--list-keys").decode("utf-8")
+    fingerprint = next(line.split(":")[9] for line in listing.splitlines()
+                       if line.startswith("fpr:"))
+    sigpath = home / "authorization.sig"
+    gpg("--detach-sign", "--output", str(sigpath), str(repo / AUTH_PATH))
+    signature_path = "authorizations/g1_v2_run.sig"
+    _write(repo, signature_path, sigpath.read_bytes())
+    auth = _commit(repo, "synthetic signed authorization")
+    _write(repo, chain["manifest"]["evidence"]["report"], chain["report"])
+    _write(repo, chain["manifest"]["evidence"]["journal"], chain["journal"])
+    evidence = _commit(repo, "synthetic evidence")
+    return {"repo": repo, "auth": auth, "evidence": evidence,
+            "public": cert, "fingerprint": fingerprint,
+            "signature_path": signature_path, "record": raw}
+
+
+def _inspect_signed(s, **kw):
+    return cc.inspect_v2_detached_authorization(
+        str(s["repo"]), kw.get("authorization", s["auth"]), AUTH_PATH,
+        kw.get("evidence", s["evidence"]),
+        kw.get("signature_path", s["signature_path"]),
+        kw.get("public", s["public"]), kw.get("fingerprint", s["fingerprint"]))
+
+
+def test_signed_authorization_proves_only_signature_not_owner_or_formal(chain, tmp_path):
+    s = _signed_chain(chain, tmp_path)
+    result = _inspect_signed(s)
+    assert result["signature_valid"] is True
+    assert result["trusted_primary_fingerprint"] == s["fingerprint"].upper()
+    assert result["owner_identity"] == cc.OWNER_IDENTITY_NOT_AUTHENTICATED
+    assert result["publication_time"] == "NOT_AUTHENTICATED_BY_GIT_ANCESTRY"
+    assert result["qualification"] == "NOT_A_MODEL_QUALIFICATION"
+    assert len(result["formal_blockers"]) == len(cc.V2_FORMAL_BLOCKERS)
+    assert result["manifest_sha256"] == chain["record"]["manifest_sha256"]
+    assert result["signed_authorization_sha256"] == __import__("hashlib").sha256(
+        s["record"]).hexdigest()
+    verified = cc.verify_v2_run(str(s["repo"]), s["auth"], AUTH_PATH, s["evidence"])
+    with pytest.raises(cc.PackError, match="FORMAL qualification is unavailable"):
+        cc.assess_v2_run(str(s["repo"]), s["auth"], AUTH_PATH, s["evidence"],
+                         _record(chain, verified, mode=cc.MODE_FORMAL))
+
+
+@pytest.mark.parametrize("invalid", ["fingerprint", "certificate", "wrong_valid_certificate",
+                                      "missing_key", "invalid_fingerprint",
+                                      "wrong_signature_path"])
+def test_signature_inspection_refuses_untrusted_material(chain, tmp_path, invalid):
+    s = _signed_chain(chain, tmp_path)
+    options = {}
+    if invalid == "fingerprint":
+        options["fingerprint"] = "0" * 40
+    elif invalid == "certificate":
+        # A genuine private-key export must not be accepted as public-only
+        # trust material, even if GPG can read its signing certificate.
+        home = tmp_path / "synthetic-gpg-private"
+        result = subprocess.run(
+            ["gpg", "--batch", "--no-tty", "--homedir", str(home),
+             "--pinentry-mode", "loopback", "--passphrase", "",
+             "--armor", "--export-secret-keys", s["fingerprint"]],
+            capture_output=True, check=True)
+        assert b"BEGIN PGP PRIVATE KEY BLOCK" in result.stdout
+        options["public"] = result.stdout
+    elif invalid == "wrong_valid_certificate":
+        home = tmp_path / "synthetic-gpg-private"
+        other = "Untrusted second key <other@example.invalid>"
+        subprocess.run(
+            ["gpg", "--batch", "--no-tty", "--homedir", str(home),
+             "--pinentry-mode", "loopback", "--passphrase", "",
+             "--quick-generate-key", other, "ed25519", "sign", "0"],
+            capture_output=True, check=True)
+        certificate = subprocess.run(
+            ["gpg", "--batch", "--no-tty", "--homedir", str(home),
+             "--armor", "--export", other],
+            capture_output=True, check=True).stdout
+        assert certificate != s["public"] and b"BEGIN PGP PUBLIC KEY BLOCK" in certificate
+        options["public"] = certificate
+    elif invalid == "missing_key":
+        options["public"] = b""
+    elif invalid == "invalid_fingerprint":
+        options["fingerprint"] = "trust-me"
+    else:
+        options["signature_path"] = "../secrets/owner.key"
+    with pytest.raises(cc.PackError):
+        _inspect_signed(s, **options)
+
+
+def test_signature_inspection_refuses_mutated_or_late_signature(chain, tmp_path):
+    s = _signed_chain(chain, tmp_path)
+    # Replacing bytes later cannot retroactively change the committed signature.
+    signature = (s["repo"] / s["signature_path"]).read_bytes()
+    _write(s["repo"], s["signature_path"], signature + b"tampered")
+    changed = _commit(s["repo"], "tampered signature after run")
+    with pytest.raises(cc.PackError, match="signature must precede"):
+        _inspect_signed(s, evidence=changed)
+    # The signed authorization is immutable: a changed record is refused by v2.
+    _write(s["repo"], AUTH_PATH, {"kind": cc.V2_AUTHORIZATION_KIND,
+                                  "manifest_sha256": "0" * 64,
+                                  "evidence": chain["manifest"]["evidence"]})
+    bad = _commit(s["repo"], "changed authorization after signature")
+    with pytest.raises(cc.PackError):
+        _inspect_signed(s, evidence=bad)
+
+
+def test_signed_inspection_has_no_provider_or_private_key_requirement(chain, tmp_path):
+    s = _signed_chain(chain, tmp_path)
+    # The private signing directory is removed: public verification must still work.
+    import shutil
+    shutil.rmtree(tmp_path / "synthetic-gpg-private")
+    assert _inspect_signed(s)["signature_valid"] is True
