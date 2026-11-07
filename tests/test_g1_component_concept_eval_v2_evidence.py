@@ -800,8 +800,16 @@ def test_signature_inspection_refuses_untrusted_material(chain, tmp_path, invali
     if invalid == "fingerprint":
         options["fingerprint"] = "0" * 40
     elif invalid == "certificate":
-        options["public"] = s["public"].replace(b"BEGIN PGP PUBLIC KEY BLOCK",
-                                                 b"BEGIN PGP PRIVATE KEY BLOCK")
+        # A genuine private-key export must not be accepted as public-only
+        # trust material, even if GPG can read its signing certificate.
+        home = tmp_path / "synthetic-gpg-private"
+        result = subprocess.run(
+            ["gpg", "--batch", "--no-tty", "--homedir", str(home),
+             "--pinentry-mode", "loopback", "--passphrase", "",
+             "--armor", "--export-secret-keys", s["fingerprint"]],
+            capture_output=True, check=True)
+        assert b"BEGIN PGP PRIVATE KEY BLOCK" in result.stdout
+        options["public"] = result.stdout
     elif invalid == "missing_key":
         options["public"] = b""
     elif invalid == "invalid_fingerprint":
