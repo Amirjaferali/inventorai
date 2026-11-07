@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FIXTURE = json.loads((ROOT / "tests" / "fixtures" / "g1_component_concept_v2_diagnostic.json")
                      .read_text(encoding="utf-8"))
 RUN_COMMIT = "2f6925bd2232d3c4bda7fb3119dacd897d3bc3dc"
-V2_PREREGISTRATION_SHA256 = "1b7bb3edae124151b4f49baee7ceca8965f7b8f8fc9b30bfddb53ec1fb5897a0"
+V2_PREREGISTRATION_SHA256 = "d31255f116b6500bd63107dd6ec2f61aeb7f073b26a0c30100f1518a367b0203"
 # sha256 of each v1 definition's source at the PR base 44cfdbc (byte-identical v1 method)
 V1_SOURCES = {
     "schema": "3d4e8c0a40c0751ea7a70a1a2e637b5485ef84fac63b55bf8bf93348e931737a",
@@ -408,53 +408,43 @@ def _full_annotations(refs):
                       for cid, r in refs.items()}}
 
 
-def _full_run(pack, override=None, mode=cc.MODE_FORMAL, assessor=None, annotations=None):
-    """A complete synthetic run validated through a real v2 record (FORMAL HUMAN by default)."""
+AGENT = dict(HUMAN, kind="AGENT", name="synthetic agent assessor")
+
+
+def _full_record(pack, override=None, mode=cc.MODE_DIAGNOSTIC, assessor=None):
     cases, refs = pack
     replies = _full_replies(pack)
     scored = [cc.score_case(replies[c["case_id"]], c, refs[c["case_id"]]) for c in cases]
     judged = _full_judgments(pack, replies, scored)
     judged.update(override or {})
-    ann = annotations or _full_annotations(refs)
     formal = mode == cc.MODE_FORMAL
     record = {"evaluation_id": cc.EVALUATION_ID_V2,
               "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION], "report_sha256": "r" * 64,
-              "mode": mode, "assessor": assessor or HUMAN,
+              "mode": mode, "assessor": assessor or (HUMAN if formal else AGENT),
               "attestation": cc.ATTESTATION if formal else None,
               "attested_on": "2026-11-06" if formal else None, "judgments": judged}
-    report, authorized = _v2_report(ann)
-    record["report_sha256"] = cc._digest(report)
-    labels = cc.check_assessment_v2(record, scored, replies, refs, ann, cc._digest(report),
-                                    _varieties(pack), run_report=report,
-                                    authorized_manifest_sha256=authorized if formal else None)
+    return record, scored, replies, refs
+
+
+def _full_run(pack, override=None, mode=cc.MODE_DIAGNOSTIC, assessor=None, annotations=None):
+    """A complete synthetic run validated through a real v2 record (DIAGNOSTIC by default:
+    FORMAL is refused in this method version)."""
+    record, scored, replies, refs = _full_record(pack, override, mode, assessor)
+    ann = annotations or _full_annotations(refs)
+    labels = cc.check_assessment_v2(record, scored, replies, refs, ann, "r" * 64, _varieties(pack))
     return scored, refs, ann, labels
-
-
-def _v2_manifest(ann):
-    """SYNTHETIC test stand-in for a future v2 run manifest (no v2 run exists)."""
-    return {"evaluation_id": cc.EVALUATION_ID_V2, "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION],
-            "preregistration_v2_sha256": cc.preregistration_v2_digest(),
-            "annotations_sha256": cc.annotations_digest(ann)}
-
-
-def _v2_report(ann, manifest=None):
-    """A SYNTHETIC report carrying a manifest, and the SHA-256 an Owner would have named."""
-    manifest = manifest or _v2_manifest(ann)
-    return {"manifest": manifest, "rows": []}, cc._digest(manifest)
 
 
 def test_the_central_rule_blocks_credit_but_never_penalises_valid_clarification(pack):
     scored, refs, ann, labels = _full_run(pack)
-    assert cc.decide_v2(scored, refs, ann, labels)["verdict"] == "PRELIMINARY_GO"
-    _s, _r, _a, diag_labels = _full_run(pack, mode=cc.MODE_DIAGNOSTIC,
-                                        assessor=dict(HUMAN, kind="AGENT"))
-    diag = cc.decide_v2(scored, refs, ann, diag_labels)
-    assert diag["verdict"] == "DIAGNOSTIC_ONLY" and diag["diagnostic_outcome"] == "PRELIMINARY_GO"
-    assert "NOT A QUALIFICATION" in diag["qualification"]
+    d = cc.decide_v2(scored, refs, ann, labels)
+    assert d["verdict"] == "DIAGNOSTIC_ONLY" and d["diagnostic_outcome"] == "PRELIMINARY_GO"
+    assert "NOT A QUALIFICATION" in d["qualification"]
     central = ann["cases"]["Q07"]["central"][0]
     _s, _r, _a, missing = _full_run(pack, override={central: _judgment("MISSING", [])})
     d = cc.decide_v2(scored, refs, ann, missing)
-    assert d["verdict"] == "NO_GO" and d["central_omitted"] == ["Q07"] and not d["graded"]["G1"]
+    assert d["diagnostic_outcome"] == "NO_GO" and d["central_omitted"] == ["Q07"]
+    assert not d["graded"]["G1"]
     # a decided omission is not hidden by another central function still being unassessed
     ann2 = copy.deepcopy(ann)
     other = refs["Q07"]["essential_functions"][1]["function_id"]
@@ -482,50 +472,48 @@ def test_formal_needs_complete_annotations_and_declared_choices(pack):
     ann = _full_annotations(refs)
     partial = dict(ann, cases={})
     with pytest.raises(cc.PackError, match="every case"):
-        _full_run(pack, annotations=partial)
+        _full_run(pack, mode=cc.MODE_FORMAL, annotations=partial)
     no_choice = copy.deepcopy(ann)
     no_choice["cases"]["Q07"]["choices"] = []
     with pytest.raises(cc.PackError, match="reference choice declared"):
-        _full_run(pack, annotations=no_choice)
-    # diagnostic annotations may be partial, but no reference-choice credit without a choice
+        _full_run(pack, mode=cc.MODE_FORMAL, annotations=no_choice)
+    # no reference-choice credit without a predeclared choice, in any mode
     with pytest.raises(cc.PackError, match="predeclared choice"):
-        _full_run(pack, mode=cc.MODE_DIAGNOSTIC, assessor=dict(HUMAN, kind="AGENT"),
-                  annotations=no_choice)
+        _full_run(pack, annotations=no_choice)
     # removing an applicable case's annotation cannot produce PRELIMINARY_GO on either path:
-    # the formal labels refuse other annotations, and the decision rule itself fails closed
+    # labels refuse other annotations, and the decision rule itself fails closed
     scored, refs, ann_full, labels = _full_run(pack)
     without_q07 = dict(ann_full, cases={k: v for k, v in ann_full["cases"].items() if k != "Q07"})
     with pytest.raises(cc.PackError, match="annotations the labels were validated against"):
         cc.decide_v2(scored, refs, without_q07, labels)
-    _s, _r, _a, diag = _full_run(pack, mode=cc.MODE_DIAGNOSTIC, assessor=dict(HUMAN, kind="AGENT"),
-                                 annotations=without_q07,
+    _s, _r, _a, diag = _full_run(pack, annotations=without_q07,
                                  override={"Q07:G4": _judgment("ABSENT", [])})
     d = cc.decide_v2(scored, refs, without_q07, diag)
     assert d["diagnostic_outcome"] != "PRELIMINARY_GO" and not d["graded"]["G1"]
 
 
 def test_the_decision_mode_comes_only_from_validated_records(pack):
-    scored, refs, ann, formal = _full_run(pack)
+    scored, refs, ann, agent = _full_run(pack)
     with pytest.raises(cc.PackError, match="labels from check_assessment_v2"):
-        cc.decide_v2(scored, refs, ann, dict(formal))
+        cc.decide_v2(scored, refs, ann, dict(agent))
     with pytest.raises(cc.PackError, match="validated record"):
-        cc.AssessedLabels(dict(formal), cc.MODE_FORMAL, ["HUMAN"], formal.annotations_sha256)
+        cc.AssessedLabels(dict(agent), cc.MODE_FORMAL, ["HUMAN"], agent.annotations_sha256)
     other = copy.deepcopy(ann)
     other["cases"]["Q07"]["central"] = []
     with pytest.raises(cc.PackError, match="annotations the labels were validated against"):
-        cc.decide_v2(scored, refs, other, formal)
-    _s, _r, _a, agent = _full_run(pack, mode=cc.MODE_DIAGNOSTIC, assessor=dict(HUMAN, kind="AGENT"))
+        cc.decide_v2(scored, refs, other, agent)
     for mutate in (lambda: setattr(agent, "mode", cc.MODE_FORMAL),
                    lambda: agent.__setitem__("Q07-F1", "ADDRESSED"),
                    lambda: agent.update({}), lambda: agent.pop("Q07-F1")):
         with pytest.raises(cc.PackError, match="read-only"):
             mutate()
     assert cc.decide_v2(scored, refs, ann, agent)["verdict"] == "DIAGNOSTIC_ONLY"
-    merged, _pos = cc.reconcile_v2([formal, agent])            # mixing never yields FORMAL
+    _s, _r, _a, human_diag = _full_run(pack, assessor=HUMAN)   # a human DIAGNOSTIC record
+    merged, _pos = cc.reconcile_v2([human_diag, agent])
     assert merged.mode == cc.MODE_DIAGNOSTIC
     assert cc.decide_v2(scored, refs, ann, merged)["verdict"] == "DIAGNOSTIC_ONLY"
     with pytest.raises(cc.PackError, match="only validated records"):
-        cc.reconcile_v2([dict(formal)])
+        cc.reconcile_v2([dict(agent)])
 
 
 def test_insufficient_evidence_and_disputes_earn_nothing(pack):
@@ -533,53 +521,43 @@ def test_insufficient_evidence_and_disputes_earn_nothing(pack):
     item = "Q07-F1"
     _s, _r, _a, other = _full_run(pack, override={item: _judgment("MISSING", [])})
     merged, positions = cc.reconcile_v2([labels, other])
-    assert merged.mode == cc.MODE_FORMAL
     assert merged[item] == cc.DISPUTED and positions[item] == ["ADDRESSED", "MISSING"]
     d = cc.decide_v2(scored, refs, ann, merged)
-    assert d["verdict"] == "INCOMPLETE_REVIEW" and item in d["unresolved"]
+    assert d["diagnostic_outcome"] == "INCOMPLETE_REVIEW" and item in d["unresolved"]
     _s, _r, _a, insufficient = _full_run(
         pack, override={item: _judgment(cc.INSUFFICIENT_EVIDENCE, [], "cannot tell")})
     d = cc.decide_v2(scored, refs, ann, insufficient)
-    assert d["verdict"] == "INCOMPLETE_REVIEW" and not d["graded"]["G1"]
+    assert d["diagnostic_outcome"] == "INCOMPLETE_REVIEW" and not d["graded"]["G1"]
     assert not cc._credited("G4", cc.DISPUTED) and not cc._credited("G1", cc.DISPUTED)
 
 
-def test_formal_needs_a_manifest_that_froze_the_annotations_before_outputs(pack):
-    cases, refs = pack
-    replies = _full_replies(pack)
-    scored = [cc.score_case(replies[c["case_id"]], c, refs[c["case_id"]]) for c in cases]
+def test_a_self_constructed_manifest_and_empty_report_cannot_produce_a_formal_qualification(pack):
+    """Fail closed: a fully attested HUMAN record over complete, 'declared' annotations, with a
+    manifest and an empty synthetic report built by the caller and the caller's own digest as
+    the 'authorized' hash, is still refused; so is the real v1 run report. No FORMAL labels can
+    be issued, so no formal verdict can exist, until a separately authorized v2 run adds an
+    authenticated evidence path."""
+    record, scored, replies, refs = _full_record(pack, mode=cc.MODE_FORMAL)
     ann = _full_annotations(refs)
-    record = {"evaluation_id": cc.EVALUATION_ID_V2,
-              "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION], "report_sha256": "r" * 64,
-              "mode": cc.MODE_FORMAL, "assessor": HUMAN, "attestation": cc.ATTESTATION,
-              "attested_on": "2026-11-06", "judgments": _full_judgments(pack, replies, scored)}
-    def run(manifest, authorized=None, report=None):
-        report = report or {"manifest": manifest, "rows": []}
-        rec = dict(record, report_sha256=cc._digest(report))
-        return cc.check_assessment_v2(rec, scored, replies, refs, ann, cc._digest(report),
-                                      _varieties(pack), run_report=report,
-                                      authorized_manifest_sha256=authorized or (
-                                          cc._digest(manifest) if manifest else None))
+    manifest = {"evaluation_id": cc.EVALUATION_ID_V2,
+                "method": [cc.METHOD_V2_ID, cc.METHOD_V2_VERSION],
+                "preregistration_v2_sha256": cc.preregistration_v2_digest(),
+                "annotations_sha256": cc.annotations_digest(ann)}
+    self_built = {"manifest": manifest, "manifest_sha256": cc._digest(manifest), "rows": []}
     v1_report = json.loads(subprocess.run(
         ["git", "show", "%s:docs/benchmarks/evidence/g1_component_concept_v1/run_report.json"
          % RUN_COMMIT], cwd=ROOT, capture_output=True, check=True).stdout)
-    edited = copy.deepcopy(ann)
-    edited["cases"]["Q07"]["central"] = [refs["Q07"]["essential_functions"][1]["function_id"]]
-    for manifest in (None, v1_report["manifest"], _v2_manifest(edited),
-                     dict(_v2_manifest(ann), preregistration_v2_sha256="0" * 64)):
-        with pytest.raises(cc.PackError, match="froze these annotations"):
-            run(manifest)                                   # declared_before_outputs alone is no proof
-    with pytest.raises(cc.PackError, match="froze these annotations"):
-        run(v1_report["manifest"], authorized=v1_report["manifest_sha256"], report=v1_report)
-    # a correct-looking manifest is not enough: it must be the Owner-authorized one of THIS report
-    with pytest.raises(cc.PackError, match="froze these annotations"):
-        run(_v2_manifest(ann), authorized="0" * 64)
-    good = {"manifest": _v2_manifest(ann), "rows": []}
-    with pytest.raises(cc.PackError, match="froze these annotations"):
-        cc.check_assessment_v2(dict(record, report_sha256="r" * 64), scored, replies, refs, ann,
-                               "r" * 64, _varieties(pack), run_report=good,
-                               authorized_manifest_sha256=cc._digest(good["manifest"]))
-    assert run(_v2_manifest(ann)).mode == cc.MODE_FORMAL
+    for report in (self_built, v1_report):
+        rec = dict(record, report_sha256=cc._digest(report))
+        with pytest.raises(cc.PackError, match="FORMAL qualification is unavailable"):
+            cc.check_assessment_v2(rec, scored, replies, refs, ann, cc._digest(report),
+                                   _varieties(pack))
+    # no caller-supplied digest or report parameter exists any more
+    import inspect
+    assert set(inspect.signature(cc.check_assessment_v2).parameters) == {
+        "record", "scored", "replies", "refs", "annotations", "report_sha256", "varieties"}
+    assert not hasattr(cc, "check_formal_freeze")
+    assert "FORMAL is refused in every case" in cc.DECISION_RULE_V2
 
 
 def test_relationship_ends_on_stated_items_render_by_their_text(pack):

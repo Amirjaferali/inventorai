@@ -861,10 +861,11 @@ DECISION_RULE_V2 = (
     "from validated records: DIAGNOSTIC mode reports the computed outcome only as "
     "DIAGNOSTIC_ONLY. FORMAL mode needs every record to be a HUMAN reviewer's under the v1 "
     "attestation, and annotations for every case, with a declared choice for every POSITIVE "
-    "case, frozen before any output by a v2 run manifest that records their digest (no such "
-    "manifest exists until a v2 run is separately authorized, so no formal claim is possible "
-    "before then); a POSITIVE case without a declared central outcome never passes G1. "
-    "PRELIMINARY_GO there still only "
+    "case; in this version FORMAL is refused in every case (fail closed) because no "
+    "authenticated v2 run evidence path binding authorization, manifest, report, scored "
+    "responses and assessment exists; only a separately authorized v2 run may add one. A "
+    "POSITIVE case without a declared central outcome never passes G1. PRELIMINARY_GO in a "
+    "future FORMAL assessment would still only "
     "supports considering one provisional, unpersisted concept-presentation design for separate "
     "authorization, never production activation.")
 SEMANTIC_BASIS = ("Pointer checks verify only that each cited quotation exists at its place in the "
@@ -900,27 +901,17 @@ def annotations_digest(annotations):
     return _sha(annotations["cases"])
 
 
-def check_formal_freeze(annotations, run_report, report_sha256, authorized_manifest_sha256):
-    """FORMAL needs proof that the annotations existed before any output, through the
-    existing frozen-manifest mechanism: the assessed report must be exactly the run report
-    (its digest equals the record's `report_sha256`), its manifest must be the one the Owner
-    authorized by SHA-256 before the run (`campaign_authorized`), and that manifest must be a
-    v2 manifest naming this method, the v2 pre-registration and these exact annotations. No
-    such manifest exists yet (no v2 run is authorized), so no formal qualification can be
-    claimed until a separately authorized v2 run records it; `declared_before_outputs` alone
-    is a declaration, not proof."""
-    if not isinstance(run_report, dict) or _digest(run_report) != report_sha256 \
-            or not campaign_authorized(run_report.get("manifest"), authorized_manifest_sha256):
-        raise PackError("FORMAL needs a v2 run manifest that froze these annotations before any "
-                        "output (the authorized manifest of this exact report)")
-    run_manifest = run_report["manifest"]
-    if not isinstance(run_manifest, dict) \
-            or run_manifest.get("evaluation_id") != EVALUATION_ID_V2 \
-            or run_manifest.get("method") != [METHOD_V2_ID, METHOD_V2_VERSION] \
-            or run_manifest.get("preregistration_v2_sha256") != preregistration_v2_digest() \
-            or run_manifest.get("annotations_sha256") != annotations_digest(annotations):
-        raise PackError("FORMAL needs a v2 run manifest that froze these annotations before any "
-                        "output")
+# FORMAL qualification is NOT available in this method version (fail closed). A digest the
+# caller supplies, or a manifest / report the caller builds, proves neither the Owner's
+# authorization nor genuine run provenance. Only a separately authorized v2 run may add an
+# authenticated evidence path - reusing the v1 mechanisms (`campaign_authorized` over an
+# Owner-named manifest SHA-256, `check_run_boundary`, the fsynced journal and
+# `_check_report`) - that binds authorization, manifest, report, scored responses and the
+# assessment, and the annotations digest inside that manifest. Until then every FORMAL record
+# is refused after its reviewer and annotation checks; DIAGNOSTIC is unaffected.
+FORMAL_UNAVAILABLE = ("FORMAL qualification is unavailable: no authenticated v2 run evidence path "
+                      "exists (a separately authorized v2 run must bind authorization, manifest, "
+                      "report, scored responses and assessment)")
 
 
 def check_annotations(annotations, refs, formal=False):
@@ -1044,8 +1035,7 @@ class AssessedLabels(dict):
     update = pop = popitem = clear = setdefault = _read_only
 
 
-def check_assessment_v2(record, scored, replies, refs, annotations, report_sha256, varieties,
-                        run_report=None, authorized_manifest_sha256=None):
+def check_assessment_v2(record, scored, replies, refs, annotations, report_sha256, varieties):
     """Normalised {item_id: label} of ONE v2 assessment record, or PackError. Validates the
     shape, the mode / assessor / attestation boundary, every pointer and quotation, the
     evidence each label needs, the declared lexical guards and the G4 option map. It never
@@ -1075,8 +1065,8 @@ def check_assessment_v2(record, scored, replies, refs, annotations, report_sha25
             raise PackError("FORMAL needs the unchanged v1 attestation")
         if not {_VARIETY_LANGUAGE[v] for v in varieties} <= set(a["languages"]):
             raise PackError("reviewer competence does not cover the pack's languages")
-        cases = check_annotations(annotations, refs, formal=True)
-        check_formal_freeze(annotations, run_report, report_sha256, authorized_manifest_sha256)
+        check_annotations(annotations, refs, formal=True)
+        raise PackError(FORMAL_UNAVAILABLE)                # fail closed: see FORMAL_UNAVAILABLE
     elif record["mode"] == MODE_DIAGNOSTIC:
         if record["attestation"] is not None or record["attested_on"] is not None:
             raise PackError("a DIAGNOSTIC record claims no attestation")
