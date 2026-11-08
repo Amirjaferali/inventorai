@@ -1956,6 +1956,13 @@ def assess_v2_run(repo, authorization_commit, authorization_path, evidence_commi
 # obtained and fixed by the Owner, outside an executor-supplied manifest.
 # Git ancestry alone does not establish real-world publication time.
 # ─────────────────────────────────────────────────────────────────────────────
+_GPG_REFUSED_STATUS = frozenset({
+    "REVKEYSIG", "EXPKEYSIG", "EXPSIG", "BADSIG", "ERRSIG",
+    "KEYREVOKED", "KEYEXPIRED", "NO_PUBKEY"})
+# Colon-listing validity: r revoked, e expired, i invalid, d disabled.
+_GPG_REFUSED_VALIDITY = frozenset({"r", "e", "i", "d"})
+
+
 def inspect_v2_detached_authorization(repo, authorization_commit, authorization_path,
                                       evidence_commit, signature_path, trusted_public_key,
                                       trusted_fingerprint):
@@ -2031,18 +2038,42 @@ def inspect_v2_detached_authorization(repo, authorization_commit, authorization_
             if len(primary_keys) != 1 or not fingerprint_rows \
                     or fingerprint_rows[0] != expected:
                 raise PackError("certificate does not match the independently trusted fingerprint")
+            # Validity (colon field 2) of every key in the certificate, keyed by
+            # the fingerprint row that follows it: the primary and each subkey.
+            key_validity, current = {}, None
+            for row in rows:
+                if row[0] in ("pub", "sub"):
+                    current = row
+                elif row[0] == "fpr" and len(row) > 9 and current is not None:
+                    key_validity[row[9].upper()] = (current[0], current[1])
+                    current = None
             verified_signature = gpg("--status-fd", "1", "--verify",
                                      str(signature_file), str(signed_file))
             status = verified_signature.stdout.decode("ascii", "replace").splitlines()
+            keywords = [line.split()[1] for line in status
+                        if line.startswith("[GNUPG:] ") and len(line.split()) > 1]
             valids = [line.split() for line in status
                       if line.startswith("[GNUPG:] VALIDSIG ")]
-            if verified_signature.returncode != 0 or len(valids) != 1:
+            # GnuPG exits 0 and still emits VALIDSIG for a revoked or expired
+            # key: only a single unqualified GOODSIG + VALIDSIG is accepted.
+            if verified_signature.returncode != 0 or len(valids) != 1 \
+                    or keywords.count("GOODSIG") != 1 \
+                    or keywords.count("VALIDSIG") != 1 \
+                    or set(keywords) & _GPG_REFUSED_STATUS:
                 raise PackError("invalid detached authorization signature")
             parts = valids[0]
             signer = parts[2].upper()
             primary = parts[-1].upper() if len(parts[-1]) == 40 else signer
             if primary != expected or not re.fullmatch(r"[0-9A-F]{40}", signer):
                 raise PackError("signature is not from the trusted key")
+            # The primary key and the key that actually signed (a subkey where
+            # applicable) must belong to this certificate and be neither
+            # revoked, expired, invalid nor disabled.
+            for fingerprint, role in ((expected, "pub"), (signer, None)):
+                found = key_validity.get(fingerprint)
+                if found is None or (role and found[0] != role) \
+                        or found[1] in _GPG_REFUSED_VALIDITY:
+                    raise PackError("the trusted signing key is revoked, expired or invalid")
     except (OSError, subprocess.TimeoutExpired, UnicodeError) as exc:
         raise PackError("offline signature inspection unavailable") from exc
 

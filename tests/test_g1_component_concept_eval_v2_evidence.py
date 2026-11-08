@@ -724,8 +724,14 @@ def test_malformed_pack_content_is_a_refusal_never_a_crash(tmp_path):
 # These test keys are generated in disposable temp directories; no real key
 # or Owner identity is asserted by a synthetic signature.
 # ==========================================================================
-def _signed_chain(chain, tmp_path):
-    """Rebuild the fixture with a detached signature committed WITH authorization."""
+def _signed_chain(chain, tmp_path, variant=None):
+    """Rebuild the fixture with a detached signature committed WITH authorization.
+
+    ``variant`` builds the synthetic key lifecycle: None (one valid primary
+    signing key), "subkey" (a valid signing subkey), "revoked" (signed after
+    the key's revocation from a pre-revocation copy, the certificate carrying
+    the revocation), "expired" (key created and used in the past, now expired)
+    or "expired_subkey" (a valid primary whose expired subkey signed)."""
     import os
     import shutil
     from pathlib import Path
@@ -743,18 +749,43 @@ def _signed_chain(chain, tmp_path):
     env = {**os.environ, "GNUPGHOME": str(home)}
     user = "Synthetic owner for offline test <synthetic@example.invalid>"
 
-    def gpg(*args):
+    def gpg(*args, input=None):
         return subprocess.run(["gpg", "--batch", "--no-tty", "--homedir", str(home),
-                               *args], capture_output=True, env=env, check=True).stdout
+                               *args], input=input, capture_output=True, env=env,
+                              check=True).stdout
 
-    gpg("--pinentry-mode", "loopback", "--passphrase", "", "--quick-generate-key",
-        user, "ed25519", "sign", "0")
-    cert = gpg("--armor", "--export", user)
+    past = ("--faked-system-time", "20200101T000000!")
+    unlocked = ("--pinentry-mode", "loopback", "--passphrase", "")
+    created = past if variant in ("expired", "expired_subkey") else ()
+    usage, expiry = ("cert", "0") if variant in ("subkey", "expired_subkey") \
+        else ("sign", "1y" if variant == "expired" else "0")
+    gpg(*created, *unlocked, "--quick-generate-key", user, "ed25519", usage, expiry)
     listing = gpg("--with-colons", "--fingerprint", "--list-keys").decode("utf-8")
     fingerprint = next(line.split(":")[9] for line in listing.splitlines()
                        if line.startswith("fpr:"))
+    if variant in ("subkey", "expired_subkey"):
+        sub_time = past if variant == "expired_subkey" else ()
+        gpg(*sub_time, *unlocked, "--quick-add-key", fingerprint, "ed25519", "sign",
+            "1y" if variant == "expired_subkey" else "0")
     sigpath = home / "authorization.sig"
-    gpg("--detach-sign", "--output", str(sigpath), str(repo / AUTH_PATH))
+    signing_env = env
+    if variant == "revoked":
+        # Keep a pre-revocation copy, revoke the key, then sign with the copy:
+        # a compromised key used after its Owner revoked it.
+        pre_revocation = tmp_path / "gpg-prerev"  # short: agent socket path limit
+        shutil.copytree(home, pre_revocation, ignore=shutil.ignore_patterns("S.*"))
+        revocation = (home / "openpgp-revocs.d" / (fingerprint + ".rev")).read_bytes()
+        gpg("--import", input=revocation.replace(b":-----BEGIN", b"-----BEGIN"))
+        signing_env = {**os.environ, "GNUPGHOME": str(pre_revocation)}
+        subprocess.run(["gpg", "--batch", "--no-tty", "--homedir", str(pre_revocation),
+                        *unlocked, "--detach-sign", "--output", str(sigpath),
+                        str(repo / AUTH_PATH)], capture_output=True,
+                       env=signing_env, check=True)
+    else:
+        signing_time = past if variant in ("expired", "expired_subkey") else ()
+        gpg(*signing_time, *unlocked, "--detach-sign", "--output", str(sigpath),
+            str(repo / AUTH_PATH))
+    cert = gpg("--armor", "--export", user)
     signature_path = "authorizations/g1_v2_run.sig"
     _write(repo, signature_path, sigpath.read_bytes())
     auth = _commit(repo, "synthetic signed authorization")
@@ -858,3 +889,28 @@ def test_signed_inspection_has_no_provider_or_private_key_requirement(chain, tmp
     import shutil
     shutil.rmtree(tmp_path / "synthetic-gpg-private")
     assert _inspect_signed(s)["signature_valid"] is True
+
+
+def test_signature_from_a_valid_signing_subkey_is_accepted(chain, tmp_path):
+    s = _signed_chain(chain, tmp_path, variant="subkey")
+    result = _inspect_signed(s)
+    assert result["signature_valid"] is True
+    assert result["trusted_primary_fingerprint"] == s["fingerprint"].upper()
+    assert result["signer_fingerprint"] != s["fingerprint"].upper()
+    assert result["owner_identity"] == cc.OWNER_IDENTITY_NOT_AUTHENTICATED
+
+
+@pytest.mark.parametrize("variant", ["revoked", "expired", "expired_subkey"])
+def test_signature_from_a_revoked_or_expired_key_is_refused(chain, tmp_path, variant):
+    # F1 (PR #943 security review): GnuPG exits 0 and emits VALIDSIG for these
+    # signatures, with the right fingerprint; they must still be refused.
+    s = _signed_chain(chain, tmp_path, variant=variant)
+    with pytest.raises(cc.PackError, match="invalid detached authorization signature"
+                                           "|revoked, expired or invalid"):
+        _inspect_signed(s)
+
+
+def test_refused_gpg_status_and_validity_sets_are_fail_closed():
+    assert {"REVKEYSIG", "EXPKEYSIG", "EXPSIG", "BADSIG", "ERRSIG", "KEYREVOKED",
+            "KEYEXPIRED", "NO_PUBKEY"} <= cc._GPG_REFUSED_STATUS
+    assert {"r", "e"} <= cc._GPG_REFUSED_VALIDITY
