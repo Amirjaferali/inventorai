@@ -634,6 +634,26 @@ UI_STRINGS = {
     "UI_S15_OFFER_NOTE": {
         "en": "Fixed mechanical parts, such as an enclosure or mount, count too: a circuit board can be the electronic part and its enclosure the mechanical part. Tick this only if both types of parts really work together in your invention. This declaration is available only at project creation; adding it later currently requires a new project. Some part-specific engineering steps require this declaration and further information.",
         "ar": "تُعدّ العلبة أو قاعدة التثبيت جزءًا ميكانيكيًا ولو كانت ثابتة؛ فقد تكون لوحة الدارة الجزء الإلكتروني، والعلبة المحيطة بها الجزء الميكانيكي. ضع علامة في هذا المربع فقط إذا كانت أجزاء من النوعين تعمل معًا فعلًا في اختراعك. لا يتاح هذا التصريح حاليًا إلا عند إنشاء المشروع؛ وإضافته لاحقًا تتطلب مشروعًا جديدًا. بعض الخطوات الهندسية الخاصة بالأجزاء تتطلب هذا التصريح ومعلومات إضافية."},
+    # G1-INTEGRATED-JOURNEY-RECOVERY-01: the in-session action that starts a
+    # SEPARATE new integrated project from the original idea (nothing copied).
+    "UI_IJR_TITLE": {
+        "en": "Does your invention combine mechanical and electrical/electronic parts?",
+        "ar": "هل يجمع اختراعك أجزاءً ميكانيكية وأجزاءً كهربائية / إلكترونية؟"},
+    "UI_IJR_NOTE": {
+        "en": "This project was started without declaring an integrated invention, and that cannot be changed for this project. If an electronic part and a mechanical part really work together in your invention (for example a circuit board and the enclosure around it), you can start a separate, new integrated project from your original idea. The new project has its own identity and starts fresh: none of the answers, constraints, components or other work recorded here are copied to it. This project and all its history stay exactly as they are.",
+        "ar": "بدأ هذا المشروع دون التصريح بأنه اختراع متكامل، ولا يمكن تغيير ذلك في هذا المشروع. إذا كان في اختراعك جزء إلكتروني وجزء ميكانيكي يعملان معًا فعلًا (مثل لوحة دارة والعلبة المحيطة بها)، يمكنك بدء مشروع متكامل جديد ومنفصل من فكرتك الأصلية. للمشروع الجديد هويته الخاصة ويبدأ من جديد: لا يُنسخ إليه أيٌّ من الإجابات أو القيود أو المكوّنات أو أي عمل آخر مسجّل هنا. ويبقى هذا المشروع وكل سجلّه كما هو تمامًا."},
+    "UI_IJR_STEP_NOTE": {
+        "en": "Nothing is created yet. You will first see the integrated-invention questions with your original idea, name the two parts yourself and choose where to start. A new project is created only if you answer Yes and complete them.",
+        "ar": "لن يُنشأ شيء بعد. سترى أولًا أسئلة الاختراع المتكامل مع فكرتك الأصلية، وتسمّي الجزأين بنفسك وتختار من أين تبدأ. لا يُنشأ مشروع جديد إلا إذا أجبت بنعم وأكملتها."},
+    "UI_IJR_ACK": {
+        "en": "I understand this starts a separate new project and does not change or copy this one.",
+        "ar": "أفهم أن هذا يبدأ مشروعًا جديدًا منفصلًا، ولا يغيّر هذا المشروع ولا ينسخه."},
+    "UI_IJR_BUTTON": {
+        "en": "Start a separate integrated project from my original idea",
+        "ar": "ابدأ مشروعًا متكاملًا منفصلًا من فكرتي الأصلية"},
+    "UI_IJR_UNAVAILABLE": {
+        "en": "A separate integrated project cannot be started from this project now. Nothing was created and this project is unchanged.",
+        "ar": "لا يمكن الآن بدء مشروع متكامل منفصل من هذا المشروع. لم يُنشأ أي شيء ولم يتغيّر هذا المشروع."},
     "UI_S15_OFFER_LABEL": {
         "en": "My invention includes mechanical and electrical/electronic parts that work together.",
         "ar": "يتضمن اختراعي أجزاءً ميكانيكية وأجزاءً كهربائية / إلكترونية تعمل معًا.",

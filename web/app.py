@@ -5758,6 +5758,15 @@ def start():
     idea_text = request.form.get("idea", "").strip()
     if not idea_text:
         return redirect(url_for("index"))
+    return _start_admission(idea_text)
+
+
+def _start_admission(idea_text, integrated_declared=False):
+    """The /start admission body (extracted unchanged for
+    G1-INTEGRATED-JOURNEY-RECOVERY-01). ``integrated_declared`` is True only for
+    the in-session recovery action, which stands for the start page's own
+    integrated-invention declaration; every gate below still applies, and
+    nothing is created before the existing complete YES confirmation."""
     # P10-SEC2: bounded free-text hardening — explicit rejection (400, this
     # surface's existing form-error convention), never truncation; runs before
     # ANY classification, session creation, or durable write. The legacy
@@ -5788,7 +5797,8 @@ def start():
     # admissible ONLY while BOTH composed part domains are activated by the
     # canonical policy; otherwise it is refused here — never silently turned
     # into an ordinary single-domain admission.
-    integrated_requested = _integrated_entry_requested(request.form)
+    integrated_requested = (integrated_declared
+                            or _integrated_entry_requested(request.form))
     if integrated_requested and not _composition_domains_activated(activated):
         return _render_start_page(error=_unsupported_domain_message(activated, lang))
     sole = activated[0] if len(activated) == 1 else None
@@ -5911,6 +5921,46 @@ def start():
     # AND explicitly confirmed ACTIVATED domain (§4.F — no cross-domain
     # mislabeling).
     return _create_project_session(idea_text, target)
+
+
+# G1-INTEGRATED-JOURNEY-RECOVERY-01: an inventor whose project was started as
+# an ordinary (single-focus) project may start a SEPARATE, NEW integrated
+# project from the exact durable original statement. The composition of the
+# existing project stays immutable: nothing is changed, migrated or copied, and
+# the new project is created only by the existing /start integrated flow after
+# its complete YES confirmation. No domain, part, focus or method is chosen
+# here; the idea never travels in a URL and nothing leaves the server.
+def _integrated_restart_seed(sid):
+    """The exact durable original statement of ``sid`` when the recovery action
+    may be offered, else None: both composed part domains activated, a durable
+    project with NO declared parts, and a readable non-empty seed. The caller
+    MUST first establish project authorization. Fails closed."""
+    try:
+        if not _composition_domains_activated(_activated_specialist_domains()):
+            return None
+        exists, _owner = _get_store().load_owner(sid)
+        if not exists or _get_store().load_project_subsystems(sid):
+            return None
+    except Exception:
+        return None
+    return _original_idea_text(sid)
+
+
+@app.route("/session/<sid>/integrated-restart", methods=["POST"])
+def integrated_restart(sid):
+    """Open the EXISTING integrated-invention clarification with the project's
+    original statement. Creates nothing: the clarification page then submits to
+    /start, whose gates and confirmation decide whether a new project exists."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if request.form.get("integrated_restart_ack") != "yes":
+        # The inventor's explicit acknowledgement is required; nothing changes.
+        return redirect(url_for("show_session", sid=sid) + "#integrated-restart")
+    seed = _integrated_restart_seed(sid)
+    if seed is None:
+        return _render_start_page(
+            error=ui_text.text("UI_IJR_UNAVAILABLE", _current_ui_lang()), status=409)
+    return _start_admission(seed.strip(), integrated_declared=True)
 
 
 def _create_project_session(idea_text, target, subsystems=()):
@@ -7343,6 +7393,10 @@ def show_session(sid):
         # Stage 15 Slice 1: the bounded integrated-invention scope (None for
         # every ordinary project).
         integrated_scope=_scope_view,
+        # G1-INTEGRATED-JOURNEY-RECOVERY-01: the separate-new-project action,
+        # offered only for a project with no declared parts and a readable seed.
+        integrated_restart=(not _scope_view
+                            and _integrated_restart_seed(sid) is not None),
         # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A): the
         # inventor's statement about the Mechanical part, read from durable
         # truth; presentation only.

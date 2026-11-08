@@ -1270,6 +1270,23 @@ body{overflow-wrap:anywhere}
 {% endif %}
 
 
+{#- G1-INTEGRATED-JOURNEY-RECOVERY-01: a project started without the integrated
+    declaration keeps that composition; the inventor may instead start a SEPARATE
+    new integrated project from the original idea through the existing start flow.
+    Secondary and optional: never the page's primary action. -#}
+{% if integrated_restart is defined and integrated_restart %}
+<section class="integrated-restart" id="integrated-restart" data-integrated-restart aria-labelledby="integrated-restart-title" style="border:1px solid #ddd;background:#fafafa;border-radius:4px;padding:10px 14px;margin:12px 0">
+  <h2 id="integrated-restart-title" style="font-size:15px;margin:0 0 6px 0">{{ t('UI_IJR_TITLE') }}</h2>
+  <p style="margin:0 0 6px 0;font-size:14px" data-ijr-note>{{ t('UI_IJR_NOTE') }}</p>
+  <p style="margin:0 0 8px 0;font-size:13px;color:#555" data-ijr-step>{{ t('UI_IJR_STEP_NOTE') }}</p>
+  <form method="POST" action="{{ url_for('integrated_restart', sid=sid) }}" data-ijr-form>
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <label style="display:block;font-size:13px;margin:0 0 8px 0"><input type="checkbox" name="integrated_restart_ack" value="yes" required data-ijr-ack> {{ t('UI_IJR_ACK') }}</label>
+    <button type="submit" data-ijr-submit>{{ t('UI_IJR_BUTTON') }}</button>
+  </form>
+</section>
+{% endif %}
+
 {# RVR-5 (Wave-1, T1-B / OD-PDVG-02(a)): rendered reachability for the
    EXISTING governed correction route. Display + form only - the route body,
    replay, supersession, token and idempotency semantics are byte-unchanged
