@@ -326,3 +326,106 @@ def test_r14_copy_is_bilingual_and_claims_nothing():
     assert "stay exactly as they are" in note
     for word in ("compatib", "validat", "safe", "recommend"):
         assert word not in " ".join(ui_text.text(k, "en") for k in NEW_KEYS).lower()
+
+
+
+# ==========================================================================
+# G1 product proof: ONE continuous recovery-to-CAD correction/withdrawal
+# journey. Reuses the already-tested #944, #919, clearance and CAD owners;
+# this is not a new method, engineering admission or product capability.
+# ==========================================================================
+def test_r15_one_recovered_idea_reaches_cad_then_corrects_and_withdraws(client):
+    import json
+
+    from tests.test_g1_integrated_engineering_continuation import (
+        _to_participation, _participate, _ifc, _links, _evidence)
+    from tests.test_board_enclosure_planar_clearance import (
+        _save as save_clearance, _page as clearance_page, _fields as form_fields)
+    from tests.test_board_enclosure_cad_download import (
+        _link as cad_link, _bundle as cad_bundle, _check_geometry)
+
+    original = _single(client)
+    # This is a real original project with its own recorded history, not a
+    # freshly assembled synthetic state preloaded for the downstream tests.
+    _answer(client, original, MECH_ANSWER)
+    original_rows = _project_rows(original)
+    count_before = _project_count()
+
+    clarification = _restart(client, original)
+    assert clarification.status_code == 200
+    full_seed = _hidden_idea(clarification.get_data(as_text=True))
+    assert full_seed == BOARD_IDEA and len(full_seed) > 180
+    project = _created(_compose(client, full_seed, focus=MECH,
+                                origin_project=original, **PARTS))
+    assert project != original and _record_count(project) == 0
+    assert _store().load_reconstruction_inputs(project)["seed_idea_text"] == BOARD_IDEA
+    assert _project_count() == count_before + 1
+    assert _project_rows(original) == original_rows
+
+    # The actual governed-answer and nonfocused-part flows precede the
+    # existing #919 integrated engineering continuation.
+    for answer in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+        _answer(client, project, answer)
+    assert _save_part(client, project, _part(project, ELEC),
+                      {q: "My own words about it." for q in _ids(ELEC)}).status_code == 200
+    assert _kind(_raw(client, project)) == "declare_interaction"
+    before_engineering = _evidence(project)
+
+    _to_participation(client, project)
+    ids = _participate(client, project)
+    interface_id = _ifc(project)
+    expected_clearance = f"/session/{project}/interface-clearance/{interface_id}"
+    assert _links(_raw(client, project)) == [expected_clearance]
+
+    # First: a NOT_MET evaluation and a CAD snapshot containing exactly
+    # the inventor's declared dimensions, not a resized "solution".
+    saved = save_clearance(client, project, interface_id, ids)
+    assert saved.status_code == 200
+    old_url = cad_link(saved.get_data(as_text=True))
+    assert old_url
+    old_files, _ = cad_bundle(client.get(old_url))
+    old = json.loads(old_files["companion.json"])
+    assert old["evaluation"]["outcome"] == "NOT_MET"
+    assert old["binding"]["project_id"] == project
+    assert old["binding"]["interface_id"] == interface_id
+    assert old["binding"]["declaration_revision_no"] == 0
+    assert old["declared_values"]["region_x"] == "86"
+    assert _check_geometry(old_files["geometry.dxf"], old["declared_values"]) == 0
+
+    # Correcting ONLY the declared region creates a new revision, a
+    # different result and a new bound CAD file. The old URL fails stale.
+    corrected = save_clearance(client, project, interface_id, ids,
+                               values=("84", "50", "88", "56", "2"))
+    assert corrected.status_code == 200
+    new_url = cad_link(corrected.get_data(as_text=True))
+    assert new_url and new_url != old_url
+    new_files, _ = cad_bundle(client.get(new_url))
+    new = json.loads(new_files["companion.json"])
+    assert new["evaluation"]["outcome"] == "MET"
+    assert new["binding"]["declaration_revision_no"] == 1
+    assert new["declared_values"]["region_x"] == "88"
+    assert new["binding"]["snapshot_digest"] != old["binding"]["snapshot_digest"]
+    assert _check_geometry(new_files["geometry.dxf"], new["declared_values"]) == 0
+    assert client.get(old_url).status_code == 409
+    assert 'data-pcc-outcome="MET"' in client.get(
+        f"/session/{project}/deliverable").get_data(as_text=True)
+
+    # A separate, explicitly confirmed withdrawal removes the CURRENT
+    # evaluation and CAD eligibility; even the newest download URL is stale.
+    page = clearance_page(client, project, interface_id).get_data(as_text=True)
+    withdrawal = form_fields(page, form="data-pcc-withdraw-form")
+    withdrawal["withdraw_confirm"] = "yes"
+    response = client.post(
+        f"/session/{project}/interface-clearance/{interface_id}/withdraw",
+        data=withdrawal)
+    assert response.status_code == 200
+    assert client.get(new_url).status_code == 409
+    assert cad_link(clearance_page(client, project, interface_id)
+                    .get_data(as_text=True)) is None
+    assert _store().load_planar_clearance(project)["ledger"].active_for(interface_id) is None
+
+    # The entire real HTTP journey preserves the original project, and
+    # engineering declarations never manufacture governed-question credit.
+    assert _project_rows(original) == original_rows
+    assert _project_count() == count_before + 1
+    assert _evidence(project) == before_engineering
