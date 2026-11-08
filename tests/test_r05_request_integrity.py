@@ -47,6 +47,9 @@ MUTATIONS = (
     # note for one current declared component (record / replace / clear).
     "/session/<sid>/component-prototype-need",
     "/session/<sid>/part-temperature-change",
+    # G1-INTEGRATED-JOURNEY-RECOVERY-01: open the existing integrated-invention
+    # clarification from the project's original idea (creates nothing itself).
+    "/session/<sid>/integrated-restart",
     # COMPONENT-INTERFACE-PARTICIPATION-01: the components the inventor says
     # take part in one declared interaction (current value; replace / clear).
     "/session/<sid>/interface-participation",
