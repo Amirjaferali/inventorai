@@ -441,7 +441,7 @@ body{overflow-wrap:anywhere}
     {% endif %}
     {% if rrc %}
     <div class="journey-note" data-rrc>
-      <p style="margin:0 0 4px 0" data-rrc-note>{{ t('UI_RRC_NOTE') }}</p>
+      <p style="margin:0 0 4px 0" data-rrc-note>{{ t('UI_RRC_NOTE' if routed_recovery.gap_type == 'PHYSICAL_FEASIBILITY' else 'UI_RRC_NOTE_POINT') }}</p>
       <a data-rrc-link data-rrc-kind="{{ rrc_kind }}" href="{{ rrc[0] }}">{{ t(rrc[1]) }}</a>
     </div>
     {% endif %}
@@ -450,7 +450,9 @@ body{overflow-wrap:anywhere}
   {#- INTEGRATED-JOURNEY-GUIDANCE-01: after every existing primary action, an
       integrated invention is guided to ONE optional inventor-owned step across
       its recorded parts and declared interactions (route-derived; nothing is
-      inferred, assessed or made mandatory). The handoff stays one click away. -#}
+      inferred, assessed or made mandatory). The handoff stays one click away.
+      G1-ROUTED-RECOVERY-CONTINUATION-01 also offers the same step as a
+      secondary link inside the routed-recovery branch above. -#}
   {% elif integrated_guidance and integrated_guidance.kind == 'part_questions' %}
     <p class="journey-note" data-ijg-note>{{ t('UI_IJG_PART_NOTE_MECH' if integrated_guidance.part == 'mechanical' else 'UI_IJG_PART_NOTE_ELEC') }}</p>
     <a class="journey-primary" data-primary-action data-ijg-action="part_questions" href="{{ url_for('part_questions', sid=sid, part=integrated_guidance.part_id) }}">{{ t('UI_IJG_PART_CTA_MECH' if integrated_guidance.part == 'mechanical' else 'UI_IJG_PART_CTA_ELEC') }}</a>

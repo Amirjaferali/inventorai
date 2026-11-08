@@ -145,26 +145,84 @@ def test_05_no_link_while_a_governed_question_is_served(client):
     assert "data-rrc" not in page
 
 
-def test_06_single_domain_routed_recovery_gets_no_link(client):
+@pytest.mark.parametrize("forced", [None, "declare_interaction"])
+def test_06_single_domain_routed_recovery_gets_no_link(client, monkeypatch, forced):
     sid = _start(client)
     for value in (MECH_ANSWER, MECH_ANSWER, WEAK, BA_1, BA_2):
         _answer(client, sid, value)
+    if forced:   # even a forced kind finds no interaction form on a single-domain page
+        monkeypatch.setattr(appmod, "_integrated_journey_guidance",
+                            lambda *_a, **_k: {"kind": forced, "clearance": []})
     page = _raw(client, sid)
     assert _href(page) == "#routed-recovery"
     assert "data-rrc" not in page
 
 
 @pytest.mark.parametrize("derived", [None, {"kind": None, "clearance": []},
-                                     {"kind": "declare_interaction", "clearance": []},
                                      {"kind": "unknown_kind", "clearance": []}])
 def test_07_nothing_usable_from_the_owner_means_no_link(client, monkeypatch, derived):
-    sid = _start(client)                                 # no interaction or component forms here
-    for value in (MECH_ANSWER, MECH_ANSWER, WEAK, BA_1, BA_2):
-        _answer(client, sid, value)
+    sid = _integrated(client)                            # the integrated forms ARE on this page
+    _to_routed_recovery(client, sid)
     monkeypatch.setattr(appmod, "_integrated_journey_guidance", lambda *_a, **_k: derived)
     page = _raw(client, sid)
     assert _href(page) == "#routed-recovery"
     assert "data-rrc" not in page
+
+
+def _primary_branch_href(sid, guidance, monkeypatch, client):
+    """What the step's OWN primary branch renders for the same derived step."""
+    with monkeypatch.context() as m:
+        m.setattr(appmod, "_integrated_journey_guidance", lambda *_a, **_k: guidance)
+        m.setattr(appmod, "_routed_recovery_context", lambda *_a, **_k: None)
+        page = _raw(client, sid)
+    kind = re.search(r'data-ijg-action="([^"]+)"', _primary(page)).group(1)
+    return kind, _href(page)
+
+
+@pytest.mark.parametrize("kind", ["part_questions", "declare_interaction", "component_inventory",
+                                  "participation", "interface_preparation"])
+def test_07b_each_secondary_target_equals_its_own_primary_branch(client, monkeypatch, kind):
+    sid = _integrated(client)
+    _to_routed_recovery(client, sid)
+    real = appmod._integrated_journey_guidance(sid, appmod._integrated_scope_context(_live(sid)))
+    assert real["kind"] == "part_questions"
+    guidance = dict(real) if kind == "part_questions" else {"kind": kind, "clearance": []}
+    with monkeypatch.context() as m:
+        m.setattr(appmod, "_integrated_journey_guidance", lambda *_a, **_k: guidance)
+        page = _raw(client, sid)
+    assert _href(page) == "#routed-recovery"
+    [(secondary_kind, secondary_href)] = _links(page)
+    assert (secondary_kind, _html.unescape(secondary_href)) == _primary_branch_href(
+        sid, guidance, monkeypatch, client)
+
+
+def test_07c_no_component_link_when_the_inventory_cannot_take_another(client, monkeypatch):
+    sid = _integrated(client)
+    _to_routed_recovery(client, sid)
+    original = appmod._component_inventory_context
+
+    def full(*a, **k):
+        view = original(*a, **k)
+        return dict(view, can_add=False) if view else view
+    monkeypatch.setattr(appmod, "_component_inventory_context", full)
+    monkeypatch.setattr(appmod, "_integrated_journey_guidance",
+                        lambda *_a, **_k: {"kind": "component_inventory", "clearance": []})
+    page = _raw(client, sid)
+    assert _href(page) == "#routed-recovery" and "data-rrc" not in page
+
+
+def test_07d_another_routed_point_gets_the_neutral_note(client, monkeypatch):
+    sid = _integrated(client)
+    _to_routed_recovery(client, sid)
+    original = appmod._routed_recovery_context
+
+    def other_point(*a, **k):
+        view = original(*a, **k)
+        return dict(view, gap_type=BA) if view else view
+    monkeypatch.setattr(appmod, "_routed_recovery_context", other_point)
+    page = _html.unescape(_raw(client, sid))
+    assert ui_text.text("UI_RRC_NOTE_POINT", "en") in page
+    assert ui_text.text("UI_RRC_NOTE", "en") not in page
 
 
 def test_08_an_unreadable_composition_keeps_the_routed_recovery_alone(client, monkeypatch):
@@ -196,15 +254,25 @@ def test_09_a_stranger_or_anonymous_client_cannot_follow_the_owners_link(client)
 # ==========================================================================
 # 6. EN / AR
 # ==========================================================================
-def test_10_copy_is_bilingual_and_states_the_boundary():
-    en = ui_text.text("UI_RRC_NOTE", "en")
-    ar = ui_text.text("UI_RRC_NOTE", "ar")
+@pytest.mark.parametrize("key", ["UI_RRC_NOTE", "UI_RRC_NOTE_POINT"])
+def test_10_copy_is_bilingual_and_states_the_boundary(key):
+    en = ui_text.text(key, "en")
+    ar = ui_text.text(key, "ar")
     assert en and ar and en != ar
-    assert "does not answer or resolve" in en and "Optional" in en
-    assert "none of it shows that the idea is ready" in en
-    assert "لا يجيب" in ar and "ولا يحلّها" in ar and "اختياري" in ar and "جاهزة" in ar
-    for word in ("validat", "verified", "compatib", "safe", "recommend"):
+    assert en.startswith("Optional") and "does not answer or resolve the open" in en
+    assert "still needs specialist input" in en
+    assert "only makes it possible to accept that point as a known, unresolved risk" in en
+    assert "within its own stated limits and evidence" in en
+    assert en.endswith("none of it shows that the idea is ready.")
+    assert ar.startswith("اختياري") and "لا يجيب" in ar and "ولا يحلّها" in ar
+    assert "ما زالت تحتاج إلى مدخلات مختص" in ar and "كمخاطرة معروفة غير محلولة" in ar
+    assert "ضمن حدوده المعلنة وأدلّته" in ar and ar.endswith("أن الفكرة جاهزة.")
+    for word in ("validat", "verified", "compatib", "safe", "recommend", "corrected answer"):
         assert word not in en.lower()
+    for word in ("مُتحقَّق", "متحقق منه", "متوافق", "آمن", "معتمد", "نوصي", "الأدلة المتاحة"):
+        assert word not in ar
+    assert ("feasibility" in en) == (key == "UI_RRC_NOTE")
+    assert ("الجدوى" in ar) == (key == "UI_RRC_NOTE")
 
 
 def test_11_arabic_page_is_rtl_with_the_arabic_link(client):
