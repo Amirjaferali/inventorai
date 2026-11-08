@@ -1277,6 +1277,7 @@ body{overflow-wrap:anywhere}
 {% if integrated_restart is defined and integrated_restart %}
 <section class="integrated-restart" id="integrated-restart" data-integrated-restart aria-labelledby="integrated-restart-title" style="border:1px solid #ddd;background:#fafafa;border-radius:4px;padding:10px 14px;margin:12px 0">
   <h2 id="integrated-restart-title" style="font-size:15px;margin:0 0 6px 0">{{ t('UI_IJR_TITLE') }}</h2>
+  {% if integrated_restart_declined is defined and integrated_restart_declined %}<p role="status" data-ijr-declined style="margin:0 0 6px 0;font-size:14px;color:#1b5e20">{{ t('UI_IJR_DECLINED') }}</p>{% endif %}
   <p style="margin:0 0 6px 0;font-size:14px" data-ijr-note>{{ t('UI_IJR_NOTE') }}</p>
   <p style="margin:0 0 8px 0;font-size:13px;color:#555" data-ijr-step>{{ t('UI_IJR_STEP_NOTE') }}</p>
   <form method="POST" action="{{ url_for('integrated_restart', sid=sid) }}" data-ijr-form>

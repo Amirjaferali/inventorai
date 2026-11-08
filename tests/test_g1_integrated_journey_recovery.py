@@ -41,7 +41,7 @@ BOARD_IDEA = ("I want to develop a small electronic device with a circuit board 
               "yet. " + "The board reads a temperature sensor and lights a small LED when it gets warm. " * 3
               ).strip()
 NEW_KEYS = ("UI_IJR_TITLE", "UI_IJR_NOTE", "UI_IJR_STEP_NOTE", "UI_IJR_ACK", "UI_IJR_BUTTON",
-            "UI_IJR_UNAVAILABLE")
+            "UI_IJR_UNAVAILABLE", "UI_IJR_ORIGIN_NOTE", "UI_IJR_BACK", "UI_IJR_DECLINED")
 
 
 def _single(c, idea=BOARD_IDEA, lang=None):
@@ -119,6 +119,10 @@ def test_r02_recovery_opens_the_existing_clarification_with_the_full_seed_and_wr
     assert re.search(r'name="composition_answer" value="(yes|no|not_sure)" required(?! checked)', page)
     assert "checked" not in re.search(r'<form method="POST" action="/start" class="composition-form"'
                                       r'.*?</form>', page, re.S).group(0)
+    assert f'name="origin_project" value="{sid}"' in page
+    note = re.search(r'<p data-ijr-origin-note[^>]*>(.*?)</p>', page, re.S).group(1)
+    assert ui_text.text("UI_IJR_ORIGIN_NOTE", "en") in _html.unescape(note)
+    assert f'<a data-ijr-back href="/session/{sid}">' in note
     assert _project_count() == before_count and _project_rows(sid) == before_rows
 
 
@@ -128,7 +132,7 @@ def test_r03_yes_creates_a_separate_project_with_the_full_idea_and_declared_part
     before_rows, before_records = _project_rows(sid), _record_count(sid)
     assert before_records >= 1
     idea = _hidden_idea(_restart(client, sid).get_data(as_text=True))
-    new = _created(_compose(client, idea, focus=MECH, **PARTS))
+    new = _created(_compose(client, idea, focus=MECH, origin_project=sid, **PARTS))
     assert new != sid
     inputs = _store().load_reconstruction_inputs(new)
     assert inputs["seed_idea_text"] == BOARD_IDEA and inputs["confirmed_domain"] == MECH
@@ -231,17 +235,62 @@ def test_r10_an_unsupported_classification_keeps_the_existing_refusal(client, mo
     assert _project_count() == before
 
 
-@pytest.mark.parametrize("answer", ["no", "not_sure", None])
-def test_r11_no_not_sure_or_a_missing_answer_creates_nothing(client, answer):
+@pytest.mark.parametrize("answer", ["no", "not_sure"])
+def test_r11_no_or_not_sure_returns_to_the_unchanged_original_project(client, answer):
     sid = _single(client)
     idea = _hidden_idea(_restart(client, sid).get_data(as_text=True))
     before, rows = _project_count(), _project_rows(sid)
-    resp = _compose(client, idea, answer=answer, focus=MECH, **PARTS)
-    assert resp.status_code in (200, 400)
+    resp = _compose(client, idea, answer=answer, focus=MECH, origin_project=sid, **PARTS)
+    assert resp.status_code == 302
+    assert resp.headers["Location"].endswith(f"/session/{sid}?ijr=declined#integrated-restart")
     assert _project_count() == before and _project_rows(sid) == rows
-    if answer is not None:
-        key = "UI_S15_GUIDE_NO" if answer == "no" else "UI_S15_GUIDE_NOT_SURE"
-        assert ui_text.text(key, "en") in _html.unescape(resp.get_data(as_text=True))
+    page = client.get(f"/session/{sid}?ijr=declined").get_data(as_text=True)
+    status = re.search(r'<p role="status" data-ijr-declined[^>]*>(.*?)</p>', page, re.S)
+    assert status and _html.unescape(status.group(1)) == ui_text.text("UI_IJR_DECLINED", "en")
+    assert "data-ijr-declined" not in _raw(client, sid)    # only on that return
+
+
+def test_r11b_a_missing_answer_keeps_the_origin_and_creates_nothing(client):
+    sid = _single(client)
+    idea = _hidden_idea(_restart(client, sid).get_data(as_text=True))
+    before = _project_count()
+    resp = _compose(client, idea, answer=None, focus=MECH, origin_project=sid, **PARTS)
+    page = resp.get_data(as_text=True)
+    assert resp.status_code == 400 and f'name="origin_project" value="{sid}"' in page
+    assert f'data-ijr-back href="/session/{sid}"' in page and _project_count() == before
+
+
+@pytest.mark.parametrize("forged", ["unknown", "foreign", "malformed", "repeated"])
+def test_r11c_a_forged_origin_is_ignored_and_never_redirected_to(client, forged):
+    sid = _single(client)
+    idea = _hidden_idea(_restart(client, sid).get_data(as_text=True))
+    if forged == "unknown":
+        origin = "00000000-0000-4000-8000-000000000000"
+    elif forged == "foreign":
+        owner, _aid = _client_for(f"ijr-forged-{forged}@example.com")
+        origin = _single(owner)
+    elif forged == "malformed":
+        origin = sid.upper()
+    else:
+        origin = [sid, sid]
+    before = _project_count()
+    data = {"idea": idea, "composition_step": "1", "integrated_invention": "yes",
+            "composition_answer": "no", "initial_focus": MECH, "origin_project": origin}
+    data.update(PARTS)
+    resp = client.post("/start", data=data, follow_redirects=False)
+    assert resp.status_code == 200                          # the ordinary NO guidance
+    assert ui_text.text("UI_S15_GUIDE_NO", "en") in _html.unescape(resp.get_data(as_text=True))
+    assert _project_count() == before
+
+
+def test_r11d_the_ordinary_start_flow_is_unchanged(client):
+    before = _project_count()
+    resp = _compose(client, BOARD_IDEA, answer="no", focus=MECH, **PARTS)
+    assert resp.status_code == 200 and _project_count() == before
+    assert "data-ijr-origin-note" not in resp.get_data(as_text=True)
+    page = client.post("/start", data={"idea": BOARD_IDEA, "integrated_invention": "yes"}
+                       ).get_data(as_text=True)
+    assert "data-composition-form" in page and 'name="origin_project"' not in page
 
 
 def test_r12_a_missing_part_or_focus_creates_nothing(client):

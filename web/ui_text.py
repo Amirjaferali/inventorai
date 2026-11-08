@@ -651,6 +651,13 @@ UI_STRINGS = {
     "UI_IJR_BUTTON": {
         "en": "Start a separate integrated project from my original idea",
         "ar": "ابدأ مشروعًا متكاملًا منفصلًا من فكرتي الأصلية"},
+    "UI_IJR_ORIGIN_NOTE": {
+        "en": "You came here from an existing project. Answering Yes below creates a separate, new project; your existing project stays unchanged either way.",
+        "ar": "وصلت إلى هنا من مشروع قائم. الإجابة بنعم أدناه تُنشئ مشروعًا جديدًا منفصلًا، ويبقى مشروعك القائم دون تغيير في كل الأحوال."},
+    "UI_IJR_BACK": {"en": "Back to my project", "ar": "العودة إلى مشروعي"},
+    "UI_IJR_DECLINED": {
+        "en": "No new project was created. This project is unchanged.",
+        "ar": "لم يُنشأ أي مشروع جديد. ولم يتغيّر هذا المشروع."},
     "UI_IJR_UNAVAILABLE": {
         "en": "A separate integrated project cannot be started from this project now. Nothing was created and this project is unchanged.",
         "ar": "لا يمكن الآن بدء مشروع متكامل منفصل من هذا المشروع. لم يُنشأ أي شيء ولم يتغيّر هذا المشروع."},

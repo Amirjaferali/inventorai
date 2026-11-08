@@ -35,7 +35,14 @@
   <input type="hidden" name="composition_step" value="1">
   <input type="hidden" name="integrated_invention" value="yes">
   <input type="hidden" name="idea" value="{{ start_composition['idea'] }}">
+  {%- if start_composition['origin'] %}
+  <input type="hidden" name="origin_project" value="{{ start_composition['origin'] }}">
+  {%- endif %}
   <h2>{{ t('UI_S15_TITLE') }}</h2>
+  {%- if start_composition['origin'] %}
+  {#- G1-INTEGRATED-JOURNEY-RECOVERY-01: opened from an existing project. -#}
+  <p data-ijr-origin-note style="font-size:14px;border-inline-start:3px solid #9bb3c9;padding-inline-start:8px">{{ t('UI_IJR_ORIGIN_NOTE') }} <a data-ijr-back href="{{ url_for('show_session', sid=start_composition['origin']) }}">{{ t('UI_IJR_BACK') }}</a></p>
+  {%- endif %}
   <p>{{ t(start_composition['intro_key']) }}</p>
   <p style="font-size:14px;margin-bottom:4px"><strong>{{ t('UI_S15_IDEA_LABEL') }}</strong></p>
   <p class="composition-idea" dir="auto" style="white-space:pre-wrap;background:#f7f7f7;border:1px solid #ddd;border-radius:4px;padding:8px 12px">{{ start_composition['idea'] }}</p>

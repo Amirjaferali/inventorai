@@ -5691,9 +5691,11 @@ def _composition_parts_error(form):
 
 
 def _render_composition_page(idea_text, classification, error_key=None,
-                             values=None, status=None):
+                             values=None, status=None, origin=None):
     """Render the bounded composition clarification (a mode of the start page).
-    Presentation only: no session, no admission, no persistence."""
+    Presentation only: no session, no admission, no persistence. ``origin`` is
+    the already-authorized project the in-session recovery action came from
+    (G1-INTEGRATED-JOURNEY-RECOVERY-01), or None for every ordinary start."""
     return _render_start_page(
         error=(ui_text.text(error_key, _current_ui_lang()) if error_key else None),
         status=status,
@@ -5707,13 +5709,21 @@ def _render_composition_page(idea_text, classification, error_key=None,
             # while no domain is part-eligible — the historical form).
             "optional_fields": [(name_field, function_field) for _domain, name_field,
                                 function_field in _offered_optional_parts()],
+            "origin": origin,
         })
 
 
-def _integrated_invention_start(idea_text, classification, activated, lang):
+def _integrated_invention_start(idea_text, classification, activated, lang,
+                                origin=None):
     """Stage 15 Slice 1 admission flow. Creates NOTHING until a valid YES with
     every field valid; NO / NOT SURE save nothing, create no session and invent
-    no winning domain (the idea text is carried back to the ordinary form)."""
+    no winning domain (the idea text is carried back to the ordinary form).
+
+    G1-INTEGRATED-JOURNEY-RECOVERY-01: when the clarification was opened from
+    an existing project (``origin``, or the re-authorized ``origin_project``
+    form field), NO / NOT SURE return the inventor to that unchanged project
+    instead of the start form, so no duplicate ordinary project is suggested."""
+    origin = origin or _recovery_origin(request.form)
     lowered = idea_text.lower()
     if (not _composition_domains_activated(activated)
             or not _composition_classification_eligible(classification)
@@ -5723,13 +5733,16 @@ def _integrated_invention_start(idea_text, classification, activated, lang):
         return _render_start_page(error=_unsupported_domain_message(activated, lang))
     form = request.form
     if form.get("composition_step") != "1":
-        return _render_composition_page(idea_text, classification)
+        return _render_composition_page(idea_text, classification, origin=origin)
     values = _composition_submitted_values(form)
     answer = form.get("composition_answer")
     if answer not in _COMPOSITION_ANSWERS:
         return _render_composition_page(idea_text, classification,
-                                        "UI_S15_ERR_ANSWER", values, 400)
+                                        "UI_S15_ERR_ANSWER", values, 400, origin=origin)
     if answer != "yes":
+        if origin is not None:
+            return redirect(url_for("show_session", sid=origin, ijr="declined")
+                            + "#integrated-restart")
         return _render_start_page(
             error=ui_text.text("UI_S15_GUIDE_NO" if answer == "no"
                                else "UI_S15_GUIDE_NOT_SURE", lang),
@@ -5737,14 +5750,14 @@ def _integrated_invention_start(idea_text, classification, activated, lang):
     parts, error_key = _composition_parts_error(form)
     if error_key is not None:
         return _render_composition_page(idea_text, classification, error_key,
-                                        values, 400)
+                                        values, 400, origin=origin)
     focus = form.get("initial_focus")
     if (focus not in _subsystem_model.COMPOSITION_DOMAINS
             or not domain_activation.is_activated(focus)):
         # A missing or forged focus (any value outside the two composed,
         # currently activated part domains) never admits anything.
         return _render_composition_page(idea_text, classification,
-                                        "UI_S15_ERR_FOCUS", values, 400)
+                                        "UI_S15_ERR_FOCUS", values, 400, origin=origin)
     subsystems = tuple(
         _subsystem_model.declared_subsystem(domain, *parts[domain])
         for domain in (_subsystem_model.COMPOSITION_DOMAINS
@@ -5761,7 +5774,7 @@ def start():
     return _start_admission(idea_text)
 
 
-def _start_admission(idea_text, integrated_declared=False):
+def _start_admission(idea_text, integrated_declared=False, origin=None):
     """The /start admission body (extracted unchanged for
     G1-INTEGRATED-JOURNEY-RECOVERY-01). ``integrated_declared`` is True only for
     the in-session recovery action, which stands for the start page's own
@@ -5825,7 +5838,8 @@ def _start_admission(idea_text, integrated_declared=False):
         # the parts genuinely work together, and nothing is created before a
         # complete, valid YES. Every other tie / richer result keeps the
         # fail-closed branches below unchanged.
-        return _integrated_invention_start(idea_text, classification, activated, lang)
+        return _integrated_invention_start(idea_text, classification, activated, lang,
+                                           origin=origin)
     if classification.kind is DomainResultKind.AMBIGUOUS_TIE:
         # Fail closed: an ambiguous activated tie is NOT a single supported
         # domain. It must never enter the None classifier-miss fallback, never
@@ -5930,6 +5944,21 @@ def _start_admission(idea_text, integrated_declared=False):
 # the new project is created only by the existing /start integrated flow after
 # its complete YES confirmation. No domain, part, focus or method is chosen
 # here; the idea never travels in a URL and nothing leaves the server.
+def _recovery_origin(form):
+    """The project a composition submission came back from, ONLY when the
+    field holds one well-formed id the caller is authorized for; else None (the
+    ordinary start behaviour). It changes navigation only: never the idea, the
+    parts, the focus, the admission or the original project."""
+    values = form.getlist("origin_project")
+    if len(values) != 1:
+        return None
+    try:
+        origin = str(uuid.UUID(values[0]))
+    except (ValueError, AttributeError, TypeError):
+        return None
+    return origin if origin == values[0] and _project_authorized(origin) else None
+
+
 def _integrated_restart_seed(sid):
     """The exact durable original statement of ``sid`` when the recovery action
     may be offered, else None: both composed part domains activated, a durable
@@ -5960,7 +5989,7 @@ def integrated_restart(sid):
     if seed is None:
         return _render_start_page(
             error=ui_text.text("UI_IJR_UNAVAILABLE", _current_ui_lang()), status=409)
-    return _start_admission(seed.strip(), integrated_declared=True)
+    return _start_admission(seed.strip(), integrated_declared=True, origin=sid)
 
 
 def _create_project_session(idea_text, target, subsystems=()):
@@ -7397,6 +7426,8 @@ def show_session(sid):
         # offered only for a project with no declared parts and a readable seed.
         integrated_restart=(not _scope_view
                             and _integrated_restart_seed(sid) is not None),
+        # True only on the return from a NO / NOT SURE clarification answer.
+        integrated_restart_declined=(request.args.get("ijr") == "declined"),
         # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A): the
         # inventor's statement about the Mechanical part, read from durable
         # truth; presentation only.

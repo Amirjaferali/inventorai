@@ -82,3 +82,26 @@ def test_a_single_project_recovers_into_a_separate_integrated_project(server, pa
     expect(page.locator("[data-integrated-restart]")).to_have_count(1)
     expect(page.locator("[data-integrated-scope]")).to_have_count(0)
     assert not errors
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_no_returns_the_inventor_to_their_unchanged_project(server, page, lang):
+    sid = _start_single(page, server, lang)
+    page.locator("[data-ijr-ack]").check()
+    page.locator("[data-ijr-submit]").click()
+    page.wait_for_load_state()
+    expect(page.locator("[data-ijr-origin-note]")).to_contain_text(text("UI_IJR_ORIGIN_NOTE", lang))
+    expect(page.locator("[data-ijr-back]")).to_have_text(text("UI_IJR_BACK", lang))
+    page.locator("[data-composition-form] input[name=composition_answer][value=no]").check()
+    page.locator("[data-composition-form] button[type=submit]").click()
+    page.wait_for_load_state()
+    assert f"/session/{sid}" in page.url
+    expect(page.locator("[data-ijr-declined]")).to_have_text(text("UI_IJR_DECLINED", lang))
+    expect(page.locator("[data-integrated-scope]")).to_have_count(0)
+    page.goto(f"{server}/session/{sid}")
+    page.locator("[data-ijr-ack]").check()
+    page.locator("[data-ijr-submit]").click()
+    page.wait_for_load_state()
+    page.locator("[data-ijr-back]").click()
+    page.wait_for_load_state()
+    assert page.url.split("#")[0].split("?")[0].endswith(f"/session/{sid}")
