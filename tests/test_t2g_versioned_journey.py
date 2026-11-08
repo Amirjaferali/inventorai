@@ -225,9 +225,12 @@ def test_the_version_is_selected_before_the_seed_is_interpreted(client):
     import inspect
     c, appmod, db = client
     # Stage 15 Slice 1 extracted the unchanged creation path out of `start`
-    # into `_create_project_session`, which `start` delegates to.
+    # into `_create_project_session`; G1-INTEGRATED-JOURNEY-RECOVERY-01 moved
+    # the unchanged admission body into `_start_admission`, which `start`
+    # delegates to.
+    assert "return _start_admission(idea_text)" in inspect.getsource(appmod.start)
     assert "return _create_project_session(idea_text, target)" in \
-        inspect.getsource(appmod.start)
+        inspect.getsource(appmod._start_admission)
     source = inspect.getsource(appmod._create_project_session)
     assign = source.index("state.engine_contract_version = ")
     seed_run = source.index("initial_result = run_iteration(state, idea_text)")
