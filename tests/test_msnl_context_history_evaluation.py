@@ -110,7 +110,11 @@ def test_the_preregistration_manifest_and_instructions_are_pinned(manifest):
     assert manifest["candidate"] == prereg["candidate"]
     assert manifest["candidate"]["instructions_sha256"] == INSTRUCTIONS_SHA256 == \
         hashlib.sha256(manifest["candidate"]["instructions"].encode("utf-8")).hexdigest()
-    assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
+    # The gate may be open ONLY for the one authorized run, i.e. while no evidence of it
+    # exists; once the evidence exists it must be closed again.
+    assert isinstance(h.CONTEXT_HISTORY_RUN_AUTHORIZED, bool)
+    if os.path.exists(h.CONTEXT_HISTORY_REPORT_PATH) or os.path.exists(h.CONTEXT_HISTORY_JOURNAL_PATH):
+        assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
     assert "NOT AUTHORIZED TO RUN" in manifest["status"]
     assert manifest["budget"]["max_provider_requests"] == prereg["run_plan"]["max_provider_requests"] == 120
     assert manifest["budget"]["cost_ceiling_usd"] == prereg["run_plan"]["cost_ceiling_usd"] == 6.0

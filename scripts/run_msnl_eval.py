@@ -2180,7 +2180,10 @@ CONTEXT_HISTORY_PREREG_SHA256 = "d8896785bb84713fa54c8b59fcfdb30c8f71af9251e5ef4
 CONTEXT_HISTORY_MANIFEST_PATH = os.path.join(
     _ROOT, "tests", "fixtures", "msnl_context_history_v1.json")
 CONTEXT_HISTORY_MANIFEST_SHA256 = "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda56465365fcdaaabda847"
-CONTEXT_HISTORY_RUN_AUTHORIZED = False
+# Owner authorization "G1/R2 CONTEXT-AND-HISTORY — ONE AUTHORIZED RUN" (2026-11-09) opens the
+# gate for exactly ONE run against the frozen manifest and preregistration pinned above
+# (gpt-6-sol, Standard, at most 120 requests, US$6, no retry). The evidence commit closes it.
+CONTEXT_HISTORY_RUN_AUTHORIZED = True
 CONTEXT_HISTORY_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
                                             "msnl_context_history_v1")
 CONTEXT_HISTORY_JOURNAL_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR, "run_01_journal.jsonl")
