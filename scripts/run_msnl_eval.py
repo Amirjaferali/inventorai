@@ -1797,10 +1797,13 @@ PROJECT_CONTEXT_MANIFEST_PATH = os.path.join(
 PROJECT_CONTEXT_MANIFEST_SHA256 = "a43232da68a1bf3067a7027b280f7fe3a0f5811487d085424bee38b63b2928f0"
 PROJECT_CONTEXT_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                          "msnl_project_context_v1.json")
-# Owner authorization "G1/R2 PROJECT-CONTEXT FALSIFICATION — ONE AUTHORIZED RUN" (2026-11-09): opened
-# for exactly ONE run against the frozen manifest pinned above (OpenAI, gpt-6-sol, at most 60
-# requests, US$5, synthetic only, no retries); closed again in the evidence commit.
-PROJECT_CONTEXT_RUN_AUTHORIZED = True
+# Owner authorization "G1/R2 PROJECT-CONTEXT FALSIFICATION — ONE AUTHORIZED RUN" (2026-11-09)
+# opened the gate for exactly ONE run against the frozen manifest pinned above. That run took
+# place on 2026-11-09 from commit 4433081 (23 requests, US$0.044384, outcome
+# FALSIFIED_ELIGIBLE_CREDIT_WITHHELD; evidence in docs/benchmarks/evidence/
+# msnl_project_context_v1/), so the gate is closed again: any further run needs a new Owner
+# authorization and a reviewed commit that reopens it.
+PROJECT_CONTEXT_RUN_AUTHORIZED = False
 PC_ALLOWED_SERVICE_TIERS = ("default",)        # Standard processing: the price basis
 PROJECT_CONTEXT_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
                                             "msnl_project_context_v1")

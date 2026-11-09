@@ -1,0 +1,1225 @@
+{
+ "by_category": {
+  "CONTRADICTS_IDEA": {
+   "correct_yes": 3,
+   "decision_CONFLICT": 3,
+   "incumbent_false_grant_removed_OPEN": 1,
+   "incumbent_false_grant_removed_PARTIAL": 1,
+   "tested": 3
+  },
+  "EVERYDAY_PARTIAL": {},
+  "FAITHFUL_PARAPHRASE": {
+   "correct_yes": 2,
+   "decision_RELATED": 2,
+   "tested": 2
+  },
+  "GENERIC_INSUFFICIENT": {
+   "correct_yes": 1,
+   "decision_UNCERTAIN": 1,
+   "incumbent_false_grant_removed_OPEN": 1,
+   "incumbent_false_grant_removed_PARTIAL": 1,
+   "tested": 1
+  },
+  "NEGATION_SAME_PROJECT": {
+   "correct_yes": 1,
+   "decision_RELATED": 1,
+   "tested": 1
+  },
+  "NEW_DETAIL": {
+   "correct_no": 1,
+   "correct_yes": 3,
+   "decision_CONFLICT": 1,
+   "decision_RELATED": 3,
+   "newly_withheld_eligible_OPEN": 1,
+   "newly_withheld_eligible_PARTIAL": 1,
+   "tested": 4
+  },
+  "OTHER_INVENTION": {
+   "correct_yes": 3,
+   "decision_UNGROUNDED": 1,
+   "decision_UNRELATED": 2,
+   "incumbent_false_grant_removed_OPEN": 3,
+   "incumbent_false_grant_removed_PARTIAL": 3,
+   "tested": 3
+  },
+  "OTHER_INVENTION_SHARED_WORDS": {
+   "correct_yes": 2,
+   "decision_UNRELATED": 2,
+   "incumbent_false_grant_removed_OPEN": 2,
+   "incumbent_false_grant_removed_PARTIAL": 2,
+   "tested": 2
+  },
+  "UNDECIDED_SAME_PROJECT": {
+   "correct_no": 1,
+   "correct_yes": 1,
+   "decision_CONFLICT": 1,
+   "decision_RELATED": 1,
+   "tested": 2
+  },
+  "UNKNOWN_SAME_PROJECT": {
+   "correct_yes": 2,
+   "decision_RELATED": 2,
+   "tested": 2
+  }
+ },
+ "by_idea_project_swaps": {
+  "P1": {
+   "correct_yes": 1,
+   "decision_UNRELATED": 1,
+   "incumbent_false_grant_removed_OPEN": 1,
+   "incumbent_false_grant_removed_PARTIAL": 1,
+   "tested": 1
+  },
+  "P2": {},
+  "P3": {
+   "correct_yes": 1,
+   "decision_UNRELATED": 1,
+   "incumbent_false_grant_removed_OPEN": 1,
+   "incumbent_false_grant_removed_PARTIAL": 1,
+   "tested": 1
+  },
+  "P4": {
+   "correct_yes": 1,
+   "decision_UNRELATED": 1,
+   "tested": 1
+  },
+  "P5": {},
+  "P6": {}
+ },
+ "by_kind": {
+  "IDEA_SWAP": {
+   "correct_yes": 3,
+   "decision_UNRELATED": 3,
+   "incumbent_false_grant_removed_OPEN": 2,
+   "incumbent_false_grant_removed_PARTIAL": 2,
+   "tested": 3
+  },
+  "PACK_CASE": {
+   "correct_no": 2,
+   "correct_yes": 18,
+   "decision_CONFLICT": 5,
+   "decision_RELATED": 9,
+   "decision_UNCERTAIN": 1,
+   "decision_UNGROUNDED": 1,
+   "decision_UNRELATED": 4,
+   "incumbent_false_grant_removed_OPEN": 7,
+   "incumbent_false_grant_removed_PARTIAL": 7,
+   "newly_withheld_eligible_OPEN": 1,
+   "newly_withheld_eligible_PARTIAL": 1,
+   "tested": 20
+  }
+ },
+ "by_project": {
+  "P1": {
+   "correct_yes": 5,
+   "decision_CONFLICT": 1,
+   "decision_RELATED": 2,
+   "decision_UNGROUNDED": 1,
+   "decision_UNRELATED": 1,
+   "incumbent_false_grant_removed_OPEN": 2,
+   "incumbent_false_grant_removed_PARTIAL": 2,
+   "tested": 5
+  },
+  "P2": {
+   "correct_yes": 4,
+   "decision_RELATED": 2,
+   "decision_UNCERTAIN": 1,
+   "decision_UNRELATED": 1,
+   "incumbent_false_grant_removed_OPEN": 2,
+   "incumbent_false_grant_removed_PARTIAL": 2,
+   "tested": 4
+  },
+  "P3": {
+   "correct_no": 1,
+   "correct_yes": 3,
+   "decision_CONFLICT": 1,
+   "decision_RELATED": 2,
+   "decision_UNRELATED": 1,
+   "incumbent_false_grant_removed_OPEN": 1,
+   "incumbent_false_grant_removed_PARTIAL": 1,
+   "tested": 4
+  },
+  "P4": {
+   "correct_no": 1,
+   "correct_yes": 4,
+   "decision_CONFLICT": 3,
+   "decision_RELATED": 1,
+   "decision_UNRELATED": 1,
+   "incumbent_false_grant_removed_OPEN": 2,
+   "incumbent_false_grant_removed_PARTIAL": 2,
+   "newly_withheld_eligible_OPEN": 1,
+   "newly_withheld_eligible_PARTIAL": 1,
+   "tested": 5
+  },
+  "P5": {
+   "correct_yes": 3,
+   "decision_RELATED": 2,
+   "decision_UNRELATED": 1,
+   "incumbent_false_grant_removed_OPEN": 1,
+   "incumbent_false_grant_removed_PARTIAL": 1,
+   "tested": 3
+  },
+  "P6": {
+   "correct_yes": 2,
+   "decision_UNRELATED": 2,
+   "incumbent_false_grant_removed_OPEN": 1,
+   "incumbent_false_grant_removed_PARTIAL": 1,
+   "tested": 2
+  }
+ },
+ "by_variety": {
+  "ar-msa": {
+   "correct_no": 1,
+   "correct_yes": 12,
+   "decision_CONFLICT": 2,
+   "decision_RELATED": 6,
+   "decision_UNCERTAIN": 1,
+   "decision_UNGROUNDED": 1,
+   "decision_UNRELATED": 3,
+   "incumbent_false_grant_removed_OPEN": 4,
+   "incumbent_false_grant_removed_PARTIAL": 4,
+   "newly_withheld_eligible_OPEN": 1,
+   "newly_withheld_eligible_PARTIAL": 1,
+   "tested": 13
+  },
+  "en": {
+   "correct_no": 1,
+   "correct_yes": 9,
+   "decision_CONFLICT": 3,
+   "decision_RELATED": 3,
+   "decision_UNRELATED": 4,
+   "incumbent_false_grant_removed_OPEN": 5,
+   "incumbent_false_grant_removed_PARTIAL": 5,
+   "tested": 10
+  }
+ },
+ "classification_confusion": {
+  "CONFLICT->CONFLICT": 3,
+  "RELATED->CONFLICT": 2,
+  "RELATED->RELATED": 9,
+  "UNCERTAIN->UNCERTAIN": 1,
+  "UNRELATED->UNGROUNDED": 1,
+  "UNRELATED->UNRELATED": 7
+ },
+ "correctness_basis": "correct_yes / correct_no compare the RAW model verdict with the expected verdict; classification_confusion and decision_* use the DECISION, in which an ungrounded reply is UNGROUNDED",
+ "limits": [
+  "visible pack, not a holdout; selection by rule only",
+  "category / served-question confound (pack N3)",
+  "same-family labels, no human or native-Arabic review",
+  "no real inventor declarations: context is the idea only",
+  "MSA only",
+  "swap expectations assume the idea, not the question, defines the invention",
+  "small denominators: per-project and per-language counts are indicative only"
+ ],
+ "manifest_id": "msnl-project-context-v1-falsification-01",
+ "outcome": "FALSIFIED_ELIGIBLE_CREDIT_WITHHELD",
+ "overall": {
+  "correct_no": 2,
+  "correct_yes": 21,
+  "decision_CONFLICT": 5,
+  "decision_RELATED": 9,
+  "decision_UNCERTAIN": 1,
+  "decision_UNGROUNDED": 1,
+  "decision_UNRELATED": 7,
+  "incumbent_false_grant_removed_OPEN": 9,
+  "incumbent_false_grant_removed_PARTIAL": 9,
+  "newly_withheld_eligible_OPEN": 1,
+  "newly_withheld_eligible_PARTIAL": 1,
+  "tested": 23
+ },
+ "rows": [
+  {
+   "attempt": {
+    "attempt": 1,
+    "http_status": 200,
+    "input_token_bound": 3689,
+    "measured_cost_usd": 0.001694,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047378,
+    "response_id": "resp_0a424e21b42995bb016af1dacaf4bc87d1bcc4fe1cb61f9d5a",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 527,
+     "output_tokens": 64,
+     "reasoning_tokens": 31,
+     "total_tokens": 591
+    }
+   },
+   "category": "NEW_DETAIL",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "UNRELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNRELATED",
+   "idea_project_id": "P3",
+   "item_id": "SWAP-P2-C02-en-to-P3",
+   "kind": "IDEA_SWAP",
+   "project_id": "P2",
+   "variety": "en",
+   "verdict": "UNRELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 2,
+    "http_status": 200,
+    "input_token_bound": 3527,
+    "measured_cost_usd": 0.004906,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047054,
+    "response_id": "resp_0546d42f3c226377016af1dacd1bbc87d1a46390a9ac48297e",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 488,
+     "output_tokens": 393,
+     "reasoning_tokens": 363,
+     "total_tokens": 881
+    }
+   },
+   "category": "UNDECIDED_SAME_PROJECT",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "CONFLICT",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P3",
+   "item_id": "P3-C07-en",
+   "kind": "PACK_CASE",
+   "project_id": "P3",
+   "variety": "en",
+   "verdict": "CONFLICT"
+  },
+  {
+   "attempt": {
+    "attempt": 3,
+    "http_status": 200,
+    "input_token_bound": 3470,
+    "measured_cost_usd": 0.0014,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.04694,
+    "response_id": "resp_0e264700ffcfdb8c016af1dad16cc487d19b455e8fa3d9f254",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 480,
+     "output_tokens": 44,
+     "reasoning_tokens": 16,
+     "total_tokens": 524
+    }
+   },
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "UNRELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNRELATED",
+   "idea_project_id": "P6",
+   "item_id": "P6-C06-en",
+   "kind": "PACK_CASE",
+   "project_id": "P6",
+   "variety": "en",
+   "verdict": "UNRELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 4,
+    "http_status": 200,
+    "input_token_bound": 3328,
+    "measured_cost_usd": 0.001784,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.046656,
+    "response_id": "resp_088bb7b764db46d9016af1dad32b4887d1bad03fbdfce9a149",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 452,
+     "output_tokens": 88,
+     "reasoning_tokens": 57,
+     "total_tokens": 540
+    }
+   },
+   "category": "CONTRADICTS_IDEA",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "CONFLICT",
+   "error": null,
+   "expected_outcome": "CLARIFY",
+   "expected_verdict": "CONFLICT",
+   "idea_project_id": "P4",
+   "item_id": "P4-C10-en",
+   "kind": "PACK_CASE",
+   "project_id": "P4",
+   "variety": "en",
+   "verdict": "CONFLICT"
+  },
+  {
+   "attempt": {
+    "attempt": 5,
+    "http_status": 200,
+    "input_token_bound": 3648,
+    "measured_cost_usd": 0.001564,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047296,
+    "response_id": "resp_0de12209a66d01b7016af1dad4874087d1bc48fdfd09d7d3ca",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 517,
+     "output_tokens": 53,
+     "reasoning_tokens": 24,
+     "total_tokens": 570
+    }
+   },
+   "category": "NEW_DETAIL",
+   "composed": {
+    "OPEN": {
+     "composed_granted": true,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": true,
+     "engine_granted": true
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P2",
+   "item_id": "P2-C02-en",
+   "kind": "PACK_CASE",
+   "project_id": "P2",
+   "variety": "en",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 6,
+    "http_status": 200,
+    "input_token_bound": 3440,
+    "measured_cost_usd": 0.00139,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.04688,
+    "response_id": "resp_0b665a521c1c2e79016af1dad672f087d1b595e7592dcdc414",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 470,
+     "output_tokens": 45,
+     "reasoning_tokens": 0,
+     "total_tokens": 515
+    }
+   },
+   "category": "FAITHFUL_PARAPHRASE",
+   "composed": {
+    "OPEN": {
+     "composed_granted": true,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": true,
+     "engine_granted": true
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P5",
+   "item_id": "P5-C01-en",
+   "kind": "PACK_CASE",
+   "project_id": "P5",
+   "variety": "en",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 7,
+    "http_status": 200,
+    "input_token_bound": 3929,
+    "measured_cost_usd": 0.004686,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047858,
+    "response_id": "resp_051ae5aef90976f3016af1dad98d2087d1b6fd0976777f3af9",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 538,
+     "output_tokens": 361,
+     "reasoning_tokens": 330,
+     "total_tokens": 899
+    }
+   },
+   "category": "UNDECIDED_SAME_PROJECT",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P3",
+   "item_id": "P3-C07-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 8,
+    "http_status": 200,
+    "input_token_bound": 3627,
+    "measured_cost_usd": 0.001256,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047254,
+    "response_id": "resp_0363dd7a54eb5560016af1daddb4c887d1b73d22cf5a5ad6aa",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 508,
+     "output_tokens": 24,
+     "reasoning_tokens": 0,
+     "total_tokens": 532
+    }
+   },
+   "category": "OTHER_INVENTION",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "UNRELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNRELATED",
+   "idea_project_id": "P1",
+   "item_id": "P1-C05-en",
+   "kind": "PACK_CASE",
+   "project_id": "P1",
+   "variety": "en",
+   "verdict": "UNRELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 9,
+    "http_status": 200,
+    "input_token_bound": 3807,
+    "measured_cost_usd": 0.001398,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047614,
+    "response_id": "resp_0dce4dd51ba7b5ee016af1dadf3b1c87d194042e1df6f6e320",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 519,
+     "output_tokens": 36,
+     "reasoning_tokens": 0,
+     "total_tokens": 555
+    }
+   },
+   "category": "NEGATION_SAME_PROJECT",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P5",
+   "item_id": "P5-C03-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 10,
+    "http_status": 200,
+    "input_token_bound": 3553,
+    "measured_cost_usd": 0.001504,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047106,
+    "response_id": "resp_05a8f80f9d952ef4016af1dae0b7b087d1b552c40b2f2e8245",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 472,
+     "output_tokens": 56,
+     "reasoning_tokens": 25,
+     "total_tokens": 528
+    }
+   },
+   "category": "UNKNOWN_SAME_PROJECT",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P4",
+   "item_id": "P4-C08-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 11,
+    "http_status": 200,
+    "input_token_bound": 3653,
+    "measured_cost_usd": 0.001296,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047306,
+    "response_id": "resp_0cdfb21f10db36bf016af1dae2b37487d1b8d0a9ab55fe7f6a",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 508,
+     "output_tokens": 28,
+     "reasoning_tokens": 0,
+     "total_tokens": 536
+    }
+   },
+   "category": "FAITHFUL_PARAPHRASE",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "UNRELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNRELATED",
+   "idea_project_id": "P1",
+   "item_id": "SWAP-P3-C01-en-to-P1",
+   "kind": "IDEA_SWAP",
+   "project_id": "P3",
+   "variety": "en",
+   "verdict": "UNRELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 12,
+    "http_status": 200,
+    "input_token_bound": 4075,
+    "measured_cost_usd": 0.001686,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.04815,
+    "response_id": "resp_0bbd4ec6ba6b3a86016af1dae3f50487d1bfe6f287fc562e33",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 563,
+     "output_tokens": 56,
+     "reasoning_tokens": 25,
+     "total_tokens": 619
+    }
+   },
+   "category": "NEW_DETAIL",
+   "composed": {
+    "OPEN": {
+     "composed_granted": true,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": true,
+     "engine_granted": true
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P2",
+   "item_id": "P2-C02-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 13,
+    "http_status": 200,
+    "input_token_bound": 3637,
+    "measured_cost_usd": 0.002392,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047274,
+    "response_id": "resp_0c3259c5f0a57ca5016af1dae545a087d1a1ba58be1bd098ee",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 486,
+     "output_tokens": 142,
+     "reasoning_tokens": 93,
+     "total_tokens": 628
+    }
+   },
+   "category": "CONTRADICTS_IDEA",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "CONFLICT",
+   "error": null,
+   "expected_outcome": "CLARIFY",
+   "expected_verdict": "CONFLICT",
+   "idea_project_id": "P4",
+   "item_id": "P4-C10-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "verdict": "CONFLICT"
+  },
+  {
+   "attempt": {
+    "attempt": 14,
+    "http_status": 200,
+    "input_token_bound": 3736,
+    "measured_cost_usd": 0.001514,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047472,
+    "response_id": "resp_0b6786a1fd7cabbe016af1dae75f4c87d191fa4be31e7326a9",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 507,
+     "output_tokens": 50,
+     "reasoning_tokens": 18,
+     "total_tokens": 557
+    }
+   },
+   "category": "OTHER_INVENTION",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "UNRELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNRELATED",
+   "idea_project_id": "P4",
+   "item_id": "P4-C05-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "verdict": "UNRELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 15,
+    "http_status": 200,
+    "input_token_bound": 4125,
+    "measured_cost_usd": 0.001734,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.04825,
+    "response_id": "resp_05c0640530593db8016af1dae8e82887d193106fb2812ca2a0",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 577,
+     "output_tokens": 58,
+     "reasoning_tokens": 14,
+     "total_tokens": 635
+    }
+   },
+   "category": "FAITHFUL_PARAPHRASE",
+   "composed": {
+    "OPEN": {
+     "composed_granted": true,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": true,
+     "engine_granted": true
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P3",
+   "item_id": "P3-C01-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 16,
+    "http_status": 200,
+    "input_token_bound": 3806,
+    "measured_cost_usd": 0.001996,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047612,
+    "response_id": "resp_0b8021784d0c5294016af1daea51f087d185f9608bb457717e",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 513,
+     "output_tokens": 97,
+     "reasoning_tokens": 55,
+     "total_tokens": 610
+    }
+   },
+   "category": "FAITHFUL_PARAPHRASE",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "UNRELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNRELATED",
+   "idea_project_id": "P4",
+   "item_id": "SWAP-P6-C01-ar-msa-to-P4",
+   "kind": "IDEA_SWAP",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "verdict": "UNRELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 17,
+    "http_status": 200,
+    "input_token_bound": 3902,
+    "measured_cost_usd": 0.001598,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047804,
+    "response_id": "resp_018d28d0d1d00a8d016af1daec1d7087d1a8ee9466a6a86602",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 539,
+     "output_tokens": 52,
+     "reasoning_tokens": 20,
+     "total_tokens": 591
+    }
+   },
+   "category": "UNKNOWN_SAME_PROJECT",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P1",
+   "item_id": "P1-C08-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 18,
+    "http_status": 200,
+    "input_token_bound": 3832,
+    "measured_cost_usd": 0.001676,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047664,
+    "response_id": "resp_0ace7727075ecad5016af1daed917087d1bfef92f13fdac827",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 518,
+     "output_tokens": 64,
+     "reasoning_tokens": 28,
+     "total_tokens": 582
+    }
+   },
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "UNRELATED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNRELATED",
+   "idea_project_id": "P5",
+   "item_id": "P5-C06-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "verdict": "UNRELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 19,
+    "http_status": 200,
+    "input_token_bound": 3758,
+    "measured_cost_usd": 0.001526,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047516,
+    "response_id": "resp_0e833ee234a08bed016af1daeff45887d1b80dedfcb3cd6611",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 538,
+     "output_tokens": 45,
+     "reasoning_tokens": 12,
+     "total_tokens": 583
+    }
+   },
+   "category": "NEW_DETAIL",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "RELATED",
+   "error": null,
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P1",
+   "item_id": "P1-C02-en",
+   "kind": "PACK_CASE",
+   "project_id": "P1",
+   "variety": "en",
+   "verdict": "RELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 20,
+    "http_status": 200,
+    "input_token_bound": 3683,
+    "measured_cost_usd": 0.001566,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047366,
+    "response_id": "resp_06ff8109b847fca1016af1daf1335887d1a4efe23ebe7c7d28",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 488,
+     "output_tokens": 59,
+     "reasoning_tokens": 35,
+     "total_tokens": 547
+    }
+   },
+   "category": "GENERIC_INSUFFICIENT",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "UNCERTAIN",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNCERTAIN",
+   "idea_project_id": "P2",
+   "item_id": "P2-C09-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "verdict": "UNCERTAIN"
+  },
+  {
+   "attempt": {
+    "attempt": 21,
+    "http_status": 200,
+    "input_token_bound": 3536,
+    "measured_cost_usd": 0.00163,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047072,
+    "response_id": "resp_03728ea7a4a79958016af1daf2f37487d193cdd211ffb97e45",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 485,
+     "output_tokens": 66,
+     "reasoning_tokens": 34,
+     "total_tokens": 551
+    }
+   },
+   "category": "CONTRADICTS_IDEA",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": false
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": false
+    }
+   },
+   "decision": "CONFLICT",
+   "error": null,
+   "expected_outcome": "CLARIFY",
+   "expected_verdict": "CONFLICT",
+   "idea_project_id": "P1",
+   "item_id": "P1-C10-en",
+   "kind": "PACK_CASE",
+   "project_id": "P1",
+   "variety": "en",
+   "verdict": "CONFLICT"
+  },
+  {
+   "attempt": {
+    "attempt": 22,
+    "http_status": 200,
+    "input_token_bound": 4125,
+    "measured_cost_usd": 0.001908,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.04825,
+    "response_id": "resp_0026105fda3ee070016af1daf4617887d183d98a5110e3929b",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 579,
+     "output_tokens": 75,
+     "reasoning_tokens": 49,
+     "total_tokens": 654
+    }
+   },
+   "category": "OTHER_INVENTION",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "UNGROUNDED",
+   "error": null,
+   "expected_outcome": "NO_CREDIT",
+   "expected_verdict": "UNRELATED",
+   "idea_project_id": "P1",
+   "item_id": "P1-C05-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "verdict": "UNRELATED"
+  },
+  {
+   "attempt": {
+    "attempt": 23,
+    "http_status": 200,
+    "input_token_bound": 3881,
+    "measured_cost_usd": 0.00228,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.047762,
+    "response_id": "resp_095a7ee173b57870016af1daf79d1487d198af98f9d689aa17",
+    "sent": true,
+    "service_tier": "default",
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 530,
+     "output_tokens": 122,
+     "reasoning_tokens": 89,
+     "total_tokens": 652
+    }
+   },
+   "category": "NEW_DETAIL",
+   "composed": {
+    "OPEN": {
+     "composed_granted": false,
+     "engine_granted": true
+    },
+    "PARTIAL": {
+     "composed_granted": false,
+     "engine_granted": true
+    }
+   },
+   "decision": "CONFLICT",
+   "error": null,
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "expected_verdict": "RELATED",
+   "idea_project_id": "P4",
+   "item_id": "P4-C02-ar-msa",
+   "kind": "PACK_CASE",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "verdict": "CONFLICT"
+  }
+ ],
+ "spend": {
+  "committed_bound_usd": 0.044384,
+  "measured_cost_usd": 0.044384,
+  "requests_sent": 23
+ },
+ "stop": {
+  "decision": "CONFLICT",
+  "item_id": "P4-C02-ar-msa",
+  "reason": "FALSIFIED_ELIGIBLE_CREDIT_WITHHELD",
+  "verdict": "CONFLICT"
+ },
+ "untested_items": [
+  "P3-C06-ar-msa",
+  "SWAP-P4-C02-ar-msa-to-P5",
+  "P4-C05-en",
+  "SWAP-P1-C02-ar-msa-to-P2",
+  "P4-C08-en",
+  "P5-C06-en",
+  "P2-C05-ar-msa",
+  "P2-C05-en",
+  "P1-C02-ar-msa",
+  "P5-C09-ar-msa",
+  "P6-C04-ar-msa",
+  "P3-C04-en",
+  "P2-C03-en",
+  "P2-C09-en",
+  "P6-C01-en",
+  "P3-C06-en",
+  "SWAP-P6-C01-en-to-P4",
+  "P1-C10-ar-msa",
+  "SWAP-P4-C02-en-to-P5",
+  "P6-C07-en",
+  "SWAP-P5-C01-en-to-P6",
+  "P4-C02-en",
+  "SWAP-P1-C02-en-to-P2",
+  "P6-C07-ar-msa",
+  "SWAP-P3-C01-ar-msa-to-P1",
+  "P3-C01-en",
+  "P6-C01-ar-msa",
+  "P5-C03-en",
+  "SWAP-P5-C01-ar-msa-to-P6",
+  "P5-C09-en",
+  "P6-C04-en",
+  "P3-C04-ar-msa",
+  "SWAP-P2-C02-ar-msa-to-P3",
+  "P1-C08-en",
+  "P6-C06-ar-msa",
+  "P2-C03-ar-msa",
+  "P5-C01-ar-msa"
+ ]
+}

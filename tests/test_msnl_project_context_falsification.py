@@ -371,3 +371,29 @@ def test_the_authorized_path_writes_exclusive_evidence_once(frozen, monkeypatch,
     again = h.project_context_falsification("openai", True, True)
     assert "already exists" in again["refused"] and again["provider_requests"] == 0
     assert len(fake.bodies) == 60
+
+
+# ─── the ONE authorized run's evidence (2026-11-09) ───────────────────────────
+
+def test_the_recorded_run_is_internally_consistent_and_the_gate_is_closed(frozen):
+    """The committed report recomputes from its own rows, agrees with the fsynced
+    journal and stayed inside the authorization: gpt-6-sol, Standard tier, at most
+    60 requests, under US$5, no error, no retry."""
+    assert h.PROJECT_CONTEXT_RUN_AUTHORIZED is False
+    report = json.load(open(h.PROJECT_CONTEXT_REPORT_PATH, encoding="utf-8"))
+    journal = [json.loads(line) for line in open(h.PROJECT_CONTEXT_JOURNAL_PATH, encoding="utf-8")]
+    assert report == json.loads(json.dumps(h.project_context_report(
+        frozen[0], report["outcome"], report["stop"], report["rows"], report["spend"]), sort_keys=True))
+    attempts = [e for e in journal if e["event"] == "attempt"]
+    reserved = [e for e in journal if e["event"] == "reserved"]
+    assert journal[0]["event"] == "start" and journal[-1]["event"] == "end"
+    assert journal[0]["manifest_sha256"] == MANIFEST_SHA256 and journal[0]["model"] == "gpt-6-sol"
+    assert len(attempts) == len(reserved) == report["spend"]["requests_sent"] == len(report["rows"]) <= 60
+    assert [a["item_id"] for a in attempts] == [it["item_id"] for it in _ordered(frozen[0])][:len(attempts)]
+    assert {a["model"] for a in attempts} == {"gpt-6-sol"} and {a["service_tier"] for a in attempts} == {"default"}
+    assert all(a["error"] is None and a["http_status"] == 200 for a in attempts)
+    total = sum(a["measured_cost_usd"] for a in attempts)
+    assert abs(total - report["spend"]["measured_cost_usd"]) < 1e-6 and total < 5.0
+    assert report["outcome"] == h.PC_FALSIFIED_ELIGIBLE == report["stop"]["reason"]
+    assert report["stop"]["item_id"] == attempts[-1]["item_id"] == "P4-C02-ar-msa"
+    assert len(report["untested_items"]) == 60 - len(attempts)
