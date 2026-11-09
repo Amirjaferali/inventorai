@@ -1797,7 +1797,11 @@ PROJECT_CONTEXT_MANIFEST_PATH = os.path.join(
 PROJECT_CONTEXT_MANIFEST_SHA256 = "a43232da68a1bf3067a7027b280f7fe3a0f5811487d085424bee38b63b2928f0"
 PROJECT_CONTEXT_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                          "msnl_project_context_v1.json")
-PROJECT_CONTEXT_RUN_AUTHORIZED = False
+# Owner authorization "G1/R2 PROJECT-CONTEXT FALSIFICATION — ONE AUTHORIZED RUN" (2026-11-09): opened
+# for exactly ONE run against the frozen manifest pinned above (OpenAI, gpt-6-sol, at most 60
+# requests, US$5, synthetic only, no retries); closed again in the evidence commit.
+PROJECT_CONTEXT_RUN_AUTHORIZED = True
+PC_ALLOWED_SERVICE_TIERS = ("default",)        # Standard processing: the price basis
 PROJECT_CONTEXT_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
                                             "msnl_project_context_v1")
 PROJECT_CONTEXT_JOURNAL_PATH = os.path.join(PROJECT_CONTEXT_EVIDENCE_DIR,
@@ -1815,6 +1819,7 @@ PC_NOT_FALSIFIED = "NOT_FALSIFIED_ON_TESTED_ITEMS"
 ERR_INPUT_BOUND = "input_tokens_over_reserved_bound"
 ERR_USAGE_UNKNOWN = "usage_unknown"
 ERR_INTEGRITY = "integrity"
+ERR_SERVICE_TIER = "service_tier_not_standard"
 
 
 def project_context_manifest():
@@ -1915,11 +1920,31 @@ def pc_stop(item, decision):
 def pc_classify_measured(adapter, manifest, pack, item, payload, bound):
     """ONE request: (reply, error_kind, meta). Beyond the schema, a 200 reply
     must confirm the configured model, report usage, stay within its output
-    cap and within the reserved input-token bound."""
-    reply, meta = _measured_call(adapter, payload)
+    cap and within the reserved input-token bound, and report Standard
+    processing (service_tier "default", the price basis of every reservation):
+    any other or unreported tier stops the run before a second request."""
+    tier = {"value": _PF_UNAVAILABLE}
+    transport = adapter._transport
+
+    def sniff(url, headers, body, timeout):
+        status, raw = transport(url, headers, body, timeout)
+        try:
+            tier["value"] = _pf_safe(json.loads(raw.decode("utf-8")).get("service_tier"))
+        except Exception:
+            tier["value"] = _PF_UNAVAILABLE
+        return status, raw
+    adapter._transport = sniff
+    try:
+        reply, meta = _measured_call(adapter, payload)
+    finally:
+        adapter._transport = transport
+    meta["service_tier"] = tier["value"]
     kind = adapter.last_error_kind
     usage = meta["usage"]
     if meta["sent"] and meta["http_status"] == 200:
+        if meta["service_tier"] not in PC_ALLOWED_SERVICE_TIERS:
+            adapter._fail(ERR_SERVICE_TIER)
+            return None, ERR_SERVICE_TIER, meta
         if not (isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)):
             adapter._fail(ERR_USAGE_UNKNOWN)
             return None, ERR_USAGE_UNKNOWN, meta
@@ -1991,8 +2016,8 @@ def project_context_run(adapter, manifest, pack, journal=None):
                "verdict": None if reply is None else reply["verdict"],
                "attempt": {"attempt": ledger["requests"], "sent": meta["sent"],
                            "http_status": meta["http_status"], "response_id": meta["response_id"],
-                           "model": meta["model"], "usage": usage,
-                           "input_token_bound": bound, "reserved_usd": round(reserved, 6),
+                           "model": meta["model"], "service_tier": meta["service_tier"],
+                           "usage": usage, "input_token_bound": bound, "reserved_usd": round(reserved, 6),
                            "measured_cost_usd": None if cost is None else round(cost, 6)}}
         if err is None:
             _idea, _question, answer = pc_item_text(manifest, pack, item)

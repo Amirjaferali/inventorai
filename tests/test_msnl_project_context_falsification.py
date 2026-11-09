@@ -11,6 +11,7 @@ import collections
 import copy
 import hashlib
 import json
+import os
 
 import pytest
 
@@ -31,10 +32,10 @@ def _usage(inp=900, out=120):
             "output_tokens_details": {"reasoning_tokens": 40}, "total_tokens": inp + out}
 
 
-def _wrap(obj, model="gpt-6-sol", usage=None, status=200):
+def _wrap(obj, model="gpt-6-sol", usage=None, status=200, tier="default"):
     status, raw = _reply(obj, status=status)
     body = json.loads(raw.decode("utf-8"))
-    body.update(model=model, usage=_usage() if usage is None else usage)
+    body.update(model=model, usage=_usage() if usage is None else usage, service_tier=tier)
     return status, json.dumps(body).encode("utf-8")
 
 
@@ -62,7 +63,7 @@ class Fake:
 def _refusal():
     status, raw = _reply({}, refusal=True)
     body = json.loads(raw.decode("utf-8"))
-    body.update(model="gpt-6-sol", usage=_usage())
+    body.update(model="gpt-6-sol", usage=_usage(), service_tier="default")
     return status, json.dumps(body).encode("utf-8")
 
 
@@ -94,7 +95,12 @@ def test_the_manifest_pack_and_instructions_are_pinned(frozen):
     assert hashlib.sha256(manifest["arm"]["instructions"].encode()).hexdigest() == \
         manifest["arm"]["instructions_sha256"]
     assert manifest["provider"]["model"] == "gpt-6-sol" and "NONE" in manifest["provider"]["substitution"]
-    assert h.PROJECT_CONTEXT_RUN_AUTHORIZED is False
+    # The gate may be open ONLY for the one authorized run, i.e. while no evidence of it
+    # exists; once the evidence exists it must be closed again.
+    assert isinstance(h.PROJECT_CONTEXT_RUN_AUTHORIZED, bool)
+    if os.path.exists(h.PROJECT_CONTEXT_REPORT_PATH) or os.path.exists(h.PROJECT_CONTEXT_JOURNAL_PATH):
+        assert h.PROJECT_CONTEXT_RUN_AUTHORIZED is False
+    assert h.PC_ALLOWED_SERVICE_TIERS == ("default",)
     assert "NOT AUTHORIZED TO RUN" in manifest["status"]
 
 
@@ -275,7 +281,10 @@ def test_an_ungrounded_related_withholds_eligible_credit_but_cannot_falsify_unre
      "input_tokens_over_reserved_bound"),
     (lambda item, answer: _refusal(), "refusal"),
     (lambda item, answer: (200, json.dumps({"status": "incomplete", "output": [], "model": "gpt-6-sol",
-                                            "usage": _usage()}).encode()), "incomplete"),
+                                            "usage": _usage(), "service_tier": "default"}).encode()),
+     "incomplete"),
+    (lambda item, answer: _wrap(_expected(item, answer), tier="priority"), "service_tier_not_standard"),
+    (lambda item, answer: _wrap(_expected(item, answer), tier=None), "service_tier_not_standard"),
 ])
 def test_every_invalid_path_stops_at_the_first_request_without_retry(frozen, reply, reason):
     outcome, stop, rows, spend, fake = _run(frozen, reply)
@@ -329,6 +338,8 @@ def test_journal_keeps_no_prompt_or_reply_text(frozen, tmp_path):
 # ─── the closed gate ──────────────────────────────────────────────────────────
 
 def test_the_run_is_refused_while_not_authorized_and_sends_nothing(monkeypatch):
+    monkeypatch.setattr(h, "PROJECT_CONTEXT_RUN_AUTHORIZED", False)
+
     def boom(*a, **k):
         raise AssertionError("no adapter may be built")
     monkeypatch.setattr(h, "OpenAIMsnlAdapter", boom)
