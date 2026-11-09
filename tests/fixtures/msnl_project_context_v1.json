@@ -1,0 +1,4225 @@
+{
+ "pack_id": "msnl-project-context-v1",
+ "status": "SYNTHETIC",
+ "notice": "PRE-CANDIDATE qualification basis for the T2-G / OD-PDVG-10 residual R2 cross-idea false-credit facet (DEFERRED_OBLIGATIONS_REGISTER, T2-G row; obligations A1-A5). Every case is SYNTHETIC: not real-user, market, human-study or tuning evidence. It holds the lexical engine baseline as OBSERVED data only - the baseline is never the expected answer. No candidate method exists; this pack selects, qualifies and authorizes nothing. It is committed and therefore visible: it is NOT a blind holdout. Qualifying any candidate requires a FRESH, independently authored holdout under this same frozen design, written after the candidate is frozen (A3).",
+ "target": "For ONE project idea, ONE served Mechanism Completeness question and ONE answer: is the answer about THIS project (RELEVANT), clearly about a different invention (UNRELATED), about this project but contradicting the idea (CONTRADICTS_IDEA), or too generic to tie to any invention (INSUFFICIENT); and may it earn credit (GRANT_ELIGIBLE), must it earn none (NO_CREDIT), or must it be clarified (CLARIFY)? Engineering correctness, feasibility, completeness and safety are never judged: contextual relevance is not engineering validity.",
+ "varieties": [
+  "en",
+  "ar-msa"
+ ],
+ "scope": {
+  "gap_type": "MECHANISM_COMPLETENESS",
+  "served_questions": {
+   "mechanical:MECHANISM_COMPLETENESS:Q1": {
+    "domain": "mechanical",
+    "served_index": 0,
+    "en": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+    "ar-msa": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية."
+   },
+   "mechanical:MECHANISM_COMPLETENESS:Q2": {
+    "domain": "mechanical",
+    "served_index": 1,
+    "en": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+    "ar-msa": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه."
+   },
+   "mechanical:MECHANISM_COMPLETENESS:Q3": {
+    "domain": "mechanical",
+    "served_index": 2,
+    "en": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+    "ar-msa": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء."
+   },
+   "N-MC-1": {
+    "domain": "electronics_electrical",
+    "served_index": 0,
+    "en": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+    "ar-msa": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها."
+   },
+   "N-MC-2": {
+    "domain": "electronics_electrical",
+    "served_index": 1,
+    "en": "What are the main parts of your idea, in your own words, and what does each part do?",
+    "ar-msa": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟"
+   },
+   "N-MC-3": {
+    "domain": "electronics_electrical",
+    "served_index": 2,
+    "en": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+    "ar-msa": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها."
+   }
+  },
+  "excluded": "Physical Feasibility and every other gap; the uncertainty-seeking variants mechanical:MECHANISM_COMPLETENESS:Q4 and N-MC-4; Arabic varieties other than MSA (Gulf, Egyptian and others are NOT evaluated); multi-answer histories (one answer per case). The known board-inside-enclosure / wheelchair-ramp, bicycle-light and plant-watering cases are excluded."
+ },
+ "categories": {
+  "FAITHFUL_PARAPHRASE": {
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "definition": "restates, in different everyday words, how THIS project's idea works, adding nothing new"
+  },
+  "NEW_DETAIL": {
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "definition": "explains how THIS project works using at least one component, behaviour, constraint or mechanism step that the idea text does not mention but that plausibly belongs to it (A4)"
+  },
+  "NEGATION_SAME_PROJECT": {
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "definition": "explains how THIS project works partly by saying what one of its parts does NOT do"
+  },
+  "EVERYDAY_PARTIAL": {
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "definition": "a short, partial, tentative but real statement of how part of THIS project works, in plain words"
+  },
+  "OTHER_INVENTION": {
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "definition": "a coherent, technically plausible explanation of how a DIFFERENT invention works (not this project), written as an answer to the served question and using its vocabulary (A2)"
+  },
+  "OTHER_INVENTION_SHARED_WORDS": {
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "definition": "a coherent explanation of how a DIFFERENT invention works that deliberately reuses several ordinary words that also appear in THIS project's idea (A2 lexical-overlap trap)"
+  },
+  "UNDECIDED_SAME_PROJECT": {
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "definition": "about THIS project, but says only that how it will work has not been chosen or decided yet; states no mechanism (A5)"
+  },
+  "UNKNOWN_SAME_PROJECT": {
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "definition": "about THIS project, but says only that the writer does not know how it works; states no mechanism (A5)"
+  },
+  "GENERIC_INSUFFICIENT": {
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "definition": "mechanism-sounding but so generic that it cannot be tied to THIS project or to any particular invention (e.g. the parts work together and each does its job); evidence is insufficient, so it must not earn credit (A5)"
+  },
+  "CONTRADICTS_IDEA": {
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "definition": "about THIS project, but its explanation contradicts an explicit element of the idea text (e.g. the idea says it runs on a battery, the answer says it plugs into the wall); it must be clarified with the inventor, never silently credited or silently rejected"
+  }
+ },
+ "labelling_rules": [
+  "L1 Each case is judged for ONE project idea, ONE served question and ONE answer, with no history.",
+  "L2 relevance: RELEVANT when the answer is about the invention described by the idea; UNRELATED when it clearly describes a different invention; CONTRADICTS_IDEA when it is about this invention but contradicts an explicit element of the idea text; INSUFFICIENT when it cannot be tied to this or any particular invention.",
+  "L3 A component, behaviour, constraint or step that the idea text does not mention does NOT make an answer UNRELATED when it plausibly belongs to this invention (A4).",
+  "L4 Sharing words with the idea or with the question is neither necessary nor sufficient for RELEVANT (A2).",
+  "L5 expected_outcome: GRANT_ELIGIBLE only when RELEVANT and the answer itself states how parts or steps of this invention act on one another (even partially, tentatively, in everyday words or through a physical negation); NO_CREDIT for UNRELATED, INSUFFICIENT, or RELEVANT answers that state no mechanism (undecided or unknown); CLARIFY for CONTRADICTS_IDEA.",
+  "L6 Correctness, quality, feasibility and safety are not judged: a wrong but relevant mechanism statement is still GRANT_ELIGIBLE.",
+  "L7 Arabic cases are judged by the same rules; their idea text and answer are Arabic (MSA); established English technical terms inside Arabic are allowed."
+ ],
+ "design": {
+  "projects": 6,
+  "domain_split": "3 mechanical, 3 electronics_electrical, materially different from each other",
+  "groups_per_project": 10,
+  "groups": 60,
+  "cases_per_group": 2,
+  "cases": 120,
+  "slot_plan": "for project p (P1-P3 mechanical, P4-P6 electronics_electrical) and category c (index k in categories order), group id = p + '-' + 'C%02d' % (k+1), served index = k % 3; each group has one 'en' and one 'ar-msa' case with the same meaning, each against that project's idea in the same language"
+ },
+ "evaluation_grain": "One unit = (case, prior state OPEN or PARTIAL). Every measure is computed overall, per variety, per project and per category at case grain. Cases whose blind label disagrees with the slot label are flagged label_disputed and excluded from every measure; they are reported separately.",
+ "measures": {
+  "M-FC-UNRELATED": "share of (UNRELATED case, prior) units that are GRANTED",
+  "M-FC-INSUFFICIENT": "share of (INSUFFICIENT case, prior) units that are GRANTED",
+  "M-FC-SAME-PROJECT-NO-MECHANISM": "share of (RELEVANT + NO_CREDIT case, prior) units that are GRANTED",
+  "M-FR": "share of (GRANT_ELIGIBLE case, prior) units that are NOT GRANTED (rejected or abstained)",
+  "M-FR-NEW-DETAIL-GAP": "M-FR on NEW_DETAIL minus M-FR on FAITHFUL_PARAPHRASE",
+  "M-ABSTAIN-ELIGIBLE": "share of (GRANT_ELIGIBLE case, prior) units on which an arm abstains (reported separately from rejection; the engine baseline cannot abstain)",
+  "M-CLARIFY-SILENT-GRANT": "share of (CLARIFY case, prior) units GRANTED without a clarify / abstain output (for the engine baseline: GRANTED at all)",
+  "GRANTED": "the composed outcome raises the Mechanism Completeness status or sets known_mechanism from the answer (scripts/run_msnl_eval.py mc_engine_outcome 'granted')"
+ },
+ "acceptance_criteria": {
+  "scope": "Predeclared before any case was written. They apply to a FUTURE candidate on a FRESH holdout under this design; on this pack they are reported, never used to qualify. A PASS would authorize nothing by itself.",
+  "QC1": "M-FC-UNRELATED = 0 overall, in every variety and in every project (A1, A2).",
+  "QC2": "M-FC-INSUFFICIENT = 0 overall and in every variety (A5).",
+  "QC3": "M-FC-SAME-PROJECT-NO-MECHANISM = 0 overall and in every variety (A5).",
+  "QP1": "M-FR no higher than the frozen lexical baseline's M-FR on the same cases, overall and in every variety (no new false rejection).",
+  "QP2": "M-FR-NEW-DETAIL-GAP <= 0.10 overall and in every variety (A4: new inventor details are not penalised relative to paraphrase).",
+  "QA1": "M-ABSTAIN-ELIGIBLE <= 0.10 overall (abstention is not a hidden rejection).",
+  "QX1": "M-CLARIFY-SILENT-GRANT = 0 overall and in every variety.",
+  "QG1": "Every criterion holds in every project; a method with project- or invention-specific terms or rules fails A1 by inspection."
+ },
+ "replay": {
+  "engine_contract_version": "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4",
+  "prior_partial_text": "[synthetic prior answer recorded earlier]",
+  "composition": "Offline, network-free, harness-only: scripts/run_msnl_eval.py mc_engine_outcome, unchanged. For each case and prior state (OPEN, PARTIAL) a fresh IdeaState is built at the case's served index and engine.progression_loop.integrate_response is called once. The project idea is NOT an input of the engine (that absence is the defect under study); it is recorded per case for a future candidate only."
+ },
+ "projects": [
+  {
+   "project_id": "P1",
+   "domain": "mechanical",
+   "idea": {
+    "en": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+    "ar-msa": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال."
+   }
+  },
+  {
+   "project_id": "P2",
+   "domain": "mechanical",
+   "idea": {
+    "en": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+    "ar-msa": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان."
+   }
+  },
+  {
+   "project_id": "P3",
+   "domain": "mechanical",
+   "idea": {
+    "en": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+    "ar-msa": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد."
+   }
+  },
+  {
+   "project_id": "P4",
+   "domain": "electronics_electrical",
+   "idea": {
+    "en": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+    "ar-msa": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك."
+   }
+  },
+  {
+   "project_id": "P5",
+   "domain": "electronics_electrical",
+   "idea": {
+    "en": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+    "ar-msa": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة."
+   }
+  },
+  {
+   "project_id": "P6",
+   "domain": "electronics_electrical",
+   "idea": {
+    "en": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+    "ar-msa": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص."
+   }
+  }
+ ],
+ "cases": [
+  {
+   "case_id": "P1-C01-en",
+   "group_id": "P1-C01",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "You take hold of the handle and pull it toward you, and the whole set of shelves drops until it sits level with the counter. Because the hidden weights inside the wooden sides balance it, it hardly takes any strength. When you are finished you push it up again and the weights help it rise back into the cupboard.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C01-ar-msa",
+   "group_id": "P1-C01",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "تمسك المقبض وتسحبه نحوك، فتنزل مجموعة الرفوف كلها حتى تصبح بمحاذاة سطح العمل. ولأن الأثقال المخبأة داخل الجانبين الخشبيين توازنها، لا تحتاج تقريبًا إلى أي قوة. وعندما تنتهي تدفعها إلى الأعلى من جديد فتساعدها الأثقال على الرجوع إلى داخل الخزانة.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C02-en",
+   "group_id": "P1-C02",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "The handle is fixed to a frame that carries the shelves. Steel cables run from the top of that frame over two small pulleys in the ceiling of the cabinet and then down to the weights inside the side panels. When I pull the frame down, the cables lift the weights; when I push it up, the weights sink and draw it home. At the top a spring catch drops into a notch and keeps the shelves up until I squeeze the handle to free it.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C02-ar-msa",
+   "group_id": "P1-C02",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "المقبض مثبت على إطار يحمل الرفوف. تمتد كابلات فولاذية من أعلى هذا الإطار فوق بكرتين صغيرتين في سقف الخزانة ثم تنزل إلى الأثقال داخل الألواح الجانبية. عندما أسحب الإطار إلى الأسفل ترفع الكابلات الأثقال، وعندما أدفعه إلى الأعلى تهبط الأثقال وتجرّه إلى مكانه. وفي الأعلى ماسك بنابض يسقط في شق فيُبقي الرفوف مرفوعة حتى أضغط المقبض لتحريرها.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C03-en",
+   "group_id": "P1-C03",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "The main parts are the shelf frame, the handle and the weights in the sides. The weights don't lift anything on their own; they only cancel out most of what the shelves weigh, so my arm is still what actually moves them. The handle doesn't turn or unlock anything either, it is just the thing I pull the whole frame down by.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C03-ar-msa",
+   "group_id": "P1-C03",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "الأجزاء الرئيسية هي إطار الرفوف والمقبض والأثقال الموجودة في الجانبين. الأثقال لا ترفع شيئًا بمفردها، بل تلغي معظم وزن الرفوف فقط، فتبقى ذراعي هي التي تحرّكها فعلًا. والمقبض كذلك لا يدور ولا يفتح أي قفل، بل هو مجرد شيء أسحب منه الإطار كله إلى الأسفل.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C04-en",
+   "group_id": "P1-C04",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "I pull the handle, the shelves come down, and I think the weights go up while that happens.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C04-ar-msa",
+   "group_id": "P1-C04",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "أسحب المقبض فتنزل الرفوف، وأظن أن الأثقال تصعد أثناء ذلك.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C05-en",
+   "group_id": "P1-C05",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "OTHER_INVENTION",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "The long lever arm is hinged at the back of the base plate. When you push the lever down, it drives a flat metal plate onto the can standing in the cup and squashes it. When you lift the lever again, a small spring pushes the crushed can out through a slot underneath and into the recycling bin.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C05-ar-msa",
+   "group_id": "P1-C05",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "ذراع الرافعة الطويلة مثبتة بمفصل في مؤخرة اللوح السفلي. عندما تضغط الذراع إلى الأسفل تدفع صفيحة معدنية مسطحة على العلبة الواقفة في التجويف فتسحقها. وعندما ترفع الذراع مرة أخرى يدفع نابض صغير العلبة المسحوقة عبر فتحة في الأسفل إلى سلة إعادة التدوير.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C06-en",
+   "group_id": "P1-C06",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "The main parts are a frame made of wooden panels, a seat that slides along it, and a handle tied to a rope. When you pull the handle, the rope spins a flywheel with heavy weights around its rim, and that pushes back against you the way water does against an oar. The seat's job is to roll back and forward with each stroke.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C06-ar-msa",
+   "group_id": "P1-C06",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "الأجزاء الرئيسية هي إطار من الألواح الخشبية، ومقعد ينزلق عليه، ومقبض مربوط بحبل. عندما تسحب المقبض يدير الحبل عجلة دوّارة على حافتها أثقال ثقيلة، فتقاوم حركتك كما يقاوم الماء المجداف. ومهمة المقعد أن ينزلق إلى الخلف والأمام مع كل سحبة.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C07-en",
+   "group_id": "P1-C07",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "I haven't settled yet on how the cabinet shelves will come down and go back up when someone pulls the handle. That part of the design is still open for me; I haven't picked a way.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C07-ar-msa",
+   "group_id": "P1-C07",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "لم أحسم بعد كيف ستنزل رفوف الخزانة إلى الأسفل وتعود إلى الأعلى عندما يسحب أحدهم المقبض. هذا الجزء من التصميم ما زال مفتوحًا عندي، ولم أختر طريقة بعد.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C08-en",
+   "group_id": "P1-C08",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "Honestly, I don't know which parts of the cabinet would move or how they would be joined to each other. All I know is that I want the shelves to reach counter height for my mother.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C08-ar-msa",
+   "group_id": "P1-C08",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "بصراحة لا أعرف أي أجزاء الخزانة ستتحرك ولا كيف ستتصل ببعضها. كل ما أعرفه أنني أريد أن تصل الرفوف إلى مستوى سطح العمل من أجل أمي.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C09-en",
+   "group_id": "P1-C09",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "It needs a few main parts that work together. Each part does its own job and hands the effort on to the next one until the result is achieved.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C09-ar-msa",
+   "group_id": "P1-C09",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "تحتاج الفكرة إلى بضعة أجزاء رئيسية تعمل معًا. كل جزء يؤدي مهمته الخاصة ويسلّم الجهد إلى الجزء التالي حتى تتحقق النتيجة.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P1-C10-en",
+   "group_id": "P1-C10",
+   "project_id": "P1",
+   "variety": "en",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "I want a kitchen wall cabinet whose shelves come down to counter height when you pull a handle, so short or older people can reach the top cupboard. I imagine heavy counterweights hidden in the wooden side panels that balance the shelves, so they slide down and back up without much effort. No motor, just the handle and the weights.",
+   "text": "You press a button on the side, and a small electric motor at the top of the cabinet winds the shelves down to the counter. Press the button again and the motor winds them back up.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P1-C10-ar-msa",
+   "group_id": "P1-C10",
+   "project_id": "P1",
+   "variety": "ar-msa",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "أريد خزانة مطبخ معلقة على الحائط تنزل رفوفها إلى مستوى سطح العمل عندما تسحب مقبضًا، حتى يتمكن الأشخاص قصار القامة أو كبار السن من الوصول إلى الخزانة العلوية. أتخيل أثقالًا موازِنة ثقيلة مخفية داخل الألواح الجانبية الخشبية توازن الرفوف، فتنزل وتعود إلى الأعلى دون جهد كبير. لا يوجد محرك، فقط المقبض والأثقال.",
+   "text": "تضغط زرًا على الجانب، فيلفّ محرك كهربائي صغير في أعلى الخزانة الرفوفَ إلى الأسفل حتى سطح العمل. وإذا ضغطت الزر مرة أخرى أعادها المحرك إلى الأعلى.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C01-en",
+   "group_id": "P2-C01",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "You push one end of the soaked shirt into the gap between the two rubber rollers and start turning the crank by hand. The rollers drag the shirt through and press it hard, so the water is forced out and falls back into the bucket underneath. No power is needed at any point.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C01-ar-msa",
+   "group_id": "P2-C01",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "تدفع طرف القميص المبتل في الفراغ بين الأسطوانتين المطاطيتين وتبدأ بإدارة الذراع بيدك. تسحب الأسطوانتان القميص بينهما وتضغطانه بقوة، فيُدفع الماء خارجه ويسقط عائدًا إلى الدلو تحتهما. ولا حاجة إلى أي طاقة في أي مرحلة.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C02-en",
+   "group_id": "P2-C02",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "The crank turns the top roller directly. That roller has a small gear on its end that meshes with a gear on the bottom roller, so the two rollers spin toward each other and pull the cloth in. On each side a screw knob presses on a spring that pushes the top roller down, so you can tighten the gap for thin socks or open it up for a thick towel.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C02-ar-msa",
+   "group_id": "P2-C02",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "الذراع تدير الأسطوانة العليا مباشرة. وفي طرف هذه الأسطوانة ترس صغير يتعشق مع ترس على الأسطوانة السفلى، فتدور الأسطوانتان نحو بعضهما وتسحبان القماش إلى الداخل. وعلى كل جانب مقبض لولبي يضغط على نابض يدفع الأسطوانة العليا إلى الأسفل، فتستطيع تضييق الفراغ للجوارب الرقيقة أو توسيعه للمنشفة السميكة.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C03-en",
+   "group_id": "P2-C03",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "Main parts: the bucket, the two rubber rollers and the crank. The bottom roller isn't driven by anything; it just spins freely because the shirt and the top roller drag it round. The bucket does no squeezing at all, its only job is to catch the water that runs off.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C03-ar-msa",
+   "group_id": "P2-C03",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "الأجزاء الرئيسية: الدلو، والأسطوانتان المطاطيتان، والذراع. الأسطوانة السفلى لا يحرّكها أي شيء، بل تدور بحرية لأن القميص والأسطوانة العليا يجرّانها معهما. والدلو لا يعصر شيئًا إطلاقًا، فمهمته الوحيدة أن يلتقط الماء الذي يسيل.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C04-en",
+   "group_id": "P2-C04",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "Maybe the rollers just press the shirt flat as I turn, and the water runs down.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C04-ar-msa",
+   "group_id": "P2-C04",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "ربما تضغط الأسطوانتان القميص فقط وأنا أدير، فينزل الماء.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C05-en",
+   "group_id": "P2-C05",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "OTHER_INVENTION",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "The handle turns a long threaded rod, and the fork on its end holds the apple and spins it. As the rod screws itself forward, the apple moves past a small blade on a spring-loaded arm, which presses on the skin and takes it off in one long strip.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C05-ar-msa",
+   "group_id": "P2-C05",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "المقبض يدير قضيبًا طويلًا ملولبًا، والشوكة في طرفه تمسك التفاحة وتديرها. وبينما يتقدم القضيب إلى الأمام تمرّ التفاحة بجانب شفرة صغيرة على ذراع بنابض، تضغط على القشرة فتنزعها في شريط واحد طويل.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C06-en",
+   "group_id": "P2-C06",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "The main parts are a big drum that the garden hose wraps around, a hand crank on its side to turn it, and a rubber guide with two small rollers that the hose passes between so it winds on evenly. The drum stands on a frame beside the outdoor tap, and the water flows through its hollow middle.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C06-ar-msa",
+   "group_id": "P2-C06",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "الأجزاء الرئيسية هي أسطوانة كبيرة يلتف عليها خرطوم الحديقة، وذراع يدوية على جانبها لإدارتها، ودليل من المطاط فيه أسطوانتان صغيرتان يمر الخرطوم بينهما حتى يلتف بانتظام. تقف الأسطوانة على هيكل بجانب صنبور الماء الخارجي، ويمر الماء عبر وسطها المجوف.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C07-en",
+   "group_id": "P2-C07",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "I haven't decided how the shirt will actually get squeezed dry in the bucket. I'm still weighing up different ways of doing it and nothing has been chosen yet.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C07-ar-msa",
+   "group_id": "P2-C07",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "لم أقرر بعد كيف سيُعصر القميص فعلًا في الدلو. ما زلت أوازن بين طرق مختلفة لفعل ذلك، ولم أختر شيئًا حتى الآن.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C08-en",
+   "group_id": "P2-C08",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "I'm not sure which parts of the wringer would move or what would connect to what. I don't really understand how it would work; I just want my clothes to dry faster at the campsite.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C08-ar-msa",
+   "group_id": "P2-C08",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "لست متأكدًا أي أجزاء العصّارة ستتحرك أو ما الذي سيتصل بماذا. لا أفهم حقًا كيف ستعمل، كل ما أريده أن تجف ملابسي أسرع في المخيم.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P2-C09-en",
+   "group_id": "P2-C09",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "Every main part has a role. The first one gets things going, the ones in the middle keep it moving along, and the last one completes the task.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C09-ar-msa",
+   "group_id": "P2-C09",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "لكل جزء رئيسي دور. الجزء الأول يبدأ العملية، والأجزاء التي في الوسط تواصل تحريكها، والجزء الأخير يُكمل المهمة.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C10-en",
+   "group_id": "P2-C10",
+   "project_id": "P2",
+   "variety": "en",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "A wringer bucket for washing clothes while camping. It is a plastic bucket with two rubber rollers fixed across the top: you feed a wet shirt between them and turn a hand crank. The rollers squeeze the water out and it drips back into the bucket. It works without electricity, so you can use it anywhere.",
+   "text": "You plug it into the power socket in the camper van and flip a switch. A little motor spins the rollers for you, so all you do is feed the shirt in.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P2-C10-ar-msa",
+   "group_id": "P2-C10",
+   "project_id": "P2",
+   "variety": "ar-msa",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "دلو لعصر الملابس أثناء التخييم. هو دلو بلاستيكي مثبت فوقه أسطوانتان من المطاط: تُدخل القميص المبلل بينهما ثم تدير ذراعًا يدوية. تعصر الأسطوانتان الماء من القميص فيقطر عائدًا إلى الدلو. يعمل دون كهرباء، لذلك يمكنك استخدامه في أي مكان.",
+   "text": "توصله بمقبس الكهرباء في سيارة التخييم وتضغط مفتاح التشغيل. فيدير محرك صغير الأسطوانتين بدلًا منك، ولا يبقى عليك إلا أن تُدخل القميص.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P3-C01-en",
+   "group_id": "P3-C01",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "First you stretch the rubber cover over your shoe. Outside on the ice, the little steel spikes underneath bite into it with every step, so you don't slip. Before you go inside you twist the knob at the heel and the spikes tuck away flat into the sole; twisting it back makes them point down again.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C01-ar-msa",
+   "group_id": "P3-C01",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "أولًا تشدّ الغطاء المطاطي فوق حذائك. وفي الخارج على الجليد تنغرس المسامير الفولاذية الصغيرة تحته مع كل خطوة، فلا تنزلق. وقبل أن تدخل تلفّ المقبض الدائري عند الكعب فتختبئ المسامير مسطحة داخل النعل، وإذا لففته بالعكس عادت تتجه إلى الأسفل.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C02-en",
+   "group_id": "P3-C02",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "The dial turns a thin shaft that runs inside the sole from the heel to the toe. The spikes sit on small hinged plates along that shaft, so when the shaft rotates it tips all the plates together and swings the spikes down or folds them up. A ratchet that clicks inside the dial holds the shaft in place so the spikes can't fold up by accident while you walk.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C02-ar-msa",
+   "group_id": "P3-C02",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "القرص يدير عمودًا رفيعًا يمتد داخل النعل من الكعب إلى مقدمة القدم. والمسامير مركّبة على صفائح صغيرة بمفصلات على طول هذا العمود، فعندما يدور العمود يُميل الصفائح كلها معًا فتنزل المسامير أو تنطوي. وداخل القرص سقّاطة تطقطق وتثبّت العمود حتى لا تنطوي المسامير بالخطأ أثناء المشي.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C03-en",
+   "group_id": "P3-C03",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "The parts are the stretchy rubber cover, the steel spikes and the dial on the heel. The rubber cover doesn't grip the ice itself; it is only there to hold everything tight on the shoe. And the spikes don't stay down all the time: when they are folded into the sole they don't touch the floor at all.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C03-ar-msa",
+   "group_id": "P3-C03",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "الأجزاء هي الغطاء المطاطي المرن، والمسامير الفولاذية، والقرص الموجود على الكعب. الغطاء المطاطي لا يتمسك بالجليد بنفسه، بل وظيفته فقط أن يثبّت كل شيء بإحكام على الحذاء. والمسامير لا تبقى نازلة طوال الوقت، فعندما تنطوي داخل النعل لا تلمس الأرض أبدًا.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C04-en",
+   "group_id": "P3-C04",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "I step on the ice and the spikes dig in a little, I think, so my foot doesn't slide.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C04-ar-msa",
+   "group_id": "P3-C04",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "أدوس على الجليد فتنغرس المسامير قليلًا، على ما أظن، فلا تنزلق قدمي.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P3-C05-en",
+   "group_id": "P3-C05",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "OTHER_INVENTION",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "When you turn the top knob, the screw goes down into the cork. As it goes in, the two side arms rise up, because their gear teeth mesh with the teeth on the central rod. Then you press both arms down, and that pulls the rod, and the cork with it, up out of the bottle.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P3-C05-ar-msa",
+   "group_id": "P3-C05",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "عندما تدير المقبض العلوي ينزل اللولب داخل السدادة. وأثناء نزوله ترتفع الذراعان الجانبيتان، لأن أسنانهما تتعشق مع الأسنان على القضيب الأوسط. ثم تضغط الذراعين معًا إلى الأسفل، فيُسحب القضيب ومعه السدادة إلى خارج الزجاجة.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P3-C06-en",
+   "group_id": "P3-C06",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "The main parts are a steel frame with spikes underneath, a long handle, and a dial on the axle. You push it across the lawn and the spikes poke holes in the soil so water can reach the roots. Turning the dial lifts the spike wheel, so you can roll it over paved paths and floors without scratching them.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C06-ar-msa",
+   "group_id": "P3-C06",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "الأجزاء الرئيسية هي هيكل فولاذي تحته مسامير، ومقبض طويل، وقرص على المحور. تدفعه فوق العشب فتثقب المسامير التربة ليصل الماء إلى الجذور. وإذا أدرت القرص ارتفعت عجلة المسامير، فتستطيع دحرجته فوق الممرات المبلّطة والأرضيات دون أن تخدشها.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C07-en",
+   "group_id": "P3-C07",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "I haven't made up my mind about how the overshoe will go from spikes out to spikes away. That is still an open choice for me and I haven't decided on anything.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P3-C07-ar-msa",
+   "group_id": "P3-C07",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "لم أستقر بعد على الطريقة التي سينتقل بها غطاء الحذاء من بروز المسامير إلى إخفائها. هذا ما زال خيارًا مفتوحًا عندي ولم أقرر أي شيء.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P3-C08-en",
+   "group_id": "P3-C08",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "I have no idea what would move inside the overshoe or how the dial would be linked to anything. That part is a mystery to me.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C08-ar-msa",
+   "group_id": "P3-C08",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "ليست لدي أي فكرة عمّا سيتحرك داخل غطاء الحذاء أو كيف سيرتبط القرص بأي شيء. هذا الجزء غامض بالنسبة لي.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C09-en",
+   "group_id": "P3-C09",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "You'd need a handful of basic parts, and each one is responsible for a piece of the work. When they're put together properly, everything does what it should.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C09-ar-msa",
+   "group_id": "P3-C09",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+   "served_index": 2,
+   "served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "تحتاج إلى عدد قليل من الأجزاء الأساسية، وكل واحد منها مسؤول عن جزء من العمل. وعندما تُجمع معًا بالشكل الصحيح يقوم كل شيء بما يجب عليه.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P3-C10-en",
+   "group_id": "P3-C10",
+   "project_id": "P3",
+   "variety": "en",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "project_idea": "Overshoes for walking on icy pavements in winter. They are rubber covers that stretch over your normal shoes, with a set of small steel spikes under the sole. When you go indoors you turn a dial on the back of the heel and the spikes fold up flat into the sole, so they don't scratch floors. Turning the dial the other way flips them down again.",
+   "text": "You pull them on, and the spikes underneath are fixed in place for good; they never fold away. When you get indoors you just take the overshoes off.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P3-C10-ar-msa",
+   "group_id": "P3-C10",
+   "project_id": "P3",
+   "variety": "ar-msa",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+   "project_idea": "أغطية أحذية للمشي على الأرصفة المتجمدة في الشتاء. هي أغطية من المطاط تُشد فوق حذائك العادي، وتحت نعلها مجموعة من المسامير الفولاذية الصغيرة. عندما تدخل إلى مكان مغلق تدير قرصًا في مؤخرة الكعب فتنطوي المسامير وتصبح مسطحة داخل النعل، حتى لا تخدش الأرضيات. وإذا أدرت القرص في الاتجاه الآخر انقلبت المسامير إلى الأسفل من جديد.",
+   "text": "تلبسها فوق حذائك، والمسامير تحتها ثابتة في مكانها بشكل دائم ولا تنطوي أبدًا. وعندما تدخل إلى البيت تخلع الأغطية فقط.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P4-C01-en",
+   "group_id": "P4-C01",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "The box on the side of the fridge can sense the magnet on the door. As soon as the door swings open, the magnet is no longer next to the box, so it knows. If things stay like that for over a minute, it starts beeping and carries on until the door is shut. Two AA cells keep it running.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C01-ar-msa",
+   "group_id": "P4-C01",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "العلبة على جانب الثلاجة تستطيع أن تحسّ بالمغناطيس الموجود على الباب. وبمجرد أن ينفتح الباب لا يعود المغناطيس بجوار العلبة، فتعرف ذلك. وإذا استمر الوضع هكذا أكثر من دقيقة تبدأ بالتنبيه الصوتي وتستمر حتى يُغلق الباب. وتشغّلها بطاريتان من نوع AA.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C02-en",
+   "group_id": "P4-C02",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "Inside the box there's a reed switch, a tiny glass part with two metal contacts that touch while the magnet is close. When the door opens they spring apart, and a small chip starts counting. After sixty seconds the chip switches on a buzzer. I'd also put a little button on the front that silences it for five minutes while you're unpacking the shopping.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C02-ar-msa",
+   "group_id": "P4-C02",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "داخل العلبة مفتاح reed switch، وهو قطعة زجاجية صغيرة فيها طرفا تلامس معدنيان يتلامسان ما دام المغناطيس قريبًا. وعندما يُفتح الباب يتباعدان، فتبدأ شريحة صغيرة بالعدّ. وبعد ستين ثانية تشغّل الشريحة طنّانًا. وسأضع أيضًا زرًا صغيرًا في الأمام يُسكته خمس دقائق أثناء ترتيب المشتريات.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C03-en",
+   "group_id": "P4-C03",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "Someone opens the door and wanders off. For the first minute nothing happens: the box does not beep straight away, it only waits. When the minute runs out and the magnet still isn't back beside the box, the beeping begins, and that is how people in the kitchen find out.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C03-ar-msa",
+   "group_id": "P4-C03",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "يفتح أحدهم الباب ثم يبتعد. وفي الدقيقة الأولى لا يحدث شيء، فالعلبة لا تُصدر التنبيه فورًا بل تنتظر فقط. وعندما تنقضي الدقيقة ولا يكون المغناطيس قد عاد بجوار العلبة، يبدأ صوت التنبيه، وهكذا يعرف من في المطبخ.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C04-en",
+   "group_id": "P4-C04",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "I guess the box just feels the magnet go away and then it beeps.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P4-C04-ar-msa",
+   "group_id": "P4-C04",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "أظن أن العلبة تشعر فقط بابتعاد المغناطيس ثم تُصدر التنبيه.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P4-C05-en",
+   "group_id": "P4-C05",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "OTHER_INVENTION",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "The main parts are a pill box with seven lids, a small clock chip, and a light under each lid. The clock decides when a dose is due and lights up that day's compartment. A switch under each lid tells it when the lid has been lifted, and then the light goes off.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C05-ar-msa",
+   "group_id": "P4-C05",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "الأجزاء الرئيسية هي علبة أدوية بسبعة أغطية، وشريحة ساعة صغيرة، وضوء تحت كل غطاء. تحدد الساعة متى يحين موعد الجرعة فتضيء حجرة ذلك اليوم. ويخبرها مفتاح تحت كل غطاء عندما يُرفع الغطاء، فينطفئ الضوء.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C06-en",
+   "group_id": "P4-C06",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "You slide the little box slowly along the wall. Inside it, a magnet is pulled toward the steel screws hidden behind the plaster, so the box knows it is over a wooden stud. At that moment it beeps, and you know where it's safe to drill. It runs on two AA batteries.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P4-C06-ar-msa",
+   "group_id": "P4-C06",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "تمرّر العلبة الصغيرة على الحائط ببطء. في داخلها مغناطيس ينجذب إلى المسامير الحديدية المخفية خلف الجبس، فتعرف العلبة أنها فوق عارضة خشبية. عندها تُصدر صوت تنبيه فتعرف أين يمكنك الثقب بأمان. وتعمل ببطاريتين من نوع AA.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P4-C07-en",
+   "group_id": "P4-C07",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "I haven't chosen yet how the fridge alarm will notice that the door is open, or what it will do after that. I'm leaving that open for now.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C07-ar-msa",
+   "group_id": "P4-C07",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "لم أختر بعد كيف سيلاحظ إنذار الثلاجة أن الباب مفتوح، ولا ماذا سيفعل بعد ذلك. سأترك هذا مفتوحًا في الوقت الحالي.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P4-C08-en",
+   "group_id": "P4-C08",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "To be honest I don't know what the parts of the fridge alarm would be or what each one does. I only know the result I want.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P4-C08-ar-msa",
+   "group_id": "P4-C08",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "بصراحة لا أعرف ما ستكون أجزاء إنذار الثلاجة ولا ما يفعله كل منها. أعرف فقط النتيجة التي أريدها.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P4-C09-en",
+   "group_id": "P4-C09",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "First something happens, then the system picks it up, works out what it means, and the right part reacts so that the person finds out.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C09-ar-msa",
+   "group_id": "P4-C09",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "أولًا يحدث شيء ما، ثم يلتقطه النظام ويفهم ما يعنيه، ويتفاعل الجزء المناسب حتى يعرف الشخص.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C10-en",
+   "group_id": "P4-C10",
+   "project_id": "P4",
+   "variety": "en",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A small alarm for the fridge door. A magnet goes on the door and a little box on the side of the fridge notices when the magnet moves away. If the door stays open for more than one minute, the box beeps until someone closes it. It runs on two AA batteries, so there are no wires.",
+   "text": "It plugs into the wall socket behind the fridge, with a cable running up to the box. When the door has been open too long, the box beeps.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P4-C10-ar-msa",
+   "group_id": "P4-C10",
+   "project_id": "P4",
+   "variety": "ar-msa",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "جهاز إنذار صغير لباب الثلاجة. يُثبَّت مغناطيس على الباب، وعلبة صغيرة على جانب الثلاجة تلاحظ عندما يبتعد المغناطيس عنها. إذا بقي الباب مفتوحًا أكثر من دقيقة واحدة، تُصدر العلبة صوت تنبيه حتى يغلقه أحدهم. تعمل ببطاريتين من نوع AA فلا توجد أسلاك.",
+   "text": "يُوصَل بمقبس الكهرباء في الحائط خلف الثلاجة، ويمتد سلك منه إلى العلبة. وعندما يبقى الباب مفتوحًا مدة طويلة تُصدر العلبة صوت تنبيه.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P5-C01-en",
+   "group_id": "P5-C01",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "Water from a leak spreads out over the floor and reaches the two metal strips. Once it joins them together, the device can tell, and it uses the house Wi-Fi to send a text to my phone. It takes its power from the socket beside the washer.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C01-ar-msa",
+   "group_id": "P5-C01",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "ينتشر الماء المتسرب على الأرض حتى يصل إلى الشريطين المعدنيين. وبمجرد أن يصل بينهما يدرك الجهاز ذلك، فيستخدم شبكة Wi-Fi في البيت ليرسل رسالة إلى هاتفي. ويأخذ طاقته من المقبس الموجود بجانب الغسالة.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C02-en",
+   "group_id": "P5-C02",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "The strips are wired to a small circuit that tries to push a tiny current from one to the other; a dry floor lets nothing through, but water lets a little flow. A Wi-Fi chip in the box then contacts an app on my phone. I'd also add a red light on the box that stays lit until someone presses a reset button, so a small puddle that dries before I get home still isn't missed.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P5-C02-ar-msa",
+   "group_id": "P5-C02",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "الشريطان موصولان بدائرة صغيرة تحاول تمرير تيار ضئيل من أحدهما إلى الآخر؛ فالأرض الجافة لا تسمح بمروره، أما الماء فيسمح بمرور قليل منه. ثم تتصل شريحة Wi-Fi داخل العلبة بتطبيق على هاتفي. وسأضيف كذلك ضوءًا أحمر على العلبة يبقى مضاءً حتى يضغط أحدهم زر إعادة الضبط، حتى لا تفوتني بركة صغيرة جفّت قبل وصولي إلى البيت.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P5-C03-en",
+   "group_id": "P5-C03",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "The hose cracks and water starts dripping. A few drops don't set anything off yet, because the strips are apart and the water hasn't touched both of them. Only when the puddle stretches across both strips does the box react, and then the message reaches my phone.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P5-C03-ar-msa",
+   "group_id": "P5-C03",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "يتشقق الخرطوم ويبدأ الماء بالتقاطر. بضع قطرات لا تُطلق أي شيء بعد، لأن الشريطين متباعدان ولم يلمسهما الماء كليهما. وفقط عندما تمتد البركة فوق الشريطين معًا تستجيب العلبة، وعندها تصل الرسالة إلى هاتفي.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P5-C04-en",
+   "group_id": "P5-C04",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "Maybe the water touching the strips is what makes it send something to my phone.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C04-ar-msa",
+   "group_id": "P5-C04",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "ربما يكون لمس الماء للشريطين هو ما يجعله يرسل شيئًا إلى هاتفي.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C05-en",
+   "group_id": "P5-C05",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "OTHER_INVENTION",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "The main parts are a distance sensor on the garage wall, a small controller and a strip of lights. The sensor measures how far away the car's bumper is, the controller compares that with the stopping point, and the lights change from green to red when you are close enough to stop.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C05-ar-msa",
+   "group_id": "P5-C05",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "الأجزاء الرئيسية هي حساس مسافة على جدار المرآب، ووحدة تحكم صغيرة، وشريط من الأضواء. يقيس الحساس بُعد مصد السيارة، وتقارنه وحدة التحكم بنقطة التوقف، فتتحول الأضواء من الأخضر إلى الأحمر عندما تقترب بما يكفي للتوقف.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C06-en",
+   "group_id": "P5-C06",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "Rain starts falling into the funnel on the roof. The water fills a small metal tipping cup, and every time it tips over one more count is added. When the count passes a set amount, the device sends a message to my phone over Wi-Fi, so I know it has rained heavily.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C06-ar-msa",
+   "group_id": "P5-C06",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "يبدأ المطر بالسقوط في القمع المثبت على السطح، فيمتلئ بالماء كوب معدني صغير قابل للانقلاب، وتُضاف عدّة مع كل انقلاب. وعندما يتجاوز العدد كمية محددة يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi، فأعرف أن المطر كان غزيرًا.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C07-en",
+   "group_id": "P5-C07",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "I haven't decided yet how the leak warning will notice the water under the machine or how it will tell me. Those choices are still open.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P5-C07-ar-msa",
+   "group_id": "P5-C07",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "لم أقرر بعد كيف سيلاحظ جهاز التنبيه الماء تحت الغسالة ولا كيف سيخبرني. هذه الخيارات ما زالت مفتوحة.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P5-C08-en",
+   "group_id": "P5-C08",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "I really don't know which parts the leak warning would need or what each of them would do. I'm not a technical person.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C08-ar-msa",
+   "group_id": "P5-C08",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "حقًا لا أعرف ما الأجزاء التي يحتاجها جهاز التنبيه من التسرب ولا ما سيفعله كل منها. لست شخصًا تقنيًا.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P5-C09-en",
+   "group_id": "P5-C09",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "When the problem starts, it is detected, the signal goes through the system step by step, and in the end the person is told.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C09-ar-msa",
+   "group_id": "P5-C09",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "عندما تبدأ المشكلة يتم اكتشافها، وتمر الإشارة عبر النظام خطوة بعد خطوة، وفي النهاية يُبلَّغ الشخص.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C10-en",
+   "group_id": "P5-C10",
+   "project_id": "P5",
+   "variety": "en",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A water leak warning for under the washing machine. Two thin metal strips lie on the floor a few millimetres apart; if water spreads across the floor and touches both strips, the device sends a message to my phone over the home Wi-Fi. It is plugged into the wall socket next to the machine.",
+   "text": "It isn't plugged in anywhere; a coin battery inside it powers everything. When water touches both strips it sends the message to my phone over Wi-Fi.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P5-C10-ar-msa",
+   "group_id": "P5-C10",
+   "project_id": "P5",
+   "variety": "ar-msa",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "تنبيه من تسرب الماء يوضع تحت الغسالة. شريطان معدنيان رفيعان ممدودان على الأرض بينهما بضعة مليمترات؛ إذا انتشر الماء على الأرض ولامس الشريطين معًا، يرسل الجهاز رسالة إلى هاتفي عبر شبكة Wi-Fi المنزلية. وهو موصول بمقبس الكهرباء في الحائط بجانب الغسالة.",
+   "text": "لا يُوصَل بأي مقبس، فبطارية صغيرة على شكل قرص بداخله تشغّل كل شيء. وعندما يلمس الماء الشريطين معًا يرسل الرسالة إلى هاتفي عبر Wi-Fi.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C01-en",
+   "group_id": "P6-C01",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "The pad under the seat cushion can feel when the child is sitting on it. Once the driver turns the engine off, if that weight is still there, the fob on the driver's keys buzzes to warn them. A small coin cell keeps the pad going.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C01-ar-msa",
+   "group_id": "P6-C01",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "FAITHFUL_PARAPHRASE",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "الوسادة الموجودة تحت حشوة المقعد تستطيع أن تحسّ عندما يجلس الطفل عليها. وبعد أن يطفئ السائق المحرك، إذا بقي ذلك الوزن موجودًا، تهتز القطعة المعلقة في مفاتيح السائق وتطنّ لتنبهه. وتُبقي بطارية صغيرة على شكل قرص الوسادة تعمل.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C02-en",
+   "group_id": "P6-C02",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "The pad is a thin sheet that conducts more electricity when it is squeezed, with a small radio chip that talks to the fob over Bluetooth. A third part plugs into the car's USB socket; when the engine stops, that socket loses power, and the plug tells the pad. The pad then checks for weight and, if there is some, radios the fob. The fob has a tiny vibration motor and a short beep, and it repeats every thirty seconds until the driver presses its button.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "LOW"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C02-ar-msa",
+   "group_id": "P6-C02",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "الوسادة صفيحة رقيقة توصل الكهرباء أكثر عندما تُضغط، ومعها شريحة لاسلكية صغيرة تتواصل مع القطعة المعلقة عبر Bluetooth. وهناك جزء ثالث يُوصَل بمقبس USB في السيارة؛ فعندما يتوقف المحرك ينقطع التيار عن ذلك المقبس، فيُبلغ الوسادة. ثم تتحقق الوسادة من وجود وزن، وإن وُجد ترسل إشارة لاسلكية إلى القطعة المعلقة. وفي القطعة محرك اهتزاز صغير وصفارة قصيرة، وتتكرر كل ثلاثين ثانية حتى يضغط السائق زرها.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "LOW"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C03-en",
+   "group_id": "P6-C03",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "The driver parks, switches off the engine and starts to walk away. While the car is running the pad doesn't send anything, so there is no buzzing during the drive. Only after the engine is off, if the child's weight is still pressing on the pad, does the fob on the keys start buzzing, and that's the moment the driver finds out.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C03-ar-msa",
+   "group_id": "P6-C03",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "NEGATION_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "يركن السائق السيارة ويطفئ المحرك ويبدأ بالابتعاد. وأثناء تشغيل السيارة لا ترسل الوسادة أي شيء، فلا يحدث طنين أثناء القيادة. وفقط بعد إطفاء المحرك، إذا ظل وزن الطفل ضاغطًا على الوسادة، تبدأ القطعة المعلقة في المفاتيح بالطنين، وفي تلك اللحظة يعرف السائق.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C04-en",
+   "group_id": "P6-C04",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "Kind of like, the pad feels the kid is still there and the keys buzz.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C04-ar-msa",
+   "group_id": "P6-C04",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "EVERYDAY_PARTIAL",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "تقريبًا، الوسادة تشعر أن الطفل ما زال موجودًا فتطنّ المفاتيح.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "GRANT_ELIGIBLE",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "GRANT_ELIGIBLE",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C05-en",
+   "group_id": "P6-C05",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "OTHER_INVENTION",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "The main parts are a temperature probe hanging among the plants in the greenhouse, a small controller, and a siren inside the house. The probe reads how cold the air is, the controller compares that with a frost limit, and when it drops below that it switches the siren on through a long cable.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C05-ar-msa",
+   "group_id": "P6-C05",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "الأجزاء الرئيسية هي مجس حرارة معلق بين النباتات في البيت الزجاجي، ووحدة تحكم صغيرة، وصفارة إنذار داخل المنزل. يقرأ المجس مدى برودة الهواء، وتقارنها وحدة التحكم بحدّ الصقيع، وعندما تنخفض الحرارة عن ذلك تشغّل الصفارة عبر سلك طويل.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C06-en",
+   "group_id": "P6-C06",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "You step onto the pressure pad of the bathroom scale and your weight presses on it, so a reading is taken. The scale compares the reading with last week's, and if the weight has gone up a lot it starts buzzing so you know. It runs on a coin battery.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C06-ar-msa",
+   "group_id": "P6-C06",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "OTHER_INVENTION_SHARED_WORDS",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "تصعد على وسادة الضغط في ميزان الحمّام فيضغط وزنك عليها وتُؤخذ قراءة. يقارن الميزان القراءة بقراءة الأسبوع الماضي، وإذا زاد الوزن كثيرًا يبدأ بالطنين حتى تعرف. ويعمل ببطارية صغيرة على شكل قرص.",
+   "relevance": "UNRELATED",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "UNRELATED",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C07-en",
+   "group_id": "P6-C07",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "I haven't decided yet how the car-seat reminder will notice that the child is still there, or how it will warn the driver. I'm still thinking it over.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C07-ar-msa",
+   "group_id": "P6-C07",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "UNDECIDED_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "لم أقرر بعد كيف سيلاحظ منبّه مقعد الطفل أن الطفل ما زال موجودًا، ولا كيف سينبّه السائق. ما زلت أفكر في الأمر.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C08-en",
+   "group_id": "P6-C08",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "I don't know what parts the reminder for the child seat would have or what each part would do. I can't picture how it works inside.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C08-ar-msa",
+   "group_id": "P6-C08",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "UNKNOWN_SAME_PROJECT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "لا أعرف ما الأجزاء التي سيتكون منها منبّه مقعد الطفل ولا ما سيفعله كل جزء. لا أستطيع أن أتخيل كيف يعمل من الداخل.",
+   "relevance": "RELEVANT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "RELEVANT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C09-en",
+   "group_id": "P6-C09",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "Something goes wrong, a part notices, it passes that along to the next part, and that part lets someone know.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C09-ar-msa",
+   "group_id": "P6-C09",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "GENERIC_INSUFFICIENT",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-3",
+   "served_index": 2,
+   "served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "يحدث خلل ما، فيلاحظه جزء، وينقل ذلك إلى الجزء التالي، وذلك الجزء يُعلم أحدهم.",
+   "relevance": "INSUFFICIENT",
+   "expected_outcome": "NO_CREDIT",
+   "blind_label": {
+    "relevance": "INSUFFICIENT",
+    "expected_outcome": "NO_CREDIT",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "PARTIAL",
+     "granted": true
+    },
+    "PARTIAL": {
+     "status_after": "CLOSED",
+     "granted": true
+    }
+   }
+  },
+  {
+   "case_id": "P6-C10-en",
+   "group_id": "P6-C10",
+   "project_id": "P6",
+   "variety": "en",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "project_idea": "A reminder so a child is never left in a parked car. A thin pressure pad goes under the cushion of the child car seat. When the car's engine is switched off and the pad still feels the child's weight, a key-ring fob that the driver carries starts buzzing. The pad runs on a coin battery.",
+   "text": "The pad is wired into the car's own electrics, so there is no battery in it to change. When the engine goes off and there is still weight on it, the fob buzzes.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  },
+  {
+   "case_id": "P6-C10-ar-msa",
+   "group_id": "P6-C10",
+   "project_id": "P6",
+   "variety": "ar-msa",
+   "category": "CONTRADICTS_IDEA",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+   "project_idea": "منبّه حتى لا يُنسى طفل داخل سيارة متوقفة. توضع وسادة رقيقة تستشعر الضغط تحت حشوة مقعد الطفل في السيارة. عندما يُطفأ محرك السيارة وتظل الوسادة تشعر بوزن الطفل، تبدأ قطعة صغيرة معلقة في سلسلة المفاتيح يحملها السائق بالاهتزاز والطنين. تعمل الوسادة ببطارية صغيرة على شكل قرص.",
+   "text": "الوسادة موصولة بأسلاك بكهرباء السيارة نفسها، فلا توجد فيها بطارية تحتاج إلى تغيير. وعندما يُطفأ المحرك ويظل عليها وزن، تطنّ القطعة المعلقة.",
+   "relevance": "CONTRADICTS_IDEA",
+   "expected_outcome": "CLARIFY",
+   "blind_label": {
+    "relevance": "CONTRADICTS_IDEA",
+    "expected_outcome": "CLARIFY",
+    "confidence": "HIGH"
+   },
+   "label_disputed": false,
+   "engine_baseline": {
+    "OPEN": {
+     "status_after": "OPEN",
+     "granted": false
+    },
+    "PARTIAL": {
+     "status_after": "PARTIAL",
+     "granted": false
+    }
+   }
+  }
+ ],
+ "baseline_observed": {
+  "note": "OBSERVED lexical engine baseline on this pack, computed once at freezing from engine_baseline; [count, units] per measure, (case, prior) units, undisputed cases only. These are observed failures and successes of the current method, never expected answers, and they qualify nothing.",
+  "measures": {
+   "overall": {
+    "M-FC-UNRELATED": [
+     36,
+     48
+    ],
+    "M-FC-INSUFFICIENT": [
+     24,
+     24
+    ],
+    "M-FC-SAME-PROJECT-NO-MECHANISM": [
+     12,
+     48
+    ],
+    "M-FR": [
+     40,
+     96
+    ],
+    "M-FR-NEW-DETAIL": [
+     8,
+     24
+    ],
+    "M-FR-FAITHFUL-PARAPHRASE": [
+     10,
+     24
+    ],
+    "M-CLARIFY-SILENT-GRANT": [
+     8,
+     24
+    ]
+   },
+   "en": {
+    "M-FC-UNRELATED": [
+     20,
+     24
+    ],
+    "M-FC-INSUFFICIENT": [
+     12,
+     12
+    ],
+    "M-FC-SAME-PROJECT-NO-MECHANISM": [
+     8,
+     24
+    ],
+    "M-FR": [
+     20,
+     48
+    ],
+    "M-FR-NEW-DETAIL": [
+     4,
+     12
+    ],
+    "M-FR-FAITHFUL-PARAPHRASE": [
+     6,
+     12
+    ],
+    "M-CLARIFY-SILENT-GRANT": [
+     6,
+     12
+    ]
+   },
+   "ar-msa": {
+    "M-FC-UNRELATED": [
+     16,
+     24
+    ],
+    "M-FC-INSUFFICIENT": [
+     12,
+     12
+    ],
+    "M-FC-SAME-PROJECT-NO-MECHANISM": [
+     4,
+     24
+    ],
+    "M-FR": [
+     20,
+     48
+    ],
+    "M-FR-NEW-DETAIL": [
+     4,
+     12
+    ],
+    "M-FR-FAITHFUL-PARAPHRASE": [
+     4,
+     12
+    ],
+    "M-CLARIFY-SILENT-GRANT": [
+     2,
+     12
+    ]
+   },
+   "by_project_M-FC-UNRELATED": {
+    "P1": [
+     8,
+     8
+    ],
+    "P2": [
+     6,
+     8
+    ],
+    "P3": [
+     4,
+     8
+    ],
+    "P4": [
+     4,
+     8
+    ],
+    "P5": [
+     8,
+     8
+    ],
+    "P6": [
+     6,
+     8
+    ]
+   },
+   "by_category_granted": {
+    "FAITHFUL_PARAPHRASE": [
+     14,
+     24
+    ],
+    "NEW_DETAIL": [
+     16,
+     24
+    ],
+    "NEGATION_SAME_PROJECT": [
+     20,
+     24
+    ],
+    "EVERYDAY_PARTIAL": [
+     6,
+     24
+    ],
+    "OTHER_INVENTION": [
+     18,
+     24
+    ],
+    "OTHER_INVENTION_SHARED_WORDS": [
+     18,
+     24
+    ],
+    "UNDECIDED_SAME_PROJECT": [
+     6,
+     24
+    ],
+    "UNKNOWN_SAME_PROJECT": [
+     6,
+     24
+    ],
+    "GENERIC_INSUFFICIENT": [
+     24,
+     24
+    ],
+    "CONTRADICTS_IDEA": [
+     8,
+     24
+    ]
+   }
+  }
+ },
+ "annotation": {
+  "preregistration_order": "design (target, categories, labelling rules L1-L7, slot plan, measures, acceptance criteria) frozen before any case existed, design sha256 17e8557c1ebb74355cec2ba363e0277565118af5dcfcd9abdf54c8697844d167; cases written and frozen (authored sha256 7ab993a329476ee03eb24e6f05395e81186bb0314780c75ff661ea12be0d37c6) before blind labelling and before any engine baseline was computed; no candidate method exists.",
+  "method": "Cases (6 project ideas EN / AR-MSA, 120 answers) were written by one author agent that read only the frozen design file and nothing in the repository; labels were assigned blind by a separate agent that read only the target, L1-L7 and the 120 cases shuffled (seed 20261109) under opaque keys, with no category, slot plan or expected outcome. The assembler (the executor that ran the cross-idea diagnostic and wrote the design) wrote no case and changed no text or label. Author note: I read only the frozen design file (design.json) and wrote every idea and answer myself; I read nothing under the repository and did no web search. The main difficulty was keeping OTHER_INVENTION_SHARED_WORDS answers clearly about a different invention while reusing at least three ordinary idea words in both English and MSA, and fitting the electronics 'problem' questions to the P4 stud-finder and P5 rain-gauge distractors. Labeller note: I read only blind_rules.json and blind_input.json in the scratchpad/pc directory and nothing else (no other files, no web). Labels apply L1-L7 per case without history; undecided/don't-know answers about this invention were labelled RELEVANT/NO_CREDIT and generic step templates INSUFFICIENT. The hardest cases were B082 and B100 (an added USB-socket engine-off sensor beside a coin-battery pad, judged a plausible added part rather than a contradiction).",
+  "label_agreement": "120 of 120 cases: blind label equals slot label on both relevance and expected_outcome",
+  "disagreement_resolution": "Predeclared: no relabelling. A case whose blind label differs from its slot label is label_disputed, kept verbatim and excluded from every measure. Disputed: none",
+  "independence_limits": "Author, labeller, assembler and reviewer are separate agents of the same model family in one session, not independent humans; the assembler designed the categories after seeing the board / ramp diagnostic. This pack is committed and visible, so it is NOT a blind holdout: qualifying any candidate needs a fresh, independently authored holdout under this frozen design, written after the candidate is frozen (A3).",
+  "human_native_speaker_review": "NOT PERFORMED (Arabic MSA was written and labelled by agents only).",
+  "reworded_for_eligibility": "none (no case was edited after authoring)",
+  "post_freeze_review_notes": [
+   "Recorded after an independent non-authoring review of the frozen pack; cases, labels, design, measures, criteria and baseline are unchanged.",
+   "N1 The design and authored sha256 values in preregistration_order refer to scratch files that were not committed; they cannot be verified from the repository. Only this pack's own sha256 is pinned.",
+   "N2 The 120/120 blind agreement (118 HIGH, 2 LOW confidence) comes from a same-family agent whose rules L1-L7 closely mirror the category definitions; it is not a measured inter-annotator reliability.",
+   "N3 Design confound (most substantive): the slot plan ties each category to one served question (served index = category index mod 3), so every per-category comparison - including QP2's NEW_DETAIL versus FAITHFUL_PARAPHRASE gap - is confounded with the served question and index. A fresh holdout should rotate served questions across categories under a declared design amendment before it is used for qualification.",
+   "N4 The engine baseline is identical from the OPEN and PARTIAL priors on all 120 cases, so (case, prior) unit counts are exactly double the case counts here.",
+   "N5 QP1 compares a candidate with the lexical baseline recomputed on the SAME fresh holdout cases; it is a weak bar (baseline M-FR here: 40/96).",
+   "N6 Recorded but not separately listed in baseline_observed: M-FR-NEW-DETAIL-GAP = 8/24 - 10/24 = -2/24 overall; M-ABSTAIN-ELIGIBLE = 0/96 by construction (the engine cannot abstain). evaluation_grain promises per-project and per-category computation; baseline_observed reports per project only M-FC-UNRELATED and per category only grant counts - the full grid is computable from engine_baseline.",
+   "N7 Per-project zero-tolerance checks (QC1, QG1) rest on about four undisputed (case, variety) pairs per project, so their power is low; results are reported as observed.",
+   "N8 Weak or loose cases, kept verbatim: P6-C02 (NEW_DETAIL; a USB-powered third part beside a coin-battery pad, close to CONTRADICTS_IDEA, labelled LOW confidence); P4-C03 and P5-C03 (NEGATION_SAME_PROJECT; negation of timing or threshold rather than of what a part does). P6's Arabic idea mentions vibration and buzzing while the English mentions buzzing only, so P6-C02's vibration motor is new in English only.",
+   "N9 UNDECIDED_SAME_PROJECT and UNKNOWN_SAME_PROJECT probe A5 and the existing T2-G-4 / R1 residuals (e.g. P4-C07-en is still granted), not the cross-idea defect itself."
+  ]
+ }
+}
