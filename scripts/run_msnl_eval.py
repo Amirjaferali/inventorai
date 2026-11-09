@@ -2254,6 +2254,7 @@ def ch_decision(answer, reply):
         grounded = quote == ""
     decided = contribution if grounded else CH_UNGROUNDED
     return {"project_relation": reply["project_relation"], "new_contribution": decided,
+            "reply_new_contribution": contribution,
             "possible_amendment": reply["possible_amendment"],
             "progress_eligible": reply["project_relation"] == "RELATED" and decided == "CONTENT_BEARING"}
 
@@ -2279,10 +2280,15 @@ def ch_measures(manifest, rows):
         other = [(c, d) for c, d in units if not c["slot_label"]["possible_amendment"]]
         return {
             "M-UP": [sum(d["progress_eligible"] for _, d in neg), len(neg)],
+            # Literal preregistration: a rejection is UNRELATED, NO_NEW_CONTENT or an
+            # ungrounded CONTENT_BEARING; UNCERTAIN on either axis is an abstention,
+            # whatever its quote (read from the reply, before grounding).
             "M-LR": [sum(d["project_relation"] == "UNRELATED"
-                         or d["new_contribution"] in ("NO_NEW_CONTENT", CH_UNGROUNDED)
+                         or d["reply_new_contribution"] == "NO_NEW_CONTENT"
+                         or (d["reply_new_contribution"] == "CONTENT_BEARING"
+                             and d["new_contribution"] == CH_UNGROUNDED)
                          for _, d in pos), len(pos)],
-            "M-ABST": [sum("UNCERTAIN" in (d["project_relation"], d["new_contribution"])
+            "M-ABST": [sum("UNCERTAIN" in (d["project_relation"], d["reply_new_contribution"])
                            for _, d in pos), len(pos)],
             "M-FLIP": [sum(d["project_relation"] == "UNRELATED" for _, d in related), len(related)],
             "M-AMEND-recall": [sum(d["possible_amendment"] for _, d in amend), len(amend)],
@@ -2355,6 +2361,10 @@ def context_history_run(adapter, manifest, journal=None):
                               "input_token_bound": bound,
                               "committed_usd": round(ledger["committed"], 6)})
         reply, err, meta = ch_classify_measured(adapter, manifest, case, payload, bound)
+        if reply is None and err is None:
+            # e.g. a JSON ``null`` reply: never skipped silently; the run is INVALID.
+            err = toa.ERR_MALFORMED
+            adapter._fail(err)
         usage = meta["usage"]
         known = isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)
         cost = (_pf_usd(usage["input_tokens"], usage["output_tokens"], price["input_usd_per_1m"],
@@ -2387,9 +2397,10 @@ def context_history_report(manifest, stop, rows, spend):
     """The outcome (INVALID on any stop, else every failed criterion or
     NOT_FALSIFIED_ON_THIS_HOLDOUT), the measures and every untested case."""
     measures = ch_measures(manifest, rows)
-    failed = [] if stop is not None else ch_failed_criteria(measures)
-    outcome = CH_INVALID if stop is not None else (failed or [CH_NOT_FALSIFIED])
     tested = {r["case_id"] for r in rows if r.get("decision") is not None}
+    complete = tested == {c["case_id"] for c in manifest["cases"]}
+    failed = [] if stop is not None or not complete else ch_failed_criteria(measures)
+    outcome = CH_INVALID if stop is not None or not complete else (failed or [CH_NOT_FALSIFIED])
     return {"manifest_id": manifest["manifest_id"], "outcome": outcome, "stop": stop, "spend": spend,
             "measures": measures,
             "excluded_disputed": [c["case_id"] for c in ch_ordered(manifest) if c["label_disputed"]],

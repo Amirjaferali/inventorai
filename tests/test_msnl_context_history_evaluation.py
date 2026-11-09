@@ -435,3 +435,32 @@ def test_the_authorized_path_writes_exclusive_evidence_once(manifest, monkeypatc
     again = h.context_history_evaluation("openai", True, True)
     assert "already exists" in again["refused"] and again["provider_requests"] == 0
     assert len(fake.bodies) == 120
+
+
+def test_a_null_reply_is_invalid_never_skipped(manifest):
+    """Review M1: a JSON null reply (schema-valid JSON, no object) stops the run
+    INVALID at once; no case is ever silently left unscored."""
+    report, fake = _run(manifest, lambda c: _wrap(None))
+    assert report["outcome"] == h.CH_INVALID and report["stop"]["reason"] == toa.ERR_MALFORMED
+    assert len(fake.bodies) == 1 and len(report["untested_cases"]) == 120
+
+
+def test_an_incomplete_measurement_is_never_a_verdict(manifest):
+    report = h.context_history_report(manifest, None, [], {"requests_sent": 0})
+    assert report["outcome"] == h.CH_INVALID and len(report["untested_cases"]) == 120
+
+
+def test_uncertain_with_a_quote_is_an_abstention_not_a_rejection(manifest):
+    """Review N1: the preregistration counts UNCERTAIN on either axis as an
+    abstention, whatever its quote; it is never progress."""
+    target = _first(manifest, "NEW_DETAIL")
+    reply = {"project_relation": "RELATED", "new_contribution": "UNCERTAIN",
+             "possible_amendment": False, "evidence_quote": _quote(target)}
+    report, _ = _run(manifest, _overriding(target, reply))
+    o = report["measures"]["overall"]
+    assert report["outcome"] == [h.CH_NOT_FALSIFIED]
+    assert (o["M-ABST"][0], o["M-LR"][0], o["M-UP"][0]) == (1, 0, 0)
+    target = _first(manifest, "PLAIN_LANGUAGE_DETAIL")
+    reply = dict(reply, new_contribution="NO_NEW_CONTENT")
+    report, _ = _run(manifest, _overriding(target, reply))
+    assert report["outcome"] == [h.CH_F2]
