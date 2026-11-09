@@ -1920,12 +1920,16 @@ def pc_stop(item, decision):
     return None
 
 
-def pc_classify_measured(adapter, manifest, pack, item, payload, bound):
+def pc_classify_measured(adapter, manifest, pack, item, payload, bound,
+                         reply_error=None, fields=PC_FIELDS):
     """ONE request: (reply, error_kind, meta). Beyond the schema, a 200 reply
     must confirm the configured model, report usage, stay within its output
     cap and within the reserved input-token bound, and report Standard
     processing (service_tier "default", the price basis of every reservation):
-    any other or unreported tier stops the run before a second request."""
+    any other or unreported tier stops the run before a second request.
+    ``reply_error`` / ``fields`` default to the project-context reply; the
+    context-history evaluation passes its own and shares every other check."""
+    reply_error = pc_reply_error if reply_error is None else reply_error
     tier = {"value": _PF_UNAVAILABLE}
     transport = adapter._transport
 
@@ -1965,11 +1969,11 @@ def pc_classify_measured(adapter, manifest, pack, item, payload, bound):
     if reply == ms.ABSTAIN:
         adapter.errors[ERR_REFUSAL] = adapter.errors.get(ERR_REFUSAL, 0) + 1
         return None, ERR_REFUSAL, meta
-    kind = pc_reply_error(reply)
+    kind = reply_error(reply)
     if kind is not None:
         adapter._fail(kind)
         return None, kind, meta
-    return {f: reply[f] for f in PC_FIELDS}, None, meta
+    return {f: reply[f] for f in fields}, None, meta
 
 
 def project_context_run(adapter, manifest, pack, journal=None):
@@ -2156,6 +2160,307 @@ def project_context_falsification(provider, allow_network, managed_credential):
     return out
 
 
+# ─── R2 context-and-history evaluation (prepared; NOT authorized to run) ─────
+# ONE frozen candidate reads the original idea, the served question, ONE
+# preceding inventor answer and the current answer, and gives two independent
+# judgments: project_relation and new_contribution, plus an amendment
+# disclosure that never changes the relation. Instructions and criteria were
+# frozen (tests/fixtures/msnl_context_history_v1_preregistration.json) before
+# any case existed; the cases were written and blind-labelled afterwards by
+# separate agents. Every case is sent once, with no early stop on a falsifying
+# case, so the report is a full measurement; only an INVALID event stops it.
+# Nothing here touches product code, replay, an engine contract or any store,
+# and "progress_eligible" is an evaluation reading that grants nothing.
+# CONTEXT_HISTORY_RUN_AUTHORIZED stays False until a separate Owner
+# authorization and a reviewed commit open it for exactly ONE run.
+
+CONTEXT_HISTORY_PREREG_PATH = os.path.join(
+    _ROOT, "tests", "fixtures", "msnl_context_history_v1_preregistration.json")
+CONTEXT_HISTORY_PREREG_SHA256 = "d8896785bb84713fa54c8b59fcfdb30c8f71af9251e5ef4d45f9f20c6267a8c2"
+CONTEXT_HISTORY_MANIFEST_PATH = os.path.join(
+    _ROOT, "tests", "fixtures", "msnl_context_history_v1.json")
+CONTEXT_HISTORY_MANIFEST_SHA256 = "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda56465365fcdaaabda847"
+CONTEXT_HISTORY_RUN_AUTHORIZED = False
+CONTEXT_HISTORY_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
+                                            "msnl_context_history_v1")
+CONTEXT_HISTORY_JOURNAL_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR, "run_01_journal.jsonl")
+CONTEXT_HISTORY_REPORT_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR, "run_01_report.json")
+CH_RELATIONS = ("RELATED", "UNRELATED", "UNCERTAIN")
+CH_CONTRIBUTIONS = ("CONTENT_BEARING", "NO_NEW_CONTENT", "UNCERTAIN")
+CH_FIELDS = ("project_relation", "new_contribution", "possible_amendment", "evidence_quote")
+CH_UNGROUNDED = "UNGROUNDED"
+CH_INPUT_FIELDS = ("original_idea", "served_question", "preceding_answer", "current_answer")
+CH_F1 = "F1_FALSIFIED_UNJUSTIFIED_PROGRESS"
+CH_F2 = "F2_FALSIFIED_LEGITIMATE_REJECTED"
+CH_F3 = "F3_FALSIFIED_OVER_ABSTENTION"
+CH_F4 = "F4_FALSIFIED_RELATION_FLIP"
+CH_INVALID = "INVALID"
+CH_NOT_FALSIFIED = "NOT_FALSIFIED_ON_THIS_HOLDOUT"
+CH_MAX_ABSTENTIONS = 3
+
+
+def context_history_manifest():
+    """The hash-pinned manifest; refuses (PackError) any drift in it, in the
+    preregistration it names, or between their frozen instructions."""
+    prereg = _load(CONTEXT_HISTORY_PREREG_PATH, CONTEXT_HISTORY_PREREG_SHA256)
+    manifest = _load(CONTEXT_HISTORY_MANIFEST_PATH, CONTEXT_HISTORY_MANIFEST_SHA256)
+    cand, frozen = manifest["candidate"], prereg["candidate"]
+    if manifest["preregistration"]["sha256"] != CONTEXT_HISTORY_PREREG_SHA256 or cand != frozen:
+        raise PackError("the manifest's candidate differs from the preregistered one")
+    if hashlib.sha256(cand["instructions"].encode("utf-8")).hexdigest() != cand["instructions_sha256"]:
+        raise PackError("the frozen instructions do not match their pinned digest")
+    return manifest
+
+
+def ch_ordered(manifest):
+    return sorted(manifest["cases"], key=lambda c: c["request_index"])
+
+
+def ch_payload(manifest, case, model=toa.MODEL):
+    """The exact provider body: frozen instructions, the strict schema and as
+    input ONLY the four case texts (no id, category or label)."""
+    body = json.dumps({f: case[f] for f in CH_INPUT_FIELDS}, ensure_ascii=False, sort_keys=True)
+    return {"model": model, "instructions": manifest["candidate"]["instructions"], "input": body,
+            "store": False, "max_output_tokens": manifest["budget"]["max_output_tokens"],
+            "text": {"format": {"type": "json_schema", "name": "msnl_context_history",
+                                "strict": True, "schema": manifest["candidate"]["output_schema"]}}}
+
+
+def ch_reservation_usd(manifest, payload):
+    return pc_reservation_usd(manifest, payload)
+
+
+def ch_reply_error(reply):
+    """None when ``reply`` is exactly the four frozen fields with frozen values."""
+    if not isinstance(reply, dict) or set(reply) != set(CH_FIELDS):
+        return toa.ERR_MALFORMED
+    if reply["project_relation"] not in CH_RELATIONS \
+            or reply["new_contribution"] not in CH_CONTRIBUTIONS \
+            or not isinstance(reply["possible_amendment"], bool) \
+            or not isinstance(reply["evidence_quote"], str):
+        return toa.ERR_MALFORMED
+    return None
+
+
+def ch_decision(answer, reply):
+    """The two judgments as decided: CONTENT_BEARING needs a non-empty quote
+    found in the answer, every other contribution an empty quote; otherwise the
+    contribution is UNGROUNDED. progress_eligible = RELATED and a grounded
+    CONTENT_BEARING; it is an evaluation reading only and grants nothing."""
+    contribution, quote = reply["new_contribution"], reply["evidence_quote"]
+    if contribution == "CONTENT_BEARING":
+        grounded = bool(quote.strip()) and quote_grounded(quote, answer)
+    else:
+        grounded = quote == ""
+    decided = contribution if grounded else CH_UNGROUNDED
+    return {"project_relation": reply["project_relation"], "new_contribution": decided,
+            "reply_new_contribution": contribution,
+            "possible_amendment": reply["possible_amendment"],
+            "progress_eligible": reply["project_relation"] == "RELATED" and decided == "CONTENT_BEARING"}
+
+
+def ch_measures(manifest, rows):
+    """The preregistered measures over the decided rows of UNDISPUTED cases:
+    [count, units] each, overall and by category, project, domain, variety and
+    side, plus the per-axis confusion."""
+    cases = {c["case_id"]: c for c in manifest["cases"]}
+    scored = [(cases[r["case_id"]], r["decision"]) for r in rows
+              if r.get("decision") is not None and not cases[r["case_id"]]["label_disputed"]]
+
+    def positive(c):
+        return (c["slot_label"]["project_relation"], c["slot_label"]["new_contribution"]) == \
+            ("RELATED", "CONTENT_BEARING")
+
+    def tally(units):
+        units = list(units)
+        pos = [(c, d) for c, d in units if positive(c)]
+        neg = [(c, d) for c, d in units if not positive(c)]
+        related = [(c, d) for c, d in units if c["slot_label"]["project_relation"] == "RELATED"]
+        amend = [(c, d) for c, d in units if c["slot_label"]["possible_amendment"]]
+        other = [(c, d) for c, d in units if not c["slot_label"]["possible_amendment"]]
+        return {
+            "M-UP": [sum(d["progress_eligible"] for _, d in neg), len(neg)],
+            # Literal preregistration: a rejection is UNRELATED, NO_NEW_CONTENT or an
+            # ungrounded CONTENT_BEARING; UNCERTAIN on either axis is an abstention,
+            # whatever its quote (read from the reply, before grounding).
+            "M-LR": [sum(d["project_relation"] == "UNRELATED"
+                         or d["reply_new_contribution"] == "NO_NEW_CONTENT"
+                         or (d["reply_new_contribution"] == "CONTENT_BEARING"
+                             and d["new_contribution"] == CH_UNGROUNDED)
+                         for _, d in pos), len(pos)],
+            "M-ABST": [sum("UNCERTAIN" in (d["project_relation"], d["reply_new_contribution"])
+                           for _, d in pos), len(pos)],
+            "M-FLIP": [sum(d["project_relation"] == "UNRELATED" for _, d in related), len(related)],
+            "M-AMEND-recall": [sum(d["possible_amendment"] for _, d in amend), len(amend)],
+            "M-AMEND-false-flags": [sum(d["possible_amendment"] for _, d in other), len(other)],
+        }
+
+    def by(key):
+        return {v: tally(u for u in scored if key(u[0]) == v)
+                for v in sorted({key(c) for c in manifest["cases"]})}
+    relation = collections.Counter((c["slot_label"]["project_relation"], d["project_relation"])
+                                   for c, d in scored)
+    contribution = collections.Counter((c["slot_label"]["new_contribution"], d["new_contribution"])
+                                       for c, d in scored
+                                       if c["slot_label"]["project_relation"] == "RELATED")
+    return {"overall": tally(scored), "by_category": by(lambda c: c["category"]),
+            "by_project": by(lambda c: c["project_id"]), "by_domain": by(lambda c: c["domain"]),
+            "by_variety": by(lambda c: c["variety"]), "by_side": by(lambda c: c["side"]),
+            "relation_confusion": {"%s->%s" % k: v for k, v in sorted(relation.items())},
+            "contribution_confusion_related_only": {"%s->%s" % k: v
+                                                    for k, v in sorted(contribution.items())}}
+
+
+def ch_failed_criteria(measures):
+    """Every preregistered criterion the overall measures fail, in order."""
+    o = measures["overall"]
+    failed = []
+    if o["M-UP"][0] > 0:
+        failed.append(CH_F1)
+    if o["M-LR"][0] > 0:
+        failed.append(CH_F2)
+    if o["M-ABST"][0] > CH_MAX_ABSTENTIONS:
+        failed.append(CH_F3)
+    if o["M-FLIP"][0] > 0:
+        failed.append(CH_F4)
+    return failed
+
+
+def ch_classify_measured(adapter, manifest, case, payload, bound):
+    return pc_classify_measured(adapter, manifest, None, case, payload, bound,
+                                reply_error=ch_reply_error, fields=CH_FIELDS)
+
+
+def context_history_run(adapter, manifest, journal=None):
+    """Every case in frozen request order, ONE request each, no retry and no
+    early stop on a falsifying case. Each request first reserves its bounded
+    maximum cost; the run stops INVALID on the first error, an exhausted
+    allocation or a reservation over the ceiling. Returns (stop, rows, spend);
+    the outcome is decided by ``context_history_report``."""
+    b = manifest["budget"]
+    price = b["pricing"]
+    ledger = {"requests": 0, "committed": 0.0, "measured": 0.0, "sent": 0}
+    rows, stop = [], None
+    for case in ch_ordered(manifest):
+        if ledger["requests"] >= b["max_provider_requests"]:
+            stop = {"reason": ERR_BUDGET, "case_id": case["case_id"]}
+            break
+        payload = ch_payload(manifest, case, adapter._model)
+        bound = pc_input_token_bound(manifest, payload)
+        reserved = _pf_usd(bound, b["max_output_tokens"], price["input_usd_per_1m"],
+                           price["output_usd_per_1m"])
+        if ledger["committed"] + reserved > b["cost_ceiling_usd"]:
+            _mc_journal(journal, {"event": "refused_before_send", "case_id": case["case_id"],
+                                  "reason": ERR_COST_CEILING, "reserved_usd": round(reserved, 6),
+                                  "committed_usd": round(ledger["committed"], 6)})
+            stop = {"reason": ERR_COST_CEILING, "case_id": case["case_id"]}
+            break
+        ledger["requests"] += 1
+        _mc_journal(journal, {"event": "reserved", "attempt": ledger["requests"],
+                              "case_id": case["case_id"], "reserved_usd": round(reserved, 6),
+                              "input_token_bound": bound,
+                              "committed_usd": round(ledger["committed"], 6)})
+        reply, err, meta = ch_classify_measured(adapter, manifest, case, payload, bound)
+        if reply is None and err is None:
+            # e.g. a JSON ``null`` reply: never skipped silently; the run is INVALID.
+            err = toa.ERR_MALFORMED
+            adapter._fail(err)
+        usage = meta["usage"]
+        known = isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)
+        cost = (_pf_usd(usage["input_tokens"], usage["output_tokens"], price["input_usd_per_1m"],
+                        price["output_usd_per_1m"]) if known else None)
+        if meta["sent"]:
+            ledger["sent"] += 1
+            ledger["committed"] += (cost if err is None else max(cost, reserved)) if known else reserved
+        ledger["measured"] += cost or 0.0
+        row = {"case_id": case["case_id"], "error": err,
+               "reply": None if reply is None else {f: reply[f] for f in CH_FIELDS
+                                                    if f != "evidence_quote"},
+               "decision": None if reply is None else ch_decision(case["current_answer"], reply),
+               "attempt": {"attempt": ledger["requests"], "sent": meta["sent"],
+                           "http_status": meta["http_status"], "response_id": meta["response_id"],
+                           "model": meta["model"], "service_tier": meta["service_tier"],
+                           "usage": usage, "input_token_bound": bound, "reserved_usd": round(reserved, 6),
+                           "measured_cost_usd": None if cost is None else round(cost, 6)}}
+        rows.append(row)
+        _mc_journal(journal, {"event": "attempt", "case_id": case["case_id"], "error": err,
+                              "decision": row["decision"], **row["attempt"]})
+        if err is not None:
+            stop = {"reason": err, "case_id": case["case_id"]}
+            break
+    spend = {"requests_sent": ledger["sent"], "measured_cost_usd": round(ledger["measured"], 6),
+             "committed_bound_usd": round(ledger["committed"], 6)}
+    return stop, rows, spend
+
+
+def context_history_report(manifest, stop, rows, spend):
+    """The outcome (INVALID on any stop, else every failed criterion or
+    NOT_FALSIFIED_ON_THIS_HOLDOUT), the measures and every untested case."""
+    measures = ch_measures(manifest, rows)
+    tested = {r["case_id"] for r in rows if r.get("decision") is not None}
+    complete = tested == {c["case_id"] for c in manifest["cases"]}
+    failed = [] if stop is not None or not complete else ch_failed_criteria(measures)
+    outcome = CH_INVALID if stop is not None or not complete else (failed or [CH_NOT_FALSIFIED])
+    return {"manifest_id": manifest["manifest_id"], "outcome": outcome, "stop": stop, "spend": spend,
+            "measures": measures,
+            "excluded_disputed": [c["case_id"] for c in ch_ordered(manifest) if c["label_disputed"]],
+            "untested_cases": [c["case_id"] for c in ch_ordered(manifest) if c["case_id"] not in tested],
+            "rows": rows,
+            "meaning": manifest["meaning_of_outcomes"]}
+
+
+def context_history_evaluation(provider, allow_network, managed_credential):
+    """Check the frozen manifest and print the plan and its reservations; only
+    while authorized, with the openai provider and both network flags, run the
+    ONE evaluation, journaling as it goes."""
+    manifest = context_history_manifest()
+    reservations = [round(ch_reservation_usd(manifest, ch_payload(manifest, c)), 6)
+                    for c in ch_ordered(manifest)]
+    out = {"manifest_id": manifest["manifest_id"], "manifest_sha256": CONTEXT_HISTORY_MANIFEST_SHA256,
+           "cases": len(manifest["cases"]),
+           "disputed": sum(c["label_disputed"] for c in manifest["cases"]),
+           "max_provider_requests": manifest["budget"]["max_provider_requests"],
+           "ceiling_usd": manifest["budget"]["cost_ceiling_usd"],
+           "worst_case_reserved_usd": round(sum(reservations), 6)}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not CONTEXT_HISTORY_RUN_AUTHORIZED:
+        out["refused"] = "the context-history evaluation is not authorized; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    if sum(reservations) > manifest["budget"]["cost_ceiling_usd"]:
+        out["refused"] = "the worst case is over the ceiling; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if os.path.exists(CONTEXT_HISTORY_REPORT_PATH):
+        out["refused"] = "evaluation evidence already exists; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    os.makedirs(CONTEXT_HISTORY_EVIDENCE_DIR, exist_ok=True)
+    try:
+        journal = open(CONTEXT_HISTORY_JOURNAL_PATH, "x", encoding="utf-8")
+    except FileExistsError:
+        out["refused"] = "the evaluation journal already exists; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    with journal:
+        _mc_journal(journal, {"event": "start", "manifest_sha256": CONTEXT_HISTORY_MANIFEST_SHA256,
+                              "model": adapter._model, "ceiling_usd": out["ceiling_usd"]})
+        stop, rows, spend = context_history_run(adapter, manifest, journal)
+        report = context_history_report(manifest, stop, rows, spend)
+        _mc_journal(journal, {"event": "end", "outcome": report["outcome"], **spend})
+    with open(CONTEXT_HISTORY_REPORT_PATH, "x", encoding="utf-8") as fh:
+        fh.write(json.dumps(report, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": spend["requests_sent"], "error_kinds": adapter.errors,
+                "outcome": report["outcome"], "stop": stop, "spend": spend})
+    return out
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
@@ -2172,7 +2477,28 @@ def main(argv=None):
     p.add_argument("--mechanism-v2-evaluation", action="store_true")
     p.add_argument("--mechanism-v2-rescore", metavar="PATH")
     p.add_argument("--project-context-falsification", action="store_true")
+    p.add_argument("--context-history-evaluation", action="store_true")
     args = p.parse_args(argv)
+    if args.context_history_evaluation:
+        others = (args.project_context_falsification, args.mechanism_v2_rescore,
+                  args.mechanism_v2_evaluation, args.mechanism_content, args.mechanism_preflight,
+                  args.mechanism_candidate_check, args.responsiveness, args.rescore, args.show_cases,
+                  args.mechanism_content_journal, args.mechanism_content_rescore)
+        if any(others):
+            print(json.dumps({"refused": "--context-history-evaluation takes no other mode"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = context_history_evaluation(args.provider, args.allow_network,
+                                             args.managed_credential)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
     if args.project_context_falsification:
         others = (args.mechanism_v2_rescore, args.mechanism_v2_evaluation, args.mechanism_content,
                   args.mechanism_preflight, args.mechanism_candidate_check, args.responsiveness,
