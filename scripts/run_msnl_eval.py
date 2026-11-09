@@ -52,6 +52,14 @@ File-creation contract:
       synthetic inputs, two output caps, at most 8 requests within a reserved
       US$5 budget; with the default `lexical` provider it prints the plan and
       its reservations and sends nothing).
+    `--project-context-falsification` (T2-G / R2 cross-idea facet: ONE
+      pre-registered falsification of the candidate project-context veto over
+      the pinned `tests/fixtures/msnl_project_context_v1_falsification_01.json`
+      — 48 cases of the #948 pack plus 12 rechecked idea swaps, at most 60
+      requests within a reserved US$5 ceiling, veto-only offline composition,
+      stop on the first decisive or invalid item; refused while
+      PROJECT_CONTEXT_RUN_AUTHORIZED is False, and with the default `lexical`
+      provider it prints the plan and its reservations and sends nothing).
     There is NO option for a project, session, account, database or free-form
     input: both pack paths are fixed and their SHA-256 values are pinned, and a
     re-scored file is only read and checked against the pinned pack's labels,
@@ -71,6 +79,7 @@ File-creation contract:
     activation, persistence or product behaviour.
 """
 import argparse
+import collections
 import copy
 import hashlib
 import json
@@ -1769,6 +1778,349 @@ def mechanism_preflight_run(provider, allow_network, managed_credential):
     return out
 
 
+# ─── R2 cross-idea facet: project-context veto FALSIFICATION (evaluation only) ─
+#
+# ONE pre-registered, synthetic-only, request-local falsification run of the
+# candidate project-context veto (DEFERRED_OBLIGATIONS_REGISTER, T2-G row,
+# obligations A1-A5) over the frozen manifest below, which selects 48 cases of
+# the #948 pack plus 12 independently rechecked idea swaps. The model only
+# CLASSIFIES (RELATED / UNRELATED / UNCERTAIN / CONFLICT); the composition is
+# offline and veto-only: credit survives only where the frozen lexical engine
+# baseline granted it AND the decision is RELATED, so the candidate can never
+# create credit. A grounded quote is a schema check, never proof of relevance.
+# Nothing here touches product code, replay, an engine contract or any store.
+# PROJECT_CONTEXT_RUN_AUTHORIZED stays False until a separate Owner
+# authorization and a reviewed commit open it for exactly ONE run.
+
+PROJECT_CONTEXT_MANIFEST_PATH = os.path.join(
+    _ROOT, "tests", "fixtures", "msnl_project_context_v1_falsification_01.json")
+PROJECT_CONTEXT_MANIFEST_SHA256 = "a43232da68a1bf3067a7027b280f7fe3a0f5811487d085424bee38b63b2928f0"
+PROJECT_CONTEXT_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                         "msnl_project_context_v1.json")
+PROJECT_CONTEXT_RUN_AUTHORIZED = False
+PROJECT_CONTEXT_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
+                                            "msnl_project_context_v1")
+PROJECT_CONTEXT_JOURNAL_PATH = os.path.join(PROJECT_CONTEXT_EVIDENCE_DIR,
+                                            "falsification_01_journal.jsonl")
+PROJECT_CONTEXT_REPORT_PATH = os.path.join(PROJECT_CONTEXT_EVIDENCE_DIR,
+                                           "falsification_01_report.json")
+PC_VERDICTS = ("RELATED", "UNRELATED", "UNCERTAIN", "CONFLICT")
+PC_UNGROUNDED = "UNGROUNDED"
+PC_FIELDS = ("verdict", "quote")
+PC_FALSIFIED_UNRELATED = "FALSIFIED_UNRELATED_CREDIT_SURVIVED"
+PC_FALSIFIED_ELIGIBLE = "FALSIFIED_ELIGIBLE_CREDIT_WITHHELD"
+PC_FALSIFIED_CONFLICT = "FALSIFIED_CONFLICT_SILENTLY_GRANTED"
+PC_INVALID = "INVALID"
+PC_NOT_FALSIFIED = "NOT_FALSIFIED_ON_TESTED_ITEMS"
+ERR_INPUT_BOUND = "input_tokens_over_reserved_bound"
+ERR_USAGE_UNKNOWN = "usage_unknown"
+ERR_INTEGRITY = "integrity"
+
+
+def project_context_manifest():
+    """(manifest, pack): the hash-pinned manifest and the hash-pinned #948 pack
+    it names; refuses (PackError) any drift in either or in the instructions."""
+    manifest = _load(PROJECT_CONTEXT_MANIFEST_PATH, PROJECT_CONTEXT_MANIFEST_SHA256)
+    src = manifest["source_pack"]
+    pack = _load(PROJECT_CONTEXT_PACK_PATH, src["sha256"])
+    arm = manifest["arm"]
+    if hashlib.sha256(arm["instructions"].encode("utf-8")).hexdigest() != arm["instructions_sha256"]:
+        raise PackError("the frozen instructions do not match their pinned digest")
+    return manifest, pack
+
+
+def pc_item_text(manifest, pack, item):
+    """(project_idea, question, answer) for ONE item: the source case's served
+    question and answer, and the idea of ``idea_project_id`` in its language."""
+    case = next(c for c in pack["cases"] if c["case_id"] == item["source_case_id"])
+    idea = next(p for p in pack["projects"]
+                if p["project_id"] == item["idea_project_id"])["idea"][case["variety"]]
+    return idea, case["served_question"], case["text"]
+
+
+def pc_payload(manifest, pack, item, model=toa.MODEL):
+    """The exact provider body: frozen instructions, the strict four-way schema
+    and as input ONLY the idea, the question and the answer."""
+    idea, question, answer = pc_item_text(manifest, pack, item)
+    schema = {"type": "object",
+              "properties": {"verdict": {"type": "string", "enum": list(PC_VERDICTS)},
+                             "quote": {"type": "string"}},
+              "required": list(PC_FIELDS), "additionalProperties": False}
+    body = json.dumps({"project_idea": idea, "question": question, "answer": answer},
+                      ensure_ascii=False, sort_keys=True)
+    return {"model": model, "instructions": manifest["arm"]["instructions"], "input": body,
+            "store": False, "max_output_tokens": manifest["budget"]["max_output_tokens"],
+            "text": {"format": {"type": "json_schema", "name": "msnl_project_context",
+                                "strict": True, "schema": schema}}}
+
+
+def pc_input_token_bound(manifest, payload):
+    """A conservative upper bound on billed input tokens: the UTF-8 bytes of
+    the WHOLE request body (instructions, input and schema included) plus the
+    frozen overhead allowance. Assumes a byte-level BPE tokenizer (at most one
+    token per byte); every reply's usage is checked against it and a breach
+    makes the run INVALID."""
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    return len(body) + manifest["budget"]["input_overhead_tokens"]
+
+
+def pc_reservation_usd(manifest, payload):
+    b = manifest["budget"]
+    return _pf_usd(pc_input_token_bound(manifest, payload), b["max_output_tokens"],
+                   b["pricing"]["input_usd_per_1m"], b["pricing"]["output_usd_per_1m"])
+
+
+def pc_reply_error(reply):
+    """None when ``reply`` is exactly {verdict, quote} with a frozen verdict."""
+    if not isinstance(reply, dict) or set(reply) != set(PC_FIELDS):
+        return toa.ERR_MALFORMED
+    if reply["verdict"] not in PC_VERDICTS or not isinstance(reply["quote"], str):
+        return toa.ERR_MALFORMED
+    return None
+
+
+def pc_decision(answer, reply):
+    """The verdict, or UNGROUNDED: UNCERTAIN needs an empty quote; every other
+    verdict needs a non-empty quote grounded in the answer. A grounded quote
+    shows only that the model quoted the answer, not that it is related."""
+    verdict, quote = reply["verdict"], reply["quote"]
+    if verdict == "UNCERTAIN":
+        return verdict if quote == "" else PC_UNGROUNDED
+    return verdict if quote.strip() and quote_grounded(quote, answer) else PC_UNGROUNDED
+
+
+def pc_compose(item, decision):
+    """Per prior: the frozen engine grant, and the composed grant = engine
+    granted AND decision RELATED (veto-only: never more than the engine)."""
+    return {prior: {"engine_granted": item["engine_baseline"][prior]["granted"],
+                    "composed_granted": item["engine_baseline"][prior]["granted"]
+                    and decision == "RELATED"}
+            for prior in PRIORS}
+
+
+def pc_stop(item, decision):
+    """The decisive falsification this ONE item triggers, or None."""
+    engine = any(item["engine_baseline"][p]["granted"] for p in PRIORS)
+    if not engine:
+        return None
+    if item["expected_verdict"] == "UNRELATED" and decision == "RELATED":
+        return PC_FALSIFIED_UNRELATED
+    if item["expected_outcome"] == "GRANT_ELIGIBLE" and decision != "RELATED":
+        return PC_FALSIFIED_ELIGIBLE
+    if item["expected_verdict"] == "CONFLICT" and decision == "RELATED":
+        return PC_FALSIFIED_CONFLICT
+    return None
+
+
+def pc_classify_measured(adapter, manifest, pack, item, payload, bound):
+    """ONE request: (reply, error_kind, meta). Beyond the schema, a 200 reply
+    must confirm the configured model, report usage, stay within its output
+    cap and within the reserved input-token bound."""
+    reply, meta = _measured_call(adapter, payload)
+    kind = adapter.last_error_kind
+    usage = meta["usage"]
+    if meta["sent"] and meta["http_status"] == 200:
+        if not (isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)):
+            adapter._fail(ERR_USAGE_UNKNOWN)
+            return None, ERR_USAGE_UNKNOWN, meta
+        if usage["output_tokens"] > manifest["budget"]["max_output_tokens"]:
+            adapter._fail(ERR_COST_UNBOUNDED)
+            return None, ERR_COST_UNBOUNDED, meta
+        if usage["input_tokens"] > bound:
+            adapter._fail(ERR_INPUT_BOUND)
+            return None, ERR_INPUT_BOUND, meta
+    if reply is None:
+        return None, kind, meta
+    if not _pf_model_confirmed(meta["model"], adapter._model):
+        adapter._fail(ERR_MODEL_UNCONFIRMED)
+        return None, ERR_MODEL_UNCONFIRMED, meta
+    if reply == ms.ABSTAIN:
+        adapter.errors[ERR_REFUSAL] = adapter.errors.get(ERR_REFUSAL, 0) + 1
+        return None, ERR_REFUSAL, meta
+    kind = pc_reply_error(reply)
+    if kind is not None:
+        adapter._fail(kind)
+        return None, kind, meta
+    return {f: reply[f] for f in PC_FIELDS}, None, meta
+
+
+def project_context_run(adapter, manifest, pack, journal=None):
+    """The items in frozen request order, ONE request each, no retry. Each
+    request first reserves its bounded maximum cost; the run stops INVALID on
+    the first error, an exhausted allocation or a reservation over the ceiling,
+    and FALSIFIED on the first decisive item. Returns (outcome, stop, rows,
+    spend)."""
+    b = manifest["budget"]
+    price = b["pricing"]
+    items = sorted(manifest["items"], key=lambda it: it["request_index"])
+    ledger = {"requests": 0, "committed": 0.0, "measured": 0.0, "sent": 0}
+    rows, outcome, stop = [], PC_NOT_FALSIFIED, None
+    for item in items:
+        if ledger["requests"] >= b["max_provider_requests"]:
+            outcome, stop = PC_INVALID, {"reason": ERR_BUDGET, "item_id": item["item_id"]}
+            break
+        payload = pc_payload(manifest, pack, item, adapter._model)
+        bound = pc_input_token_bound(manifest, payload)
+        reserved = _pf_usd(bound, b["max_output_tokens"], price["input_usd_per_1m"],
+                           price["output_usd_per_1m"])
+        if ledger["committed"] + reserved > b["cost_ceiling_usd"]:
+            _mc_journal(journal, {"event": "refused_before_send", "item_id": item["item_id"],
+                                  "reason": ERR_COST_CEILING, "reserved_usd": round(reserved, 6),
+                                  "committed_usd": round(ledger["committed"], 6)})
+            outcome, stop = PC_INVALID, {"reason": ERR_COST_CEILING, "item_id": item["item_id"]}
+            break
+        ledger["requests"] += 1
+        _mc_journal(journal, {"event": "reserved", "attempt": ledger["requests"],
+                              "item_id": item["item_id"], "reserved_usd": round(reserved, 6),
+                              "input_token_bound": bound,
+                              "committed_usd": round(ledger["committed"], 6)})
+        reply, err, meta = pc_classify_measured(adapter, manifest, pack, item, payload, bound)
+        usage = meta["usage"]
+        known = isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)
+        cost = (_pf_usd(usage["input_tokens"], usage["output_tokens"], price["input_usd_per_1m"],
+                        price["output_usd_per_1m"]) if known else None)
+        if meta["sent"]:
+            ledger["sent"] += 1
+        ledger["measured"] += cost or 0.0
+        ledger["committed"] += (cost if (known and err is None) else reserved) if meta["sent"] else 0.0
+        row = {"item_id": item["item_id"], "kind": item["kind"], "project_id": item["project_id"],
+               "idea_project_id": item["idea_project_id"], "variety": item["variety"],
+               "category": item["category"], "expected_verdict": item["expected_verdict"],
+               "expected_outcome": item["expected_outcome"], "error": err,
+               "verdict": None if reply is None else reply["verdict"],
+               "attempt": {"attempt": ledger["requests"], "sent": meta["sent"],
+                           "http_status": meta["http_status"], "response_id": meta["response_id"],
+                           "model": meta["model"], "usage": usage,
+                           "input_token_bound": bound, "reserved_usd": round(reserved, 6),
+                           "measured_cost_usd": None if cost is None else round(cost, 6)}}
+        if err is None:
+            _idea, _question, answer = pc_item_text(manifest, pack, item)
+            row["decision"] = pc_decision(answer, reply)
+            row["composed"] = pc_compose(item, row["decision"])
+            if any(v["composed_granted"] and not v["engine_granted"] for v in row["composed"].values()):
+                err = row["error"] = ERR_INTEGRITY            # veto-only by construction
+        rows.append(row)
+        _mc_journal(journal, {"event": "attempt", "item_id": item["item_id"], "error": err,
+                              "verdict": row["verdict"], "decision": row.get("decision"),
+                              **row["attempt"]})
+        if err is not None:
+            outcome, stop = PC_INVALID, {"reason": err, "item_id": item["item_id"]}
+            break
+        falsified = pc_stop(item, row["decision"])
+        if falsified is not None:
+            outcome, stop = falsified, {"reason": falsified, "item_id": item["item_id"]}
+            break
+    spend = {"requests_sent": ledger["sent"], "measured_cost_usd": round(ledger["measured"], 6),
+             "committed_bound_usd": round(ledger["committed"], 6)}
+    return outcome, stop, rows, spend
+
+
+def project_context_report(manifest, outcome, stop, rows, spend):
+    """Classification and composed consequences reported SEPARATELY, overall
+    and per project, idea project, language and kind, with the tested
+    denominators and every untested item."""
+    scored = [r for r in rows if r.get("decision") is not None]
+    tested = {r["item_id"] for r in scored}
+
+    def tally(select):
+        out = collections.Counter()
+        for r in scored:
+            if not select(r):
+                continue
+            out["tested"] += 1
+            out["correct_" + ("yes" if r["verdict"] == r["expected_verdict"] else "no")] += 1
+            out["decision_" + r["decision"]] += 1
+            for prior, v in r["composed"].items():
+                surv = v["composed_granted"] and r["expected_outcome"] != "GRANT_ELIGIBLE"
+                if surv:
+                    key = ("surviving_false_grant_lexical_residual"
+                           if r["expected_verdict"] == "RELATED" else "surviving_false_grant_veto")
+                    out[key + "_" + prior] += 1
+                if v["engine_granted"] and r["expected_outcome"] == "GRANT_ELIGIBLE" \
+                        and not v["composed_granted"]:
+                    out["newly_withheld_eligible_" + prior] += 1
+                if v["engine_granted"] and r["expected_outcome"] != "GRANT_ELIGIBLE" \
+                        and not v["composed_granted"]:
+                    out["incumbent_false_grant_removed_" + prior] += 1
+            if r["decision"] == "UNCERTAIN" and r["expected_outcome"] == "GRANT_ELIGIBLE":
+                out["abstention_on_eligible"] += 1
+        return dict(sorted(out.items()))
+
+    confusion = collections.Counter((r["expected_verdict"], r["decision"]) for r in scored)
+    return {"manifest_id": manifest["manifest_id"], "outcome": outcome, "stop": stop,
+            "spend": spend,
+            "classification_confusion": {"%s->%s" % k: v for k, v in sorted(confusion.items())},
+            "overall": tally(lambda r: True),
+            "by_project": {p: tally(lambda r, p=p: r["project_id"] == p)
+                           for p in sorted({it["project_id"] for it in manifest["items"]})},
+            "by_idea_project_swaps": {p: tally(lambda r, p=p: r["kind"] == "IDEA_SWAP"
+                                               and r["idea_project_id"] == p)
+                                      for p in sorted({it["idea_project_id"] for it in manifest["items"]
+                                                       if it["kind"] == "IDEA_SWAP"})},
+            "by_variety": {v: tally(lambda r, v=v: r["variety"] == v) for v in ("en", "ar-msa")},
+            "by_kind": {k: tally(lambda r, k=k: r["kind"] == k) for k in ("PACK_CASE", "IDEA_SWAP")},
+            "by_category": {c: tally(lambda r, c=c: r["category"] == c and r["kind"] == "PACK_CASE")
+                            for c in sorted({it["category"] for it in manifest["items"]})},
+            "untested_items": [it["item_id"] for it in sorted(manifest["items"],
+                                                              key=lambda it: it["request_index"])
+                               if it["item_id"] not in tested],
+            "rows": rows,
+            "limits": manifest["known_limits"]}
+
+
+def project_context_falsification(provider, allow_network, managed_credential):
+    """Check the frozen manifest, pack and baselines and print the plan and its
+    reservations; only while authorized, with the openai provider and both
+    network flags, run the ONE falsification, journaling as it goes."""
+    manifest, pack = project_context_manifest()
+    by = {c["case_id"]: c for c in pack["cases"]}
+    drift = [it["item_id"] for it in manifest["items"]
+             if it["engine_baseline"] != by[it["source_case_id"]]["engine_baseline"]]
+    reservations = [round(pc_reservation_usd(manifest, pc_payload(manifest, pack, it)), 6)
+                    for it in sorted(manifest["items"], key=lambda it: it["request_index"])]
+    out = {"manifest_id": manifest["manifest_id"], "manifest_sha256": PROJECT_CONTEXT_MANIFEST_SHA256,
+           "items": len(manifest["items"]), "max_provider_requests": manifest["budget"]["max_provider_requests"],
+           "ceiling_usd": manifest["budget"]["cost_ceiling_usd"],
+           "worst_case_reserved_usd": round(sum(reservations), 6), "baseline_drift": drift}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not PROJECT_CONTEXT_RUN_AUTHORIZED:
+        out["refused"] = "the project-context falsification is not authorized; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    if drift or sum(reservations) > manifest["budget"]["cost_ceiling_usd"]:
+        out["refused"] = "baseline drift or a worst case over the ceiling; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if os.path.exists(PROJECT_CONTEXT_REPORT_PATH):
+        out["refused"] = "falsification evidence already exists; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    os.makedirs(PROJECT_CONTEXT_EVIDENCE_DIR, exist_ok=True)
+    try:
+        journal = open(PROJECT_CONTEXT_JOURNAL_PATH, "x", encoding="utf-8")
+    except FileExistsError:
+        out["refused"] = "the falsification journal already exists; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    with journal:
+        _mc_journal(journal, {"event": "start", "manifest_sha256": PROJECT_CONTEXT_MANIFEST_SHA256,
+                              "model": adapter._model, "ceiling_usd": out["ceiling_usd"]})
+        outcome, stop, rows, spend = project_context_run(adapter, manifest, pack, journal)
+        _mc_journal(journal, {"event": "end", "outcome": outcome, **spend})
+    report = project_context_report(manifest, outcome, stop, rows, spend)
+    with open(PROJECT_CONTEXT_REPORT_PATH, "x", encoding="utf-8") as fh:
+        fh.write(json.dumps(report, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": spend["requests_sent"], "error_kinds": adapter.errors,
+                "outcome": outcome, "stop": stop, "spend": spend})
+    return out
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
@@ -1784,7 +2136,28 @@ def main(argv=None):
     p.add_argument("--mechanism-candidate-check", action="store_true")
     p.add_argument("--mechanism-v2-evaluation", action="store_true")
     p.add_argument("--mechanism-v2-rescore", metavar="PATH")
+    p.add_argument("--project-context-falsification", action="store_true")
     args = p.parse_args(argv)
+    if args.project_context_falsification:
+        others = (args.mechanism_v2_rescore, args.mechanism_v2_evaluation, args.mechanism_content,
+                  args.mechanism_preflight, args.mechanism_candidate_check, args.responsiveness,
+                  args.rescore, args.show_cases, args.mechanism_content_journal,
+                  args.mechanism_content_rescore)
+        if any(others):
+            print(json.dumps({"refused": "--project-context-falsification takes no other mode"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = project_context_falsification(args.provider, args.allow_network,
+                                                args.managed_credential)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
     if args.mechanism_v2_rescore:
         if args.provider != "lexical" or args.allow_network or args.managed_credential \
                 or args.mechanism_v2_evaluation or args.mechanism_content \
