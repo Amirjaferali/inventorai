@@ -4208,6 +4208,18 @@
   "disagreement_resolution": "Predeclared: no relabelling. A case whose blind label differs from its slot label is label_disputed, kept verbatim and excluded from every measure. Disputed: none",
   "independence_limits": "Author, labeller, assembler and reviewer are separate agents of the same model family in one session, not independent humans; the assembler designed the categories after seeing the board / ramp diagnostic. This pack is committed and visible, so it is NOT a blind holdout: qualifying any candidate needs a fresh, independently authored holdout under this frozen design, written after the candidate is frozen (A3).",
   "human_native_speaker_review": "NOT PERFORMED (Arabic MSA was written and labelled by agents only).",
-  "reworded_for_eligibility": "none (no case was edited after authoring)"
+  "reworded_for_eligibility": "none (no case was edited after authoring)",
+  "post_freeze_review_notes": [
+   "Recorded after an independent non-authoring review of the frozen pack; cases, labels, design, measures, criteria and baseline are unchanged.",
+   "N1 The design and authored sha256 values in preregistration_order refer to scratch files that were not committed; they cannot be verified from the repository. Only this pack's own sha256 is pinned.",
+   "N2 The 120/120 blind agreement (118 HIGH, 2 LOW confidence) comes from a same-family agent whose rules L1-L7 closely mirror the category definitions; it is not a measured inter-annotator reliability.",
+   "N3 Design confound (most substantive): the slot plan ties each category to one served question (served index = category index mod 3), so every per-category comparison - including QP2's NEW_DETAIL versus FAITHFUL_PARAPHRASE gap - is confounded with the served question and index. A fresh holdout should rotate served questions across categories under a declared design amendment before it is used for qualification.",
+   "N4 The engine baseline is identical from the OPEN and PARTIAL priors on all 120 cases, so (case, prior) unit counts are exactly double the case counts here.",
+   "N5 QP1 compares a candidate with the lexical baseline recomputed on the SAME fresh holdout cases; it is a weak bar (baseline M-FR here: 40/96).",
+   "N6 Recorded but not separately listed in baseline_observed: M-FR-NEW-DETAIL-GAP = 8/24 - 10/24 = -2/24 overall; M-ABSTAIN-ELIGIBLE = 0/96 by construction (the engine cannot abstain). evaluation_grain promises per-project and per-category computation; baseline_observed reports per project only M-FC-UNRELATED and per category only grant counts - the full grid is computable from engine_baseline.",
+   "N7 Per-project zero-tolerance checks (QC1, QG1) rest on about four undisputed (case, variety) pairs per project, so their power is low; results are reported as observed.",
+   "N8 Weak or loose cases, kept verbatim: P6-C02 (NEW_DETAIL; a USB-powered third part beside a coin-battery pad, close to CONTRADICTS_IDEA, labelled LOW confidence); P4-C03 and P5-C03 (NEGATION_SAME_PROJECT; negation of timing or threshold rather than of what a part does). P6's Arabic idea mentions vibration and buzzing while the English mentions buzzing only, so P6-C02's vibration motor is new in English only.",
+   "N9 UNDECIDED_SAME_PROJECT and UNKNOWN_SAME_PROJECT probe A5 and the existing T2-G-4 / R1 residuals (e.g. P4-C07-en is still granted), not the cross-idea defect itself."
+  ]
  }
 }

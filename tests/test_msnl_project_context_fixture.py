@@ -9,7 +9,6 @@ synthetic material only, send nothing and select, qualify or authorize no method
 """
 import collections
 import hashlib
-import json
 import pathlib
 
 import pytest
@@ -20,8 +19,7 @@ from tests.test_msnl_llm_eval_harness import h
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PACK_PATH = ROOT / "tests" / "fixtures" / "msnl_project_context_v1.json"
-PACK_SHA256 = "e3dac14c346520b763c277071db43f39500cca756fb02608fc63a1d48f5d330a"
-V1_PACK_PATH = ROOT / "tests" / "fixtures" / "msnl_mechanism_content_v1.json"
+PACK_SHA256 = "aec7ad88c677e8a5fc1bdb7fbb7eb283c5ade738a8769d92a0480bbf86c4449a"
 
 CATEGORIES = ("FAITHFUL_PARAPHRASE", "NEW_DETAIL", "NEGATION_SAME_PROJECT", "EVERYDAY_PARTIAL",
               "OTHER_INVENTION", "OTHER_INVENTION_SHARED_WORDS", "UNDECIDED_SAME_PROJECT",
@@ -69,8 +67,10 @@ def test_every_case_carries_its_slot_label_and_its_project_idea(pack):
 
 
 def test_served_contexts_are_the_committed_questions(pack):
+    # the committed Arabic texts, read from the hash-pinned v1 pack
     arabic = {c["question_id"]: c["served_question"]
-              for c in json.loads(V1_PACK_PATH.read_text(encoding="utf-8"))["cases"] if c["variety"] == "ar-msa"}
+              for c in h._load(h.MECHANISM_PACK_PATH, h.MECHANISM_PACK_SHA256)["cases"]
+              if c["variety"] == "ar-msa"}
     for c in pack["cases"]:
         k = int(c["group_id"].split("-C")[1]) - 1
         assert c["served_index"] == k % 3
@@ -84,6 +84,10 @@ def test_the_known_cases_are_excluded(pack):
     text = " ".join([c["text"] for c in pack["cases"]] + [p["idea"]["en"] for p in pack["projects"]]).lower()
     for word in ("wheelchair", "bicycle", "bike", "watering", "enclosure"):
         assert word not in text, word
+    arabic = " ".join([c["text"] for c in pack["cases"] if c["variety"] == "ar-msa"]
+                      + [p["idea"]["ar-msa"] for p in pack["projects"]])
+    for word in ("كرسي متحرك", "دراجة", "سقي النبات", "ري النبات"):
+        assert word not in arabic, word
 
 
 def test_the_frozen_engine_baseline_reproduces(pack):
@@ -155,3 +159,8 @@ def test_the_annotation_records_independence_order_and_limits(pack):
     assert "NOT PERFORMED" in a["human_native_speaker_review"]
     assert "NOT a blind holdout" in a["independence_limits"]
     assert "same model family" in a["independence_limits"]
+    notes = " ".join(a["post_freeze_review_notes"])
+    for marker in ("cases, labels, design, measures, criteria and baseline are unchanged",
+                   "Design confound", "not a measured inter-annotator reliability",
+                   "cannot be verified from the repository", "SAME fresh holdout"):
+        assert marker in notes, marker
