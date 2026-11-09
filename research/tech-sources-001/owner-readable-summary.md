@@ -15,7 +15,7 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q | Exact claim (short) | Status | Open dimension / caveat | Use | IP for product use |
 |---|---|---|---|---|---|
 | Q-01 | D-7 regime criterion for the bounded stiffness method | QUALIFIED-CANDIDATE (facts) + AUTHORITY BLOCKED | No machine-checkable criterion in any inspected source; governing condition is DR-2 (yours) | dec | CALCULATION-GRADE (SRC-001, 003, 014–016) |
-| Q-02 | Load characteristics governing motor ↔ mechanism | QUALIFIED-CANDIDATE | SRC-004 residual authorship / IP; DC-only for SRC-005 | handoff | IP-UNRESOLVED (SRC-004, SRC-005) — not usable for product admission |
+| Q-02 | Load characteristics governing motor ↔ mechanism | PARTIAL (specialist 2026-11-06) | SRC-004 residual authorship / IP; DC-only for SRC-005; breakaway / speed-range requirement still without clean source | handoff | partial — τ = K_t·i and J·dω/dt = Στ CALCULATION-GRADE (conditional: SRC-065 BSD-3, SRC-067 U.S. only); load-requirement claims D-1…D-5 IP-UNRESOLVED (SRC-004, SRC-005); induction statement IP-UNRESOLVED (SRC-068); no legal clearance |
 | Q-03 | Embedded 28-T2 execution-facing output | QUESTION UNCLEAR / AUTHORITY BLOCKED | No exact claim recorded (DR-3) | — | — |
 | Q-04 | Measurements before comparing a deflection estimate | QUALIFIED-CANDIDATE | — | verif | mixed — SRC-001 / SRC-014 points CALCULATION-GRADE; SRC-006 points IP-UNRESOLVED |
 | Q-05 | Logic output levels vs driver stage | SOURCE ACCESS BLOCKED | Claim UNVERIFIED (ibiblio TLS, NXP) | — | — |
