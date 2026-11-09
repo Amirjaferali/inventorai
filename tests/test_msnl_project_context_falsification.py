@@ -11,6 +11,7 @@ import collections
 import copy
 import hashlib
 import json
+import os
 
 import pytest
 
@@ -31,10 +32,10 @@ def _usage(inp=900, out=120):
             "output_tokens_details": {"reasoning_tokens": 40}, "total_tokens": inp + out}
 
 
-def _wrap(obj, model="gpt-6-sol", usage=None, status=200):
+def _wrap(obj, model="gpt-6-sol", usage=None, status=200, tier="default"):
     status, raw = _reply(obj, status=status)
     body = json.loads(raw.decode("utf-8"))
-    body.update(model=model, usage=_usage() if usage is None else usage)
+    body.update(model=model, usage=_usage() if usage is None else usage, service_tier=tier)
     return status, json.dumps(body).encode("utf-8")
 
 
@@ -62,7 +63,7 @@ class Fake:
 def _refusal():
     status, raw = _reply({}, refusal=True)
     body = json.loads(raw.decode("utf-8"))
-    body.update(model="gpt-6-sol", usage=_usage())
+    body.update(model="gpt-6-sol", usage=_usage(), service_tier="default")
     return status, json.dumps(body).encode("utf-8")
 
 
@@ -94,7 +95,12 @@ def test_the_manifest_pack_and_instructions_are_pinned(frozen):
     assert hashlib.sha256(manifest["arm"]["instructions"].encode()).hexdigest() == \
         manifest["arm"]["instructions_sha256"]
     assert manifest["provider"]["model"] == "gpt-6-sol" and "NONE" in manifest["provider"]["substitution"]
-    assert h.PROJECT_CONTEXT_RUN_AUTHORIZED is False
+    # The gate may be open ONLY for the one authorized run, i.e. while no evidence of it
+    # exists; once the evidence exists it must be closed again.
+    assert isinstance(h.PROJECT_CONTEXT_RUN_AUTHORIZED, bool)
+    if os.path.exists(h.PROJECT_CONTEXT_REPORT_PATH) or os.path.exists(h.PROJECT_CONTEXT_JOURNAL_PATH):
+        assert h.PROJECT_CONTEXT_RUN_AUTHORIZED is False
+    assert h.PC_ALLOWED_SERVICE_TIERS == ("default",)
     assert "NOT AUTHORIZED TO RUN" in manifest["status"]
 
 
@@ -275,7 +281,10 @@ def test_an_ungrounded_related_withholds_eligible_credit_but_cannot_falsify_unre
      "input_tokens_over_reserved_bound"),
     (lambda item, answer: _refusal(), "refusal"),
     (lambda item, answer: (200, json.dumps({"status": "incomplete", "output": [], "model": "gpt-6-sol",
-                                            "usage": _usage()}).encode()), "incomplete"),
+                                            "usage": _usage(), "service_tier": "default"}).encode()),
+     "incomplete"),
+    (lambda item, answer: _wrap(_expected(item, answer), tier="priority"), "service_tier_not_standard"),
+    (lambda item, answer: _wrap(_expected(item, answer), tier=None), "service_tier_not_standard"),
 ])
 def test_every_invalid_path_stops_at_the_first_request_without_retry(frozen, reply, reason):
     outcome, stop, rows, spend, fake = _run(frozen, reply)
@@ -329,6 +338,8 @@ def test_journal_keeps_no_prompt_or_reply_text(frozen, tmp_path):
 # ─── the closed gate ──────────────────────────────────────────────────────────
 
 def test_the_run_is_refused_while_not_authorized_and_sends_nothing(monkeypatch):
+    monkeypatch.setattr(h, "PROJECT_CONTEXT_RUN_AUTHORIZED", False)
+
     def boom(*a, **k):
         raise AssertionError("no adapter may be built")
     monkeypatch.setattr(h, "OpenAIMsnlAdapter", boom)
@@ -360,3 +371,46 @@ def test_the_authorized_path_writes_exclusive_evidence_once(frozen, monkeypatch,
     again = h.project_context_falsification("openai", True, True)
     assert "already exists" in again["refused"] and again["provider_requests"] == 0
     assert len(fake.bodies) == 60
+
+
+# ─── the ONE authorized run's evidence (2026-11-09) ───────────────────────────
+
+def test_the_recorded_run_is_internally_consistent_and_the_gate_is_closed(frozen):
+    """The committed report recomputes from its own rows, agrees with the fsynced
+    journal and stayed inside the authorization: gpt-6-sol, Standard tier, at most
+    60 requests, under US$5, no error, no retry."""
+    assert h.PROJECT_CONTEXT_RUN_AUTHORIZED is False
+    with open(h.PROJECT_CONTEXT_REPORT_PATH, encoding="utf-8") as fh:
+        report = json.load(fh)
+    with open(h.PROJECT_CONTEXT_JOURNAL_PATH, encoding="utf-8") as fh:
+        journal = [json.loads(line) for line in fh]
+    assert report == json.loads(json.dumps(h.project_context_report(
+        frozen[0], report["outcome"], report["stop"], report["rows"], report["spend"]), sort_keys=True))
+    attempts = [e for e in journal if e["event"] == "attempt"]
+    reserved = [e for e in journal if e["event"] == "reserved"]
+    assert journal[0]["event"] == "start" and journal[-1]["event"] == "end"
+    assert journal[0]["manifest_sha256"] == MANIFEST_SHA256 and journal[0]["model"] == "gpt-6-sol"
+    assert len(attempts) == len(reserved) == report["spend"]["requests_sent"] == len(report["rows"]) <= 60
+    assert [a["item_id"] for a in attempts] == [it["item_id"] for it in _ordered(frozen[0])][:len(attempts)]
+    assert {a["model"] for a in attempts} == {"gpt-6-sol"} and {a["service_tier"] for a in attempts} == {"default"}
+    assert all(a["error"] is None and a["http_status"] == 200 for a in attempts)
+    total = sum(a["measured_cost_usd"] for a in attempts)
+    assert abs(total - report["spend"]["measured_cost_usd"]) < 1e-6 and total < 5.0
+    # no retry, no restart: one start, contiguous reserve/attempt pairs, one end
+    n = len(attempts)
+    assert [e["event"] for e in journal] == ["start"] + ["reserved", "attempt"] * n + ["end"]
+    assert [a["attempt"] for a in attempts] == list(range(1, n + 1))
+    # every report row is exactly what the journal recorded for that attempt
+    for row, att in zip(report["rows"], attempts):
+        assert row["item_id"] == att["item_id"] and row["attempt"]["attempt"] == att["attempt"]
+        assert (row["verdict"], row["decision"]) == (att["verdict"], att["decision"])
+        for key in ("usage", "measured_cost_usd", "response_id", "model", "service_tier",
+                    "input_token_bound", "reserved_usd"):
+            assert row["attempt"][key] == att[key], key
+    # the stop is re-derived from the frozen rules, not taken from the report
+    items = {it["item_id"]: it for it in frozen[0]["items"]}
+    stops = [h.pc_stop(items[r["item_id"]], r["decision"]) for r in report["rows"]]
+    assert all(s is None for s in stops[:-1]) and stops[-1] == report["outcome"] == report["stop"]["reason"]
+    assert report["outcome"] == h.PC_FALSIFIED_ELIGIBLE
+    assert report["stop"]["item_id"] == attempts[-1]["item_id"] == "P4-C02-ar-msa"
+    assert len(report["untested_items"]) == 60 - n
