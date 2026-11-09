@@ -1982,7 +1982,8 @@ def project_context_run(adapter, manifest, pack, journal=None):
         if meta["sent"]:
             ledger["sent"] += 1
         ledger["measured"] += cost or 0.0
-        ledger["committed"] += (cost if (known and err is None) else reserved) if meta["sent"] else 0.0
+        if meta["sent"]:                    # never below what was measured
+            ledger["committed"] += (cost if err is None else max(cost, reserved)) if known else reserved
         row = {"item_id": item["item_id"], "kind": item["kind"], "project_id": item["project_id"],
                "idea_project_id": item["idea_project_id"], "variety": item["variety"],
                "category": item["category"], "expected_verdict": item["expected_verdict"],
@@ -2004,11 +2005,13 @@ def project_context_run(adapter, manifest, pack, journal=None):
                               "verdict": row["verdict"], "decision": row.get("decision"),
                               **row["attempt"]})
         if err is not None:
-            outcome, stop = PC_INVALID, {"reason": err, "item_id": item["item_id"]}
+            outcome, stop = PC_INVALID, {"reason": err, "item_id": item["item_id"],
+                                         "verdict": row["verdict"], "decision": row.get("decision")}
             break
         falsified = pc_stop(item, row["decision"])
-        if falsified is not None:
-            outcome, stop = falsified, {"reason": falsified, "item_id": item["item_id"]}
+        if falsified is not None:          # the cause is plain: verdict and decision
+            outcome, stop = falsified, {"reason": falsified, "item_id": item["item_id"],
+                                        "verdict": row["verdict"], "decision": row["decision"]}
             break
     spend = {"requests_sent": ledger["sent"], "measured_cost_usd": round(ledger["measured"], 6),
              "committed_bound_usd": round(ledger["committed"], 6)}
@@ -2042,13 +2045,17 @@ def project_context_report(manifest, outcome, stop, rows, spend):
                 if v["engine_granted"] and r["expected_outcome"] != "GRANT_ELIGIBLE" \
                         and not v["composed_granted"]:
                     out["incumbent_false_grant_removed_" + prior] += 1
-            if r["decision"] == "UNCERTAIN" and r["expected_outcome"] == "GRANT_ELIGIBLE":
+            if r["decision"] == "UNCERTAIN" and r["expected_outcome"] == "GRANT_ELIGIBLE" \
+                    and any(v["engine_granted"] for v in r["composed"].values()):
                 out["abstention_on_eligible"] += 1
         return dict(sorted(out.items()))
 
     confusion = collections.Counter((r["expected_verdict"], r["decision"]) for r in scored)
     return {"manifest_id": manifest["manifest_id"], "outcome": outcome, "stop": stop,
             "spend": spend,
+            "correctness_basis": ("correct_yes / correct_no compare the RAW model verdict with the expected "
+                                  "verdict; classification_confusion and decision_* use the DECISION, in which "
+                                  "an ungrounded reply is UNGROUNDED"),
             "classification_confusion": {"%s->%s" % k: v for k, v in sorted(confusion.items())},
             "overall": tally(lambda r: True),
             "by_project": {p: tally(lambda r, p=p: r["project_id"] == p)

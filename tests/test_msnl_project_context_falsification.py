@@ -224,13 +224,14 @@ def test_each_decisive_failure_stops_at_once_and_lists_the_untested(frozen, name
             return {"verdict": wrong, "quote": " ".join(answer.split()[:4])}
         return _expected(item, answer)
     got, stop, rows, spend, fake = _run(frozen, decide)
-    assert (got, stop) == (outcome, {"reason": outcome, "item_id": target["item_id"]})
+    assert got == outcome and (stop["reason"], stop["item_id"]) == (outcome, target["item_id"])
+    assert (stop["verdict"], stop["decision"]) == (wrong, wrong)         # the cause is recorded
     assert len(fake.bodies) == target["request_index"] == len(rows)
     report = h.project_context_report(frozen[0], got, stop, rows, spend)
     assert len(report["untested_items"]) == 60 - target["request_index"]
 
 
-def test_an_ungrounded_or_uncertain_reply_withholds_and_a_non_engine_item_never_falsifies(frozen):
+def test_abstaining_on_an_eligible_item_the_engine_did_not_credit_never_falsifies(frozen):
     target = _first(frozen[0], lambda it: it["expected_outcome"] == "GRANT_ELIGIBLE" and not _granted(it))
 
     def decide(item, answer):
@@ -240,7 +241,27 @@ def test_an_ungrounded_or_uncertain_reply_withholds_and_a_non_engine_item_never_
     outcome, stop, rows, spend, _ = _run(frozen, decide)
     assert outcome == h.PC_NOT_FALSIFIED
     report = h.project_context_report(frozen[0], outcome, stop, rows, spend)
-    assert report["overall"]["abstention_on_eligible"] == 1
+    assert "abstention_on_eligible" not in report["overall"]          # F3 sits inside F2
+    assert report["overall"]["decision_UNCERTAIN"] == 1 + sum(
+        1 for it in frozen[0]["items"] if it["expected_verdict"] == "UNCERTAIN")
+
+
+def test_an_ungrounded_related_withholds_eligible_credit_but_cannot_falsify_unrelated(frozen):
+    eligible = _first(frozen[0], lambda it: it["expected_outcome"] == "GRANT_ELIGIBLE" and _granted(it))
+    unrelated = _first(frozen[0], lambda it: it["expected_verdict"] == "UNRELATED" and _granted(it))
+
+    def ungrounded_on(target):
+        def decide(item, answer):
+            if item["item_id"] == target["item_id"]:
+                return {"verdict": "RELATED", "quote": "words that are not in the answer"}
+            return _expected(item, answer)
+        return decide
+    outcome, stop, rows, spend, _ = _run(frozen, ungrounded_on(eligible))
+    assert (outcome, stop["decision"]) == (h.PC_FALSIFIED_ELIGIBLE, "UNGROUNDED")
+    outcome, stop, rows, spend, _ = _run(frozen, ungrounded_on(unrelated))
+    assert outcome == h.PC_NOT_FALSIFIED
+    row = next(r for r in rows if r["item_id"] == unrelated["item_id"])
+    assert row["decision"] == "UNGROUNDED" and not any(v["composed_granted"] for v in row["composed"].values())
 
 
 @pytest.mark.parametrize("reply, reason", [
@@ -253,11 +274,34 @@ def test_an_ungrounded_or_uncertain_reply_withholds_and_a_non_engine_item_never_
     (lambda item, answer: _wrap(_expected(item, answer), usage=_usage(inp=999999)),
      "input_tokens_over_reserved_bound"),
     (lambda item, answer: _refusal(), "refusal"),
+    (lambda item, answer: (200, json.dumps({"status": "incomplete", "output": [], "model": "gpt-6-sol",
+                                            "usage": _usage()}).encode()), "incomplete"),
 ])
 def test_every_invalid_path_stops_at_the_first_request_without_retry(frozen, reply, reason):
     outcome, stop, rows, spend, fake = _run(frozen, reply)
     assert outcome == h.PC_INVALID and len(fake.bodies) == 1 and len(rows) == 1
     assert stop["reason"] == reason
+
+
+def test_a_transport_exception_is_invalid_without_retry(frozen):
+    def boom(item, answer):
+        raise OSError("network down")
+    outcome, stop, rows, spend, fake = _run(frozen, boom)
+    assert outcome == h.PC_INVALID and stop["reason"] == "transport" and len(fake.bodies) == 1
+
+
+def test_an_exhausted_allocation_is_invalid(frozen):
+    manifest = copy.deepcopy(frozen[0])
+    manifest["budget"]["max_provider_requests"] = 3
+    outcome, stop, rows, spend, fake = _run(frozen, _expected, manifest)
+    assert outcome == h.PC_INVALID and stop["reason"] == "budget_exhausted"
+    assert len(fake.bodies) == 3 and spend["requests_sent"] == 3
+
+
+def test_the_pinned_maximum_input_bound_recomputes(frozen):
+    manifest, pack = frozen
+    assert manifest["budget"]["max_input_token_bound"] == max(
+        h.pc_input_token_bound(manifest, h.pc_payload(manifest, pack, it)) for it in manifest["items"])
 
 
 def test_the_cost_ceiling_refuses_before_sending(frozen):
@@ -273,11 +317,13 @@ def test_journal_keeps_no_prompt_or_reply_text(frozen, tmp_path):
     adapter = h.OpenAIMsnlAdapter(allow_network=True, transport=fake)
     with open(path, "w", encoding="utf-8") as journal:
         h.project_context_run(adapter, frozen[0], frozen[1], journal)
-    text = path.read_text(encoding="utf-8")
-    assert frozen[0]["arm"]["instructions"][:60] not in text
-    for it in _ordered(frozen[0])[:5]:
-        idea, q, a = h.pc_item_text(frozen[0], frozen[1], it)
-        assert a not in text and idea not in text and q not in text
+    outcome, stop, rows, spend, _ = _run(frozen, _expected)
+    report = json.dumps(h.project_context_report(frozen[0], outcome, stop, rows, spend), ensure_ascii=False)
+    for text in (path.read_text(encoding="utf-8"), report):
+        assert frozen[0]["arm"]["instructions"][:60] not in text
+        for it in _ordered(frozen[0]):
+            idea, q, a = h.pc_item_text(frozen[0], frozen[1], it)
+            assert a not in text and idea not in text and q not in text
 
 
 # ─── the closed gate ──────────────────────────────────────────────────────────
@@ -292,3 +338,25 @@ def test_the_run_is_refused_while_not_authorized_and_sends_nothing(monkeypatch):
     assert plan["items"] == 60 and plan["baseline_drift"] == []
     assert plan["worst_case_reserved_usd"] < plan["ceiling_usd"]
     assert h.main(["--project-context-falsification", "--provider", "openai"]) == 2
+
+
+def test_the_authorized_path_writes_exclusive_evidence_once(frozen, monkeypatch, tmp_path):
+    """With the gate opened ONLY inside this test, a fake transport and a temporary
+    evidence directory: one run writes journal and report; a second is refused."""
+    real = h.OpenAIMsnlAdapter
+    monkeypatch.setattr(h, "PROJECT_CONTEXT_RUN_AUTHORIZED", True)
+    monkeypatch.setattr(h, "PROJECT_CONTEXT_EVIDENCE_DIR", str(tmp_path))
+    monkeypatch.setattr(h, "PROJECT_CONTEXT_JOURNAL_PATH", str(tmp_path / "journal.jsonl"))
+    monkeypatch.setattr(h, "PROJECT_CONTEXT_REPORT_PATH", str(tmp_path / "report.json"))
+    fake = Fake(frozen[0], frozen[1], _expected)
+    monkeypatch.setattr(h, "OpenAIMsnlAdapter",
+                        lambda allow_network=False: real(allow_network=allow_network, transport=fake))
+    with pytest.raises(SystemExit):
+        h.project_context_falsification("openai", True, False)        # both network flags needed
+    out = h.project_context_falsification("openai", True, True)
+    assert out["outcome"] == h.PC_NOT_FALSIFIED and out["provider_requests"] == 60
+    report = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
+    assert report["outcome"] == h.PC_NOT_FALSIFIED and report["untested_items"] == []
+    again = h.project_context_falsification("openai", True, True)
+    assert "already exists" in again["refused"] and again["provider_requests"] == 0
+    assert len(fake.bodies) == 60
