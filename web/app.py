@@ -2560,7 +2560,9 @@ def _control_loop_part_report_view(sid, state, read=None):
 
 # INTEGRATED-JOURNEY-GUIDANCE-01 — the Project Compass "What to do now" for a
 # valid integrated invention once every existing higher-priority primary action
-# is exhausted (no current question, no routed recovery, no criticality step):
+# is exhausted (no current question, no routed recovery, no criticality step);
+# G1-ROUTED-RECOVERY-CONTINUATION-01 also shows the same derived step as a
+# secondary link beside the routed-recovery primary action (the template only):
 # ONE optional, inventor-owned next step across the recorded parts and
 # interactions, read only from the existing Stage-15 owners, in a fixed order —
 #   1. the required part outside the initial analysis focus, while either of

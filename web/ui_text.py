@@ -4680,6 +4680,38 @@ UI_STRINGS = {
                "before the next stage."),
         "ar": "لا يوجد سؤال بانتظارك. ما زالت نقطة تحتاج إلى مدخلات مختص قبل المرحلة التالية.",
     },
+    # G1-ROUTED-RECOVERY-CONTINUATION-01: the boundary of the ONE secondary link
+    # offered beside the routed-recovery primary action.
+    # UI_RRC_NOTE names the routed point when it is Physical Feasibility (the only
+    # committed routing policy); UI_RRC_NOTE_POINT is the same note for any other
+    # routed point, so the copy never names a gap that is not the one waiting.
+    "UI_RRC_NOTE": {
+        "en": ("Optional while that point waits: you can keep describing the parts of your "
+               "invention and how they interact. This does not answer or resolve the open "
+               "feasibility point, which still needs specialist input; correcting your earlier "
+               "answer only makes it possible to accept that point as a known, unresolved risk. "
+               "What you record stays your own statement, any check you later run applies only "
+               "within its own stated limits and evidence, and none of it shows that the idea "
+               "is ready."),
+        "ar": ("اختياري أثناء انتظار تلك النقطة: يمكنك متابعة وصف أجزاء اختراعك وكيف تتفاعل. "
+               "هذا لا يجيب عن نقطة الجدوى المفتوحة ولا يحلّها، فهي ما زالت تحتاج إلى مدخلات "
+               "مختص؛ وتصحيح إجابتك السابقة لا يفعل سوى إتاحة قبول هذه النقطة كمخاطرة معروفة غير "
+               "محلولة. ما تسجّله يبقى تصريحك أنت، وأي فحص تجريه لاحقًا لا ينطبق إلا ضمن حدوده "
+               "المعلنة وأدلّته، ولا يُثبت شيء من ذلك أن الفكرة جاهزة."),
+    },
+    "UI_RRC_NOTE_POINT": {
+        "en": ("Optional while that point waits: you can keep describing the parts of your "
+               "invention and how they interact. This does not answer or resolve the open "
+               "point, which still needs specialist input; correcting your earlier answer only "
+               "makes it possible to accept that point as a known, unresolved risk. What you "
+               "record stays your own statement, any check you later run applies only within "
+               "its own stated limits and evidence, and none of it shows that the idea is ready."),
+        "ar": ("اختياري أثناء انتظار تلك النقطة: يمكنك متابعة وصف أجزاء اختراعك وكيف تتفاعل. "
+               "هذا لا يجيب عن النقطة المفتوحة ولا يحلّها، فهي ما زالت تحتاج إلى مدخلات مختص؛ "
+               "وتصحيح إجابتك السابقة لا يفعل سوى إتاحة قبول هذه النقطة كمخاطرة معروفة غير "
+               "محلولة. ما تسجّله يبقى تصريحك أنت، وأي فحص تجريه لاحقًا لا ينطبق إلا ضمن حدوده "
+               "المعلنة وأدلّته، ولا يُثبت شيء من ذلك أن الفكرة جاهزة."),
+    },
     "UI_NR_RECOVERY_CTA": {
         "en": "See your options",
         "ar": "عرض خياراتك",
