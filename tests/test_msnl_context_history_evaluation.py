@@ -19,7 +19,7 @@ from engine import technical_orchestration_openai as toa
 from tests.test_msnl_llm_eval_harness import h, _reply
 
 PREREG_SHA256 = "d8896785bb84713fa54c8b59fcfdb30c8f71af9251e5ef4d45f9f20c6267a8c2"
-MANIFEST_SHA256 = "__MANIFEST_SHA256__"
+MANIFEST_SHA256 = "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda56465365fcdaaabda847"
 INSTRUCTIONS_SHA256 = "440fd58ed38a221e17524abf8396637d7ca23df2ba921e4a07a46ee2b9873c51"
 POSITIVE = ("NEW_DETAIL", "PLAIN_LANGUAGE_DETAIL", "RESTATE_THEN_NEW", "AMENDMENT",
             "HISTORY_COUNTERFACTUAL_NEW")
@@ -260,7 +260,7 @@ def test_the_two_axes_are_decided_independently_and_grounded():
     assert not h.ch_decision(a, rep("UNCERTAIN", "CONTENT_BEARING", "the clip"))["progress_eligible"]
     assert h.ch_decision(a, rep("RELATED", "NO_NEW_CONTENT", "the clip"))["new_contribution"] == \
         h.CH_UNGROUNDED
-    d = h.ch_decision(a, rep("RELATED", "CONTENT_BEARING", "the clip", amend=True))
+    d = h.ch_decision(a, rep("RELATED", "CONTENT_BEARING", "The clip slides", amend=True))
     assert d["progress_eligible"] and d["possible_amendment"] is True     # disclosure, not a veto
 
 
@@ -338,15 +338,17 @@ def test_abstention_on_positives_is_tolerated_up_to_three(manifest):
 
 
 def test_a_disputed_case_is_never_scored(manifest):
-    disputed = [c for c in manifest["cases"] if c["label_disputed"]]
-    if not disputed:
-        pytest.skip("no disputed case in this holdout")
-    target = disputed[0]
+    """This holdout has no disputed case; a copy with one marked disputed shows
+    that such a case is excluded from every measure, whatever the reply."""
+    copy_ = json.loads(json.dumps(manifest))
+    target = _first(copy_, "CONTENT_FREE_REFERENCE")
+    target["label_disputed"] = True
     wrong = {"project_relation": "RELATED", "new_contribution": "CONTENT_BEARING",
              "possible_amendment": False, "evidence_quote": _quote(target)}
-    report, _ = _run(manifest, _overriding(target, wrong))
+    report, _ = _run(copy_, _overriding(target, wrong))
     assert report["outcome"] == [h.CH_NOT_FALSIFIED]
-    assert target["case_id"] in report["excluded_disputed"]
+    assert report["excluded_disputed"] == [target["case_id"]]
+    assert report["measures"]["overall"]["M-UP"][1] == 59
 
 
 # ─── INVALID paths ────────────────────────────────────────────────────────────

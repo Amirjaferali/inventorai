@@ -2179,7 +2179,7 @@ CONTEXT_HISTORY_PREREG_PATH = os.path.join(
 CONTEXT_HISTORY_PREREG_SHA256 = "d8896785bb84713fa54c8b59fcfdb30c8f71af9251e5ef4d45f9f20c6267a8c2"
 CONTEXT_HISTORY_MANIFEST_PATH = os.path.join(
     _ROOT, "tests", "fixtures", "msnl_context_history_v1.json")
-CONTEXT_HISTORY_MANIFEST_SHA256 = "__MANIFEST_SHA256__"
+CONTEXT_HISTORY_MANIFEST_SHA256 = "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda56465365fcdaaabda847"
 CONTEXT_HISTORY_RUN_AUTHORIZED = False
 CONTEXT_HISTORY_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
                                             "msnl_context_history_v1")
