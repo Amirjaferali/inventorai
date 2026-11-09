@@ -1,0 +1,305 @@
+{
+ "projects": [
+  {
+   "project_id": "CH1",
+   "domain": "mechanical",
+   "idea": {
+    "en": "My idea is a laundry drying rack that hangs from the ceiling of a small apartment and can be lowered to waist height for loading wet clothes. The user turns a handle mounted on the wall, and the rack goes up toward the ceiling, where the clothes dry out of the way. Turning the handle the other way brings the rack back down once the clothes are dry. The goal is to save floor space and avoid lifting heavy wet laundry overhead.",
+    "ar-msa": "فكرتي منشر لتجفيف الغسيل يُعلَّق في سقف شقة صغيرة، ويمكن إنزاله إلى مستوى الخصر لتعليق الملابس المبللة عليه. يدير المستخدم مقبضًا مثبتًا على الجدار فيرتفع المنشر نحو السقف، حيث تجف الملابس بعيدًا عن الطريق. وعند إدارة المقبض في الاتجاه المعاكس ينزل المنشر من جديد بعد أن تجف الملابس. والهدف توفير مساحة الأرضية وتجنّب رفع الغسيل المبلل الثقيل فوق الرأس."
+   },
+   "preceding_answer_A": {
+    "en": "Two thin steel cables run from the ends of the rack up to pulleys fixed in the ceiling and then across to the wall unit, where they wind together onto a single drum. The handle turns this drum, so both cables shorten by the same amount and the rack stays level. A ratchet wheel on the drum with a spring-loaded pawl stops the rack from sliding back down when the user lets go of the handle.",
+    "ar-msa": "يمتد سلكان رفيعان من الفولاذ من طرفي المنشر صعودًا إلى بكرتين مثبتتين في السقف، ثم يتجهان أفقيًا إلى الوحدة الجدارية حيث يلتفّان معًا على أسطوانة واحدة. يدير المقبض هذه الأسطوانة، فيقصر السلكان بالمقدار نفسه ويبقى المنشر أفقيًا. وعلى الأسطوانة عجلة سقاطة ذات سنّ مضغوط بنابض يمنع المنشر من الانزلاق إلى الأسفل حين يترك المستخدم المقبض."
+   },
+   "preceding_answer_B": {
+    "en": "The rack itself is made of six aluminium rods held between two plastic end brackets, which keeps it light enough not to hurt a child who brushes against it. It would be sold in two lengths, 120 cm and 150 cm, to suit common balcony and bathroom ceilings. Installing it needs only four screws into a ceiling joist.",
+    "ar-msa": "يتكوّن المنشر نفسه من ستة قضبان من الألومنيوم مثبتة بين حاملين طرفيين من البلاستيك، مما يجعله خفيفًا لا يؤذي طفلًا إن احتكّ به. وسيُباع بطولين، 120 سم و150 سم، ليناسب أسقف الشرفات والحمامات الشائعة. ولا يحتاج تركيبه إلا إلى أربعة براغٍ في عارضة السقف."
+   },
+   "answers": {
+    "AMENDMENT": {
+     "en": "I want to change the wall-mounted handle: instead of turning a handle, the user pulls a continuous loop of cord hanging beside the wall, as on a window blind. The loop runs over a grooved wheel fixed to the same shaft that lifts the rack, so pulling the front side of the loop raises the rack and pulling the back side lowers it. The rest of how the rack is lifted and held stays as it was.",
+     "ar-msa": "أريد تغيير المقبض المثبت على الجدار: فبدلًا من إدارة مقبض، يسحب المستخدم حلقة متصلة من الحبل تتدلى بجانب الجدار، كما في الستائر المعدنية. تمر الحلقة فوق عجلة محززة مثبتة على المحور نفسه الذي يرفع المنشر، فسحب الجانب الأمامي من الحلقة يرفع المنشر وسحب الجانب الخلفي ينزله. أما باقي طريقة الرفع والتثبيت فيبقى كما هو."
+    },
+    "CONTENT_FREE_REFERENCE": {
+     "en": "I already went through these steps when I first described the idea and in my last answer, and nothing about them has changed since then.",
+     "ar-msa": "سبق أن شرحت هذه الخطوات حين عرضت الفكرة أول مرة وفي إجابتي السابقة، ولم يتغير فيها شيء منذ ذلك الحين."
+    },
+    "NEW_DETAIL": {
+     "en": "When the user turns the handle, a small gear on the handle shaft drives a larger gear on the drum at a 1:4 ratio, so four turns of the handle make one turn of the drum and the effort stays low even with a full load of wet clothes. As the cables wind in, the rack rises until a rubber stop clamped on each cable meets its ceiling pulley, which ends the travel at the top. To lower it, the user first flips a small release lever that lifts the pawl clear and then turns the handle back.",
+     "ar-msa": "عندما يدير المستخدم المقبض، يدفع ترس صغير على محور المقبض ترسًا أكبر على الأسطوانة بنسبة 1:4، فتدور الأسطوانة دورة واحدة مقابل أربع دورات للمقبض، ويبقى الجهد قليلًا حتى مع حمولة كاملة من الملابس المبللة. ومع التفاف السلكين يرتفع المنشر إلى أن يصل مصدّ مطاطي مثبّت على كل سلك إلى بكرته في السقف، فتنتهي الحركة عند الأعلى. ولإنزاله يقلب المستخدم أولًا ذراع تحرير صغيرة ترفع السنّ بعيدًا عن العجلة، ثم يدير المقبض في الاتجاه المعاكس."
+    },
+    "OTHER_INVENTION_SHARED_VOCAB": {
+     "en": "From the moment someone uses my idea, a lever-operated walnut cracker, they set a walnut in a small cup and press the long handle down. The handle pivots on a pin and pushes a steel plunger into the cup, multiplying the push of the hand about six times until the shell splits along its seam. When the handle is released, a return spring lifts the plunger and the cracked nut drops through a grid into a tray, and the result I want is whole kernels with no crushed bits. Those are the main physical steps.",
+     "ar-msa": "من لحظة استخدام فكرتي، وهي كسّارة جوز تعمل برافعة، يضع الشخص حبة الجوز في كوب صغير ويضغط المقبض الطويل إلى الأسفل. يدور المقبض حول مسمار ويدفع مكبسًا فولاذيًا داخل الكوب، فيضاعف ضغط اليد نحو ست مرات حتى تنشق القشرة على امتداد خط التحامها. وعند ترك المقبض يرفع نابض الإرجاع المكبس، فتسقط الجوزة المكسورة عبر شبكة إلى صينية، والنتيجة التي أريدها لبّ سليم بلا فتات مسحوق. هذه هي الخطوات المادية الأساسية."
+    },
+    "PARAPHRASE_OF_PREVIOUS": {
+     "en": "Turning the wall handle spins one drum that takes in both steel wires at the same time; each wire leaves an end of the rack, passes over its own pulley in the ceiling and comes across to that drum. Because the two wires are drawn in equally, the rack climbs without tilting. Once the handle is released, the spring-pressed tooth catches the toothed wheel and holds the drum, so the rack does not drop.",
+     "ar-msa": "إدارة المقبض الجداري تلفّ أسطوانة واحدة يلتفّ عليها السلكان الفولاذيان في الوقت ذاته؛ فكل سلك يخرج من طرف المنشر ويمر فوق بكرته الخاصة في السقف ثم يصل إلى تلك الأسطوانة. ولأن السلكين يُسحبان بالقدر نفسه، يصعد المنشر دون أن يميل. وعند ترك المقبض يُمسك السنّ المضغوط بنابض بالعجلة المسننة فيثبّت الأسطوانة، فلا يسقط المنشر."
+    },
+    "PLAIN_LANGUAGE_DETAIL": {
+     "en": "You open a little flap on the box on the wall and turn the handle; each full turn lifts the rack by about the width of your hand. When the rack is almost at the top, a soft felt strip along its upper edge touches the ceiling first, so it never bangs or scrapes the paint. To bring it down you turn the handle the other way, and the rack comes down at the same calm pace.",
+     "ar-msa": "تفتح غطاءً صغيرًا في العلبة المثبتة على الجدار وتدير المقبض، فيرتفع المنشر مع كل لفة كاملة بقدر عرض الكف تقريبًا. وحين يقترب من السقف يلمسه أولًا شريط ناعم من اللباد على حافته العليا، فلا يصطدم به ولا يخدش الطلاء. ولإنزاله تدير المقبض في الاتجاه الآخر فينزل بالهدوء نفسه."
+    },
+    "RESTATE_THEN_NEW": {
+     "en": "As I said before, the handle winds both cables onto one drum and a ratchet keeps the rack from dropping. In addition, the drum has a spiral groove cut into its surface so that each cable lies in its own track and the two never cross or tangle as they wind. I would also put a friction washer behind the drum so the rack lowers slowly even if the user lets the handle spin freely.",
+     "ar-msa": "كما ذكرت سابقًا، يلفّ المقبض السلكين على أسطوانة واحدة، وتمنع السقاطة المنشر من السقوط. وأضيف إلى ذلك أن سطح الأسطوانة محفور بأخدود حلزوني، فيستقر كل سلك في مساره الخاص ولا يتقاطع السلكان أو يتشابكان أثناء الالتفاف. كما سأضع حلقة احتكاك خلف الأسطوانة كي ينزل المنشر ببطء حتى لو ترك المستخدم المقبض يدور بحرية."
+    },
+    "UNKNOWN_OR_UNDECIDED": {
+     "en": "I have not decided yet what physically happens between turning the handle and the rack moving up. It could be cables on a drum, a toothed belt, or a folding scissor arm; I am still comparing them. I also don't know yet how the rack would stay up once the handle is let go.",
+     "ar-msa": "لم أقرر بعد ما الذي يحدث ماديًا بين إدارة المقبض وصعود المنشر. قد يكون ذلك بأسلاك تلتف على أسطوانة، أو بسير مسنّن، أو بذراع مقصّية قابلة للطي، وما زلت أقارن بينها. كما أنني لا أعرف بعد كيف سيبقى المنشر في الأعلى بعد ترك المقبض."
+    }
+   }
+  },
+  {
+   "project_id": "CH2",
+   "domain": "mechanical",
+   "idea": {
+    "en": "I want to make a countertop jar opener for people with weak hands, such as older adults with arthritis. The jar stands in a base that holds it still, and the user presses down on a long lever instead of twisting the lid by hand. Pressing the lever makes a gripping head clamp onto the lid and turn it a quarter turn to loosen it. After that the lid lifts off easily.",
+    "ar-msa": "أريد صنع فتّاحة برطمانات توضع على سطح المطبخ، مخصصة لمن يعانون ضعفًا في أيديهم، مثل كبار السن المصابين بالتهاب المفاصل. يوضع البرطمان في قاعدة تثبّته في مكانه، ويضغط المستخدم إلى الأسفل على رافعة طويلة بدلًا من لفّ الغطاء بيده. ويؤدي الضغط على الرافعة إلى أن يقبض رأس إمساك على الغطاء ويديره ربع دورة فيرتخي. وبعد ذلك يُرفع الغطاء بسهولة."
+   },
+   "preceding_answer_A": {
+    "en": "The lever pivots on a hinge pin at the back of the base, and just in front of that pin it carries a curved toothed sector. As the lever goes down, the sector meshes with a bevel gear on a vertical shaft and turns the shaft that carries the gripping head. The head has three rubber-faced jaws sitting in slanted slots, so the first part of the turn pulls them inward onto the lid before the whole head keeps rotating.",
+    "ar-msa": "تدور الرافعة حول مسمار مفصلي في الجهة الخلفية من القاعدة، وتحمل أمام المسمار مباشرة قطاعًا مسننًا منحنيًا. وعندما تنخفض الرافعة يتعشّق هذا القطاع مع ترس مخروطي مركّب على عمود رأسي، فيدير العمود الذي يحمل رأس الإمساك. وفي الرأس ثلاثة فكوك مكسوّة بالمطاط تستقر في مجارٍ مائلة، فيسحبها الجزء الأول من الدوران نحو الداخل لتنطبق على الغطاء، ثم يواصل الرأس كله الدوران."
+   },
+   "preceding_answer_B": {
+    "en": "The opener should handle lids from 4 cm to 9 cm across, which covers most jam and pickle jars sold in shops. It would stand about 30 cm tall and fit beside a kettle on the counter. Every surface that touches the jar can be wiped with a damp cloth, and it needs no electricity or batteries.",
+    "ar-msa": "ينبغي أن تناسب الفتاحة أغطية يتراوح قطرها بين 4 و9 سم، وهو ما يشمل معظم برطمانات المربى والمخللات المعروضة في المتاجر. ويبلغ ارتفاعها نحو 30 سم بحيث تتسع بجانب الغلاية على سطح المطبخ. ويمكن مسح كل سطح يلامس البرطمان بقطعة قماش مبللة، ولا تحتاج إلى كهرباء أو بطاريات."
+   },
+   "answers": {
+    "AMENDMENT": {
+     "en": "I want to change the quarter turn: each press will now turn the lid half a turn, because some lids need more than a quarter turn before they come loose. To get this, the toothed sector on the lever gets twice as many teeth over a longer arc while the bevel gear stays the same size, so the same lever stroke turns the shaft and the jaws twice as far.",
+     "ar-msa": "أريد تغيير ربع الدورة: ستدير كل ضغطة الغطاء الآن نصف دورة، لأن بعض الأغطية تحتاج أكثر من ربع دورة حتى ترتخي. ولتحقيق ذلك يُضاعف عدد أسنان القطاع المسنن في الرافعة على قوس أطول، مع بقاء الترس المخروطي بالحجم نفسه، فتدير الشوطة نفسها من الرافعة العمودَ والفكوك ضعف المسافة."
+    },
+    "CONTENT_FREE_REFERENCE": {
+     "en": "The parts that move and connect are the ones I listed in my previous answer; I don't have anything to add, because my thinking on it hasn't moved on.",
+     "ar-msa": "الأجزاء التي تتحرك وتتصل هي نفسها التي ذكرتها في إجابتي السابقة، وليس لديّ ما أضيفه، لأن تفكيري في هذا لم يتقدم بعد."
+    },
+    "NEW_DETAIL": {
+     "en": "Below the bevel gear, the vertical shaft runs through a one-way clutch, so when the lever comes back up the shaft does not screw the lid tight again. A coil spring wound around the lever's hinge pin lifts the lever after each press so the user can press again. In the base, two V-shaped rubber blocks are drawn together by a thumb screw so the jar cannot spin while the head is turning its lid.",
+     "ar-msa": "تحت الترس المخروطي يمر العمود الرأسي عبر قابض أحادي الاتجاه، فلا يعيد العمود شدّ الغطاء حين ترتفع الرافعة من جديد. ويرفع نابض لولبي ملفوف حول مسمار مفصل الرافعة الرافعةَ بعد كل ضغطة كي يتمكن المستخدم من تكرار الضغط. وفي القاعدة قطعتان مطاطيتان على شكل حرف V يقرّبهما برغي يُدار بالإبهام، فلا يدور البرطمان بينما يدير الرأس غطاءه."
+    },
+    "OTHER_INVENTION_SHARED_VOCAB": {
+     "en": "In my hand-held hole punch for leather belts, the parts that move or connect are the handle, the cam, the punch tube and the anvil, and each one acts on the next part. Squeezing the handle rotates the cam, the cam pushes the hollow punch tube down, and the punch tube cuts through the leather onto a nylon anvil that protects its cutting edge. Force is transferred from the hand to the cam through the handle's long arm, so a light squeeze becomes enough pressure to cut a clean round hole, and a spring then pulls the punch tube back up.",
+     "ar-msa": "في مخرازي اليدوي لثقب الأحزمة الجلدية، الأجزاء التي تتحرك أو تتصل ببعضها هي المقبض والكامة وأنبوب الثقب والسندان، وكل منها يؤثر في الجزء الذي يليه. فالضغط على المقبض يدير الكامة، والكامة تدفع أنبوب الثقب المجوّف إلى الأسفل، وأنبوب الثقب يخترق الجلد حتى يستقر على سندان من النايلون يحمي حافته القاطعة. وتنتقل القوة من اليد إلى الكامة عبر ذراع المقبض الطويلة، فتتحول ضغطة خفيفة إلى ضغط يكفي لقطع ثقب دائري نظيف، ثم يعيد نابضٌ أنبوبَ الثقب إلى الأعلى."
+    },
+    "PARAPHRASE_OF_PREVIOUS": {
+     "en": "When the long handle is pushed downward around its rear hinge, the curved row of teeth beside that hinge rolls against the angled gear and spins the upright shaft. That shaft holds the gripping head, whose three rubber-covered jaws ride in sloping grooves, so the turning first draws them in tight on the lid and then the whole head carries on rotating.",
+     "ar-msa": "حين تُدفع الذراع الطويلة إلى الأسفل حول مفصلها الخلفي، يتدحرج صف الأسنان المنحني المجاور لذلك المفصل على الترس المائل فيدير العمود القائم. ويحمل هذا العمود رأس الإمساك ذا الفكوك الثلاثة المغلفة بالمطاط، وهي تنزلق في مجارٍ منحدرة، فيضمّها الدوران أولًا بإحكام على الغطاء ثم يستمر الرأس كله في الدوران."
+    },
+    "PLAIN_LANGUAGE_DETAIL": {
+     "en": "The long handle would have a thick foam cover, so it is kind to sore fingers and you can simply lean on it with the flat of your hand. On the head there is a small window with a painted line in it, so you can see how far the lid has turned. Under the jar sits a ring of grippy rubber that keeps it in place even on a wet counter.",
+     "ar-msa": "سيكون للذراع الطويلة غلاف سميك من الإسفنج، فيكون لطيفًا على الأصابع المتألمة، ويكفي أن تتكئ عليها براحة يدك. وفي الرأس نافذة صغيرة يظهر فيها خط ملوّن، فترى إلى أي حد دار الغطاء. وتحت البرطمان حلقة من المطاط الخشن تبقيه ثابتًا حتى على سطح مبلل."
+    },
+    "RESTATE_THEN_NEW": {
+     "en": "So, as before: the toothed sector on the lever turns a bevel gear, the gear turns the shaft, and the shaft's three jaws close on the lid and twist it. What I would add is a slip clutch between the shaft and the head, set to about 6 newton-metres, so if a lid is stuck solid the clutch slips instead of the glass cracking. Each jaw would also have a replaceable rubber pad held by a single screw.",
+     "ar-msa": "إذن، كما ذكرت سابقًا: يدير القطاع المسنن في الرافعة ترسًا مخروطيًا، ويدير الترس العمود، وتنطبق فكوك العمود الثلاثة على الغطاء وتلفّه. وما أضيفه هو قابض انزلاقي بين العمود والرأس مضبوط على نحو 6 نيوتن·متر، فإذا كان الغطاء عالقًا تمامًا انزلق القابض بدلًا من أن ينكسر الزجاج. كما سيحمل كل فكّ وسادة مطاطية قابلة للاستبدال مثبتة ببرغي واحد."
+    },
+    "UNKNOWN_OR_UNDECIDED": {
+     "en": "Honestly, I do not know yet which parts would move or connect between the lever and the gripping head. It might be gears, a cord wound around a shaft, or a screw thread, and I have not chosen. How force is transferred from the lever to the lid is still an open question for me.",
+     "ar-msa": "بصراحة، لا أعرف بعد ما الأجزاء التي ستتحرك أو تتصل ببعضها بين الرافعة ورأس الإمساك. قد تكون تروسًا، أو حبلًا ملفوفًا حول عمود، أو سنًّا لولبيًا، ولم أختر بعد. وما زالت طريقة انتقال القوة من الرافعة إلى الغطاء مسألة مفتوحة بالنسبة إليّ."
+    }
+   }
+  },
+  {
+   "project_id": "CH3",
+   "domain": "mechanical",
+   "idea": {
+    "en": "My invention is a hand-held pill splitter that cuts tablets into two equal halves cleanly. The user places a tablet in a small holder and closes a hinged lid, which brings a blade down across the tablet. The two halves stay in the holder instead of jumping onto the floor. It is meant for people who must split their medicine every day and find kitchen knives unsafe and uneven.",
+    "ar-msa": "اختراعي أداة يدوية لقسمة الأقراص الدوائية إلى نصفين متساويين بقطع نظيف. يضع المستخدم القرص في حامل صغير ثم يغلق غطاءً مفصليًا ينزل معه نصل عبر القرص. ويبقى النصفان داخل الحامل بدلًا من أن يقفزا إلى الأرض. وهي موجهة لمن يضطرون إلى قسمة دوائهم كل يوم ويرون سكاكين المطبخ غير آمنة ولا تقسم بالتساوي."
+   },
+   "preceding_answer_A": {
+    "en": "The holder is a V-shaped groove moulded into the base, and a small sliding wedge pushed by a spring presses each tablet down into the bottom of the V, so small and large tablets alike sit centred under the blade line. The blade is a stainless steel razor strip fixed inside the lid, exactly above the bottom of the V. Because the lid is hinged at one end, the blade enters the tablet at an angle and slices across it from one side to the other instead of crushing it.",
+    "ar-msa": "الحامل أخدود على شكل حرف V مصبوب في القاعدة، ويضغط إسفين منزلق صغير يدفعه نابض كل قرص نحو قاع الأخدود، فتستقر الأقراص الصغيرة والكبيرة على حد سواء في المنتصف تحت خط النصل. والنصل شريط شفرة من الفولاذ المقاوم للصدأ مثبت داخل الغطاء فوق قاع الأخدود تمامًا. ولأن الغطاء مثبت بمفصل عند أحد طرفيه، يدخل النصل القرص بزاوية ويشقه من جانب إلى آخر بدلًا من أن يسحقه."
+   },
+   "preceding_answer_B": {
+    "en": "I would make it in bright colours with large printed markings so people with poor eyesight can find it in a drawer. It should be small enough to carry in a pocket, roughly the size of a matchbox. Pharmacies could hand it out with prescriptions for tablets that are often halved.",
+    "ar-msa": "سأصنعها بألوان زاهية وعلامات مطبوعة كبيرة كي يجدها ضعاف البصر بسهولة في الدرج. وينبغي أن تكون صغيرة بما يكفي لحملها في الجيب، بحجم علبة الكبريت تقريبًا. ويمكن للصيدليات توزيعها مع الوصفات الخاصة بالأقراص التي تُقسم غالبًا."
+   },
+   "answers": {
+    "AMENDMENT": {
+     "en": "I am changing how the blade reaches the tablet: instead of a hinged lid that swings shut, the blade will sit in a vertical slide on top of the holder, and the user presses a round button straight down. The button pushes the blade carrier down along two guide rails and a return spring lifts it after the cut, so the blade now meets the tablet flat across its whole width rather than at an angle.",
+     "ar-msa": "سأغيّر طريقة وصول النصل إلى القرص: فبدلًا من غطاء مفصلي يُطوى ليُغلق، سيُركّب النصل في مجرى انزلاقي رأسي فوق الحامل، ويضغط المستخدم زرًا دائريًا إلى الأسفل مباشرة. يدفع الزر حامل النصل إلى الأسفل على سكتين توجيهيتين، ثم يرفعه نابض إرجاع بعد القطع، فيلاقي النصل القرص الآن مستويًا على عرضه كله لا بزاوية."
+    },
+    "CONTENT_FREE_REFERENCE": {
+     "en": "The parts and their jobs are the same as I wrote before; please refer to that answer, as I have nothing new on this point today.",
+     "ar-msa": "الأجزاء ومهامها كما كتبتها من قبل؛ أرجو الرجوع إلى تلك الإجابة، فليس لديّ اليوم جديد في هذه النقطة."
+    },
+    "NEW_DETAIL": {
+     "en": "Under the V-groove there is a small sliding drawer that catches tablet dust and crumbs, so they do not build up and push the next tablet off-centre. The lid has a plastic latch tab that clicks into the base, keeping the blade covered while the splitter is in a pocket. A raised rubber stop on the inside of the lid limits how far the blade travels, so its edge never hits the plastic floor of the groove and stays sharp longer.",
+     "ar-msa": "تحت الأخدود درج منزلق صغير يجمع غبار الأقراص وفتاتها، فلا يتراكم ويزيح القرص التالي عن المنتصف. وفي الغطاء لسان قفل بلاستيكي ينغلق بطقّة في القاعدة، فيبقى النصل مغطى حين تكون الأداة في الجيب. وداخل الغطاء مصدّ مطاطي بارز يحدّ من مسافة نزول النصل، فلا تصطدم حافته بأرضية الأخدود البلاستيكية وتبقى حادة مدة أطول."
+    },
+    "OTHER_INVENTION_SHARED_VOCAB": {
+     "en": "My idea is a sharpener for flat carpenter's pencils, and it needs five main parts. A clamp holds the flat pencil level; a rotating cutter wheel with spiral blades shaves away the wood; a hand crank turns the cutter wheel through a small gear; and a stop plate sets how much lead is left exposed. The job of the shavings box underneath is to catch the wood curls so the workbench stays clean.",
+     "ar-msa": "فكرتي مبراة لأقلام النجارين المسطحة، وتحتاج إلى خمسة أجزاء رئيسية. مِلزمة تثبّت القلم المسطح أفقيًا، وعجلة قاطعة دوّارة ذات شفرات حلزونية تكشط الخشب، وذراع تدوير يدوية تدير العجلة القاطعة عبر ترس صغير، وصفيحة إيقاف تحدد طول الرصاص المكشوف. أما مهمة صندوق النشارة في الأسفل فهي جمع لفائف الخشب كي تبقى طاولة العمل نظيفة."
+    },
+    "PARAPHRASE_OF_PREVIOUS": {
+     "en": "The base has a groove shaped like the letter V, and a little spring-loaded slider nudges the tablet down into its point, so whatever its size it lines up beneath where the blade will fall. Inside the lid, directly over that point, there is a strip of stainless razor steel. Since the lid swings from one end, the edge cuts through the tablet bit by bit from one side across, rather than pressing down on all of it at once.",
+     "ar-msa": "في القاعدة مجرى على هيئة حرف V، ويدفع منزلق صغير محمّل بنابض القرصَ نحو رأس هذا المجرى، فيصطفّ تحت موضع سقوط النصل مهما كان حجمه. وفي باطن الغطاء، فوق ذلك الرأس مباشرة، شريط من فولاذ الشفرات غير القابل للصدأ. وبما أن الغطاء يتأرجح من أحد طرفيه، تقطع الحافة القرص شيئًا فشيئًا من جانب إلى الجانب الآخر، بدلًا من أن تضغط عليه كله دفعة واحدة."
+    },
+    "PLAIN_LANGUAGE_DETAIL": {
+     "en": "On the outside of the lid there is a little dip shaped for your thumb, so you know where to press and your thumb does not slide off. A see-through window in the lid lets you check that the tablet is lying in the middle before you cut. The edges of the base are rounded and have a rough strip on each side, so it does not slip out of wet or shaky hands.",
+     "ar-msa": "على ظهر الغطاء تجويف صغير على قدر الإبهام، فتعرف أين تضغط ولا ينزلق إبهامك. وفي الغطاء نافذة شفافة ترى منها أن القرص مستقر في الوسط قبل أن تقسمه. وحواف القاعدة مدوّرة، وعلى كل جانب منها شريط خشن كي لا تفلت من اليد المبللة أو المرتجفة."
+    },
+    "RESTATE_THEN_NEW": {
+     "en": "To sum up what I described: a V-groove with a spring wedge centres the tablet, and a razor strip in the hinged lid slices it at an angle. One more part I now see is needed is a small magnet in the base and a steel plate in the lid, so the lid stays shut by itself between uses. I would also add a second, shallower groove for very small tablets under 6 mm across.",
+     "ar-msa": "خلاصة ما وصفته: أخدود V مع إسفين بنابض يضع القرص في المنتصف، وشريط شفرة في الغطاء المفصلي يشقه بزاوية. وأرى الآن أن هناك جزءًا آخر لازمًا، هو مغناطيس صغير في القاعدة وصفيحة فولاذية في الغطاء، كي يبقى الغطاء مغلقًا من تلقاء نفسه بين الاستعمالات. وسأضيف كذلك أخدودًا ثانيًا أقل عمقًا للأقراص الصغيرة جدًا التي يقل قطرها عن 6 مم."
+    },
+    "UNKNOWN_OR_UNDECIDED": {
+     "en": "I am not sure yet what main parts this splitter needs besides the blade and the lid. I have not decided what shape the holder should have, whether a groove, two clips or a round cup, or what the blade should be, a razor strip or a thicker knife edge. I am still working out which job each part should do.",
+     "ar-msa": "لست متأكدًا بعد من الأجزاء الرئيسية التي تحتاجها هذه الأداة غير النصل والغطاء. لم أقرر ما شكل الحامل: أخدود، أم مشبكان، أم كوب دائري، ولا ما نوع النصل: شريط شفرة أم حافة سكين أسمك. وما زلت أفكر في المهمة التي ينبغي أن يؤديها كل جزء."
+    }
+   }
+  },
+  {
+   "project_id": "CH4",
+   "domain": "electronics_electrical",
+   "idea": {
+    "en": "My idea is a small adapter that sits between a clothes iron and the wall socket. If someone gets distracted and leaves a hot iron standing, the adapter notices that the iron has not been used for a while and switches its power off. A light on the adapter shows that the power was cut, so the user understands why the iron is cold. The aim is to prevent burns and scorched clothes when people forget an iron is on.",
+    "ar-msa": "فكرتي محوّل صغير يوضع بين مكواة الملابس ومقبس الجدار. فإذا انشغل أحدهم وترك المكواة ساخنة قائمة، يلاحظ المحوّل أنها لم تُستعمل منذ مدة فيقطع عنها الكهرباء. ويضيء مصباح على المحوّل ليبيّن أن التيار قُطع، فيفهم المستخدم سبب برودة المكواة. والغاية منع الحروق واحتراق الملابس عندما ينسى الناس أن المكواة ما زالت تعمل."
+   },
+   "preceding_answer_A": {
+    "en": "The adapter measures the current flowing to the iron with a small current transformer around the live wire. While the iron is in use, its thermostat clicks on and off at irregular intervals as the soleplate meets cool fabric; when it is left standing, the switching becomes slow and very regular. A microcontroller times these on/off cycles, and if the pattern stays regular for eight minutes it opens a relay that disconnects the iron.",
+    "ar-msa": "يقيس المحوّل التيار المتدفق إلى المكواة بمحوّل تيار صغير يحيط بسلك الطور. وأثناء الكيّ يفصل منظم الحرارة في المكواة ويوصل على فترات غير منتظمة كلما لامست القاعدة قماشًا باردًا، أما إذا تُركت قائمة فيصبح التبديل بطيئًا ومنتظمًا جدًا. ويقيس متحكم دقيق مدد دورات التشغيل والإطفاء هذه، فإذا بقي النمط منتظمًا ثماني دقائق فتح مرحّلًا يفصل المكواة."
+   },
+   "preceding_answer_B": {
+    "en": "The adapter would be a plug-through block about as big as a phone charger, with a socket on its front for the iron's plug. It should work with irons of any brand rated from about 1000 to 2600 watts sold in Europe and the Middle East. I want it priced well below a mid-range iron, so people buy it as a simple add-on.",
+    "ar-msa": "سيكون المحوّل كتلة تُوصل بالمقبس مباشرة، بحجم شاحن الهاتف تقريبًا، وفي واجهتها مقبس لقابس المكواة. وينبغي أن يعمل مع مكاوٍ من أي علامة تجارية تتراوح قدرتها بين 1000 و2600 واط تقريبًا مما يُباع في أوروبا والشرق الأوسط. وأريد أن يكون سعره أقل بكثير من مكواة متوسطة، ليشتريه الناس إضافةً بسيطة."
+   },
+   "answers": {
+    "AMENDMENT": {
+     "en": "I want to change what the adapter does once it notices the iron has been left: instead of cutting the power at once and showing a light, it will first sound a buzzer for 30 seconds. The microcontroller drives a small piezo buzzer through a transistor, and if during those 30 seconds the user lifts the iron and the switching becomes irregular again, the countdown resets and the power stays on; only if nothing changes does the relay open.",
+     "ar-msa": "أريد تغيير ما يفعله المحوّل حين يلاحظ أن المكواة متروكة: فبدلًا من قطع التيار فورًا وإضاءة المصباح، سيُطلق أولًا صفارة مدة 30 ثانية. يشغّل المتحكم الدقيق صفارة كهرضغطية صغيرة عبر ترانزستور، فإذا رفع المستخدم المكواة خلال تلك الثواني الثلاثين وعاد التبديل غير منتظم، أُعيد العد التنازلي وبقي التيار موصولًا، ولا يُفتح المرحّل إلا إذا لم يتغير شيء."
+    },
+    "CONTENT_FREE_REFERENCE": {
+     "en": "How it notices and responds is what I explained in my last answer, and that is still how I see it, so there is nothing further to tell you here.",
+     "ar-msa": "كيفية ملاحظته للمشكلة واستجابته لها هي ما شرحته في إجابتي الأخيرة، وما زلت أراها كذلك، فلا جديد أضيفه هنا."
+    },
+    "NEW_DETAIL": {
+     "en": "As a second check, the microcontroller also opens the relay at once if it measures more than 13 amps, which protects against a faulty iron drawing too much. I would use a latching relay, so it holds its open or closed state without its coil drawing current all the time. A one-shot thermal fuse inside the adapter cuts everything if the adapter itself ever goes above 110 °C.",
+     "ar-msa": "وكتحقق ثانٍ، يفتح المتحكم الدقيق المرحّل فورًا إذا قاس تيارًا يزيد على 13 أمبير، فيحمي ذلك من مكواة معطوبة تسحب تيارًا زائدًا. وسأستعمل مرحّلًا ذاتي الإمساك يحتفظ بحالته مفتوحًا أو مغلقًا دون أن يستهلك ملفّه تيارًا طوال الوقت. كما يقطع منصهر حراري يعمل مرة واحدة داخل المحوّل كل شيء إذا تجاوزت حرارة المحوّل نفسه 110 °م."
+    },
+    "OTHER_INVENTION_SHARED_VOCAB": {
+     "en": "In my garage-door watcher, the system would notice the problem through a magnetic reed switch on the door frame: when the door is open, the magnet moves away and the switch opens. A timer in the base unit starts counting, and if the door is still open 20 minutes after dark, judged by a small light sensor, the system would respond by flashing an LED strip in the hallway and sending a radio message to a chime by the bed, so someone closes the door before night.",
+     "ar-msa": "في جهازي لمراقبة باب المرآب، سيلاحظ النظام المشكلة عن طريق مفتاح قصبي مغناطيسي على إطار الباب: فحين يُفتح الباب يبتعد المغناطيس فينفتح المفتاح. ويبدأ مؤقّت في الوحدة الرئيسية بالعد، فإذا ظل الباب مفتوحًا بعد 20 دقيقة من حلول الظلام، الذي يقدّره مستشعر ضوء صغير، استجاب النظام بإيماض شريط LED في الممر وإرسال رسالة لاسلكية إلى جرس بجانب السرير، كي يغلق أحدهم الباب قبل الليل."
+    },
+    "PARAPHRASE_OF_PREVIOUS": {
+     "en": "A little ring-shaped current sensor clamped around the live conductor lets the adapter see how much electricity the iron is drawing. While someone is ironing, the cool cloth makes the iron's temperature switch cut in and out unevenly, but an iron left upright cycles slowly and steadily. The adapter's small processor clocks the gaps between these cycles, and after eight minutes of steady cycling it trips a relay that cuts the iron off.",
+     "ar-msa": "مستشعر تيار صغير على شكل حلقة يحيط بموصل الطور، فيعرف المحوّل كم من الكهرباء تسحب المكواة. وفي أثناء الكيّ يجعل القماش البارد مفتاح الحرارة في المكواة يعمل وينقطع على نحو متفاوت، أما المكواة المتروكة قائمة فتتعاقب دوراتها ببطء وثبات. ويقيس المعالج الصغير في المحوّل الفواصل بين هذه الدورات، وبعد ثماني دقائق من التعاقب الثابت يُطلق مرحّلًا يقطع الكهرباء عن المكواة."
+    },
+    "PLAIN_LANGUAGE_DETAIL": {
+     "en": "The box keeps track of how often the iron clicks on and off; if you put the iron down for a short phone call it waits, but it never waits longer than about a quarter of an hour in total. When it does turn the iron off, it also gives one long beep, so someone in the next room hears it. To use the iron again you just press the big round button on the front.",
+     "ar-msa": "تتابع العلبة كم مرة تطقطق المكواة عند تشغيلها وإطفائها؛ فإن وضعت المكواة جانبًا لمكالمة قصيرة انتظرت، لكنها لا تنتظر أكثر من ربع ساعة تقريبًا في المجموع. وحين تطفئ المكواة فعلًا تُصدر صوت تنبيه طويلًا واحدًا، فيسمعه من في الغرفة المجاورة. ولكي تعود إلى استعمال المكواة يكفي أن تضغط الزر الدائري الكبير في واجهتها."
+    },
+    "RESTATE_THEN_NEW": {
+     "en": "Just to repeat, the adapter watches the iron's current with a current transformer and cuts it with a relay when the thermostat cycling stays regular for eight minutes. Beyond that, I would add a small tilt switch clipped to the iron's cord near the handle and wired to the adapter, so any movement of the iron resets the eight-minute timer straight away, even if the thermostat happens to be off at that moment.",
+     "ar-msa": "للتذكير فقط، يراقب المحوّل تيار المكواة بمحوّل تيار، ويقطعه بمرحّل إذا بقي تبديل منظم الحرارة منتظمًا ثماني دقائق. وأضيف إلى ذلك مفتاح إمالة صغيرًا يُثبَّت بمشبك على سلك المكواة قرب المقبض ويوصَل بالمحوّل، فتعيد أي حركة للمكواة ضبط مؤقّت الدقائق الثماني فورًا، حتى لو كان منظم الحرارة مطفأً في تلك اللحظة."
+    },
+    "UNKNOWN_OR_UNDECIDED": {
+     "en": "I do not know yet how the adapter would notice that the iron has been left alone. I have thought about watching the electricity it uses, a movement switch on the iron, or a heat reading, but I have not picked one. And apart from cutting the power, I haven't decided how it should respond.",
+     "ar-msa": "لا أعرف بعد كيف سيلاحظ المحوّل أن المكواة تُركت دون استعمال. فكرت في مراقبة الكهرباء التي تستهلكها، أو مفتاح حركة على المكواة، أو قياس حرارتها، لكنني لم أختر أيًّا منها. وفيما عدا قطع التيار، لم أقرر بعد كيف ينبغي أن يستجيب."
+    }
+   }
+  },
+  {
+   "project_id": "CH5",
+   "domain": "electronics_electrical",
+   "idea": {
+    "en": "My idea is a bedside lamp that wakes a person gently by growing brighter slowly before the alarm time, like a sunrise. Thirty minutes before the set time, the lamp starts with a dim red glow and gradually turns into bright warm white. The user sets the wake-up time with buttons on the lamp. It is for people who feel groggy when a loud alarm wakes them in a dark room.",
+    "ar-msa": "فكرتي مصباح بجانب السرير يوقظ الشخص بلطف إذ يزداد سطوعه ببطء قبل موعد المنبّه، كأنه شروق الشمس. فقبل الموعد المحدد بثلاثين دقيقة يبدأ المصباح بوهج أحمر خافت يتحول تدريجيًا إلى ضوء أبيض دافئ ساطع. ويضبط المستخدم وقت الاستيقاظ بأزرار على المصباح. وهو موجّه لمن يشعرون بالخمول حين يوقظهم منبّه صاخب في غرفة مظلمة."
+   },
+   "preceding_answer_A": {
+    "en": "The light comes from a ring of 24 LEDs mixing red, amber and warm-white chips, and each colour group has its own constant-current driver. A microcontroller changes the brightness of each group with pulse-width modulation, stepping it up every few seconds along a curve stored in its memory so the change looks smooth to the eye. A real-time clock chip with a coin-cell backup keeps the time even if the lamp is unplugged.",
+    "ar-msa": "يأتي الضوء من حلقة من 24 صمامًا ثنائيًا باعثًا للضوء تجمع رقاقات حمراء وكهرمانية وبيضاء دافئة، ولكل مجموعة لونية مشغّل تيار ثابت خاص بها. ويغيّر متحكم دقيق سطوع كل مجموعة بتعديل عرض النبضة، فيرفعه خطوةً كل بضع ثوانٍ وفق منحنى مخزّن في ذاكرته كي يبدو التغير سلسًا للعين. وتحفظ شريحة ساعة آنية مزودة ببطارية احتياطية زرّية الوقتَ حتى إذا فُصل المصباح عن الكهرباء."
+   },
+   "preceding_answer_B": {
+    "en": "The lamp shade would be frosted glass shaped like a half dome, so the light spreads across the ceiling instead of shining into the eyes. I picture it in matte white or light grey to suit most bedrooms, and about 20 cm wide so it fits on a small nightstand. It could also serve as an ordinary reading lamp in the evening.",
+    "ar-msa": "سيكون غطاء المصباح من زجاج مصنفر على هيئة نصف قبة، فينتشر الضوء على السقف بدلًا من أن يسطع في العينين. وأتخيله باللون الأبيض غير اللامع أو الرمادي الفاتح ليناسب معظم غرف النوم، وبعرض نحو 20 سم كي يتسع على منضدة صغيرة. ويمكن أيضًا استخدامه مصباحَ قراءة عاديًا في المساء."
+   },
+   "answers": {
+    "AMENDMENT": {
+     "en": "I'm replacing the buttons for setting the wake-up time with a single rotary knob on top of the lamp. The knob is a rotary encoder with a push switch: turning it moves the hours or minutes up and down on a small four-digit display, and pressing it steps between hours, minutes and saving, with the microcontroller reading the encoder's two pulse outputs to tell the direction of rotation.",
+     "ar-msa": "سأستبدل بالأزرار التي يُضبط بها وقت الاستيقاظ مقبضًا دوّارًا واحدًا أعلى المصباح. هذا المقبض مُرمِّز دوّار مزوّد بمفتاح ضغط: فتدويره يرفع الساعات أو الدقائق أو يخفضها على شاشة صغيرة من أربعة أرقام، والضغط عليه ينقل بين الساعات والدقائق والحفظ، ويقرأ المتحكم الدقيق خرجَي النبضات في المرمِّز ليعرف اتجاه الدوران."
+    },
+    "CONTENT_FREE_REFERENCE": {
+     "en": "I covered the main parts and what they do in my previous reply, and I would only be saying it again, so I'll leave it as it was.",
+     "ar-msa": "تناولت الأجزاء الرئيسية ووظيفة كل منها في ردي السابق، ولن أفعل الآن سوى تكراره، لذا أتركه كما هو."
+    },
+    "NEW_DETAIL": {
+     "en": "Besides the light and its control, there is a small speaker driven by a class-D amplifier chip that plays birdsong stored on a flash memory chip at the alarm time, in case the light alone does not wake the user. The lamp runs from a 12-volt wall adapter, and a buck converter on the board makes the 3.3 volts the microcontroller needs. A touch pad on the front, read through a capacitive touch input, works as a snooze that dims the lamp again for nine minutes.",
+     "ar-msa": "إلى جانب الضوء والتحكم فيه، هناك سمّاعة صغيرة يشغّلها مضخّم صوت من الفئة D، تعزف أصوات طيور مخزّنة في شريحة ذاكرة وميضية عند موعد المنبّه، تحسّبًا لعدم كفاية الضوء وحده لإيقاظ المستخدم. ويُغذّى المصباح بمحوّل جداري بجهد 12 فولت، ويخفّض محوّل خافض على اللوحة الجهد إلى 3.3 فولت الذي يحتاجه المتحكم الدقيق. وتعمل لوحة لمس في الواجهة، تُقرأ عبر مدخل لمس سعوي، زرَّ غفوة يُخفت المصباح مجددًا تسع دقائق."
+    },
+    "OTHER_INVENTION_SHARED_VOCAB": {
+     "en": "My idea is a vibrating doorbell for people who are hard of hearing, and its main parts are a wireless push button at the front door, a small receiver worn on a belt clip, and a charging dock. The push button has a coin battery and a 433 MHz transmitter that sends a coded burst when pressed; the receiver decodes it and runs a small vibration motor in a pattern of three long pulses. The charging dock tops up the receiver's lithium cell overnight, and each part does one more thing: the dock also flashes a bright LED if the bell is pressed while the receiver is charging.",
+     "ar-msa": "فكرتي جرس باب يهتز لضعاف السمع، وأجزاؤه الرئيسية زر ضغط لاسلكي عند باب البيت، ووحدة استقبال صغيرة تُعلّق على الحزام بمشبك، وقاعدة شحن. يحتوي زر الضغط على بطارية زرّية ومرسل يعمل بتردد 433 ميغاهرتز يبث دفقة مشفّرة عند الضغط عليه، فتفك وحدة الاستقبال شفرتها وتشغّل محرك اهتزاز صغيرًا بنمط من ثلاث نبضات طويلة. أما قاعدة الشحن فتعيد شحن خلية الليثيوم في وحدة الاستقبال ليلًا، وتومض كذلك بصمام ضوئي ساطع إذا ضُغط الجرس أثناء شحن الوحدة."
+    },
+    "PARAPHRASE_OF_PREVIOUS": {
+     "en": "There are two dozen LEDs set in a circle, red, amber and warm white, and each colour has its own driver feeding it a steady current. The little processor dims or brightens each colour by switching it on and off very quickly, raising the level a notch every few seconds along a curve saved inside it so no jumps can be seen. A clock chip backed by a coin battery keeps the time when the lamp has no mains power.",
+     "ar-msa": "هناك أربعة وعشرون صمامًا ضوئيًا مصفوفة في دائرة، بين أحمر وكهرماني وأبيض دافئ، ولكل لون مشغّل خاص يمدّه بتيار ثابت. ويخفّض المعالج الصغير إضاءة كل لون أو يرفعها بتشغيله وإطفائه بسرعة كبيرة، رافعًا المستوى درجةً كل بضع ثوانٍ على منحنى محفوظ فيه، فلا تُرى أي قفزات. وتحفظ شريحة ساعة مدعومة ببطارية زرّية الوقتَ حين ينقطع التيار عن المصباح."
+    },
+    "PLAIN_LANGUAGE_DETAIL": {
+     "en": "There is also a little light-catching eye on the back of the lamp, so on bright summer mornings, when the room is already light, the lamp skips the slow brightening and just plays a soft tone. The base is weighted with a steel plate so it does not tip over when you reach for it half asleep. And the brightest the lamp will ever get can be turned down with a small slider underneath, for people who find full brightness too much.",
+     "ar-msa": "وفي ظهر المصباح عين صغيرة تلتقط الضوء، ففي صباحات الصيف المشرقة، حين تكون الغرفة مضيئة أصلًا، يتخطى المصباح الإضاءة التدريجية ويكتفي بنغمة هادئة. وقاعدته مثقّلة بصفيحة من الفولاذ فلا تنقلب حين تمدّ يدك إليها وأنت نصف نائم. ويمكن خفض أقصى سطوع يبلغه المصباح بمنزلقة صغيرة في أسفله، لمن يجد السطوع الكامل أكثر مما يحتمل."
+    },
+    "RESTATE_THEN_NEW": {
+     "en": "As I already described, the 24-LED ring in three colour groups is dimmed by PWM from a microcontroller following a stored curve, and a backed-up real-time clock keeps the time. I'd add an aluminium heat-sink plate under the LED ring with an NTC thermistor on it, so the microcontroller lowers the maximum brightness if the LEDs get hotter than 70 °C.",
+     "ar-msa": "كما وصفت من قبل، يتحكم متحكم دقيق في سطوع حلقة الصمامات الأربعة والعشرين بمجموعاتها اللونية الثلاث بتعديل عرض النبضة وفق منحنى مخزّن، وتحفظ ساعة آنية مدعومة ببطارية الوقت. وأضيف صفيحة تبديد حراري من الألومنيوم تحت الحلقة عليها مقاوم حراري من نوع NTC، فيخفّض المتحكم الدقيق السطوع الأقصى إذا تجاوزت حرارة الصمامات 70 °م."
+    },
+    "UNKNOWN_OR_UNDECIDED": {
+     "en": "I haven't decided what the main parts inside would be. The light could come from LEDs, a halogen bulb with a dimmer, or a strip behind a diffuser, and the timing could come from a clock chip or from the user's phone; I'm still choosing. So I can't yet say what each part does.",
+     "ar-msa": "لم أقرر بعد ما ستكون الأجزاء الرئيسية في الداخل. فقد يأتي الضوء من صمامات ضوئية، أو من مصباح هالوجين مع مخفّت، أو من شريط خلف ناشر للضوء، وقد يأتي التوقيت من شريحة ساعة أو من هاتف المستخدم، وما زلت أختار. لذلك لا أستطيع بعد أن أقول ماذا يفعل كل جزء."
+    }
+   }
+  },
+  {
+   "project_id": "CH6",
+   "domain": "electronics_electrical",
+   "idea": {
+    "en": "My invention is a small plug-in box that lets a person know on their phone when the electricity at home goes off. It is meant for people who keep things that suffer in a power cut, such as aquarium heaters or a home server. It plugs into an ordinary wall socket and keeps watch while the owner is away. When the power cuts out, the box sends a message so the owner can ask a neighbour to check or come home, and when the power comes back it sends a second message.",
+    "ar-msa": "اختراعي علبة صغيرة توصل بالمقبس، تُعلم الشخص عبر هاتفه حين تنقطع الكهرباء في منزله. وهي موجهة لمن يملكون أشياء تتضرر من انقطاع التيار، مثل سخانات أحواض السمك أو خادم منزلي. تُوصل العلبة بمقبس جداري عادي وتبقى في حالة مراقبة أثناء غياب صاحب المنزل. وحين ينقطع التيار ترسل رسالة كي يطلب المالك من أحد الجيران التحقق أو يعود إلى البيت، وعندما يعود التيار ترسل رسالة ثانية."
+   },
+   "preceding_answer_A": {
+    "en": "Inside the box a small lithium battery is kept charged from the socket, so the box keeps running when the mains drops. An optocoupler wired through resistors across the incoming mains tells the microcontroller on every cycle whether voltage is present. The microcontroller sends an SMS through a built-in GSM module, so the alert does not depend on the home Wi-Fi router, which loses power too.",
+    "ar-msa": "داخل العلبة بطارية ليثيوم صغيرة تبقى مشحونة من المقبس، فتواصل العلبة العمل حين ينقطع التيار الرئيسي. ويُوصل مقرن ضوئي عبر مقاومات بخط التغذية الداخل، فيُعلم المتحكم الدقيق في كل دورة هل الجهد موجود أم لا. ويرسل المتحكم الدقيق رسالة نصية قصيرة عبر وحدة GSM مدمجة، فلا يعتمد التنبيه على موجّه الواي فاي في المنزل، الذي ينقطع عنه التيار هو أيضًا."
+   },
+   "preceding_answer_B": {
+    "en": "The box would be about the size of a deck of cards, white, with a blank label on the front where the owner writes which room or appliance it is watching. Several boxes could be used in one house, for example one in the garage and one in the living room. I would sell it with a short printed guide in both Arabic and English.",
+    "ar-msa": "ستكون العلبة بحجم مجموعة أوراق اللعب تقريبًا، بيضاء اللون، وعلى واجهتها ملصق فارغ يكتب عليه المالك الغرفة أو الجهاز الذي تراقبه. ويمكن استخدام عدة علب في منزل واحد، كأن توضع واحدة في المرآب وأخرى في غرفة الجلوس. وسأبيعها مع دليل مطبوع مختصر باللغتين العربية والإنجليزية."
+   },
+   "answers": {
+    "AMENDMENT": {
+     "en": "I want to change the second message: instead of sending it as soon as the power returns, the box will wait until the power has been back steadily for five minutes, because the grid often flickers on and off after a cut. The microcontroller restarts a five-minute timer each time the optocoupler shows the mains dropping again, and only when the timer runs out without interruption does it send the 'power restored' SMS together with how long the outage lasted.",
+     "ar-msa": "أريد تغيير الرسالة الثانية: فبدلًا من إرسالها فور عودة التيار، ستنتظر العلبة حتى يستقر التيار خمس دقائق متواصلة، لأن الشبكة كثيرًا ما تنقطع وتعود مرات عدة بعد الانقطاع. ويعيد المتحكم الدقيق تشغيل مؤقّت الدقائق الخمس كلما أظهر المقرن الضوئي انقطاع التيار من جديد، ولا يرسل رسالة «عاد التيار» مع مدة الانقطاع إلا حين ينتهي المؤقّت دون أي انقطاع."
+    },
+    "CONTENT_FREE_REFERENCE": {
+     "en": "Step by step, it goes just as I laid out in my earlier answer; I've gone over it again in my head and there's nothing different to report.",
+     "ar-msa": "خطوةً خطوة، يجري الأمر تمامًا كما عرضته في إجابتي السابقة؛ وقد راجعته في ذهني مرة أخرى ولا أجد ما يختلف."
+    },
+    "NEW_DETAIL": {
+     "en": "First the mains disappears and the optocoupler stops pulsing; the microcontroller waits for ten missed cycles, about 200 milliseconds, so a brief flicker does not count as an outage. It then wakes the GSM module from sleep, which takes around 15 seconds to register on the network, and sends the SMS with the time of the cut taken from its internal clock. If the network does not answer, it retries every two minutes up to ten times, and the owner knows as soon as the message reaches their phone.",
+     "ar-msa": "أولًا يختفي التيار الرئيسي فيتوقف المقرن الضوئي عن النبض، وينتظر المتحكم الدقيق عشر دورات مفقودة، أي نحو 200 ملّي ثانية، كي لا يُحسب الوميض العابر انقطاعًا. ثم يوقظ وحدة GSM من وضع السكون، فتستغرق نحو 15 ثانية للتسجيل في الشبكة، ويرسل الرسالة النصية متضمنة وقت الانقطاع من ساعته الداخلية. وإذا لم تستجب الشبكة أعاد المحاولة كل دقيقتين حتى عشر مرات، ويعرف المالك بالأمر حالما تصل الرسالة إلى هاتفه."
+    },
+    "OTHER_INVENTION_SHARED_VOCAB": {
+     "en": "With my tumble-dryer lint warning, step by step it goes like this: the problem starts when lint builds up in the exhaust duct and the airflow weakens. A small vane anemometer at the duct outlet spins more slowly, and the microcontroller compares its speed with the speed recorded when the duct was clean. When it drops below 60 percent for three drying cycles in a row, a red LED lights on the laundry-room unit and a buzzer chirps every hour, and that is the moment someone knows about it and cleans the duct.",
+     "ar-msa": "مع جهازي للتنبيه إلى انسداد مجرى مجفف الملابس بالوبر، تسير الأمور خطوةً خطوة هكذا: تبدأ المشكلة حين يتراكم الوبر في أنبوب العادم فيضعف تدفق الهواء. فتدور مروحة قياس صغيرة عند مخرج الأنبوب ببطء أكبر، ويقارن المتحكم الدقيق سرعتها بالسرعة المسجّلة حين كان الأنبوب نظيفًا. وإذا انخفضت عن 60 بالمئة في ثلاث دورات تجفيف متتالية، أضاء صمام أحمر في الوحدة المثبتة في غرفة الغسيل وأصدرت صفارة زقزقة كل ساعة، وتلك هي اللحظة التي يعرف فيها أحدهم بالمشكلة فينظف الأنبوب."
+    },
+    "PARAPHRASE_OF_PREVIOUS": {
+     "en": "When the socket goes dead, the box carries on from its own rechargeable lithium cell, which the mains had been keeping topped up. A light-coupled isolator hooked to the incoming supply lets the small processor check, with each wave of the mains, whether there is voltage, so it sees the moment it vanishes. The processor then texts the owner over the box's own mobile-network modem, which works even though the home internet router has gone dark as well.",
+     "ar-msa": "حين يصبح المقبس بلا تيار، تواصل العلبة عملها من خلية الليثيوم القابلة للشحن التي كانت الكهرباء تملؤها باستمرار. ويتيح عازل يعمل بالاقتران الضوئي موصول بخط التغذية الداخل للمعالج الصغير أن يتحقق مع كل موجة من التيار المتناوب من وجود الجهد، فيرى لحظة اختفائه. ثم يراسل المعالج المالكَ نصيًا عبر مودم الشبكة الخلوية الخاص بالعلبة، وهو يعمل حتى لو انطفأ موجّه الإنترنت في المنزل أيضًا."
+    },
+    "PLAIN_LANGUAGE_DETAIL": {
+     "en": "As soon as the lights go out, the box gives one short buzz, so anyone at home hears that something happened. The text it sends starts with the name the owner gave that box, like 'garage' or 'fish tank', so it is clear at once which room lost power. And if the cut lasts so long that the little battery inside is nearly empty, it sends one last text to say it is about to go quiet.",
+     "ar-msa": "ما إن تنطفئ الأنوار حتى تُصدر العلبة طنينًا قصيرًا واحدًا، فيسمع من في البيت أن شيئًا ما حدث. وتبدأ الرسالة التي ترسلها بالاسم الذي أطلقه المالك على تلك العلبة، مثل «المرآب» أو «حوض السمك»، فيتضح فورًا أي غرفة انقطعت عنها الكهرباء. وإذا طال الانقطاع حتى كادت البطارية الصغيرة في داخلها تفرغ، أرسلت رسالة أخيرة تقول إنها على وشك التوقف."
+    },
+    "RESTATE_THEN_NEW": {
+     "en": "In short, as I said: the battery keeps the box alive, the optocoupler tells the microcontroller the mains has gone, and the GSM module sends an SMS without needing Wi-Fi. On top of that, the message would include a reading from a small temperature sensor in the box, so an aquarium owner knows how quickly the room is cooling, and the box sends an updated temperature every 30 minutes while the outage lasts.",
+     "ar-msa": "باختصار، كما قلت: تبقي البطارية العلبة عاملة، ويُعلم المقرن الضوئي المتحكم الدقيق بانقطاع التيار، وترسل وحدة GSM رسالة نصية دون حاجة إلى الواي فاي. وفوق ذلك ستتضمن الرسالة قراءة من مستشعر حرارة صغير داخل العلبة، فيعرف صاحب حوض السمك مدى سرعة برودة الغرفة، وترسل العلبة قراءة محدّثة كل 30 دقيقة ما دام الانقطاع مستمرًا."
+    },
+    "UNKNOWN_OR_UNDECIDED": {
+     "en": "I'm still undecided about what happens step by step between the power going off and someone finding out. The box might send a text, call the phone, or use the home internet, and I haven't settled how it would keep working itself once the power is gone. I'm also not sure whether the alert should go out at once or after a short wait.",
+     "ar-msa": "ما زلت مترددًا في ما يحدث خطوة بخطوة بين انقطاع الكهرباء ومعرفة أحدهم بذلك. فقد ترسل العلبة رسالة نصية، أو تتصل بالهاتف، أو تستخدم إنترنت المنزل، ولم أحسم كيف ستبقى هي نفسها عاملة بعد انقطاع التيار. ولست متأكدًا أيضًا هل ينبغي أن ينطلق التنبيه فورًا أم بعد انتظار قصير."
+    }
+   }
+  }
+ ],
+ "author_note": "All six devices and every detail are invented; new-detail, plain-language and restate-then-new answers were written so their added details avoid both preceding answers, and each AMENDMENT changes exactly one step or part named in the original idea (CH1 handle, CH2 quarter turn, CH3 hinged lid, CH4 light-on-cutoff behaviour, CH5 buttons, CH6 second message). PLAIN_LANGUAGE_DETAIL avoids the listed engineering words and the served question's key terms, though it may still mention ordinary words such as 'battery' or 'button'."
+}
