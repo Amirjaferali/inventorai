@@ -380,8 +380,10 @@ def test_the_recorded_run_is_internally_consistent_and_the_gate_is_closed(frozen
     journal and stayed inside the authorization: gpt-6-sol, Standard tier, at most
     60 requests, under US$5, no error, no retry."""
     assert h.PROJECT_CONTEXT_RUN_AUTHORIZED is False
-    report = json.load(open(h.PROJECT_CONTEXT_REPORT_PATH, encoding="utf-8"))
-    journal = [json.loads(line) for line in open(h.PROJECT_CONTEXT_JOURNAL_PATH, encoding="utf-8")]
+    with open(h.PROJECT_CONTEXT_REPORT_PATH, encoding="utf-8") as fh:
+        report = json.load(fh)
+    with open(h.PROJECT_CONTEXT_JOURNAL_PATH, encoding="utf-8") as fh:
+        journal = [json.loads(line) for line in fh]
     assert report == json.loads(json.dumps(h.project_context_report(
         frozen[0], report["outcome"], report["stop"], report["rows"], report["spend"]), sort_keys=True))
     attempts = [e for e in journal if e["event"] == "attempt"]
@@ -394,6 +396,21 @@ def test_the_recorded_run_is_internally_consistent_and_the_gate_is_closed(frozen
     assert all(a["error"] is None and a["http_status"] == 200 for a in attempts)
     total = sum(a["measured_cost_usd"] for a in attempts)
     assert abs(total - report["spend"]["measured_cost_usd"]) < 1e-6 and total < 5.0
-    assert report["outcome"] == h.PC_FALSIFIED_ELIGIBLE == report["stop"]["reason"]
+    # no retry, no restart: one start, contiguous reserve/attempt pairs, one end
+    n = len(attempts)
+    assert [e["event"] for e in journal] == ["start"] + ["reserved", "attempt"] * n + ["end"]
+    assert [a["attempt"] for a in attempts] == list(range(1, n + 1))
+    # every report row is exactly what the journal recorded for that attempt
+    for row, att in zip(report["rows"], attempts):
+        assert row["item_id"] == att["item_id"] and row["attempt"]["attempt"] == att["attempt"]
+        assert (row["verdict"], row["decision"]) == (att["verdict"], att["decision"])
+        for key in ("usage", "measured_cost_usd", "response_id", "model", "service_tier",
+                    "input_token_bound", "reserved_usd"):
+            assert row["attempt"][key] == att[key], key
+    # the stop is re-derived from the frozen rules, not taken from the report
+    items = {it["item_id"]: it for it in frozen[0]["items"]}
+    stops = [h.pc_stop(items[r["item_id"]], r["decision"]) for r in report["rows"]]
+    assert all(s is None for s in stops[:-1]) and stops[-1] == report["outcome"] == report["stop"]["reason"]
+    assert report["outcome"] == h.PC_FALSIFIED_ELIGIBLE
     assert report["stop"]["item_id"] == attempts[-1]["item_id"] == "P4-C02-ar-msa"
-    assert len(report["untested_items"]) == 60 - len(attempts)
+    assert len(report["untested_items"]) == 60 - n
