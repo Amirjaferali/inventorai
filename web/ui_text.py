@@ -4712,6 +4712,22 @@ UI_STRINGS = {
                "محلولة. ما تسجّله يبقى تصريحك أنت، وأي فحص تجريه لاحقًا لا ينطبق إلا ضمن حدوده "
                "المعلنة وأدلّته، ولا يُثبت شيء من ذلك أن الفكرة جاهزة."),
     },
+    # G1-UQTR-INTEGRATED-CONTINUATION-01: the same secondary integrated step,
+    # offered while the inventor's own recorded non-answer suppresses the re-ask
+    # of the current point. It names no routing and no risk acceptance (neither
+    # applies here); the point stays open and its question stays available.
+    "UI_UQC_NOTE": {
+        "en": ("Optional while that point stays open: you can keep describing the parts of your "
+               "invention and how they interact. This does not answer or resolve the point, and "
+               "you can return to its question at any time. What you record stays your own "
+               "statement, any check you later run applies only within its own stated limits "
+               "and evidence, and none of it validates the design, establishes that the parts "
+               "are compatible or shows that the idea is ready."),
+        "ar": ("اختياري ما دامت تلك النقطة مفتوحة: يمكنك متابعة وصف أجزاء اختراعك وكيف تتفاعل. "
+               "هذا لا يجيب عن النقطة ولا يحلّها، ويمكنك العودة إلى سؤالها في أي وقت. ما تسجّله "
+               "يبقى تصريحك أنت، وأي فحص تجريه لاحقًا لا ينطبق إلا ضمن حدوده المعلنة وأدلّته، "
+               "ولا يُثبت شيء من ذلك صحة التصميم أو توافق الأجزاء أو أن الفكرة جاهزة."),
+    },
     "UI_NR_RECOVERY_CTA": {
         "en": "See your options",
         "ar": "عرض خياراتك",
