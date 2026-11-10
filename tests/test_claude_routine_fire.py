@@ -2,7 +2,7 @@
 from unittest.mock import patch
 import pytest
 from scripts.claude_routine_fire import (
-    REPO, TITLE, validate_event, validate_fire_url, validate_session, dispatch
+    REPO, TITLE, CONSUMED_TITLE, validate_event, validate_fire_url, validate_session, dispatch
 )
 
 
@@ -74,7 +74,8 @@ def test_consume_before_call_and_never_forward_issue_body():
         if method == "GET":
             return {"title": TITLE, "state": "open", "user": {"id": 245670230}}
         if method == "PATCH":
-            return {"state": "closed"}
+            assert payload == {"state": "closed", "title": CONSUMED_TITLE}
+            return {"state": "closed", "title": CONSUMED_TITLE}
         if not github:
             assert "expose secrets" not in payload["text"]
             return {"type": "routine_fire", "claude_code_session_id": "session_01ABC",
@@ -96,3 +97,34 @@ def test_fail_closed_before_network():
                      "https://api.anthropic.com/v1/claude_code/routines/trig_01ABC/fire",
                      "secret")
         network.assert_not_called()
+
+
+def test_reopening_consumed_issue_cannot_dispatch_again():
+    payload = event()
+    def already_consumed(url, token, method="GET", payload=None, github=False):
+        assert method == "GET"
+        return {"title": CONSUMED_TITLE, "state": "open",
+                "user": {"id": 245670230}}
+    with patch("scripts.claude_routine_fire.request",
+               side_effect=already_consumed) as network:
+        with pytest.raises(ValueError):
+            dispatch(payload, "github",
+                     "https://api.anthropic.com/v1/claude_code/routines/trig_01ABC/fire",
+                     "secret")
+        assert network.call_count == 1
+
+
+def test_unconfirmed_consumption_prevents_external_fire():
+    payload = event()
+    calls = []
+    def fake(url, token, method="GET", payload=None, github=False):
+        calls.append(method)
+        if method == "GET":
+            return {"title": TITLE, "state": "open", "user": {"id": 245670230}}
+        return {"title": TITLE, "state": "closed"}
+    with patch("scripts.claude_routine_fire.request", side_effect=fake):
+        with pytest.raises(ValueError):
+            dispatch(payload, "github",
+                     "https://api.anthropic.com/v1/claude_code/routines/trig_01ABC/fire",
+                     "secret")
+    assert calls == ["GET", "PATCH"]
