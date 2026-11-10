@@ -2242,7 +2242,7 @@ body{overflow-wrap:anywhere}
           <input type="hidden" name="cel_action" value="link">
           <label style="display:block;font-size:13px;margin:0 0 4px 0" for="cel-pick-{{ pidx }}">{{ t('UI_CEL_PICK') }}</label>
           <select id="cel-pick-{{ pidx }}" name="cel_revision" style="max-width:100%">
-            {% for k in cel.candidates %}<option value="{{ k.revision_id }}">{{ k.interface_description }} — {{ t('UI_CEL_CHECK_VERSION') }} {{ k.revision_no }}</option>{% endfor %}
+            {% for k in cel.candidates %}<option dir="auto" value="{{ k.revision_id }}">{{ k.interface_description }} — {{ t('UI_CEL_CHECK_VERSION') }} {{ k.revision_no }}</option>{% endfor %}
           </select>
           <button type="submit" style="margin-top:6px">{{ t('UI_CEL_REPLACE_BUTTON') if cel.linked else t('UI_CEL_LINK_BUTTON') }}</button>
         </form>
