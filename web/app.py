@@ -12000,11 +12000,17 @@ def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=No
     if view is not None and view["eligible"]:
         try:
             # The seed is read directly (not through ``_original_idea_text``,
-            # which reads a failure as "no idea") so that a failed read stops
-            # the aid instead of hiding a pair that might conflict.
-            inputs = _get_store().load_reconstruction_inputs(sid) or {}
+            # which reads a failure as "no idea"). A failed read, a missing or
+            # legacy envelope (``None``) or a seed that is not usable text is
+            # not a complete source set: the WHOLE aid is suppressed, conflict
+            # notice included, rather than offering an answer's pair beside an
+            # original idea that could not be read.
+            inputs = _get_store().load_reconstruction_inputs(sid)
+            seed = inputs.get("seed_idea_text") if isinstance(inputs, dict) else None
+            if not isinstance(seed, str) or not seed.strip():
+                raise ValueError("original idea unavailable")
             located = _pcc_view.current_board_pair(
-                inputs.get("seed_idea_text"), _get_store().load_contract(sid).assertions)
+                seed, _get_store().load_contract(sid).assertions)
             if located is not None and located.get("conflict"):
                 aid_conflict = True
             else:

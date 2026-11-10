@@ -237,6 +237,43 @@ def test_w06_an_unreadable_history_shows_no_aid_and_the_page_still_renders(clien
     assert "data-pcc-aid" not in body                     # not even the original idea's pair
 
 
+def _raise(_sid):
+    raise RuntimeError("seed unreadable")
+
+
+@pytest.mark.parametrize("reader", [
+    _raise,                                                         # the read fails
+    lambda _sid: None,                                              # missing / legacy envelope
+    lambda _sid: {"seed_idea_text": None, "confirmed_domain": "mechanical",
+                  "path": "N", "engine_contract_version": "v"},     # no seed in the envelope
+    lambda _sid: {"seed_idea_text": "   "},                         # an unusable seed
+    lambda _sid: {"seed_idea_text": 42},
+    lambda _sid: "not an envelope",
+])
+def test_w06b_an_unavailable_original_idea_suppresses_the_whole_aid(client, monkeypatch, reader):
+    """A missing, legacy, unreadable or unusable original idea is never treated as a complete
+    source set: valid recorded board dimensions are not offered, and no conflict notice either."""
+    sid, ifc, _ids = _project(client, PLAIN)
+    _answered(client, sid, "My circuit board is 85 x 56 mm.")
+    _answered(client, sid, "My circuit board is 90 x 60 mm.")       # would be a conflict
+    store = appmod._get_store()
+    assert "data-pcc-aid-conflict" in _body(client.get(_url(sid, ifc)))   # readable: conflict shown
+    monkeypatch.setattr(store, "load_reconstruction_inputs", reader)
+    resp = client.get(_url(sid, ifc))
+    body = _body(resp)
+    assert resp.status_code == 200 and "data-pcc-form" in body
+    assert "data-pcc-aid" not in body                     # no offer and no conflict notice
+
+
+def test_w06c_a_missing_seed_with_one_answer_offers_nothing(client, monkeypatch):
+    sid, ifc, _ids = _project(client, PLAIN)
+    _answered(client, sid, "My circuit board is 85 x 56 mm.")
+    assert _aid_chunk(_body(client.get(_url(sid, ifc)))) is not None     # readable: offered
+    monkeypatch.setattr(appmod._get_store(), "load_reconstruction_inputs", lambda _sid: None)
+    body = _body(client.get(_url(sid, ifc)))
+    assert "data-pcc-aid" not in body and "85 x 56" not in _html.unescape(body)
+
+
 def test_w07_arabic_answer_offer_and_note(client):
     sid, ifc, ids = _project(client, "حوض نباتات ذكي يفتح غطاءه على مفصّلة.", lang="ar")
     _answered(client, sid, "مقاس اللوحة 85 × 56 mm.")
