@@ -110,7 +110,11 @@ def test_the_preregistration_manifest_and_instructions_are_pinned(manifest):
     assert manifest["candidate"] == prereg["candidate"]
     assert manifest["candidate"]["instructions_sha256"] == INSTRUCTIONS_SHA256 == \
         hashlib.sha256(manifest["candidate"]["instructions"].encode("utf-8")).hexdigest()
-    assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
+    # The gate may be open ONLY for the one authorized run, i.e. while no evidence of it
+    # exists; once the evidence exists it must be closed again.
+    assert isinstance(h.CONTEXT_HISTORY_RUN_AUTHORIZED, bool)
+    if os.path.exists(h.CONTEXT_HISTORY_REPORT_PATH) or os.path.exists(h.CONTEXT_HISTORY_JOURNAL_PATH):
+        assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
     assert "NOT AUTHORIZED TO RUN" in manifest["status"]
     assert manifest["budget"]["max_provider_requests"] == prereg["run_plan"]["max_provider_requests"] == 120
     assert manifest["budget"]["cost_ceiling_usd"] == prereg["run_plan"]["cost_ceiling_usd"] == 6.0
@@ -411,8 +415,6 @@ def test_the_run_is_refused_while_not_authorized_and_sends_nothing(monkeypatch):
     assert plan["cases"] == 120 and plan["worst_case_reserved_usd"] < plan["ceiling_usd"]
     assert h.main(["--context-history-evaluation", "--provider", "openai"]) == 2
     assert h.main(["--context-history-evaluation", "--project-context-falsification"]) == 2
-    assert not os.path.exists(h.CONTEXT_HISTORY_REPORT_PATH)
-    assert not os.path.exists(h.CONTEXT_HISTORY_JOURNAL_PATH)
 
 
 def test_the_authorized_path_writes_exclusive_evidence_once(manifest, monkeypatch, tmp_path):
@@ -464,3 +466,88 @@ def test_uncertain_with_a_quote_is_an_abstention_not_a_rejection(manifest):
     reply = dict(reply, new_contribution="NO_NEW_CONTENT")
     report, _ = _run(manifest, _overriding(target, reply))
     assert report["outcome"] == [h.CH_F2]
+
+
+# ─── the ONE authorized run's evidence (2026-11-10) ───────────────────────────
+
+def _recorded():
+    with open(h.CONTEXT_HISTORY_REPORT_PATH, encoding="utf-8") as fh:
+        report = json.load(fh)
+    with open(h.CONTEXT_HISTORY_JOURNAL_PATH, encoding="utf-8") as fh:
+        journal = [json.loads(line) for line in fh]
+    return report, journal
+
+
+def test_the_recorded_run_is_internally_consistent_and_the_gate_is_closed(manifest):
+    """The committed report recomputes from its own rows, agrees with the fsynced
+    journal and stayed inside the authorization: gpt-6-sol, Standard tier, at most
+    120 requests, under US$6, no retry, no restart, frozen order."""
+    assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
+    report, journal = _recorded()
+    assert report == json.loads(json.dumps(h.context_history_report(
+        manifest, report["stop"], report["rows"], report["spend"]), sort_keys=True))
+    attempts = [e for e in journal if e["event"] == "attempt"]
+    n = len(attempts)
+    assert journal[0] == {"event": "start", "manifest_sha256": MANIFEST_SHA256,
+                          "model": "gpt-6-sol", "ceiling_usd": 6.0}
+    assert [e["event"] for e in journal] == ["start"] + ["reserved", "attempt"] * n + ["end"]
+    assert [a["attempt"] for a in attempts] == list(range(1, n + 1))
+    order = [c["case_id"] for c in h.ch_ordered(manifest)]
+    assert [a["case_id"] for a in attempts] == order[:n] and n == report["spend"]["requests_sent"] <= 120
+    for row, att in zip(report["rows"], attempts):
+        assert row["case_id"] == att["case_id"] and row["attempt"]["attempt"] == att["attempt"]
+        assert (row["error"], row["decision"]) == (att["error"], att["decision"])
+        for key in ("usage", "measured_cost_usd", "response_id", "model", "service_tier",
+                    "input_token_bound", "reserved_usd", "http_status", "sent"):
+            assert row["attempt"][key] == att[key], key
+    ok = attempts[:-1]
+    assert all(a["error"] is None and a["http_status"] == 200 for a in ok)
+    assert {a["model"] for a in ok} == {"gpt-6-sol"} and {a["service_tier"] for a in ok} == {"default"}
+    assert all(a["usage"]["output_tokens"] <= 2000 and a["usage"]["input_tokens"] <= a["input_token_bound"]
+               for a in ok)
+    total = sum(a["measured_cost_usd"] for a in ok)
+    assert abs(total - report["spend"]["measured_cost_usd"]) < 1e-6 and total < 6.0
+    assert journal[-1]["outcome"] == report["outcome"]
+
+
+def test_the_recorded_outcome_is_invalid_by_one_transport_failure_without_retry(manifest):
+    report, journal = _recorded()
+    attempts = [e for e in journal if e["event"] == "attempt"]
+    assert report["outcome"] == h.CH_INVALID
+    assert report["stop"] == {"reason": toa.ERR_TRANSPORT, "case_id": "CH2-C05-ar-msa"}
+    last = attempts[-1]
+    assert (last["attempt"], last["case_id"], last["error"], last["sent"]) == \
+        (118, "CH2-C05-ar-msa", toa.ERR_TRANSPORT, True)
+    assert last["decision"] is None and last["measured_cost_usd"] is None
+    # never retried, never filled: the failed case and the two never sent stay untested
+    order = [c["case_id"] for c in h.ch_ordered(manifest)]
+    assert report["untested_cases"] == order[117:] == ["CH2-C05-ar-msa", "CH6-C04-ar-msa",
+                                                      "CH3-C07-ar-msa"]
+    assert sum(1 for a in attempts if a["case_id"] == "CH2-C05-ar-msa") == 1
+    # the committed bound charges the failed request its full reservation
+    assert abs(report["spend"]["committed_bound_usd"]
+               - (report["spend"]["measured_cost_usd"] + last["reserved_usd"])) < 1e-6
+    # INVALID: no criterion is evaluated, whatever the scored rows show
+    assert h.CH_F1 not in report["outcome"] and h.CH_NOT_FALSIFIED not in report["outcome"]
+
+
+def test_a_second_invocation_is_refused_and_sends_nothing(monkeypatch):
+    def boom(*a, **k):
+        raise AssertionError("no adapter may be built")
+    monkeypatch.setattr(h, "OpenAIMsnlAdapter", boom)
+    out = h.context_history_evaluation("openai", True, True)          # the gate is closed
+    assert out["provider_requests"] == 0 and "not authorized" in out["refused"]
+    monkeypatch.setattr(h, "CONTEXT_HISTORY_RUN_AUTHORIZED", True)    # even if reopened
+    out = h.context_history_evaluation("openai", True, True)
+    assert out["provider_requests"] == 0 and "already exists" in out["refused"]
+
+
+def test_the_evidence_keeps_no_case_text_quote_instructions_or_raw_reply(manifest):
+    texts = [open(p, encoding="utf-8").read() for p in (h.CONTEXT_HISTORY_REPORT_PATH,
+                                                        h.CONTEXT_HISTORY_JOURNAL_PATH)]
+    for text in texts:
+        assert manifest["candidate"]["instructions"][:60] not in text
+        assert "evidence_quote" not in text and "Authorization" not in text
+        for c in manifest["cases"]:
+            for field in h.CH_INPUT_FIELDS:
+                assert c[field] not in text

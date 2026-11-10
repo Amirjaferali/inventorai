@@ -2180,6 +2180,12 @@ CONTEXT_HISTORY_PREREG_SHA256 = "d8896785bb84713fa54c8b59fcfdb30c8f71af9251e5ef4
 CONTEXT_HISTORY_MANIFEST_PATH = os.path.join(
     _ROOT, "tests", "fixtures", "msnl_context_history_v1.json")
 CONTEXT_HISTORY_MANIFEST_SHA256 = "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda56465365fcdaaabda847"
+# Owner authorization "G1/R2 CONTEXT-AND-HISTORY — ONE AUTHORIZED RUN" (2026-11-09) opened the
+# gate for exactly ONE run against the frozen manifest and preregistration pinned above. That
+# run took place on 2026-11-10 from commit f0c0052 (118 requests sent, measured US$0.374128,
+# outcome INVALID: a transport failure at request 118, CH2-C05-ar-msa, with no retry; evidence in
+# docs/benchmarks/evidence/msnl_context_history_v1/), so the gate is closed again: any further
+# run needs a new Owner authorization and a reviewed commit that reopens it.
 CONTEXT_HISTORY_RUN_AUTHORIZED = False
 CONTEXT_HISTORY_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
                                             "msnl_context_history_v1")
