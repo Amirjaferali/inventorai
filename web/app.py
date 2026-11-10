@@ -11991,15 +11991,29 @@ def _pcc_render(sid, interface_id, status=200, error=None, notice=None, draft=No
         view["raw_material"] if view else None)
     # G1-PCC-LITERAL-SOURCE-AID-01: the ONE literal board pair of the original
     # idea, display only (the callers established project authorization).
+    # G1-CURRENT-ANSWER-DIMENSION-HANDOFF-01: also of the inventor's CURRENT
+    # answered records, read from the durable ledger on every render. Different
+    # numbers -> a conflict notice and no offer; any read failure -> no aid at
+    # all (an unreadable history is never treated as an empty one).
     aid = None
+    aid_conflict = False
     if view is not None and view["eligible"]:
         try:
-            aid = _pcc_view.aid_offer(
-                _pcc_view.literal_board_pair(_original_idea_text(sid)), _current_ui_lang())
+            # The seed is read directly (not through ``_original_idea_text``,
+            # which reads a failure as "no idea") so that a failed read stops
+            # the aid instead of hiding a pair that might conflict.
+            inputs = _get_store().load_reconstruction_inputs(sid) or {}
+            located = _pcc_view.current_board_pair(
+                inputs.get("seed_idea_text"), _get_store().load_contract(sid).assertions)
+            if located is not None and located.get("conflict"):
+                aid_conflict = True
+            else:
+                aid = _pcc_view.aid_offer(located, _current_ui_lang())
         except Exception:
-            aid = None
+            aid, aid_conflict = None, False
     response = make_response(render_template(
         "planar_clearance.html", sid=sid, v=view, form=form, error=error, aid=aid,
+        aid_conflict=aid_conflict,
         notice=notice, pcc_lang=_current_ui_lang(), cad_ready=_pcc_view.cad_eligible(view),
         source_on=_pcc_source_writes_enabled(), offer=offer,
         source_max_kib=_pcc_src.MAX_FILE_BYTES // 1024,

@@ -14,6 +14,7 @@ import hashlib
 import json
 import re
 
+from engine import idea_state as _ledger
 from engine import mechanical_planar_clearance as _pcc
 from engine import subsystem_model as _sm
 
@@ -450,7 +451,8 @@ def aid_note(pair, order, lang):
     It quotes the source and states the inventor's own assignment; it never
     says the numbers were checked."""
     assignment = aid_assignment(pair, order)
-    if assignment is None or lang not in AID_NOTE_PREFIX:
+    prefixes = _AID_NOTE_PREFIXES.get(pair.get("source", AID_SOURCE_IDEA)) if pair else None
+    if assignment is None or prefixes is None or lang not in prefixes:
         return None
     x, y = assignment
     if lang == "ar":
@@ -458,17 +460,93 @@ def aid_note(pair, order, lang):
     else:
         body = "“%s”; I entered %s as board X and %s as board Y." % (
             pair["span"], x, y)
-    return AID_NOTE_PREFIX[lang] + body
+    note = prefixes[lang] + body
+    # The note field's own bound: a note that would not fit is never proposed,
+    # and its quotation is never truncated.
+    return note if len(note) <= _sm.MAX_PLANAR_CLEARANCE_TEXT_LENGTH else None
 
 
 def aid_offer(pair, lang):
     """The display model of the aid for ONE located pair in ``lang``: both
-    explicit assignments with their proposed note, none pre-chosen."""
+    explicit assignments with their proposed note, none pre-chosen. ``source``
+    says where the passage was written (the original idea unless stated)."""
     if pair is None:
+        return None
+    lang = lang if lang in AID_NOTE_PREFIX else "en"
+    orders = [{"order": order, "x": aid_assignment(pair, order)[0],
+               "y": aid_assignment(pair, order)[1],
+               "note": aid_note(pair, order, lang)}
+              for order in AID_ORDERS]
+    if any(o["note"] is None for o in orders):
         return None
     return {"passage": pair["passage"], "span": pair["span"], "first": pair["first"],
             "second": pair["second"], "unit": pair["unit"],
-            "orders": [{"order": order, "x": aid_assignment(pair, order)[0],
-                        "y": aid_assignment(pair, order)[1],
-                        "note": aid_note(pair, order, lang if lang in AID_NOTE_PREFIX else "en")}
-                       for order in AID_ORDERS]}
+            "source": pair.get("source", AID_SOURCE_IDEA), "orders": orders}
+
+
+# G1-CURRENT-ANSWER-DIMENSION-HANDOFF-01: the same literal aid, read from the
+# original idea AND from the inventor's CURRENT answered records. The
+# recognizer above is unchanged and runs on each text on its own; nothing here
+# reads meaning. A current record is exactly what the existing functional-
+# concept view counts as one: not superseded, the inventor's own provenance,
+# disposition ``answered``. Provisional assumptions, unknown / deferred /
+# specialist and every other non-answer record are never a source. The result
+# is a PROPOSAL for the existing form only: it is not stored, binds nothing to
+# the saved declaration, and says nothing about which component the numbers
+# describe or whether they are right.
+AID_SOURCE_IDEA = "idea"
+AID_SOURCE_ANSWER = "answer"
+AID_ANSWER_NOTE_PREFIX = {"en": "From my recorded answer: ", "ar": "من إجابتي المسجّلة: "}
+_AID_NOTE_PREFIXES = {AID_SOURCE_IDEA: AID_NOTE_PREFIX, AID_SOURCE_ANSWER: AID_ANSWER_NOTE_PREFIX}
+_AID_ANSWER_PROVENANCE = (_ledger.OWNER_STATED, _ledger.LEGACY_UNSPECIFIED)
+_UNSET = object()
+
+
+def current_answer_texts(records):
+    """The verbatim texts of the CURRENT answered inventor records, in ledger
+    order. Raises ``ValueError`` on anything that is not a readable record, so
+    an unreadable history is never treated as an empty one."""
+    if not isinstance(records, (list, tuple)):
+        raise ValueError("unreadable answer history")
+    texts = []
+    for record in records:
+        superseded = getattr(record, "superseded_by", _UNSET)
+        provenance = getattr(record, "provenance", _UNSET)
+        disposition = getattr(record, "disposition", _UNSET)
+        content = getattr(record, "content", _UNSET)
+        if _UNSET in (superseded, provenance, disposition, content):
+            raise ValueError("unreadable answer record")
+        if superseded is not None or provenance not in _AID_ANSWER_PROVENANCE \
+                or disposition != _ledger.DISPOSITION_ANSWERED:
+            continue
+        if not isinstance(content, str):
+            raise ValueError("unreadable answer text")
+        if content.strip():
+            texts.append(content)
+    return texts
+
+
+def current_board_pair(original_idea, records):
+    """The ONE literal board pair the inventor's current statements give, the
+    conflict marker, or ``None``.
+
+    Each text (the original idea, then every current answer) is read on its
+    own by the unchanged ``literal_board_pair``. No located pair -> ``None``.
+    Located pairs that hold different numbers -> ``{"conflict": True}``: no
+    pair is offered and none is chosen. Located pairs that hold the same two
+    numbers (in either written order) -> ONE pair, from the original idea when
+    it holds one, otherwise from the most recent current answer, with
+    ``source`` saying which. Raises on an unreadable history."""
+    located = []
+    idea_pair = literal_board_pair(original_idea)
+    if idea_pair is not None:
+        located.append(dict(idea_pair, source=AID_SOURCE_IDEA))
+    for text in current_answer_texts(records):
+        pair = literal_board_pair(text)
+        if pair is not None:
+            located.append(dict(pair, source=AID_SOURCE_ANSWER))
+    if not located:
+        return None
+    if len({tuple(sorted((p["first"], p["second"]))) for p in located}) != 1:
+        return {"conflict": True}
+    return located[0] if idea_pair is not None else located[-1]
