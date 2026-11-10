@@ -288,9 +288,10 @@ def test_d_an_obsolete_form_never_recreates_a_removed_link(client):
             con.execute("DELETE FROM constraint_engineering_links WHERE project_id = ?", (sid,))
         with pytest.raises(sqlite3.DatabaseError):
             con.execute("UPDATE constraint_engineering_links SET generation = 1 WHERE project_id = ?", (sid,))
-        with pytest.raises(sqlite3.DatabaseError):                      # REPLACE cannot reset it either
-            con.execute("INSERT OR REPLACE INTO constraint_engineering_links VALUES (?, ?, NULL, NULL, 1)",
-                        (sid, cid))
+        for generation in (1, 3):                                   # REPLACE cannot reset or lower it
+            with pytest.raises(sqlite3.DatabaseError):
+                con.execute("INSERT OR REPLACE INTO constraint_engineering_links "
+                            "VALUES (?, ?, NULL, NULL, ?)", (sid, cid, generation))
     finally:
         con.rollback()
         con.close()
@@ -499,7 +500,7 @@ def test_s01_migration_is_additive_idempotent_and_refuses_an_unknown_shape(tmp_p
     con = sqlite3.connect(path)
     con.execute("DROP TRIGGER constraint_engineering_links_no_delete")
     con.execute("DROP TRIGGER constraint_engineering_links_generation_grows")
-    con.execute("DROP TRIGGER constraint_engineering_links_no_reinsert")
+    con.execute("DROP TRIGGER constraint_engineering_links_insert_generation_grows")
     con.execute("DROP TABLE constraint_engineering_links")
     con.execute("CREATE TABLE constraint_engineering_links (project_id TEXT, other TEXT)")
     con.commit()

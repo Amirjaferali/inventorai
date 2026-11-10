@@ -2482,8 +2482,9 @@ _CONSTRAINT_ACCEPTANCE_SCHEMA = (
 # recreated by it (ABA). The check is named only by ``(project_id,
 # revision_id)``, the planar revisions' own UNIQUE identity; no interaction,
 # component, method or number is copied. Three triggers keep the tombstone: a
-# row is never deleted, never inserted twice (so not even ``INSERT OR
-# REPLACE`` can reset it) and its generation never goes down. Additive and
+# row is never deleted, its generation never goes down on an update, and a
+# second insert for the same key must carry a higher generation (so not even
+# ``INSERT OR REPLACE`` can reset it). Additive and
 # idempotent; an existing table or trigger of another shape is refused, never
 # read as empty; nothing is backfilled. Rollback is disable-and-preserve: a
 # build without this capability never reads the table, and the notes table it
@@ -2527,16 +2528,18 @@ _CONSTRAINT_LINK_TRIGGERS = (
      "OR NEW.project_id IS NOT OLD.project_id "
      "OR NEW.constraint_id IS NOT OLD.constraint_id BEGIN SELECT RAISE(ABORT, "
      "'constraint link generations only grow'); END"),
-    # An INSERT for a key that already has a row is refused, so even an
-    # ``INSERT OR REPLACE`` (whose implicit delete fires no trigger) can never
-    # reset a link or its generation. The store itself inserts a row only once
-    # and updates it afterwards.
-    ("constraint_engineering_links_no_reinsert",
-     "CREATE TRIGGER constraint_engineering_links_no_reinsert BEFORE INSERT ON "
-     "constraint_engineering_links WHEN EXISTS (SELECT 1 FROM "
+    # An INSERT for a key that already has a row must carry a HIGHER
+    # generation, so even an ``INSERT OR REPLACE`` (whose implicit delete fires
+    # no trigger) can never reset a link or lower its generation. The store's
+    # own upsert always inserts the stored generation + 1 (a BEFORE INSERT
+    # trigger fires for an upsert too), so it passes and then takes the
+    # DO UPDATE path, where the update trigger applies.
+    ("constraint_engineering_links_insert_generation_grows",
+     "CREATE TRIGGER constraint_engineering_links_insert_generation_grows BEFORE "
+     "INSERT ON constraint_engineering_links WHEN EXISTS (SELECT 1 FROM "
      "constraint_engineering_links WHERE project_id = NEW.project_id "
-     "AND constraint_id = NEW.constraint_id) BEGIN SELECT RAISE(ABORT, "
-     "'a constraint link row is never inserted twice'); END"),
+     "AND constraint_id = NEW.constraint_id AND generation >= NEW.generation) "
+     "BEGIN SELECT RAISE(ABORT, 'constraint link generations only grow'); END"),
 )
 
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the two additive,
@@ -5949,17 +5952,13 @@ class SqliteRecordStore:
                         record.current, planar["inventory"], planar["participations"],
                         planar["epochs"]):
                     raise ConstraintLinkRejected("the check is not current", "target")
-            if stored is None:
-                self._conn.execute(
-                    "INSERT INTO constraint_engineering_links (project_id, constraint_id, "
-                    "constraint_record, revision_id, generation) VALUES (?, ?, ?, ?, ?)",
-                    (project_id, constraint_id, target[0], target[1], generation + 1))
-            else:
-                self._conn.execute(
-                    "UPDATE constraint_engineering_links SET constraint_record = ?, "
-                    "revision_id = ?, generation = ? WHERE project_id = ? "
-                    "AND constraint_id = ?",
-                    (target[0], target[1], generation + 1, project_id, constraint_id))
+            self._conn.execute(
+                "INSERT INTO constraint_engineering_links (project_id, constraint_id, "
+                "constraint_record, revision_id, generation) VALUES (?, ?, ?, ?, ?) "
+                "ON CONFLICT (project_id, constraint_id) DO UPDATE SET "
+                "constraint_record = excluded.constraint_record, "
+                "revision_id = excluded.revision_id, generation = excluded.generation",
+                (project_id, constraint_id, target[0], target[1], generation + 1))
         return CONSTRAINT_LINK_UNLINKED if revision_id is None else CONSTRAINT_LINK_LINKED
 
     # --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria + values -

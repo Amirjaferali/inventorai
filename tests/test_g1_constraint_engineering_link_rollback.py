@@ -106,5 +106,5 @@ def test_rb_the_pre_increment_build_keeps_using_the_notes_and_never_touches_link
     finally:
         con.close()
     assert sorted(triggers) == ["constraint_engineering_links_generation_grows",
-                                "constraint_engineering_links_no_delete",
-                                "constraint_engineering_links_no_reinsert"]
+                                "constraint_engineering_links_insert_generation_grows",
+                                "constraint_engineering_links_no_delete"]
