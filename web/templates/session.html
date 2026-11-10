@@ -67,6 +67,35 @@
     <p class="journey-note" data-cev-q-not-validated style="margin:4px 0;color:#777">{{ t('UI_CEV_Q_NOT_VALIDATED') }}</p>
   </details>
 {% endmacro %}
+{#- G1-ROUTED-RECOVERY-CONTINUATION-01 / G1-UQTR-INTEGRATED-CONTINUATION-01: the
+    ONE optional secondary link to the integrated step the EXISTING guidance owner
+    (`integrated_guidance`) already derived, beside a primary action that stays
+    unchanged. One selection rule for every caller: the same target and the same
+    availability condition as that step's own primary branch below. It answers,
+    credits and unlocks nothing. `prefix` names the caller's data attributes. -#}
+{% macro integrated_secondary_link(prefix, note_key) %}
+    {% set link = none %}
+    {% if integrated_guidance %}
+      {% set link_kind = integrated_guidance.kind %}
+      {% if link_kind == 'part_questions' %}
+        {% set link = (url_for('part_questions', sid=sid, part=integrated_guidance.part_id), 'UI_IJG_PART_CTA_MECH' if integrated_guidance.part == 'mechanical' else 'UI_IJG_PART_CTA_ELEC') %}
+      {% elif link_kind == 'declare_interaction' and ((interface_binding is defined and interface_binding) or (interface_pair_choices is defined and interface_pair_choices)) %}
+        {% set link = ('#interface_description', 'UI_IJG_DECLARE_CTA') %}
+      {% elif link_kind == 'component_inventory' and component_inventory is defined and component_inventory and component_inventory.can_add %}
+        {% set link = ('#component_name', 'UI_IJG_COMPONENTS_CTA') %}
+      {% elif link_kind == 'participation' %}
+        {% set link = (url_for('interface_preparation', sid=sid) ~ '#participation-heading', 'UI_IJG_PARTICIPATION_CTA') %}
+      {% elif link_kind == 'interface_preparation' %}
+        {% set link = (url_for('interface_preparation', sid=sid), 'UI_IJG_PREP_CTA') %}
+      {% endif %}
+    {% endif %}
+    {% if link %}
+    <div class="journey-note" data-{{ prefix }}>
+      <p style="margin:0 0 4px 0" data-{{ prefix }}-note>{{ t(note_key) }}</p>
+      <a data-{{ prefix }}-link data-{{ prefix }}-kind="{{ link_kind }}" href="{{ link[0] }}">{{ t(link[1]) }}</a>
+    </div>
+    {% endif %}
+{% endmacro %}
 {% block title %}{{ t('UI_TITLE_SESSION') }}{% endblock %}
 {% block head %}
 <style>
@@ -412,6 +441,11 @@ body{overflow-wrap:anywhere}
   {% elif uqtr_suppression and (state.maturity_level < 2 or open_gaps) and question %}
     <p class="journey-note">{{ t('UI_UQTR_JOURNEY_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_UQTR_CTA') }}</a>
+    {#- G1-UQTR-INTEGRATED-CONTINUATION-01: while the inventor's own recorded
+        non-answer suppresses the re-ask of the current point, the same secondary
+        integrated step as the routed-recovery branch below (one shared rule).
+        The point stays open and its question stays available to revisit. -#}
+    {{ integrated_secondary_link('uqc', 'UI_UQC_NOTE') }}
   {% elif (state.maturity_level < 2 or open_gaps) and question %}
     {% set current_question_primary = true %}
     <p class="journey-note">{{ t('UI_A1_ANSWER_NOTE') }}</p>
@@ -424,27 +458,7 @@ body{overflow-wrap:anywhere}
         as ONE secondary link (never a primary action), with the same target and
         the same availability condition as its own branch below. It answers,
         credits and unlocks nothing; the routed point stays exactly as it is. -#}
-    {% set rrc = none %}
-    {% if integrated_guidance %}
-      {% set rrc_kind = integrated_guidance.kind %}
-      {% if rrc_kind == 'part_questions' %}
-        {% set rrc = (url_for('part_questions', sid=sid, part=integrated_guidance.part_id), 'UI_IJG_PART_CTA_MECH' if integrated_guidance.part == 'mechanical' else 'UI_IJG_PART_CTA_ELEC') %}
-      {% elif rrc_kind == 'declare_interaction' and ((interface_binding is defined and interface_binding) or (interface_pair_choices is defined and interface_pair_choices)) %}
-        {% set rrc = ('#interface_description', 'UI_IJG_DECLARE_CTA') %}
-      {% elif rrc_kind == 'component_inventory' and component_inventory is defined and component_inventory and component_inventory.can_add %}
-        {% set rrc = ('#component_name', 'UI_IJG_COMPONENTS_CTA') %}
-      {% elif rrc_kind == 'participation' %}
-        {% set rrc = (url_for('interface_preparation', sid=sid) ~ '#participation-heading', 'UI_IJG_PARTICIPATION_CTA') %}
-      {% elif rrc_kind == 'interface_preparation' %}
-        {% set rrc = (url_for('interface_preparation', sid=sid), 'UI_IJG_PREP_CTA') %}
-      {% endif %}
-    {% endif %}
-    {% if rrc %}
-    <div class="journey-note" data-rrc>
-      <p style="margin:0 0 4px 0" data-rrc-note>{{ t('UI_RRC_NOTE' if routed_recovery.gap_type == 'PHYSICAL_FEASIBILITY' else 'UI_RRC_NOTE_POINT') }}</p>
-      <a data-rrc-link data-rrc-kind="{{ rrc_kind }}" href="{{ rrc[0] }}">{{ t(rrc[1]) }}</a>
-    </div>
-    {% endif %}
+    {{ integrated_secondary_link('rrc', 'UI_RRC_NOTE' if routed_recovery.gap_type == 'PHYSICAL_FEASIBILITY' else 'UI_RRC_NOTE_POINT') }}
   {% elif criticality_step %}
     <a class="journey-primary" data-primary-action href="#criticality-review">{{ t('UI_A1_REVIEW_REQUIREMENT') }}</a>
   {#- INTEGRATED-JOURNEY-GUIDANCE-01: after every existing primary action, an
