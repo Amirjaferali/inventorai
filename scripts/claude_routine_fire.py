@@ -8,7 +8,7 @@ import os
 import re
 import sys
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 REPO = "Amirjaferali/inventorai"
 OWNER_ID = 245670230
@@ -63,7 +63,13 @@ def request(url, token, method="GET", payload=None, github=False):
     body = json.dumps(payload).encode() if payload is not None else None
     if body is not None:
         headers["Content-Type"] = "application/json"
-    with urlopen(Request(url, data=body, headers=headers, method=method), timeout=20) as resp:
+    # Never forward a bearer token across a redirect to another host.
+    class RefuseRedirect(HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            raise ValueError("HTTP redirect refused")
+
+    opener = build_opener(RefuseRedirect)
+    with opener.open(Request(url, data=body, headers=headers, method=method), timeout=20) as resp:
         return json.load(resp)
 
 
