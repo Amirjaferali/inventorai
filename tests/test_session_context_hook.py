@@ -618,6 +618,14 @@ def test_g1_checkpoint_answers_the_five_recovery_questions_without_authorizing()
             # preserved history, not deleted
             "History, preserved", "POST-#938/#939 G1-1/2 RESUME", "NEXT CANDIDATE, NOT APPROVED"):
         assert phrase in flat, phrase
+    # PR #890 is closed without merge: no pending disposition is presented as live
+    assert "PR #890 was CLOSED WITHOUT MERGE on 2026-11-09" in flat
+    assert "PR #890 HOLD)" not in flat and "taken with the PR #890 disposition" not in flat
+    register = " ".join((REPO / "docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md")
+                        .read_text(encoding="utf-8").split())
+    assert "PR #890 was CLOSED WITHOUT MERGE on 2026-11-09" in register
+    assert "owner, taken with the PR #890 disposition; until then" not in register
+    assert "acceptance obligations for any future candidate" in register.lower()
     # the live authority declaration is untouched and still unique
     assert raw.count("**ACTIVE CONTRACT: NONE.**") == 1
     # the successor rule and the Lean protocol route to this checkpoint
