@@ -13,6 +13,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 REPO = "Amirjaferali/inventorai"
 OWNER_ID = 245670230
 TITLE = "[INVENTORAI] Claude execution request"
+CONSUMED = "inventorai-claude-routine-consumed"
 API = "https://api.github.com/repos/" + REPO
 
 
@@ -80,14 +81,25 @@ def dispatch(event, github_token, fire_url, fire_token):
         raise ValueError("missing credentials")
     url = f"{API}/issues/{number}"
     current = request(url, github_token, github=True)
+    labels = current.get("labels")
+    if not isinstance(labels, list) or any(
+        not isinstance(label, dict) or not isinstance(label.get("name"), str)
+        for label in labels):
+        raise ValueError("cannot establish issue consumption state")
+    names = [label["name"] for label in labels]
     if (current.get("state") != "open" or current.get("title") != TITLE or
-        (current.get("user") or {}).get("id") != OWNER_ID):
-        raise ValueError("not an open owner issue")
-    # Consume before a non-idempotent call. Never retry after this point.
+        (current.get("user") or {}).get("id") != OWNER_ID or
+        CONSUMED in names):
+        raise ValueError("not an eligible unconsumed issue")
+    # Atomically mark consumed and close before any non-idempotent API fire.
+    # The consumption label survives reopening; mere issue state does not.
     closed = request(url, github_token, method="PATCH",
-                     payload={"state": "closed"}, github=True)
-    if closed.get("state") != "closed":
-        raise ValueError("cannot consume request")
+                     payload={"state": "closed", "labels": names + [CONSUMED]}, github=True)
+    closed_labels = closed.get("labels")
+    if (closed.get("state") != "closed" or not isinstance(closed_labels, list) or
+        CONSUMED not in [item.get("name") for item in closed_labels
+                         if isinstance(item, dict)]):
+        raise ValueError("cannot confirm issue consumption")
     reference = f"https://github.com/{REPO}/issues/{number}"
     prompt = (
         "INVENTORAI bounded execution REQUEST REFERENCE: " + reference +
