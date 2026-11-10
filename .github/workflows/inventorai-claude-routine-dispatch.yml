@@ -1,0 +1,35 @@
+name: INVENTORAI Claude routine dispatch
+
+on:
+  issues:
+    types: [opened]
+
+permissions: {}
+
+concurrency:
+  group: inventorai-routine-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  fire:
+    if: >-
+      github.repository == 'Amirjaferali/inventorai' &&
+      github.event.issue.user.id == 245670230 &&
+      github.event.issue.user.login == 'Amirjaferali' &&
+      github.event.issue.author_association == 'OWNER' &&
+      github.event.issue.title == '[INVENTORAI] Claude execution request' &&
+      !github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate, consume, and dispatch once
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ROUTINE_FIRE_URL: ${{ secrets.ROUTINE_FIRE_URL }}
+          ROUTINE_FIRE_TOKEN: ${{ secrets.ROUTINE_FIRE_TOKEN }}
+        run: python3 scripts/claude_routine_fire.py
