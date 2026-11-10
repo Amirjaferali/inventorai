@@ -1,0 +1,47 @@
+name: INVENTORAI Claude routine dispatch
+
+# DISABLED BY DEFAULT. The job runs only while the repository variable
+# INVENTORAI_ROUTINE_DISPATCH is exactly 'enabled' (repository Settings ->
+# Secrets and variables -> Actions -> Variables; only the repository owner or an
+# admin can set it). It is unset when this file merges, so merging activates
+# nothing and no secret is read. Issue events always run this file from the
+# default branch, never from a pull request, and take no workflow input.
+on:
+  issues:
+    types: [opened]
+
+permissions: {}
+
+concurrency:
+  group: inventorai-routine-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  fire:
+    if: >-
+      vars.INVENTORAI_ROUTINE_DISPATCH == 'enabled' &&
+      github.repository == 'Amirjaferali/inventorai' &&
+      github.event.issue.user.id == 245670230 &&
+      github.event.issue.user.login == 'Amirjaferali' &&
+      github.event.issue.author_association == 'OWNER' &&
+      github.event.issue.title == '[INVENTORAI] Claude execution request' &&
+      !github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    permissions:
+      # contents: write ONLY to create the one-time claim reference
+      # refs/inventorai-dispatch-claims/issue-<number> (atomic replay guard);
+      # the checkout keeps no credentials.
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate, claim, consume, and dispatch once
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLAIM_SHA: ${{ github.sha }}
+          ROUTINE_DISPATCH_ENABLED: ${{ vars.INVENTORAI_ROUTINE_DISPATCH }}
+          ROUTINE_FIRE_URL: ${{ secrets.ROUTINE_FIRE_URL }}
+          ROUTINE_FIRE_TOKEN: ${{ secrets.ROUTINE_FIRE_TOKEN }}
+        run: python3 scripts/claude_routine_fire.py
