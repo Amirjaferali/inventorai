@@ -1631,13 +1631,39 @@ information, not execution authority.
   - CANDIDATES: none is authorized and none carries standing priority. The (g1) sequence
     continues from step 2 with one Owner-authorized increment at a time.
 
-  **Current (g1) execution checkpoint (post-#860; continuity only, not authority).**
-  - **POSITION:** Wave 3 / (g1) step 3, qualified engineering depth. Waves 1–2 retain their unresolved obligations; none is declared complete by this position.
-  - **DELIVERED — do not repeat:** PR #859 (one bounded planar single-force moment method, N·mm, UNVALIDATED) and PR #860 (the same method offered for a validated declared Mechanical part in a Stage-15 integrated project). Confirm their merge identities against live GitHub; previous delivered references and methods remain intact.
-  - **AUTHORIZED NEXT ACTION:** NONE while ACTIVE CONTRACT is NONE. A sequencing priority, accepted candidate or previous approval to merge is not product implementation authority.
-  - **CANDIDATES / decisions:** The most recent recommendation to qualify a sensor-to-controller Embedded / Firmware path is NOT authorized and does not override (g1) ordering. The Owner declined D4 activation. Pressure calculation and automated experiment-result comparison remain BLOCKED within their examined scopes; the planar-moment eligibility extension is DELIVERED (#860), not a next candidate. Do not reinstate any without its named trigger or a new Owner decision.
-  - **BLOCKED / DEFERRED:** apply block (h), the current Deferred Obligations Register and the live active contract for canonical reasons and reopening triggers (including Sensors C3, Embedded 28-T2, Power Electronics 28-T3, preliminary motion, CAP-13 D-7, T2-G/R2, D4 and T6). Technology labels alone confer no permission or method.
-  - **NEXT-LOOP:** for an Owner-approved planned action that is genuinely blocked, record its exact blocker and reopening trigger in the existing owner, then examine the first independent eligible action remaining in (g1)'s dependency order after bounded PCRA/SFR. If none is eligible, return ONE specific material Owner decision rather than selecting a random increment. Every candidate is a recommendation until separately authorized; no automatic product selection, coding, merge or deployment.
+  **Current (g1) execution checkpoint (newest execution pointer; updated after #952, 2026-11-10; continuity only, not authority).**
+  Read this checkpoint first, in Claude, Codex or any other agent: it answers, by pointer, the five
+  recovery questions below, so a successor does not rebuild the plan from chat or dated records.
+  The dated Lean §9.5 entries and the history bullets below stay as evidence behind it and are not
+  superseded by it. An APPROVED action exists only in the live ACTIVE CONTRACT or a recorded, scoped
+  Owner authorization; every CANDIDATE here is a recommendation. Update it at the next authorized
+  touch that changes one of the five answers, never through a status-only PR.
+
+  - **1. AUTHORIZED ACTION:** NONE while ACTIVE CONTRACT is NONE. A sequencing priority, accepted candidate, earlier merge approval or one-run evaluation authorization (spent once used) is not product implementation authority.
+  - **2. AGREED SEQUENCE:** (g1) steps 1–5 with the core inventor-to-prototype clarification above; inside it, the Owner qualification sequencing of 2026-11-01 (Lean §9.5): ONE connected English journey first, then Arabic / dialect qualification, ahead of further English-only expansion. No Owner-agreed fixed order of increments exists beyond that.
+  - **3. PLACEMENT OF OMITTED CAPABILITIES:** priority groups (b) and (f), the (g1) outstanding-stage integration and the Lean §9.5 G1 tables (research placement, G1-3/4 direction, insights, F tool candidates). An unlisted technology goes under its existing owner and roadmap home; a technology name creates no owner, stage or step.
+  - **4. BLOCKED / DEFERRED:** block (h), the Deferred Obligations Register, Lean §9.5 I and "Continuation and holds" and the live active contract hold the canonical reasons and reopening triggers (including Sensors C3, Embedded 28-T2, Power Electronics 28-T3, preliminary motion Q-02, CAP-13 D-7, T2-G / R2 with its cross-idea facet, D4, T6, OD-2 and retention). Reopen one only on its named trigger or a new Owner decision. PR #890 was CLOSED WITHOUT MERGE on 2026-11-09: its held DV1 candidate and keyed false-credit evidence stay as history on that PR, no #890 disposition is pending, and "#890 HOLD" in earlier dated records describes that past state.
+  - **5. NEXT ELIGIBLE WHEN BLOCKED (NEXT-LOOP):** for an Owner-approved planned action that is genuinely blocked, record its exact blocker and reopening trigger in the existing owner, then examine the first independent eligible action remaining in (g1)'s dependency order after bounded PCRA/SFR. If none is eligible, return ONE specific material Owner decision rather than selecting a random increment. No automatic product selection, coding, merge or deployment.
+  - **POSITION (post-#952):** (g1) steps 1–2, G1-1/2 understanding and the R2 relevance trust problem; earlier step-3 work (#859, #860) stays delivered and is not repeated. Waves 1–2 keep their unresolved obligations.
+  - **DELIVERED SINCE #939 — do not repeat** (confirm merge identities on live GitHub):
+    #941 synthetic transient Q10 clarification proof (test-only, off by default; no route, prompt text or
+    persistence; not a qualification or product admission); #942 and #943 the G1-1/2 prospective v2
+    evidence-chain verifier and offline authorization-signature inspection (FORMAL stays refused);
+    #944 starting a separate integrated project from an ordinary project's original idea and #946 the
+    existing integrated step as one secondary link beside routed recovery (navigation only; nothing
+    credited); #945 a recovered-idea-to-CAD lifecycle test; #947 the R2 cross-idea false-credit facet
+    recorded in the Deferred Obligations Register (documented, not fixed; implementation BLOCKED);
+    #948–#950 the frozen project-context pack and its ONE authorized falsification run
+    (FALSIFIED_ELIGIBLE_CREDIT_WITHHELD; gate closed); #951–#952 the context-history evaluation and its
+    ONE authorized run (INVALID, transport failure at request 118, no F1–F4 verdict; gate closed). No
+    evaluation qualified a method; any further run needs a new Owner authorization and a reviewed commit.
+  - **OPEN OWNER DECISIONS (none requested by this record):** the R2 method decision under the T2-G / R2 owner (Deferred Obligations Register T2-G row and its acceptance obligations A1–A5; R2 and its cross-idea facet stay OPEN, implementation BLOCKED until that separately authorized decision); product admission of a Q10 clarification prompt after its content, attribution and evidence qualification; decisions 1–4 above; OD-2 where proposals would be retained.
+  - **History, preserved — post-#860 entries (superseded as current position by the lines above):**
+    POSITION was Wave 3 / (g1) step 3; DELIVERED #859 (planar single-force moment, N·mm, UNVALIDATED) and
+    #860 (the same method for a declared Mechanical part). The sensor-to-controller Embedded / Firmware
+    recommendation is NOT authorized and does not override (g1) ordering; the Owner declined D4
+    activation; pressure calculation and automated experiment-result comparison stay BLOCKED within their
+    examined scopes.
   - **POST-#938/#939 G1-1/2 RESUME (2026-11-07; continuity, not authority):**
     #938 delivered evidence-traced DIAGNOSTIC assessment only; FORMAL is still
     unavailable pending a separately authorized prospective v2 run and authenticated
@@ -1659,6 +1685,8 @@ information, not execution authority.
     If the qualification or admission path is blocked, preserve its trigger
     and use (g1)/NEXT-LOOP after PCRA/SFR to consider the next independent
     eligible evidence task, not an automatically selected product increment.
+    *(#941 has since executed the synthetic Q10 exchange as a test-only proof; the qualification and
+    product admission above stay outstanding.)*
   - This checkpoint is a concise pointer for successors, not another roadmap, register, boot sequence, or requirement for a post-merge governance PR.
 
   (h) **Gate results since PR #828 and reopening triggers.** Each item reopens only on its named
@@ -1694,7 +1722,8 @@ be reopened; (5) current Lead Watchlist; (6) NOW items; (7) NEXT TRIGGER items; 
 rule; (12) Owner-reserved decisions and authorization boundaries; (13) human-study
 authorization state; (14) exactly ONE next action. For engineering work, items (3), (7)–(9) and
 (14) also apply the product identity of block (a) and read the execution-continuity and reopening-trigger blocks (g)–(h) of the Lead Watchlist's
-STANDING technical-remediation entry, which record candidates as recommendations, never as authority.
+STANDING technical-remediation entry, which record candidates as recommendations, never as authority;
+its Current (g1) execution checkpoint is read first.
 A material inconsistency exposed by the
 reconstruction is resolved before mutation. No ceremonial confirmation is required when the
 reconstruction is materially correct. This applies Lean §9 (successor reconstruction and the

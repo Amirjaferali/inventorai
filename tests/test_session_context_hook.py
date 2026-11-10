@@ -87,7 +87,7 @@ def test_settings_register_one_bounded_sessionstart_command_hook_only():
 # ---- correct source selection ---------------------------------------------------------------------
 def test_reports_the_current_sources_with_their_locations(checkout):
     text = _run(checkout)
-    assert text.startswith("InventorAI session context (source: startup; all 16 items read)")
+    assert text.startswith("InventorAI session context (source: startup; all 17 items read)")
     claude = (checkout / "CLAUDE.md").read_text(encoding="utf-8").splitlines()
     [declaration] = re.findall(r"\*\*ACTIVE CONTRACT: [^*]+?\.\*\*", "\n".join(claude))
     line = next(i for i, l in enumerate(claude, 1) if declaration in l)
@@ -111,7 +111,7 @@ def test_the_real_checkout_restores_every_item_within_bounds():
     done = subprocess.run([sys.executable, "-I", "-B", str(REPO / HOOK)], input='{"source": "compact"}',
                           capture_output=True, text=True, timeout=20, cwd=str(REPO))
     text = json.loads(done.stdout)["hookSpecificOutput"]["additionalContext"]
-    assert "(source: compact; all 16 items read)" in text
+    assert "(source: compact; all 17 items read)" in text
     assert len(text) <= 9000
     # the FULL-route retry rule is restored whole, not cut off by the per-item cap
     assert ("reruns the whole FULL workflow as one complete attempt, never a single shard or job: "
@@ -141,7 +141,7 @@ def test_a_changed_source_is_read_again_on_the_next_run(checkout):
 def test_a_missing_source_is_unavailable_never_invented(checkout):
     (checkout / DOCS[2]).unlink()
     text = _run(checkout)
-    assert "RESTORATION INCOMPLETE: 1 of 13 items UNAVAILABLE" in text
+    assert "RESTORATION INCOMPLETE: 1 of 14 items UNAVAILABLE" in text
     assert "UNAVAILABLE — %s cannot be read (FileNotFoundError); read that source directly." % DOCS[2] in text
     assert "NEXT-LOOP" not in text
 
@@ -152,7 +152,7 @@ def test_an_ambiguous_declaration_is_unavailable(checkout):
     claude.write_text(raw.replace("## One boot sequence", "**ACTIVE CONTRACT: OTHER.**\n\n## One boot sequence", 1),
                       encoding="utf-8")
     text = _run(checkout)
-    assert "RESTORATION INCOMPLETE: 1 of 16 items UNAVAILABLE" in text
+    assert "RESTORATION INCOMPLETE: 1 of 17 items UNAVAILABLE" in text
     assert "CLAUDE.md: 2 bold ACTIVE CONTRACT declarations, expected exactly one" in text
     assert "ACTIVE CONTRACT: OTHER" not in text
 
@@ -164,7 +164,7 @@ def test_a_moved_or_duplicated_rule_label_is_unavailable(checkout):
                       .replace("**Test proportionality.**", "**Test proportionality.** a\n\n**Test proportionality.**", 1),
                       encoding="utf-8")
     text = _run(checkout)
-    assert "RESTORATION INCOMPLETE: 2 of 16 items UNAVAILABLE" in text
+    assert "RESTORATION INCOMPLETE: 2 of 17 items UNAVAILABLE" in text
     assert "'**Review routing.**' found 0 times, expected once" in text
     assert "'**Test proportionality.**' found 2 times, expected once" in text
 
@@ -214,7 +214,7 @@ def test_a_subdirectory_of_the_same_checkout_is_restored(checkout):
     sub = checkout / "docs" / "governance"
     for stdin in ('{"source": "startup", "cwd": "%s"}' % sub, '{"source": "startup"}'):
         text = _run(checkout, stdin, cwd=sub)
-        assert text.startswith("InventorAI session context (source: startup; all 16 items read)")
+        assert text.startswith("InventorAI session context (source: startup; all 17 items read)")
         assert "root %s (main checkout)" % checkout.resolve() in text
 
 
@@ -257,10 +257,10 @@ def test_a_session_moved_into_another_worktree_is_not_given_the_start_checkouts_
                            "checkout is not confirmed)")
     assert ("the session's working checkout %s is not the checkout this hook reads (%s)"
             % (wt.resolve(), checkout.resolve())) in text
-    assert "MAIN-ONLY" not in text and "WORKTREE-ONLY" not in text and "all 16 items read" not in text
+    assert "MAIN-ONLY" not in text and "WORKTREE-ONLY" not in text and "all 17 items read" not in text
     # the same registered command from the starting checkout itself is restored normally
     same = _registered_command(checkout, checkout, json.dumps({"source": "resume", "cwd": str(checkout)}))
-    assert "all 16 items read" in same and "**ACTIVE CONTRACT: MAIN-ONLY.**" in same
+    assert "all 17 items read" in same and "**ACTIVE CONTRACT: MAIN-ONLY.**" in same
 
 
 # ---- read-only behaviour and bounds ---------------------------------------------------------------
@@ -306,7 +306,7 @@ def test_research_checkpoint_is_restored_on_every_start(checkout, source):
                    "CadQuery/tray is a CANDIDATE", "not an approved product step",
                    "No new product increment, provider call, merge or deployment is authorized here."):
         assert phrase in text, phrase
-    assert "all 16 items read" in text and len(text) <= 9000
+    assert "all 17 items read" in text and len(text) <= 9000
     # Policy text is read from its existing owner, not copied into the hook.
     hook = (checkout / HOOK).read_text(encoding="utf-8")
     assert "CadQuery/tray" not in hook and "Flux/tool execution" not in hook
@@ -335,7 +335,7 @@ def test_missing_or_ambiguous_research_checkpoint_is_not_silently_omitted(checko
         raw += "\n" + CHECKPOINT_LABEL + " duplicated\n"
     lean.write_text(raw, encoding="utf-8")
     text = _run(checkout)
-    assert "RESTORATION INCOMPLETE: 1 of 16 items UNAVAILABLE" in text
+    assert "RESTORATION INCOMPLETE: 1 of 17 items UNAVAILABLE" in text
     assert "found %d times, expected once" % count in text
     assert "CadQuery/tray" not in text
     assert "ACTIVE CONTRACT" in text                  # unrelated authority restoration continues
@@ -551,3 +551,84 @@ def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
             "the ACE question as asked (narrowed)", "one option, not the answer",
             "blocked dependent implementation only", "that candidate is now STOPPED"):
         assert phrase in flat, phrase
+
+
+# ---- G1 execution checkpoint: the one newest pointer, restored at every start ----------------------
+G1_CHECKPOINT_LABEL = "  **Current (g1) execution checkpoint"
+
+
+def _g1_checkpoint(raw):
+    start = raw.index(G1_CHECKPOINT_LABEL)
+    return raw[start:raw.index("  (h) **Gate results", start)]
+
+
+@pytest.mark.parametrize("source", ["startup", "resume", "clear", "compact"])
+def test_g1_execution_checkpoint_is_restored_on_every_start(checkout, source):
+    text = _run(checkout, json.dumps({"source": source}))
+    lines = (checkout / DOCS[0]).read_text(encoding="utf-8").splitlines()
+    hits = [i for i, value in enumerate(lines, 1) if value.startswith(G1_CHECKPOINT_LABEL)]
+    assert len(hits) == 1
+    assert "%s:%d" % (DOCS[0], hits[0]) in text
+    for phrase in ("newest execution pointer", "continuity only, not authority",
+                   "Read this checkpoint first", "five recovery questions",
+                   "An APPROVED action exists only in the live ACTIVE CONTRACT",
+                   "every CANDIDATE here is a recommendation"):
+        assert phrase in text, phrase
+    assert "continues at %s:%d" % (DOCS[0], hits[0]) not in text      # quoted whole, not cut
+    assert "all 17 items read" in text and len(text) <= 9000
+    hook = (checkout / HOOK).read_text(encoding="utf-8")
+    assert "five recovery questions" not in hook                         # read from its owner
+
+
+@pytest.mark.parametrize("count", [0, 2])
+def test_missing_or_ambiguous_g1_checkpoint_is_not_silently_omitted(checkout, count):
+    path = checkout / DOCS[0]
+    raw = path.read_text(encoding="utf-8")
+    if count == 0:
+        raw = raw.replace(G1_CHECKPOINT_LABEL, "  **Moved checkpoint", 1)
+    else:
+        raw += "\n" + G1_CHECKPOINT_LABEL + " duplicated.**\n"
+    path.write_text(raw, encoding="utf-8")
+    text = _run(checkout)
+    assert "RESTORATION INCOMPLETE: 1 of 17 items UNAVAILABLE" in text
+    assert "found %d times, expected once" % count in text
+    assert "ACTIVE CONTRACT" in text
+
+
+def test_g1_checkpoint_answers_the_five_recovery_questions_without_authorizing():
+    raw = (REPO / DOCS[0]).read_text(encoding="utf-8")
+    checkpoint = _g1_checkpoint(raw)
+    flat = " ".join(checkpoint.split())
+    labels = ("**1. AUTHORIZED ACTION:**", "**2. AGREED SEQUENCE:**",
+              "**3. PLACEMENT OF OMITTED CAPABILITIES:**", "**4. BLOCKED / DEFERRED:**",
+              "**5. NEXT ELIGIBLE WHEN BLOCKED (NEXT-LOOP):**")
+    positions = [flat.index(label) for label in labels]
+    assert positions == sorted(positions) and all(flat.count(label) == 1 for label in labels)
+    for phrase in (
+            "NONE while ACTIVE CONTRACT is NONE",
+            "is not product implementation authority",
+            "ONE connected English journey first, then Arabic / dialect qualification",
+            "No Owner-agreed fixed order of increments exists beyond that",
+            "a technology name creates no owner, stage or step",
+            "Reopen one only on its named trigger or a new Owner decision",
+            "return ONE specific material Owner decision rather than selecting a random increment",
+            "No automatic product selection, coding, merge or deployment",
+            "none requested by this record",
+            "No evaluation qualified a method",
+            # preserved history, not deleted
+            "History, preserved", "POST-#938/#939 G1-1/2 RESUME", "NEXT CANDIDATE, NOT APPROVED"):
+        assert phrase in flat, phrase
+    # PR #890 is closed without merge: no pending disposition is presented as live
+    assert "PR #890 was CLOSED WITHOUT MERGE on 2026-11-09" in flat
+    assert "PR #890 HOLD)" not in flat and "taken with the PR #890 disposition" not in flat
+    register = " ".join((REPO / "docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md")
+                        .read_text(encoding="utf-8").split())
+    assert "PR #890 was CLOSED WITHOUT MERGE on 2026-11-09" in register
+    assert "owner, taken with the PR #890 disposition; until then" not in register
+    assert "acceptance obligations for any future candidate" in register.lower()
+    # the live authority declaration is untouched and still unique
+    assert raw.count("**ACTIVE CONTRACT: NONE.**") == 1
+    # the successor rule and the Lean protocol route to this checkpoint
+    assert "its Current (g1) execution checkpoint is read first" in " ".join(raw.split())
+    lean = " ".join((REPO / DOCS[3]).read_text(encoding="utf-8").split())
+    assert '"Current (g1) execution checkpoint" is the newest execution pointer' in lean

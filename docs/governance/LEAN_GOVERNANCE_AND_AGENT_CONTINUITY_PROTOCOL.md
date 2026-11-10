@@ -297,8 +297,11 @@ No new product increment, provider call, merge or deployment is authorized here.
 records the Owner-requested research continuity inside the existing §9 reconstruction. It
 adds no boot sequence, mandate, roadmap or approval round. Current authority remains under
 §2 and `ACTIVE_INCREMENT_CONTRACT.md`; current-state routing remains in
-`CURRENT_PROJECT_STATE.md`; the strategy and agreed sequence remain in `CLAUDE.md` G1.
-SessionStart quotes the paragraph above from this file on startup/resume/clear/compaction.
+`CURRENT_PROJECT_STATE.md`; the strategy and agreed sequence remain in `CLAUDE.md` G1, whose
+"Current (g1) execution checkpoint" is the newest execution pointer: read it before the dated
+records below, which stay as evidence behind it.
+SessionStart quotes the §9.5 opening above and the opening of that G1 checkpoint from their
+files on startup/resume/clear/compaction.
 A successor Lead outside Claude follows the same existing boot/reconstruction path; no hook
 is claimed to run in another platform. Missing/ambiguous source text is UNAVAILABLE, not an
 invitation to reconstruct it from memory.
@@ -768,8 +771,9 @@ and reopening triggers. When the current planned increment is blocked, preserve 
 blocker and use G1/NEXT-LOOP to identify the next independent eligible action (for example,
 bounded retention-owner feasibility); it remains a recommendation until authorized. Do not
 rerun failed campaigns, restart the competitor survey or activate tools from this note.
-Update this checkpoint at the next relevant authorized touch, not through a new status-only
-workflow. Deterministic orchestration and engineering truth remain with the existing owners.
+Update this checkpoint, and the `CLAUDE.md` G1 execution checkpoint where one of its five
+answers changes, at the next relevant authorized touch, not through a new status-only workflow.
+Deterministic orchestration and engineering truth remain with the existing owners.
 
 ## 10. Reserved decisions and scoped holds
 
