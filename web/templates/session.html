@@ -2227,6 +2227,10 @@ body{overflow-wrap:anywhere}
         {% endif %}
         <p style="font-size:12px;color:#555;margin:0 0 4px 0" data-cel-not-assessed>{{ t('UI_CEL_NOT_ASSESSED') }}</p>
         {% endif %}
+        {% endif %}
+        {#- The forms sit outside the availability branch: a stored link stays
+            removable when only its check cannot be read. Unreadable links are
+            never writable (the view sets ``writable`` false for them). -#}
         {% if cel.writable %}
         {% if cel.candidates %}
         <form method="POST" action="/session/{{ sid }}/constraint-engineering-link" data-cel-link-form style="margin:6px 0 0 0">
@@ -2255,7 +2259,6 @@ body{overflow-wrap:anywhere}
           <input type="hidden" name="cel_action" value="unlink">
           <button type="submit">{{ t('UI_CEL_UNLINK_BUTTON') }}</button>
         </form>
-        {% endif %}
         {% endif %}
         {% endif %}
       </div>

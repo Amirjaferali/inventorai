@@ -431,13 +431,17 @@ def test_l03_committed_truth_decides_an_unknown_outcome(client, monkeypatch):
 def test_l04_unlink_works_when_the_check_cannot_be_read(client, monkeypatch):
     sid, _ifc, _ids, cid = _setup(client)
     _link(client, sid, cid)
-    unlink = _form(client, sid, cid, "unlink")
     store = _store()
 
     def broken(_pid):
         raise appmod._ProjectComponentsCorrupt("unreadable")
     monkeypatch.setattr(store, "_planar_clearance_snapshot", broken)
-    assert _status(_block(_page(client, sid), cid)) == "UNAVAILABLE"
+    raw = _page(client, sid)
+    assert _status(_block(raw, cid)) == "UNAVAILABLE"
+    # the removal form is rendered on THIS page (only the check is unreadable), and no link form
+    forms = [f for f in _forms(raw) if f["constraint_id"] == cid]
+    assert [f["kind"] for f in forms] == ["unlink"]
+    unlink = forms[0]
     assert _post(client, sid, unlink).status_code == 302
     assert _notice(sid)[0] == "UI_CEL_MSG_UNLINKED" and _row(sid, cid)[:2] == (None, None)
 
@@ -450,7 +454,7 @@ def test_l05_unreadable_links_read_unavailable_never_none(client, monkeypatch):
     monkeypatch.setattr(_store(), "load_constraint_engineering_links", corrupt)
     block = _block(_page(client, sid), cid)
     assert _status(block) == "UNAVAILABLE" and _t("UI_CEL_UNAVAILABLE") in block
-    assert 'data-cel-link-form' not in block
+    assert 'data-cel-link-form' not in block and 'data-cel-unlink-form' not in block
 
 
 # ==========================================================================
