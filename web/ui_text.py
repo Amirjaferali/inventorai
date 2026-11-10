@@ -12299,6 +12299,18 @@ UI_STRINGS = {
     "UI_PCC_AID_INTRO": {
         "en": "Your original idea contains this passage:",
         "ar": "تحتوي فكرتك الأصلية على هذا المقطع:"},
+    "UI_PCC_AID_HEADING_ANSWER": {
+        "en": "Numbers from one of your recorded answers",
+        "ar": "أرقام من إحدى إجاباتك المسجّلة"},
+    "UI_PCC_AID_INTRO_ANSWER": {
+        "en": "One of your current recorded answers contains this passage:",
+        "ar": "تحتوي إحدى إجاباتك المسجّلة الحالية على هذا المقطع:"},
+    "UI_PCC_AID_CONFLICT": {
+        "en": "Your current statements contain different board dimensions. InventorAI cannot determine which applies to this board. Please verify and enter the dimensions yourself.",
+        "ar": "تتضمن أقوالك الحالية أبعادًا مختلفة للوحة. ولا يستطيع InventorAI تحديد أيها ينطبق على هذه اللوحة. يُرجى التحقق منها وإدخال الأبعاد بنفسك."},
+    "UI_PCC_VALUES_FRESHNESS": {
+        "en": "These are values you choose and save. If you later correct the statement they came from, the saved values will not update automatically. Review them again before relying on the comparison.",
+        "ar": "هذه قيم تختارها أنت وتحفظها. وإذا صحّحت لاحقًا القول الذي أُخذت منه، فلن تتغير القيم المحفوظة تلقائيًا. راجِعها مرة أخرى قبل الاعتماد على المقارنة."},
     "UI_PCC_AID_NUMBERS": {
         "en": "The two numbers in it, in the order you wrote them:",
         "ar": "الرقمان الواردان فيه، بالترتيب الذي كتبتهما به:"},
