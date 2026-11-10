@@ -1443,6 +1443,10 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       # current value (not a commercial owner; no supplier,
                       # cost, quantity or evidence content).
                       "constraint_acceptance_preparations",
+                      # G1-2 CONSTRAINT-ENGINEERING-LINK-01: the inventor's link from
+                      # one mandatory constraint to one saved planar clearance check
+                      # (not a commercial owner; no supplier, cost or evidence content).
+                      "constraint_engineering_links",
                       # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01: the
                       # inventor's presence-only statement about one Mechanical
                       # part (not a commercial owner; no supplier, cost,

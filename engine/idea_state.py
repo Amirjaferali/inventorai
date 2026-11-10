@@ -873,6 +873,104 @@ def constraint_acceptance_target(history, constraint_id, displayed_record_id):
     return chain
 
 
+# G1-2 CONSTRAINT-ENGINEERING-LINK-01. Under the SAME acceptance-preparation
+# owner, the inventor may link ONE current mandatory constraint to ONE saved
+# planar clearance check (an exact declaration revision). The link is the
+# inventor's own association, kept apart from the acceptance notes (its own
+# current-value row, its own explicit actions; neither reconfirms the other).
+# It records the founding constraint identity, the exact constraint version it
+# was confirmed against and the exact check revision, plus a generation that
+# only grows and is kept after the link is removed (a tombstone), so an
+# obsolete form can never recreate a removed link. A link is CURRENT only while
+# both of its exact versions are still current; otherwise it is EARLIER and is
+# never moved to a newer version. Nothing here reads either text, maps a
+# result onto the constraint, assesses whether the constraint is met, or
+# credits a gap, progression, readiness or the Validation Plan step.
+_PLANAR_REVISION_ID_RE = re.compile(r"^pcr-[0-9a-f]{32}$")
+
+
+class ConstraintLinkError(ValueError):
+    """Stored constraint links violate the bounded contract. Structural
+    message only."""
+
+
+@dataclass(frozen=True)
+class ConstraintEngineeringLink:
+    """The link row of ONE constraint identity. ``constraint_record`` and
+    ``revision_id`` are both set (linked) or both ``None`` (removed; the row is
+    kept as a tombstone so its ``generation`` is never reused)."""
+    constraint_id: str
+    constraint_record: Optional[str]
+    revision_id: Optional[str]
+    generation: int
+
+    @property
+    def linked(self):
+        return self.revision_id is not None
+
+
+def is_planar_revision_id(value):
+    return isinstance(value, str) and bool(_PLANAR_REVISION_ID_RE.match(value))
+
+
+def validate_constraint_engineering_links(links, assertions):
+    """``links`` validated WHOLE against ``assertions`` (durable order): each
+    names a constraint identity of the ledger's ONE constraint history, at
+    most once, with a positive integer generation; a linked row names a
+    declared MANDATORY version of that same identity and a well-formed check
+    revision id; a removed row names neither. Returns the tuple in constraint
+    declaration order, or ``ConstraintLinkError`` (nothing partial). The check
+    revision itself is resolved by the planar owner. Pure."""
+    history = constraint_history(list(assertions))
+    by_id = {r.record_id: r for r in assertions}
+    chains = {c.constraint_id: c for c in history.constraints}
+    seen = set()
+    for item in links:
+        if not isinstance(item, ConstraintEngineeringLink):
+            raise ConstraintLinkError("not a constraint link record")
+        chain = chains.get(item.constraint_id)
+        if chain is None:
+            raise ConstraintLinkError("the link names no constraint")
+        if item.constraint_id in seen:
+            raise ConstraintLinkError("a constraint has two link rows")
+        seen.add(item.constraint_id)
+        if not isinstance(item.generation, int) or isinstance(item.generation, bool) \
+                or item.generation < 1:
+            raise ConstraintLinkError("the link generation is invalid")
+        if (item.constraint_record is None) != (item.revision_id is None):
+            raise ConstraintLinkError("the link is half recorded")
+        if item.constraint_record is None:
+            continue
+        version = by_id.get(item.constraint_record)
+        if (item.constraint_record not in chain.history or version is None
+                or version.disposition != DISPOSITION_CONSTRAINT_DECLARED
+                or getattr(version, "constraint_strength", None)
+                != CONSTRAINT_STRENGTH_MANDATORY):
+            raise ConstraintLinkError("the link was not confirmed against a mandatory version")
+        if not is_planar_revision_id(item.revision_id):
+            raise ConstraintLinkError("the link names no check revision")
+    order = {c.constraint_id: c.position for c in history.constraints}
+    return tuple(sorted(links, key=lambda item: order[item.constraint_id]))
+
+
+def current_constraint_engineering_links(links, history):
+    """``{constraint_id: (link_or_None, constraint_changed)}`` for every CURRENT
+    MANDATORY constraint of ``history``: its stored row (``None`` when it never
+    had one; a removed row is returned so its generation is known) and whether
+    a LINKED row was confirmed against an earlier version of the constraint.
+    Withdrawn and non-mandatory constraints are absent: their rows stay stored
+    and hidden, exactly like the acceptance notes."""
+    stored = {item.constraint_id: item for item in links}
+    view = {}
+    for c in history.current:
+        if c.strength != CONSTRAINT_STRENGTH_MANDATORY:
+            continue
+        item = stored.get(c.constraint_id)
+        view[c.constraint_id] = (
+            item, item is not None and item.linked and item.constraint_record != c.record_id)
+    return view
+
+
 # Stage 20 — Assumption Revision & Replacement — Closure. An inventor may
 # supersede ONE of their own active provisional assumptions with a revised
 # provisional assumption or with their own answer, through the canonical

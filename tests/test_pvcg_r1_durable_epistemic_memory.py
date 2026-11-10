@@ -525,6 +525,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       # inventor's current-value acceptance notes per mandatory
                       # constraint (no payload, no disposition) — not a ledger.
                       "constraint_acceptance_preparations",
+                      # G1-2 CONSTRAINT-ENGINEERING-LINK-01: the inventor's current-value
+                      # link from one mandatory constraint to one saved check (no
+                      # payload, no disposition) — not a ledger.
+                      "constraint_engineering_links",
                       # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the
                       # inventor's own decision criteria and per-alternative
                       # values, append-only (typed kinds, no payload, no

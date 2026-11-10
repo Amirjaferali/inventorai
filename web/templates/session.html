@@ -2189,6 +2189,77 @@ body{overflow-wrap:anywhere}
         {% endif %}
       </div>
       {% endif %}
+      {#- G1-2 CONSTRAINT-ENGINEERING-LINK-01: the ONE saved planar clearance
+          check the inventor linked to this mandatory constraint - their own
+          association, apart from the notes above. CURRENT only while both exact
+          versions are current; EARLIER otherwise (never moved to a newer
+          version); the check's nominal result only for a CURRENT link; whether
+          the constraint is met is never assessed. -#}
+      {% if c.engineering_link %}
+      {% set cel = c.engineering_link %}
+      {% set ca = cel.association %}
+      <div data-cel data-cel-status="{{ ca.status }}" style="margin:6px 0 0 0;border-inline-start:3px solid #dbe4ec;padding-inline-start:8px">
+        <p style="font-size:13px;font-weight:600;margin:0 0 4px 0" data-cel-heading>{{ t('UI_CEL_HEADING') }}</p>
+        {% if ca.status == 'UNAVAILABLE' %}
+        <p style="font-size:12px;color:#555;margin:0" data-cel-unavailable>{{ t('UI_CEL_UNAVAILABLE') }}</p>
+        {% else %}
+        <p style="font-size:12px;color:#555;margin:0 0 6px 0" data-cel-intro>{{ t('UI_CEL_INTRO') }}</p>
+        {% if ca.status == 'NONE' %}
+        <p style="font-size:13px;color:#666;margin:0 0 4px 0" data-cel-none>{{ t('UI_CEL_NONE') }}</p>
+        {% else %}
+        <p style="font-size:13px;margin:0 0 4px 0" data-cel-check>{{ t('UI_CEL_LINKED_TO') }} <bdi dir="auto">{{ ca.check.interface_description }}</bdi> ({{ t('UI_CEL_CHECK_VERSION') }} <bdi dir="ltr">{{ ca.check.revision_no }}</bdi>) · <a href="/session/{{ sid }}/interface-clearance/{{ ca.check.interface_id }}" data-cel-open>{{ t('UI_CEL_OPEN') }}</a></p>
+        {% if ca.status == 'CURRENT' %}
+        <p style="font-size:12px;color:#1e5631;margin:0 0 4px 0" data-cel-current>{{ t('UI_CEL_STATUS_CURRENT') }}</p>
+        {% if ca.result.status == 'available' %}
+        <p style="font-size:13px;margin:0 0 4px 0" data-cel-result="{{ ca.result.outcome }}"><strong>{{ t('UI_CEL_RESULT_LABEL') }}</strong> {{ t('UI_CEL_RESULT_' ~ ca.result.outcome) }}</p>
+        {% else %}
+        <p style="font-size:12px;color:#555;margin:0 0 4px 0" data-cel-result-unavailable>{{ t('UI_CEL_RESULT_UNAVAILABLE') }}</p>
+        {% endif %}
+        {% else %}
+        <p style="font-size:12px;color:#7a4b00;margin:0 0 4px 0" data-cel-earlier>{{ t('UI_CEL_STATUS_EARLIER') }}</p>
+        <ul style="font-size:12px;color:#7a4b00;margin:0 0 4px 0;padding-inline-start:18px" data-cel-reasons>
+          {% if ca.constraint_changed %}<li data-cel-reason="constraint">{{ t('UI_CEL_REASON_CONSTRAINT') }}</li>{% endif %}
+          {% if ca.check.status == 'SUPERSEDED' %}<li data-cel-reason="superseded">{{ t('UI_CEL_REASON_SUPERSEDED') }}</li>{% endif %}
+          {% if ca.check.status == 'WITHDRAWN' %}<li data-cel-reason="withdrawn">{{ t('UI_CEL_REASON_WITHDRAWN') }}</li>{% endif %}
+          {% if ca.check.status == 'NEEDS_RECONFIRMATION' %}<li data-cel-reason="reconfirm">{{ t('UI_CEL_REASON_RECONFIRM') }}</li>{% endif %}
+        </ul>
+        <p style="font-size:12px;color:#555;margin:0 0 4px 0" data-cel-result-missing>{{ t('UI_CEL_RESULT_MISSING') }}</p>
+        {% endif %}
+        <p style="font-size:12px;color:#555;margin:0 0 4px 0" data-cel-not-assessed>{{ t('UI_CEL_NOT_ASSESSED') }}</p>
+        {% endif %}
+        {% if cel.writable %}
+        {% if cel.candidates %}
+        <form method="POST" action="/session/{{ sid }}/constraint-engineering-link" data-cel-link-form style="margin:6px 0 0 0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="cel_submission" value="{{ cel.submission }}">
+          <input type="hidden" name="constraint_id" value="{{ c.constraint_id }}">
+          <input type="hidden" name="constraint_record" value="{{ c.record_id }}">
+          <input type="hidden" name="cel_generation" value="{{ cel.generation }}">
+          <input type="hidden" name="cel_action" value="link">
+          <label style="display:block;font-size:13px;margin:0 0 4px 0" for="cel-pick-{{ pidx }}">{{ t('UI_CEL_PICK') }}</label>
+          <select id="cel-pick-{{ pidx }}" name="cel_revision" style="max-width:100%">
+            {% for k in cel.candidates %}<option value="{{ k.revision_id }}">{{ k.interface_description }} — {{ t('UI_CEL_CHECK_VERSION') }} {{ k.revision_no }}</option>{% endfor %}
+          </select>
+          <button type="submit" style="margin-top:6px">{{ t('UI_CEL_REPLACE_BUTTON') if cel.linked else t('UI_CEL_LINK_BUTTON') }}</button>
+        </form>
+        {% elif not cel.linked %}
+        <p style="font-size:12px;color:#555;margin:0 0 4px 0" data-cel-no-candidates>{{ t('UI_CEL_NO_CANDIDATES') }}</p>
+        {% endif %}
+        {% if cel.linked %}
+        <form method="POST" action="/session/{{ sid }}/constraint-engineering-link" data-cel-unlink-form style="margin:6px 0 0 0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="cel_submission" value="{{ cel.submission }}">
+          <input type="hidden" name="constraint_id" value="{{ c.constraint_id }}">
+          <input type="hidden" name="constraint_record" value="{{ c.record_id }}">
+          <input type="hidden" name="cel_generation" value="{{ cel.generation }}">
+          <input type="hidden" name="cel_action" value="unlink">
+          <button type="submit">{{ t('UI_CEL_UNLINK_BUTTON') }}</button>
+        </form>
+        {% endif %}
+        {% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
       {% if pcn.writable %}
       {% if c.can_correct %}
       <details data-pcn-correct style="margin:4px 0 0 0">

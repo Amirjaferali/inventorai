@@ -169,6 +169,10 @@ from engine.record_store import (
     ConstraintAcceptanceCorrupt as _ConstraintAcceptanceCorrupt,
     CONSTRAINT_ACCEPTANCE_UNCHANGED as _PCA_UNCHANGED,
     CONSTRAINT_ACCEPTANCE_CLEARED as _PCA_CLEARED,
+    ConstraintLinkRejected as _ConstraintLinkRejected,
+    ConstraintLinkCorrupt as _ConstraintLinkCorrupt,
+    CONSTRAINT_LINK_UNCHANGED as _CEL_UNCHANGED,
+    CONSTRAINT_LINK_UNLINKED as _CEL_UNLINKED,
     AssumptionDependencyDeclarationRejected as _DependencyDeclarationRejected,
     SubsystemInterfaceRejected as _SubsystemInterfaceRejected,
     SubsystemInterfaceConflict as _SubsystemInterfaceConflict,
@@ -7910,7 +7914,8 @@ def _deliverable_context(sid):
         package["_session_meta"][_REQUIREMENT_QUANTITIES_META_KEY] = _quantities
     # Stage 15 Slice 3: the same seam (the assembler stays pinned) carries each
     # declared-interface Validation Plan step's recorded preparation inputs.
-    _attach_section_14_interface_preparation(package, state)
+    _attach_section_14_interface_preparation(
+        package, state, constraint_links=_constraint_link_report(sid, state))
     # PATHN-CONSTRAINT-DECLARATION-01: the same seam (the assembler stays
     # pinned) keeps the withdrawn-answer count truthful: a corrected or
     # withdrawn project constraint is not a withdrawn answer.
@@ -7977,7 +7982,7 @@ def _attach_constraint_acceptance_carrier(sid, state):
     state.constraint_acceptance_preparations = list(record["preparations"])
 
 
-def _attach_section_14_interface_preparation(package, state):
+def _attach_section_14_interface_preparation(package, state, constraint_links=None):
     """Stage 15 Slice 3: add ``interface_preparation`` (the inventor's recorded
     preparation inputs, verbatim, as ``{"field", "text"}`` items) to each
     Section-14 step that carries any. The assembler emits its steps in the
@@ -8018,6 +8023,12 @@ def _attach_section_14_interface_preparation(package, state):
                     "recorded": [{"field": f, "text": text}
                                  for f, text in acceptance.recorded],
                     "missing": list(acceptance.missing)}
+            # G1-2 CONSTRAINT-ENGINEERING-LINK-01: the check the inventor
+            # linked to this constraint, only when there is one (every other
+            # step's payload is unchanged).
+            link = (constraint_links or {}).get(step.provenance.reference)
+            if link is not None:
+                row["constraint_engineering_link"] = link
 
 
 def _quantity_statements(package, state):
@@ -10456,6 +10467,7 @@ def _project_constraints_context(sid, entry, state):
         and SESSION_STORE.get(sid) is entry
     current = [i for i in items if not i["withdrawn"]]
     _attach_constraint_acceptance(sid, current)
+    _attach_constraint_engineering_links(sid, current, writable)
     active_room = len(current) < _constraints.MAX_ACTIVE_CONSTRAINTS_PER_PROJECT
     lifetime_room = (len(items)
                      < _constraints.MAX_CONSTRAINT_IDENTITIES_PER_PROJECT)
@@ -10657,6 +10669,261 @@ def constraint_acceptance(sid):
                                    and all(v is None for v in values.values())):
         return _constraint_notice(sid, entry, ack="UI_PCA_MSG_CLEARED")
     return _constraint_notice(sid, entry, ack="UI_PCA_MSG_SAVED")
+
+
+# --- G1-2 CONSTRAINT-ENGINEERING-LINK-01 -------------------------------------
+# For ONE current mandatory constraint the inventor may link ONE saved planar
+# clearance check (an exact declaration revision) - their own association,
+# under the acceptance-preparation owner but apart from the notes (its own row,
+# its own form and POST; neither reconfirms the other). The link is CURRENT
+# only while the constraint version and the check revision it names are both
+# still current and every binding of the check holds; otherwise it is EARLIER
+# and is never moved to a newer version. Only a CURRENT link shows the check's
+# nominal outcome, labelled as the check's own result under the inventor's
+# declared values; whether the constraint is met is always NOT ASSESSED.
+# Every change is an explicit action behind the request-integrity (CSRF) guard,
+# the central project authorization and a signed submission identity; the
+# store re-checks the constraint version, the check and the link generation the
+# form showed inside ONE serialized write, and an unknown outcome is decided by
+# reloading committed truth. Nothing is parsed, copied into the check, mapped
+# onto the constraint or credited to a gap, progression or readiness.
+_CEL_SUBMISSION_DOMAIN = "constraint-engineering-link/1"
+_CEL_LINK = "link"
+_CEL_UNLINK = "unlink"
+_CEL_ASSOCIATION_NONE = "NONE"
+_CEL_ASSOCIATION_CURRENT = "CURRENT"
+_CEL_ASSOCIATION_EARLIER = "EARLIER"
+_CEL_ASSOCIATION_UNAVAILABLE = "UNAVAILABLE"
+_CEL_RESULT_AVAILABLE = "available"
+_CEL_RESULT_MISSING = "missing"
+_CEL_RESULT_UNAVAILABLE = "unavailable"
+_CEL_GENERATION_RE = re.compile(r"^(0|[1-9][0-9]{0,8})$")
+_CEL_REFUSAL_KEYS = {
+    "stale": "UI_CEL_MSG_STALE",
+    "withdrawn": "UI_PCA_MSG_WITHDRAWN",
+    "not_mandatory": "UI_PCA_MSG_NOT_MANDATORY",
+    "target": "UI_CEL_MSG_TARGET",
+    "invalid": "UI_CEL_MSG_REJECTED",
+}
+
+
+def _cel_association(link, constraint_changed, planar):
+    """The association view of ONE stored link row: ``NONE`` without a linked
+    row; otherwise the linked check as the planar owner reads it NOW and
+    whether the link is CURRENT, EARLIER (the constraint or the check changed
+    since the inventor linked them) or UNAVAILABLE (the check cannot be read).
+    Only a CURRENT link carries the check's nominal outcome."""
+    if link is None or not link.linked:
+        return {"status": _CEL_ASSOCIATION_NONE, "check": None,
+                "result": None, "constraint_changed": False}
+    check = None
+    if planar is not None:
+        try:
+            check = _pcc_view.linked_check(planar, link.revision_id, _PCC_BINDING)
+        except Exception:
+            check = None
+    if check is None:
+        return {"status": _CEL_ASSOCIATION_UNAVAILABLE, "check": None,
+                "result": {"status": _CEL_RESULT_UNAVAILABLE},
+                "constraint_changed": constraint_changed}
+    if constraint_changed or check["status"] != _pcc_view.LINK_CHECK_CURRENT:
+        return {"status": _CEL_ASSOCIATION_EARLIER, "check": check,
+                "result": {"status": _CEL_RESULT_MISSING},
+                "constraint_changed": constraint_changed}
+    outcome = check["outcome"]
+    result = ({"status": _CEL_RESULT_AVAILABLE, "outcome": outcome}
+              if outcome in _CEL_OUTCOMES else {"status": _CEL_RESULT_UNAVAILABLE})
+    return {"status": _CEL_ASSOCIATION_CURRENT, "check": check, "result": result,
+            "constraint_changed": False}
+
+
+_CEL_OUTCOMES = ("MET", "NOT_MET", "MISSING_INFORMATION", "INAPPLICABLE",
+                 "COULD_NOT_BE_COMPUTED")
+
+
+def _load_constraint_links(sid):
+    """The store's ONE coherent snapshot of the links, the constraint history
+    and the planar checks, or ``None`` when this store has no such reader."""
+    loader = getattr(_get_store(), "load_constraint_engineering_links", None)
+    if not callable(loader):
+        return None
+    return loader(sid)
+
+
+def _attach_constraint_engineering_links(sid, current, writable):
+    """Attach ``engineering_link`` to every CURRENT MANDATORY item of
+    ``current`` (the live constraint list): the association, the linked
+    check, the check's nominal result and, on a writable page, the checks the
+    inventor may link and the form baselines. Used for an item only when the
+    store snapshot's version of the constraint is exactly the one this page
+    shows; otherwise, or when the links cannot be read, the item reads
+    UNAVAILABLE - never "no link". A project absent from the store shows no
+    block."""
+    mandatory = [i for i in current
+                 if i["strength"] == _constraints.CONSTRAINT_STRENGTH_MANDATORY]
+    if not mandatory:
+        return
+    try:
+        record = _load_constraint_links(sid)
+        if record is None:
+            return
+        durable = {c.constraint_id: c for c in record["history"].current}
+        links = _constraints.current_constraint_engineering_links(
+            record["links"], record["history"])
+        planar = record["planar"]
+        candidates = ([] if planar is None
+                      else _pcc_view.linkable_checks(planar, _PCC_BINDING))
+    except _ProjectNotFound:
+        return
+    except Exception:
+        durable = links = None
+    for item in mandatory:
+        chain = None if durable is None else durable.get(item["constraint_id"])
+        if (chain is None or chain.record_id != item["record_id"]
+                or chain.strength != _constraints.CONSTRAINT_STRENGTH_MANDATORY):
+            item["engineering_link"] = {"association": {
+                "status": _CEL_ASSOCIATION_UNAVAILABLE, "check": None,
+                "result": None, "constraint_changed": False}, "writable": False}
+            continue
+        link, changed = links.get(item["constraint_id"], (None, False))
+        association = _cel_association(link, changed, planar)
+        linked_revision = (link.revision_id if link is not None and link.linked
+                           and association["status"] == _CEL_ASSOCIATION_CURRENT else None)
+        item["engineering_link"] = {
+            "association": association,
+            "writable": writable,
+            "generation": 0 if link is None else link.generation,
+            "linked": link is not None and link.linked,
+            "candidates": [c for c in candidates if c["revision_id"] != linked_revision],
+            # A fresh signed identity per render (never stored): the store
+            # decides exact retries from committed state and the generation.
+            "submission": (_fresh_submission_identity(sid, _CEL_SUBMISSION_DOMAIN)
+                           if writable else ""),
+        }
+
+
+def _resolve_constraint_link_write(sid, constraint_id, record_id, revision_id):
+    """Bounded confirm-by-reload after the write RAISED: SAVED when the
+    committed row of exactly this constraint is the target, NOT SAVED on a
+    demonstrable mismatch, UNKNOWN when committed truth cannot be read."""
+    try:
+        record = _load_constraint_links(sid)
+    except Exception:
+        return _PCA_WRITE_UNKNOWN
+    if record is None:
+        return _PCA_WRITE_UNKNOWN
+    stored = next((item for item in record["links"]
+                   if item.constraint_id == constraint_id), None)
+    current = ((None, None) if stored is None
+               else (stored.constraint_record, stored.revision_id))
+    target = (None, None) if revision_id is None else (record_id, revision_id)
+    return _PCA_WRITE_SAVED if current == target else _PCA_WRITE_NOT_SAVED
+
+
+@app.route("/session/<sid>/constraint-engineering-link", methods=["POST"])
+def constraint_engineering_link(sid):
+    """G1-2 CONSTRAINT-ENGINEERING-LINK-01 - the inventor links, replaces or
+    removes the ONE saved planar clearance check of ONE current mandatory
+    constraint. Their own association; it checks, copies, infers and verifies
+    nothing and changes neither the constraint, its notes nor the check.
+    Order: request integrity (global guard) -> authorization -> signed
+    submission identity -> form shape -> ONE serialized durable write that
+    re-validates the ledger, the constraint, the check and the link
+    generation -> committed-truth resolution."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    single = {}
+    for name in ("cel_submission", "constraint_id", "constraint_record",
+                 "cel_generation", "cel_action"):
+        values = request.form.getlist(name)
+        if len(values) != 1:
+            return _constraint_notice(sid, entry, error="UI_CEL_MSG_REJECTED")
+        single[name] = values[0]
+    if _verified_submission_identity(
+            sid, single["cel_submission"], _CEL_SUBMISSION_DOMAIN) is None:
+        return _constraint_notice(sid, entry, error="UI_CEL_MSG_REJECTED")
+    constraint_id, displayed = single["constraint_id"], single["constraint_record"]
+    action = single["cel_action"]
+    if (not _REC_ID_FIELD_RE.match(constraint_id) or not _REC_ID_FIELD_RE.match(displayed)
+            or not _CEL_GENERATION_RE.match(single["cel_generation"])
+            or action not in (_CEL_LINK, _CEL_UNLINK)):
+        return _constraint_notice(sid, entry, error="UI_CEL_MSG_REJECTED")
+    revision_id = None
+    if action == _CEL_LINK:
+        picked = request.form.getlist("cel_revision")
+        if len(picked) != 1 or not _constraints.is_planar_revision_id(picked[0]):
+            return _constraint_notice(sid, entry, error="UI_CEL_MSG_CHOOSE")
+        revision_id = picked[0]
+    elif request.form.getlist("cel_revision"):
+        return _constraint_notice(sid, entry, error="UI_CEL_MSG_REJECTED")
+    try:
+        outcome = _get_store().set_constraint_engineering_link(
+            sid, constraint_id, displayed, revision_id, int(single["cel_generation"]))
+    except _ConstraintLinkRejected as exc:
+        return _constraint_notice(
+            sid, entry, error=_CEL_REFUSAL_KEYS.get(exc.kind, "UI_CEL_MSG_REJECTED"))
+    except (_ProjectNotFound, _ConstraintLinkCorrupt):
+        # Committed durable truth WAS read and fails closed: nothing written.
+        return _constraint_notice(sid, entry, error="UI_CEL_MSG_NOT_SAVED")
+    except Exception:
+        resolved = _resolve_constraint_link_write(sid, constraint_id, displayed, revision_id)
+        if resolved == _PCA_WRITE_UNKNOWN:
+            return _constraint_notice(sid, entry, error="UI_CEL_MSG_UNKNOWN")
+        if resolved == _PCA_WRITE_NOT_SAVED:
+            return _constraint_notice(sid, entry, error="UI_CEL_MSG_NOT_SAVED")
+        outcome = None
+    if outcome == _CEL_UNCHANGED:
+        return _constraint_notice(sid, entry, ack="UI_CEL_MSG_UNCHANGED")
+    if outcome == _CEL_UNLINKED or (outcome is None and revision_id is None):
+        return _constraint_notice(sid, entry, ack="UI_CEL_MSG_UNLINKED")
+    return _constraint_notice(sid, entry, ack="UI_CEL_MSG_LINKED")
+
+
+def _constraint_link_report(sid, state):
+    """``{constraint_id: view}`` for the Section 14 steps of THIS state's
+    CURRENT mandatory constraints that have a linked check, or ``{}``: no
+    store, no project, no linked check and no current mandatory constraint all
+    add nothing, so every other report is unchanged. A constraint whose durable
+    version is not the one this state shows, or links that cannot be read,
+    read UNAVAILABLE (never "no link"). Read-only."""
+    try:
+        history = _constraints.constraint_history(
+            list(getattr(state, "assertions", None) or ()))
+        shown = {c.constraint_id: c.record_id for c in history.current
+                 if c.strength == _constraints.CONSTRAINT_STRENGTH_MANDATORY}
+    except Exception:
+        return {}
+    if not shown:
+        return {}
+    try:
+        record = _load_constraint_links(sid)
+        if record is None:
+            return {}
+        durable = {c.constraint_id: c.record_id for c in record["history"].current}
+        links = _constraints.current_constraint_engineering_links(
+            record["links"], record["history"])
+    except _ProjectNotFound:
+        return {}
+    except Exception:
+        return {cid: {"status": _CEL_ASSOCIATION_UNAVAILABLE} for cid in shown}
+    views = {}
+    for cid, record_id in shown.items():
+        link, changed = links.get(cid, (None, False))
+        if link is None or not link.linked:
+            continue
+        if durable.get(cid) != record_id:
+            views[cid] = {"status": _CEL_ASSOCIATION_UNAVAILABLE}
+            continue
+        association = _cel_association(link, changed, record["planar"])
+        views[cid] = {"status": association["status"], "check": association["check"],
+                      "result": association["result"]}
+    return views
 
 
 def _constraint_report_view(state):

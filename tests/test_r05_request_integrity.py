@@ -43,6 +43,9 @@ MUTATIONS = (
     # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the inventor's current-value
     # acceptance notes for one current mandatory constraint (record / replace / clear).
     "/session/<sid>/constraint-acceptance",
+    # G1-2 CONSTRAINT-ENGINEERING-LINK-01: link / replace / remove the ONE saved planar
+    # clearance check of one current mandatory constraint (signed submission + CSRF).
+    "/session/<sid>/constraint-engineering-link",
     # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's current-value prototype-need
     # note for one current declared component (record / replace / clear).
     "/session/<sid>/component-prototype-need",

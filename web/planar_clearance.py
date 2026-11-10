@@ -157,6 +157,67 @@ CAD_HANDOFF_FORMAT = "inventorai-planar-clearance-cad-handoff/1"
 CAD_GUIDE_KEYS = tuple("UI_PCC_CAD_GUIDE_%d" % n for n in range(1, 9))
 
 
+# G1-2 CONSTRAINT-ENGINEERING-LINK-01: what an inventor-linked check revision
+# is NOW, read only from the planar owner's own validated snapshot and its own
+# binding rule (``clearance_view``). A link names ONE exact revision: it is
+# CURRENT only while that revision is still the current revision of an active
+# declaration whose every binding holds; a later correction (SUPERSEDED), a
+# withdrawal (WITHDRAWN) or a changed component, participation or method
+# (NEEDS_RECONFIRMATION) never moves the link to a newer revision. Only a
+# CURRENT link carries the check's nominal outcome; nothing here maps it onto
+# the inventor's constraint.
+LINK_CHECK_CURRENT = STATE_CURRENT
+LINK_CHECK_SUPERSEDED = "SUPERSEDED"
+LINK_CHECK_WITHDRAWN = STATE_WITHDRAWN
+LINK_CHECK_RECONFIRM = STATE_RECONFIRM
+
+
+def linked_check(snapshot, revision_id, binding):
+    """The present state of ONE linked check revision, or ``None`` when the
+    snapshot holds no material revision with that id (never guessed)."""
+    found = None
+    for record in snapshot["ledger"].records:
+        for revision in record.revisions:
+            if revision.revision_id == revision_id and revision.material is not None:
+                found = (record, revision)
+    if found is None:
+        return None
+    record, revision = found
+    view = clearance_view(snapshot, record.interface_id, binding)
+    if view is None:
+        return None
+    check = {"interface_id": record.interface_id,
+             "interface_description": view["interface_description"],
+             "revision_no": revision.revision_no, "outcome": None}
+    if record.withdrawn:
+        check["status"] = LINK_CHECK_WITHDRAWN
+    elif record.current_revision.revision_id != revision_id:
+        check["status"] = LINK_CHECK_SUPERSEDED
+    elif view["state"] != STATE_CURRENT:
+        check["status"] = LINK_CHECK_RECONFIRM
+    else:
+        check["status"] = LINK_CHECK_CURRENT
+        evaluation = view["evaluation"] or {}
+        check["outcome"] = evaluation.get("outcome")
+    return check
+
+
+def linkable_checks(snapshot, binding):
+    """Every check the inventor may link now: the CURRENT revision of each
+    interaction's active declaration whose every binding holds, in interaction
+    order."""
+    checks = []
+    for interface in snapshot["interfaces"]:
+        view = clearance_view(snapshot, interface.interface_id, binding)
+        if view is None or view["state"] != STATE_CURRENT:
+            continue
+        checks.append({"revision_id": view["record"]["revision_id"],
+                       "interface_id": interface.interface_id,
+                       "interface_description": view["interface_description"],
+                       "revision_no": view["record"]["head_revision_no"]})
+    return checks
+
+
 def cad_eligible(view):
     """True only for a CURRENT declaration whose existing evaluation reached MET or NOT MET."""
     return bool(view) and view.get("state") == STATE_CURRENT \

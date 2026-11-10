@@ -524,6 +524,28 @@ class ConstraintAcceptanceCorrupt(StoreError):
     deleted or remapped."""
 
 
+class ConstraintLinkRejected(StoreError):
+    """G1-2 CONSTRAINT-ENGINEERING-LINK-01: a link or unlink names no
+    constraint of THIS project, a constraint that is not a CURRENT mandatory
+    constraint (``kind`` ``withdrawn`` / ``not_mandatory``), a version that is
+    no longer its current one or a link generation that changed since the form
+    was shown (``stale``), or a check that is not a current, fully bound saved
+    planar clearance declaration of this project (``target``), or is malformed
+    (``invalid``). Decided inside the write transaction; nothing is written."""
+
+    def __init__(self, message, kind="invalid"):
+        super().__init__(message)
+        self.kind = kind
+
+
+class ConstraintLinkCorrupt(StoreError):
+    """G1-2 CONSTRAINT-ENGINEERING-LINK-01: a project's durable ledger is not
+    valid, or its constraint link rows are malformed, duplicated, orphaned from
+    its constraint history, or their protecting triggers are missing.
+    Fail-closed for the WHOLE collection: nothing partial is returned and
+    nothing is repaired, deleted or remapped."""
+
+
 class ComponentPrototypeNeedsCorrupt(StoreError):
     """COMPONENT-PROTOTYPE-NEED-NOTE-01: a project's durable prototype-need
     rows are malformed, duplicated or orphaned from its declared components.
@@ -827,6 +849,12 @@ class RecordStore(Protocol):
     def set_constraint_acceptance(self, project_id: str, constraint_id: str,
                                   displayed_record_id: str, values,
                                   expected) -> str: ...
+    # G1-2 CONSTRAINT-ENGINEERING-LINK-01 (current value with a kept
+    # generation; see the constraint_engineering_links note).
+    def load_constraint_engineering_links(self, project_id: str) -> dict: ...
+    def set_constraint_engineering_link(self, project_id: str, constraint_id: str,
+                                        displayed_record_id: str, revision_id,
+                                        expected_generation: int) -> str: ...
 
 
 _SCHEMA = (
@@ -2442,6 +2470,64 @@ _CONSTRAINT_ACCEPTANCE_SCHEMA = (
     """ % {"max": MAX_CONSTRAINT_ACCEPTANCE_LENGTH},
 )
 
+# G1-2 CONSTRAINT-ENGINEERING-LINK-01 — ``constraint_engineering_links``: a
+# sibling of ``constraint_acceptance_preparations`` under the SAME acceptance-
+# preparation owner (``engine.idea_state``), never a column of it, so the notes
+# table and every note-writing path are unchanged. ONE row per constraint
+# identity (its FOUNDING record id): the exact mandatory version the link was
+# confirmed against and the exact planar clearance revision it names, both set
+# (linked) or both NULL (removed: a tombstone). ``generation`` grows by one on
+# every explicit link, replace or remove and is never reset: an obsolete form
+# carries an older generation and is refused, so a removed link can never be
+# recreated by it (ABA). The check is named only by ``(project_id,
+# revision_id)``, the planar revisions' own UNIQUE identity; no interaction,
+# component, method or number is copied. Two triggers keep the tombstone: a
+# row is never deleted and its generation never goes down. Additive and
+# idempotent; an existing table or trigger of another shape is refused, never
+# read as empty; nothing is backfilled. Rollback is disable-and-preserve: a
+# build without this capability never reads the table, and the notes table it
+# does read is untouched.
+_CONSTRAINT_LINK_COLUMNS = ("project_id", "constraint_id", "constraint_record",
+                            "revision_id", "generation")
+_CONSTRAINT_LINK_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS constraint_engineering_links (
+        project_id         TEXT NOT NULL,
+        constraint_id      TEXT NOT NULL,
+        constraint_record  TEXT,
+        revision_id        TEXT,
+        generation         INTEGER NOT NULL,
+        PRIMARY KEY (project_id, constraint_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, constraint_id)
+            REFERENCES records(project_id, record_id),
+        FOREIGN KEY (project_id, constraint_record)
+            REFERENCES records(project_id, record_id),
+        FOREIGN KEY (project_id, revision_id)
+            REFERENCES planar_clearance_revisions(project_id, revision_id),
+        CHECK (typeof(constraint_id) = 'text' AND length(constraint_id) BETWEEN 1 AND 64),
+        CHECK (constraint_record IS NULL OR (typeof(constraint_record) = 'text'
+               AND length(constraint_record) BETWEEN 1 AND 64)),
+        CHECK (revision_id IS NULL OR (typeof(revision_id) = 'text'
+               AND length(revision_id) = 36)),
+        CHECK ((constraint_record IS NULL) = (revision_id IS NULL)),
+        CHECK (typeof(generation) = 'integer' AND generation >= 1)
+    )
+    """,
+)
+_CONSTRAINT_LINK_TRIGGERS = (
+    ("constraint_engineering_links_no_delete",
+     "CREATE TRIGGER constraint_engineering_links_no_delete BEFORE DELETE ON "
+     "constraint_engineering_links BEGIN SELECT RAISE(ABORT, "
+     "'constraint links keep their generation'); END"),
+    ("constraint_engineering_links_generation_grows",
+     "CREATE TRIGGER constraint_engineering_links_generation_grows BEFORE UPDATE ON "
+     "constraint_engineering_links WHEN NEW.generation <= OLD.generation "
+     "OR NEW.project_id IS NOT OLD.project_id "
+     "OR NEW.constraint_id IS NOT OLD.constraint_id BEGIN SELECT RAISE(ABORT, "
+     "'constraint link generations only grow'); END"),
+)
+
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the two additive,
 # append-only, project-scoped comparison record families. Never updated or
 # deleted (no such writer exists). ``seq`` is the project's contiguous durable
@@ -2609,6 +2695,10 @@ PARTICIPATION_PREPARATION_UNCHANGED = "UNCHANGED"
 CONSTRAINT_ACCEPTANCE_SAVED = "SAVED"
 CONSTRAINT_ACCEPTANCE_CLEARED = "CLEARED"
 CONSTRAINT_ACCEPTANCE_UNCHANGED = "UNCHANGED"
+# G1-2 CONSTRAINT-ENGINEERING-LINK-01 write outcomes.
+CONSTRAINT_LINK_LINKED = "LINKED"
+CONSTRAINT_LINK_UNLINKED = "UNLINKED"
+CONSTRAINT_LINK_UNCHANGED = "UNCHANGED"
 
 INTERFACE_OBSERVATION_INSERTED = "INSERTED"
 INTERFACE_OBSERVATION_EXACT_REPLAY = "EXACT_REPLAY"
@@ -2754,6 +2844,7 @@ class SqliteRecordStore:
             self._migrate_planar_clearance(self._conn)
             self._migrate_planar_clearance_sources(self._conn)
             self._migrate_constraint_acceptance(self._conn)
+            self._migrate_constraint_engineering_links(self._conn)
             self._migrate_decision_comparison(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
@@ -3202,6 +3293,33 @@ class SqliteRecordStore:
                 "constraint_acceptance_preparations has an unrecognised shape")
         for stmt in _CONSTRAINT_ACCEPTANCE_SCHEMA:
             conn.execute(stmt)
+
+    def _migrate_constraint_engineering_links(self, conn) -> None:
+        """G1-2 CONSTRAINT-ENGINEERING-LINK-01 forward migration: additively
+        create the ``constraint_engineering_links`` sidecar and its two
+        tombstone triggers, after the notes table and the planar revisions it
+        references. Runs inside the store's single migration transaction;
+        idempotent on a fresh and on an existing populated database; touches no
+        existing table, column, trigger or row; nothing is backfilled. A table
+        or trigger that already exists in any other shape is refused
+        (``sqlite3.DatabaseError``) rather than read as empty or guessed.
+        Rollback is disable-and-preserve."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(constraint_engineering_links)").fetchall())
+        if columns and columns != _CONSTRAINT_LINK_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "constraint_engineering_links has an unrecognised shape")
+        for stmt in _CONSTRAINT_LINK_SCHEMA:
+            conn.execute(stmt)
+        for name, sql in _CONSTRAINT_LINK_TRIGGERS:
+            found = conn.execute(
+                "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
+                (name,)).fetchone()
+            if found is None:
+                conn.execute(sql)
+            elif found[0] != sql:
+                raise sqlite3.DatabaseError(
+                    "a constraint link trigger has an unrecognised shape")
 
     def _migrate_decision_comparison(self, conn) -> None:
         """INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 forward migration:
@@ -5670,6 +5788,164 @@ class SqliteRecordStore:
                 (project_id, constraint_id, chain.record_id,
                  target[fields[0]], target[fields[1]]))
         return CONSTRAINT_ACCEPTANCE_SAVED
+
+    # --- G1-2 CONSTRAINT-ENGINEERING-LINK-01 ----------------------------------
+    def _constraint_links_state(self, project_id):
+        """``(assertions, history, links)``: this project's durable ledger
+        validated whole by the record contract, its ONE constraint history and
+        every stored link row validated whole against it, with the two
+        tombstone triggers present. ``ProjectNotFound`` without a project;
+        ``ConstraintLinkCorrupt`` on any defect (nothing partial, nothing
+        remapped). The acceptance notes are NOT read: the two lifecycles stay
+        independent. Read-only."""
+        from engine.idea_state import (
+            ConstraintEngineeringLink, ConstraintError, ConstraintLinkError,
+            constraint_history, validate_constraint_engineering_links)
+        from engine.record_contract import (
+            ContractError, assertion_from_dict, reconcile_supersession_edges)
+        proj = self._conn.execute(
+            "SELECT idea_id, contract_version FROM projects WHERE project_id = ?",
+            (project_id,)).fetchone()
+        if proj is None:
+            raise ProjectNotFound(project_id)
+        for name, sql in _CONSTRAINT_LINK_TRIGGERS:
+            found = self._conn.execute(
+                "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
+                (name,)).fetchone()
+            if found is None or found[0] != sql:
+                raise ConstraintLinkCorrupt("a constraint link trigger is missing")
+        rows = self._conn.execute(
+            "SELECT constraint_id, constraint_record, revision_id, generation "
+            "FROM constraint_engineering_links WHERE project_id = ? "
+            "ORDER BY constraint_id ASC", (project_id,)).fetchall()
+        try:
+            assertions = [assertion_from_dict(json.loads(p)) for (p,) in
+                          self._conn.execute(
+                              "SELECT payload FROM records WHERE project_id = ? "
+                              "ORDER BY seq ASC", (project_id,)).fetchall()]
+            reconcile_supersession_edges(assertions)
+            ProjectRecordContract(idea_id=proj[0], assertions=assertions,
+                                  contract_version=proj[1]).validate()
+            history = constraint_history(assertions)
+            links = validate_constraint_engineering_links(
+                [ConstraintEngineeringLink(constraint_id=r[0], constraint_record=r[1],
+                                           revision_id=r[2], generation=r[3])
+                 for r in rows], assertions)
+        except (ContractError, ConstraintError, ConstraintLinkError,
+                ValueError, TypeError, KeyError):
+            raise ConstraintLinkCorrupt(
+                "the constraint links are not valid") from None
+        return assertions, history, links
+
+    def load_constraint_engineering_links(self, project_id: str) -> dict:
+        """``{"history", "links", "planar"}`` read inside ONE consistent read
+        snapshot: the constraint history, every stored link row (linked and
+        removed alike) validated whole, and the planar clearance snapshot the
+        linked checks are resolved against (the same validated snapshot
+        ``load_planar_clearance`` returns), or ``None`` when that snapshot
+        cannot be read - the links stay readable and their checks read
+        UNAVAILABLE. No project -> ``ProjectNotFound``; invalid links ->
+        ``ConstraintLinkCorrupt``. IR-01 refuses an unresolved connection
+        before any SELECT. Read-only; project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            _assertions, history, links = self._constraint_links_state(project_id)
+            try:
+                planar = self._planar_clearance_snapshot(project_id)
+                planar.pop("_revisions")
+                planar.pop("_keys")
+            except ProjectNotFound:
+                raise
+            except (StoreError, ValueError, TypeError, KeyError):
+                planar = None
+        return {"history": history, "links": tuple(links), "planar": planar}
+
+    def set_constraint_engineering_link(self, project_id: str, constraint_id: str,
+                                        displayed_record_id: str, revision_id,
+                                        expected_generation: int) -> str:
+        """Link (``revision_id`` a planar clearance revision id) or remove
+        (``revision_id`` ``None``) the engineering check of ONE CURRENT
+        mandatory constraint, and return the outcome:
+        ``CONSTRAINT_LINK_LINKED`` / ``CONSTRAINT_LINK_UNLINKED`` for a
+        committed change, or ``CONSTRAINT_LINK_UNCHANGED`` when the durable row
+        already is exactly the target (an exact retry; nothing is written).
+
+        Shape-checked BEFORE the transaction (``ConstraintLinkRejected``,
+        ``invalid``). Then ONE serialized ``BEGIN IMMEDIATE`` transaction,
+        against DURABLE truth: the project exists; the whole ledger and every
+        link row validate (``ConstraintLinkCorrupt``); the constraint is an
+        identity of THIS project, not withdrawn, still at the displayed version
+        and mandatory (``withdrawn`` / ``stale`` / ``not_mandatory`` /
+        ``invalid``); an equal target is UNCHANGED; otherwise the stored
+        generation must equal ``expected_generation`` (``stale`` - an obsolete
+        form never overwrites a newer link or recreates a removed one). A link
+        additionally requires the revision to be the CURRENT revision of an
+        active declaration of THIS project whose every binding still holds
+        (``target``); a removal reads no check at all, so it stays possible when
+        the check is gone or unreadable. The row is then upserted with the next
+        generation; a removal keeps the row as a tombstone. The acceptance notes
+        and every other row are untouched. Full rollback on any failure. IR-01:
+        never writes on top of an unresolved connection."""
+        from engine.idea_state import (
+            ConstraintAcceptanceError, ConstraintAcceptanceNotMandatory,
+            ConstraintAcceptanceWithdrawn, ConstraintStale,
+            constraint_acceptance_target, is_planar_revision_id)
+        for identity in (constraint_id, displayed_record_id):
+            if not isinstance(identity, str) or not identity or len(identity) > 64:
+                raise ConstraintLinkRejected("malformed identity")
+        if revision_id is not None and not is_planar_revision_id(revision_id):
+            raise ConstraintLinkRejected("malformed check identity")
+        if not isinstance(expected_generation, int) or isinstance(expected_generation, bool) \
+                or expected_generation < 0:
+            raise ConstraintLinkRejected("malformed generation")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            _assertions, history, links = self._constraint_links_state(project_id)
+            try:
+                chain = constraint_acceptance_target(
+                    history, constraint_id, displayed_record_id)
+            except ConstraintAcceptanceWithdrawn:
+                raise ConstraintLinkRejected("withdrawn", "withdrawn") from None
+            except ConstraintAcceptanceNotMandatory:
+                raise ConstraintLinkRejected("not mandatory", "not_mandatory") from None
+            except ConstraintStale:
+                raise ConstraintLinkRejected("not current", "stale") from None
+            except ConstraintAcceptanceError:
+                raise ConstraintLinkRejected(
+                    "the link names no constraint of this project") from None
+            stored = next((item for item in links
+                           if item.constraint_id == constraint_id), None)
+            current = ((None, None) if stored is None
+                       else (stored.constraint_record, stored.revision_id))
+            target = (None, None) if revision_id is None else (chain.record_id, revision_id)
+            if current == target:
+                return CONSTRAINT_LINK_UNCHANGED
+            generation = 0 if stored is None else stored.generation
+            if generation != expected_generation:
+                raise ConstraintLinkRejected(
+                    "the link changed since the form was shown", "stale")
+            if revision_id is not None:
+                try:
+                    planar = self._planar_clearance_snapshot(project_id)
+                except ProjectNotFound:
+                    raise
+                except (StoreError, ValueError, TypeError, KeyError):
+                    raise ConstraintLinkRejected("the check cannot be read", "target") from None
+                record = next((r for r in planar["ledger"].records
+                               if not r.withdrawn
+                               and r.current_revision.revision_id == revision_id), None)
+                if record is None or _sm.planar_clearance_binding_issues(
+                        record.current, planar["inventory"], planar["participations"],
+                        planar["epochs"]):
+                    raise ConstraintLinkRejected("the check is not current", "target")
+            self._conn.execute(
+                "INSERT INTO constraint_engineering_links (project_id, constraint_id, "
+                "constraint_record, revision_id, generation) VALUES (?, ?, ?, ?, ?) "
+                "ON CONFLICT (project_id, constraint_id) DO UPDATE SET "
+                "constraint_record = excluded.constraint_record, "
+                "revision_id = excluded.revision_id, generation = excluded.generation",
+                (project_id, constraint_id, target[0], target[1], generation + 1))
+        return CONSTRAINT_LINK_UNLINKED if revision_id is None else CONSTRAINT_LINK_LINKED
 
     # --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria + values -
     # Every reader validates the decision ledger and BOTH comparison tables
