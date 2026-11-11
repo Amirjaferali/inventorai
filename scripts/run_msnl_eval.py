@@ -2211,8 +2211,18 @@ CONTEXT_HISTORY_MANIFEST_SHA256 = "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda5
 # its own run_02_* files; run 01 and its INVALID outcome stay exactly as recorded (their paths
 # are the RUN_01 constants below). That run took place on 2026-11-11 from commit 205f760 (80
 # requests sent, measured US$0.25071, outcome INVALID: HTTP 401 at request 80, CH2-C01-ar-msa,
-# with no retry; evidence in run_02_*), and the gate was closed again. Any further run needs a
-# new Owner authorization, its own run_NN_* paths and a reviewed commit opening the gate.
+# with no retry; evidence in run_02_*), and the gate was closed again.
+# Owner authorization "R2 CONTEXT-HISTORY RUN 03" (2026-11-11), ONE FINAL CONTROLLED
+# EVALUATION, reopens it for exactly ONE unchanged replication of the same frozen manifest,
+# preregistration, instructions, request order, scoring and F1-F4 (gpt-6-sol, Standard,
+# store=false, synthetic only, at most 120 requests, US$6, no retry, no resume, no replacement
+# of a failed case), sent through the PR #964 validated relay and journaled with the PR #959
+# diagnostics. Run 03 writes ONLY to its own run_03_* files; runs 01 and 02 and their INVALID
+# outcomes stay exactly as recorded (the RUN_01 / RUN_02 constants below). That run took place on
+# 2026-11-11 from commit a00e3cc (120 of 120 requests sent, all HTTP 200 on gpt-6-sol / default
+# tier, measured US$0.380466, no error, no retry; outcome NOT_FALSIFIED_ON_THIS_HOLDOUT; evidence
+# in run_03_*), and the gate was closed again. No further run is authorized; that outcome
+# qualifies no product use.
 CONTEXT_HISTORY_RUN_AUTHORIZED = False
 CONTEXT_HISTORY_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
                                             "msnl_context_history_v1")
@@ -2224,8 +2234,12 @@ CONTEXT_HISTORY_RUN_02_JOURNAL_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR,
                                                    "run_02_journal.jsonl")
 CONTEXT_HISTORY_RUN_02_REPORT_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR,
                                                   "run_02_report.json")
-CONTEXT_HISTORY_JOURNAL_PATH = CONTEXT_HISTORY_RUN_02_JOURNAL_PATH
-CONTEXT_HISTORY_REPORT_PATH = CONTEXT_HISTORY_RUN_02_REPORT_PATH
+CONTEXT_HISTORY_RUN_03_JOURNAL_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR,
+                                                   "run_03_journal.jsonl")
+CONTEXT_HISTORY_RUN_03_REPORT_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR,
+                                                  "run_03_report.json")
+CONTEXT_HISTORY_JOURNAL_PATH = CONTEXT_HISTORY_RUN_03_JOURNAL_PATH
+CONTEXT_HISTORY_REPORT_PATH = CONTEXT_HISTORY_RUN_03_REPORT_PATH
 CH_RELATIONS = ("RELATED", "UNRELATED", "UNCERTAIN")
 CH_CONTRIBUTIONS = ("CONTENT_BEARING", "NO_NEW_CONTENT", "UNCERTAIN")
 CH_FIELDS = ("project_relation", "new_contribution", "possible_amendment", "evidence_quote")

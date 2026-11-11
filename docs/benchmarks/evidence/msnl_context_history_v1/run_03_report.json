@@ -1,0 +1,5199 @@
+{
+ "excluded_disputed": [],
+ "manifest_id": "msnl-context-history-v1",
+ "meaning": {
+  "FALSIFIED": "every failed criterion is listed; the candidate as frozen is not usable for R2.",
+  "INVALID": "the run says nothing about the candidate; no rerun without a new authorization.",
+  "NOT_FALSIFIED_ON_THIS_HOLDOUT": "the frozen candidate met F1-F4 on this one synthetic holdout. It qualifies NO product use: replay determinism, OD-2 durable records, real-data transfer and R2 contract activation stay separate, unmade decisions."
+ },
+ "measures": {
+  "by_category": {
+   "AMENDMENT": {
+    "M-ABST": [
+     0,
+     12
+    ],
+    "M-AMEND-false-flags": [
+     0,
+     0
+    ],
+    "M-AMEND-recall": [
+     12,
+     12
+    ],
+    "M-FLIP": [
+     0,
+     12
+    ],
+    "M-LR": [
+     0,
+     12
+    ],
+    "M-UP": [
+     0,
+     0
+    ]
+   },
+   "CONTENT_FREE_REFERENCE": {
+    "M-ABST": [
+     0,
+     0
+    ],
+    "M-AMEND-false-flags": [
+     0,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     12
+    ],
+    "M-LR": [
+     0,
+     0
+    ],
+    "M-UP": [
+     0,
+     12
+    ]
+   },
+   "HISTORY_COUNTERFACTUAL_NEW": {
+    "M-ABST": [
+     0,
+     12
+    ],
+    "M-AMEND-false-flags": [
+     0,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     12
+    ],
+    "M-LR": [
+     0,
+     12
+    ],
+    "M-UP": [
+     0,
+     0
+    ]
+   },
+   "NEW_DETAIL": {
+    "M-ABST": [
+     0,
+     12
+    ],
+    "M-AMEND-false-flags": [
+     0,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     12
+    ],
+    "M-LR": [
+     0,
+     12
+    ],
+    "M-UP": [
+     0,
+     0
+    ]
+   },
+   "OTHER_INVENTION_SHARED_VOCAB": {
+    "M-ABST": [
+     0,
+     0
+    ],
+    "M-AMEND-false-flags": [
+     1,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     0
+    ],
+    "M-LR": [
+     0,
+     0
+    ],
+    "M-UP": [
+     0,
+     12
+    ]
+   },
+   "PARAPHRASE_OF_PREVIOUS": {
+    "M-ABST": [
+     0,
+     0
+    ],
+    "M-AMEND-false-flags": [
+     0,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     12
+    ],
+    "M-LR": [
+     0,
+     0
+    ],
+    "M-UP": [
+     0,
+     12
+    ]
+   },
+   "PLAIN_LANGUAGE_DETAIL": {
+    "M-ABST": [
+     0,
+     12
+    ],
+    "M-AMEND-false-flags": [
+     1,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     12
+    ],
+    "M-LR": [
+     0,
+     12
+    ],
+    "M-UP": [
+     0,
+     0
+    ]
+   },
+   "PROJECT_COUNTERFACTUAL": {
+    "M-ABST": [
+     0,
+     0
+    ],
+    "M-AMEND-false-flags": [
+     0,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     0
+    ],
+    "M-LR": [
+     0,
+     0
+    ],
+    "M-UP": [
+     0,
+     12
+    ]
+   },
+   "RESTATE_THEN_NEW": {
+    "M-ABST": [
+     0,
+     12
+    ],
+    "M-AMEND-false-flags": [
+     0,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     12
+    ],
+    "M-LR": [
+     0,
+     12
+    ],
+    "M-UP": [
+     0,
+     0
+    ]
+   },
+   "UNKNOWN_OR_UNDECIDED": {
+    "M-ABST": [
+     0,
+     0
+    ],
+    "M-AMEND-false-flags": [
+     12,
+     12
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     12
+    ],
+    "M-LR": [
+     0,
+     0
+    ],
+    "M-UP": [
+     0,
+     12
+    ]
+   }
+  },
+  "by_domain": {
+   "electronics_electrical": {
+    "M-ABST": [
+     0,
+     30
+    ],
+    "M-AMEND-false-flags": [
+     7,
+     54
+    ],
+    "M-AMEND-recall": [
+     6,
+     6
+    ],
+    "M-FLIP": [
+     0,
+     48
+    ],
+    "M-LR": [
+     0,
+     30
+    ],
+    "M-UP": [
+     0,
+     30
+    ]
+   },
+   "mechanical": {
+    "M-ABST": [
+     0,
+     30
+    ],
+    "M-AMEND-false-flags": [
+     7,
+     54
+    ],
+    "M-AMEND-recall": [
+     6,
+     6
+    ],
+    "M-FLIP": [
+     0,
+     48
+    ],
+    "M-LR": [
+     0,
+     30
+    ],
+    "M-UP": [
+     0,
+     30
+    ]
+   }
+  },
+  "by_project": {
+   "CH1": {
+    "M-ABST": [
+     0,
+     10
+    ],
+    "M-AMEND-false-flags": [
+     2,
+     18
+    ],
+    "M-AMEND-recall": [
+     2,
+     2
+    ],
+    "M-FLIP": [
+     0,
+     16
+    ],
+    "M-LR": [
+     0,
+     10
+    ],
+    "M-UP": [
+     0,
+     10
+    ]
+   },
+   "CH2": {
+    "M-ABST": [
+     0,
+     10
+    ],
+    "M-AMEND-false-flags": [
+     2,
+     18
+    ],
+    "M-AMEND-recall": [
+     2,
+     2
+    ],
+    "M-FLIP": [
+     0,
+     16
+    ],
+    "M-LR": [
+     0,
+     10
+    ],
+    "M-UP": [
+     0,
+     10
+    ]
+   },
+   "CH3": {
+    "M-ABST": [
+     0,
+     10
+    ],
+    "M-AMEND-false-flags": [
+     3,
+     18
+    ],
+    "M-AMEND-recall": [
+     2,
+     2
+    ],
+    "M-FLIP": [
+     0,
+     16
+    ],
+    "M-LR": [
+     0,
+     10
+    ],
+    "M-UP": [
+     0,
+     10
+    ]
+   },
+   "CH4": {
+    "M-ABST": [
+     0,
+     10
+    ],
+    "M-AMEND-false-flags": [
+     2,
+     18
+    ],
+    "M-AMEND-recall": [
+     2,
+     2
+    ],
+    "M-FLIP": [
+     0,
+     16
+    ],
+    "M-LR": [
+     0,
+     10
+    ],
+    "M-UP": [
+     0,
+     10
+    ]
+   },
+   "CH5": {
+    "M-ABST": [
+     0,
+     10
+    ],
+    "M-AMEND-false-flags": [
+     3,
+     18
+    ],
+    "M-AMEND-recall": [
+     2,
+     2
+    ],
+    "M-FLIP": [
+     0,
+     16
+    ],
+    "M-LR": [
+     0,
+     10
+    ],
+    "M-UP": [
+     0,
+     10
+    ]
+   },
+   "CH6": {
+    "M-ABST": [
+     0,
+     10
+    ],
+    "M-AMEND-false-flags": [
+     2,
+     18
+    ],
+    "M-AMEND-recall": [
+     2,
+     2
+    ],
+    "M-FLIP": [
+     0,
+     16
+    ],
+    "M-LR": [
+     0,
+     10
+    ],
+    "M-UP": [
+     0,
+     10
+    ]
+   }
+  },
+  "by_side": {
+   "negative": {
+    "M-ABST": [
+     0,
+     0
+    ],
+    "M-AMEND-false-flags": [
+     13,
+     60
+    ],
+    "M-AMEND-recall": [
+     0,
+     0
+    ],
+    "M-FLIP": [
+     0,
+     36
+    ],
+    "M-LR": [
+     0,
+     0
+    ],
+    "M-UP": [
+     0,
+     60
+    ]
+   },
+   "positive": {
+    "M-ABST": [
+     0,
+     60
+    ],
+    "M-AMEND-false-flags": [
+     1,
+     48
+    ],
+    "M-AMEND-recall": [
+     12,
+     12
+    ],
+    "M-FLIP": [
+     0,
+     60
+    ],
+    "M-LR": [
+     0,
+     60
+    ],
+    "M-UP": [
+     0,
+     0
+    ]
+   }
+  },
+  "by_variety": {
+   "ar-msa": {
+    "M-ABST": [
+     0,
+     30
+    ],
+    "M-AMEND-false-flags": [
+     8,
+     54
+    ],
+    "M-AMEND-recall": [
+     6,
+     6
+    ],
+    "M-FLIP": [
+     0,
+     48
+    ],
+    "M-LR": [
+     0,
+     30
+    ],
+    "M-UP": [
+     0,
+     30
+    ]
+   },
+   "en": {
+    "M-ABST": [
+     0,
+     30
+    ],
+    "M-AMEND-false-flags": [
+     6,
+     54
+    ],
+    "M-AMEND-recall": [
+     6,
+     6
+    ],
+    "M-FLIP": [
+     0,
+     48
+    ],
+    "M-LR": [
+     0,
+     30
+    ],
+    "M-UP": [
+     0,
+     30
+    ]
+   }
+  },
+  "contribution_confusion_related_only": {
+   "CONTENT_BEARING->CONTENT_BEARING": 60,
+   "NO_NEW_CONTENT->NO_NEW_CONTENT": 36
+  },
+  "overall": {
+   "M-ABST": [
+    0,
+    60
+   ],
+   "M-AMEND-false-flags": [
+    14,
+    108
+   ],
+   "M-AMEND-recall": [
+    12,
+    12
+   ],
+   "M-FLIP": [
+    0,
+    96
+   ],
+   "M-LR": [
+    0,
+    60
+   ],
+   "M-UP": [
+    0,
+    60
+   ]
+  },
+  "relation_confusion": {
+   "RELATED->RELATED": 96,
+   "UNRELATED->UNRELATED": 24
+  }
+ },
+ "outcome": [
+  "NOT_FALSIFIED_ON_THIS_HOLDOUT"
+ ],
+ "rows": [
+  {
+   "attempt": {
+    "attempt": 1,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5959,
+    "latency_ms": 3506,
+    "measured_cost_usd": 0.002872,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031918,
+    "response_id": "resp_002703b8da89d702016af4b737df2c87d1a6ad15cd4cacd095",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:02.827Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 981,
+     "output_tokens": 91,
+     "reasoning_tokens": 54,
+     "total_tokens": 1072
+    }
+   },
+   "case_id": "CH6-C08-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 2,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6027,
+    "latency_ms": 2003,
+    "measured_cost_usd": 0.002924,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032054,
+    "response_id": "resp_04285ab3e42fd278016af4b73a8dd087d18cddf785ce5e386f",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:06.335Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1002,
+     "output_tokens": 92,
+     "reasoning_tokens": 27,
+     "total_tokens": 1094
+    }
+   },
+   "case_id": "CH5-C10-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 3,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6065,
+    "latency_ms": 2072,
+    "measured_cost_usd": 0.002964,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03213,
+    "response_id": "resp_07b5da3aef8f2734016af4b73c81f887d19497be16e2366983",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:08.339Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1007,
+     "output_tokens": 95,
+     "reasoning_tokens": 20,
+     "total_tokens": 1102
+    }
+   },
+   "case_id": "CH1-C04-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 4,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6833,
+    "latency_ms": 2720,
+    "measured_cost_usd": 0.003428,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033666,
+    "response_id": "resp_0201d84c5a5937c9016af4b73ea14887d1a7ae48a19225c055",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:10.413Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1094,
+     "output_tokens": 124,
+     "reasoning_tokens": 50,
+     "total_tokens": 1218
+    }
+   },
+   "case_id": "CH6-C01-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 5,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6813,
+    "latency_ms": 2031,
+    "measured_cost_usd": 0.003374,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033626,
+    "response_id": "resp_0150b25cc3ca627a016af4b74148c087d1a997b9ad0e1d910a",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:13.134Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1082,
+     "output_tokens": 121,
+     "reasoning_tokens": 84,
+     "total_tokens": 1203
+    }
+   },
+   "case_id": "CH6-C06-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 6,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6711,
+    "latency_ms": 2399,
+    "measured_cost_usd": 0.003832,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033422,
+    "response_id": "resp_0b9a7d772cd8b8dd016af4b7435b2087d189ba3c5bb39fa02d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:15.166Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1106,
+     "output_tokens": 162,
+     "reasoning_tokens": 79,
+     "total_tokens": 1268
+    }
+   },
+   "case_id": "CH4-C10-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 7,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6042,
+    "latency_ms": 1722,
+    "measured_cost_usd": 0.002884,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032084,
+    "response_id": "resp_041ee33598db9da8016af4b745b5c487d18ec59df617e406c2",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:17.566Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1007,
+     "output_tokens": 87,
+     "reasoning_tokens": 29,
+     "total_tokens": 1094
+    }
+   },
+   "case_id": "CH2-C10-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 8,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5883,
+    "latency_ms": 1920,
+    "measured_cost_usd": 0.002846,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031766,
+    "response_id": "resp_0d910b494bc3be5f016af4b7477a9887d187b943598adc0a84",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:19.290Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 958,
+     "output_tokens": 93,
+     "reasoning_tokens": 56,
+     "total_tokens": 1051
+    }
+   },
+   "case_id": "CH4-C08-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 9,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5938,
+    "latency_ms": 1886,
+    "measured_cost_usd": 0.003014,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031876,
+    "response_id": "resp_0ae7388e5be7185f016af4b7495f7c87d1a262f15df74461f4",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:21.211Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 982,
+     "output_tokens": 105,
+     "reasoning_tokens": 68,
+     "total_tokens": 1087
+    }
+   },
+   "case_id": "CH3-C08-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 10,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6650,
+    "latency_ms": 1432,
+    "measured_cost_usd": 0.00285,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.0333,
+    "response_id": "resp_0c3657ea55de08d2016af4b74b3e9887d1b08c911718801d71",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:23.099Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1080,
+     "output_tokens": 69,
+     "reasoning_tokens": 32,
+     "total_tokens": 1149
+    }
+   },
+   "case_id": "CH2-C08-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 11,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5892,
+    "latency_ms": 1818,
+    "measured_cost_usd": 0.002804,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031784,
+    "response_id": "resp_060c5edd5662ba07016af4b74cad7087d1b458586604f4bb9d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:24.532Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 977,
+     "output_tokens": 85,
+     "reasoning_tokens": 48,
+     "total_tokens": 1062
+    }
+   },
+   "case_id": "CH2-C08-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 12,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5940,
+    "latency_ms": 1605,
+    "measured_cost_usd": 0.002676,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03188,
+    "response_id": "resp_0597cef1e635b2fe016af4b74e82f887d19e54d8851cd93de3",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:26.350Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 983,
+     "output_tokens": 71,
+     "reasoning_tokens": 34,
+     "total_tokens": 1054
+    }
+   },
+   "case_id": "CH5-C06-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 13,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6025,
+    "latency_ms": 2466,
+    "measured_cost_usd": 0.003638,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03205,
+    "response_id": "resp_0efaf5a6c82252d2016af4b7501c0c87d1a327d4016309dec0",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:27.957Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 999,
+     "output_tokens": 164,
+     "reasoning_tokens": 113,
+     "total_tokens": 1163
+    }
+   },
+   "case_id": "CH3-C09-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 14,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6123,
+    "latency_ms": 2433,
+    "measured_cost_usd": 0.003184,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032246,
+    "response_id": "resp_08e1ea13897ac3fd016af4b7529a8887d1855a18c4d81f5b83",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:30.423Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1017,
+     "output_tokens": 115,
+     "reasoning_tokens": 51,
+     "total_tokens": 1132
+    }
+   },
+   "case_id": "CH6-C01-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 15,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6774,
+    "latency_ms": 2045,
+    "measured_cost_usd": 0.002986,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033548,
+    "response_id": "resp_06d41127d74c0770016af4b754fdd887d1a4dd23c01ea7a883",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:32.857Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1098,
+     "output_tokens": 79,
+     "reasoning_tokens": 42,
+     "total_tokens": 1177
+    }
+   },
+   "case_id": "CH2-C06-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 16,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5739,
+    "latency_ms": 1427,
+    "measured_cost_usd": 0.002378,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031478,
+    "response_id": "resp_062f3db1c978b107016af4b757254087d1beb74b21f51d80d7",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:34.903Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 929,
+     "output_tokens": 52,
+     "reasoning_tokens": 15,
+     "total_tokens": 981
+    }
+   },
+   "case_id": "CH4-C07-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 17,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6623,
+    "latency_ms": 2205,
+    "measured_cost_usd": 0.003598,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033246,
+    "response_id": "resp_0d915c8f0625397e016af4b75878f087d1ace3943809db9d19",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:36.331Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1069,
+     "output_tokens": 146,
+     "reasoning_tokens": 87,
+     "total_tokens": 1215
+    }
+   },
+   "case_id": "CH4-C04-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 18,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6798,
+    "latency_ms": 2004,
+    "measured_cost_usd": 0.00337,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033596,
+    "response_id": "resp_0325e92202af78a8016af4b75aadd887d18bbe529ddb8ee840",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:38.538Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1095,
+     "output_tokens": 118,
+     "reasoning_tokens": 38,
+     "total_tokens": 1213
+    }
+   },
+   "case_id": "CH1-C10-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 19,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6489,
+    "latency_ms": 1645,
+    "measured_cost_usd": 0.002912,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032978,
+    "response_id": "resp_0d09e64b073cae27016af4b75cae6487d18597df692be5542b",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:40.543Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1056,
+     "output_tokens": 80,
+     "reasoning_tokens": 43,
+     "total_tokens": 1136
+    }
+   },
+   "case_id": "CH3-C08-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 20,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6080,
+    "latency_ms": 1534,
+    "measured_cost_usd": 0.002938,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03216,
+    "response_id": "resp_0cf4bd5a237a94be016af4b75e58bc87d18d86fd1349f5ee66",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:42.189Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1004,
+     "output_tokens": 93,
+     "reasoning_tokens": 56,
+     "total_tokens": 1097
+    }
+   },
+   "case_id": "CH6-C06-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 21,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6716,
+    "latency_ms": 1975,
+    "measured_cost_usd": 0.003608,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033432,
+    "response_id": "resp_08cec3b27f664e80016af4b75fdc3487d1a650713affd7969d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:43.724Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1089,
+     "output_tokens": 143,
+     "reasoning_tokens": 73,
+     "total_tokens": 1232
+    }
+   },
+   "case_id": "CH2-C04-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 22,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6103,
+    "latency_ms": 3890,
+    "measured_cost_usd": 0.005462,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032206,
+    "response_id": "resp_09ad0d89b6f8fdeb016af4b761e11487d1ba477c935e458add",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:45.700Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1016,
+     "output_tokens": 343,
+     "reasoning_tokens": 283,
+     "total_tokens": 1359
+    }
+   },
+   "case_id": "CH5-C09-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 23,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6029,
+    "latency_ms": 1750,
+    "measured_cost_usd": 0.002732,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032058,
+    "response_id": "resp_06e2814b39b8169e016af4b765c08487d1a678f311a2258c4f",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:49.592Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 996,
+     "output_tokens": 74,
+     "reasoning_tokens": 15,
+     "total_tokens": 1070
+    }
+   },
+   "case_id": "CH3-C04-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 24,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6159,
+    "latency_ms": 2248,
+    "measured_cost_usd": 0.003324,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032318,
+    "response_id": "resp_0c0f0211c09d57d9016af4b7677bc487d1b26b8f1d813c5f43",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:51.344Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1032,
+     "output_tokens": 126,
+     "reasoning_tokens": 66,
+     "total_tokens": 1158
+    }
+   },
+   "case_id": "CH1-C01-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 25,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6685,
+    "latency_ms": 2253,
+    "measured_cost_usd": 0.003468,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03337,
+    "response_id": "resp_0548e8876d88d6c7016af4b769c47487d1bfc41754b3f8dd6e",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:53.593Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1059,
+     "output_tokens": 135,
+     "reasoning_tokens": 55,
+     "total_tokens": 1194
+    }
+   },
+   "case_id": "CH6-C05-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 26,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6786,
+    "latency_ms": 1506,
+    "measured_cost_usd": 0.00311,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033572,
+    "response_id": "resp_0ade91253ef3e5d7016af4b76bfcc087d18bf5702d82429f25",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:55.846Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1090,
+     "output_tokens": 93,
+     "reasoning_tokens": 56,
+     "total_tokens": 1183
+    }
+   },
+   "case_id": "CH1-C06-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 27,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6495,
+    "latency_ms": 1828,
+    "measured_cost_usd": 0.002948,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03299,
+    "response_id": "resp_0bd56e163079db9e016af4b76d7cec87d18ac76fa01ad34c64",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:57.353Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1059,
+     "output_tokens": 83,
+     "reasoning_tokens": 23,
+     "total_tokens": 1142
+    }
+   },
+   "case_id": "CH3-C02-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 28,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6726,
+    "latency_ms": 2010,
+    "measured_cost_usd": 0.00323,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033452,
+    "response_id": "resp_08737c445ae52ad8016af4b76f539487d195d4ad9947606221",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:43:59.183Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1070,
+     "output_tokens": 109,
+     "reasoning_tokens": 50,
+     "total_tokens": 1179
+    }
+   },
+   "case_id": "CH6-C02-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 29,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6034,
+    "latency_ms": 2033,
+    "measured_cost_usd": 0.003236,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032068,
+    "response_id": "resp_04aefad2af8077f7016af4b7715c0087d1a69e6046f64cad26",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:01.195Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 988,
+     "output_tokens": 126,
+     "reasoning_tokens": 46,
+     "total_tokens": 1114
+    }
+   },
+   "case_id": "CH4-C04-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 30,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6118,
+    "latency_ms": 1674,
+    "measured_cost_usd": 0.00296,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032236,
+    "response_id": "resp_01b3d084c487cc07016af4b77367b887d19f0ae513859f4681",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:03.230Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1025,
+     "output_tokens": 91,
+     "reasoning_tokens": 30,
+     "total_tokens": 1116
+    }
+   },
+   "case_id": "CH3-C10-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 31,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6033,
+    "latency_ms": 1494,
+    "measured_cost_usd": 0.00268,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032066,
+    "response_id": "resp_0d135f6760ae5099016af4b77513c887d1a32b8ce51f2476ff",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:04.905Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 980,
+     "output_tokens": 72,
+     "reasoning_tokens": 35,
+     "total_tokens": 1052
+    }
+   },
+   "case_id": "CH4-C06-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 32,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6639,
+    "latency_ms": 1898,
+    "measured_cost_usd": 0.003258,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033278,
+    "response_id": "resp_01c085899ef7b7c2016af4b776972887d1b66425f140d2b37d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:06.400Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1094,
+     "output_tokens": 107,
+     "reasoning_tokens": 49,
+     "total_tokens": 1201
+    }
+   },
+   "case_id": "CH3-C01-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 33,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5881,
+    "latency_ms": 1815,
+    "measured_cost_usd": 0.00297,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031762,
+    "response_id": "resp_01d4cfb432521159016af4b7788ef087d180f0187c50d0c1f5",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:08.299Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 975,
+     "output_tokens": 102,
+     "reasoning_tokens": 24,
+     "total_tokens": 1077
+    }
+   },
+   "case_id": "CH5-C03-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 34,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6086,
+    "latency_ms": 1960,
+    "measured_cost_usd": 0.0033,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032172,
+    "response_id": "resp_0cf5fbb08e2ca57e016af4b77a423087d180ba960c3946576b",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:10.116Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1005,
+     "output_tokens": 129,
+     "reasoning_tokens": 43,
+     "total_tokens": 1134
+    }
+   },
+   "case_id": "CH6-C04-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 35,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5764,
+    "latency_ms": 1263,
+    "measured_cost_usd": 0.002244,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031528,
+    "response_id": "resp_0e21be0394e35804016af4b77c3bb487d1b58ab1771fa9cde3",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:12.077Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 947,
+     "output_tokens": 35,
+     "reasoning_tokens": 0,
+     "total_tokens": 982
+    }
+   },
+   "case_id": "CH2-C07-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 36,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6789,
+    "latency_ms": 1923,
+    "measured_cost_usd": 0.00324,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033578,
+    "response_id": "resp_07e144ce37847f97016af4b77d7e1487d195b017cba35b444c",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:13.340Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1115,
+     "output_tokens": 101,
+     "reasoning_tokens": 42,
+     "total_tokens": 1216
+    }
+   },
+   "case_id": "CH2-C10-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 37,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6010,
+    "latency_ms": 2150,
+    "measured_cost_usd": 0.003078,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03202,
+    "response_id": "resp_084b51111970513d016af4b77f707087d19e55a6a901801fb6",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:15.265Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1009,
+     "output_tokens": 106,
+     "reasoning_tokens": 48,
+     "total_tokens": 1115
+    }
+   },
+   "case_id": "CH2-C03-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 38,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6685,
+    "latency_ms": 1476,
+    "measured_cost_usd": 0.003238,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03337,
+    "response_id": "resp_03caffbea19d2485016af4b78190f087d1bb52919aa96563d8",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:17.417Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1094,
+     "output_tokens": 105,
+     "reasoning_tokens": 68,
+     "total_tokens": 1199
+    }
+   },
+   "case_id": "CH3-C06-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 39,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6763,
+    "latency_ms": 1960,
+    "measured_cost_usd": 0.003238,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033526,
+    "response_id": "resp_0c1198ed2eb1b7c8016af4b783087887d1a6cf572e741ee513",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:18.894Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1084,
+     "output_tokens": 107,
+     "reasoning_tokens": 44,
+     "total_tokens": 1191
+    }
+   },
+   "case_id": "CH1-C03-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 40,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6664,
+    "latency_ms": 1965,
+    "measured_cost_usd": 0.003452,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033328,
+    "response_id": "resp_00551c617f4ea0f2016af4b785088087d1889c86c71401665a",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:20.855Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1086,
+     "output_tokens": 128,
+     "reasoning_tokens": 68,
+     "total_tokens": 1214
+    }
+   },
+   "case_id": "CH2-C02-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 41,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6773,
+    "latency_ms": 1748,
+    "measured_cost_usd": 0.003136,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033546,
+    "response_id": "resp_0868e454042c396b016af4b787038887d191fa54767c03d9c4",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:22.823Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1078,
+     "output_tokens": 98,
+     "reasoning_tokens": 20,
+     "total_tokens": 1176
+    }
+   },
+   "case_id": "CH1-C04-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 42,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5986,
+    "latency_ms": 2019,
+    "measured_cost_usd": 0.003188,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031972,
+    "response_id": "resp_0bb9e8eab14330c3016af4b788bef887d1bfe3a758284dd906",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:24.572Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 994,
+     "output_tokens": 120,
+     "reasoning_tokens": 60,
+     "total_tokens": 1114
+    }
+   },
+   "case_id": "CH3-C02-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 43,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6610,
+    "latency_ms": 1681,
+    "measured_cost_usd": 0.003266,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03322,
+    "response_id": "resp_0a012ee706c0179c016af4b78abf3487d18ad61cd2da69fa55",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:26.593Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1098,
+     "output_tokens": 107,
+     "reasoning_tokens": 70,
+     "total_tokens": 1205
+    }
+   },
+   "case_id": "CH5-C06-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 44,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6569,
+    "latency_ms": 1711,
+    "measured_cost_usd": 0.003072,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033138,
+    "response_id": "resp_05990aa98e91afec016af4b78c6cf887d1997cbd9746f9f270",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:28.275Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1066,
+     "output_tokens": 94,
+     "reasoning_tokens": 32,
+     "total_tokens": 1160
+    }
+   },
+   "case_id": "CH4-C01-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 45,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5999,
+    "latency_ms": 1889,
+    "measured_cost_usd": 0.003128,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031998,
+    "response_id": "resp_0292c441b15a7fae016af4b78e243087d1bdef9fd4f3438656",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:29.988Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 989,
+     "output_tokens": 115,
+     "reasoning_tokens": 35,
+     "total_tokens": 1104
+    }
+   },
+   "case_id": "CH1-C05-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 46,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6058,
+    "latency_ms": 2192,
+    "measured_cost_usd": 0.00324,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032116,
+    "response_id": "resp_0713bf3ebe2c1f3b016af4b7900c6087d1a69503bba06622bc",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:31.878Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 995,
+     "output_tokens": 125,
+     "reasoning_tokens": 71,
+     "total_tokens": 1120
+    }
+   },
+   "case_id": "CH4-C09-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 47,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6305,
+    "latency_ms": 1258,
+    "measured_cost_usd": 0.002508,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03261,
+    "response_id": "resp_0d1d2b07ab4970dc016af4b7923f6c87d1b967d5b4415880cc",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:34.071Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 994,
+     "output_tokens": 52,
+     "reasoning_tokens": 15,
+     "total_tokens": 1046
+    }
+   },
+   "case_id": "CH6-C07-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 48,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5839,
+    "latency_ms": 1690,
+    "measured_cost_usd": 0.002762,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031678,
+    "response_id": "resp_0214548a9720d845016af4b793914087d1af6105de8068065d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:35.330Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 966,
+     "output_tokens": 83,
+     "reasoning_tokens": 26,
+     "total_tokens": 1049
+    }
+   },
+   "case_id": "CH5-C05-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 49,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5913,
+    "latency_ms": 1787,
+    "measured_cost_usd": 0.002972,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031826,
+    "response_id": "resp_0e34050439b3c83f016af4b7953a2487d1bf3f0690e664b1d0",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:37.021Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 971,
+     "output_tokens": 103,
+     "reasoning_tokens": 36,
+     "total_tokens": 1074
+    }
+   },
+   "case_id": "CH4-C05-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 50,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5991,
+    "latency_ms": 1808,
+    "measured_cost_usd": 0.00305,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031982,
+    "response_id": "resp_0c85e3b051864465016af4b796f55487d1a93b579aae4d0b0a",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:38.809Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1000,
+     "output_tokens": 105,
+     "reasoning_tokens": 42,
+     "total_tokens": 1105
+    }
+   },
+   "case_id": "CH5-C01-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 51,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6045,
+    "latency_ms": 1538,
+    "measured_cost_usd": 0.002802,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03209,
+    "response_id": "resp_09b4d41d09fbccea016af4b798c36087d1b252d5d6bd5273b2",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:40.618Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1006,
+     "output_tokens": 79,
+     "reasoning_tokens": 28,
+     "total_tokens": 1085
+    }
+   },
+   "case_id": "CH1-C02-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 52,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6694,
+    "latency_ms": 4307,
+    "measured_cost_usd": 0.005996,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033388,
+    "response_id": "resp_00ac0f5d3a7afb3c016af4b79a4dcc87d193eeb875b8b456dc",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:42.157Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1073,
+     "output_tokens": 385,
+     "reasoning_tokens": 322,
+     "total_tokens": 1458
+    }
+   },
+   "case_id": "CH6-C10-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 53,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5947,
+    "latency_ms": 1822,
+    "measured_cost_usd": 0.003026,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031894,
+    "response_id": "resp_047ed270b7555bc7016af4b79ea24c87d1ae84a042df45f9b4",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:46.465Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 983,
+     "output_tokens": 106,
+     "reasoning_tokens": 69,
+     "total_tokens": 1089
+    }
+   },
+   "case_id": "CH1-C08-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 54,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6575,
+    "latency_ms": 1788,
+    "measured_cost_usd": 0.003328,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03315,
+    "response_id": "resp_0a2debe94e3c6196016af4b7a0716087d18af4fbdb27a00e9f",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:48.288Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1084,
+     "output_tokens": 116,
+     "reasoning_tokens": 25,
+     "total_tokens": 1200
+    }
+   },
+   "case_id": "CH5-C03-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 55,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6550,
+    "latency_ms": 2236,
+    "measured_cost_usd": 0.003932,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.0331,
+    "response_id": "resp_095800daf7cc164c016af4b7a23a6087d185289550fc83a81d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:50.078Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1061,
+     "output_tokens": 181,
+     "reasoning_tokens": 108,
+     "total_tokens": 1242
+    }
+   },
+   "case_id": "CH4-C03-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 56,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6153,
+    "latency_ms": 1798,
+    "measured_cost_usd": 0.002926,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032306,
+    "response_id": "resp_0d727a27cf5165d0016af4b7a4751087d1a9293b6b27d7cd2f",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:52.315Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1033,
+     "output_tokens": 86,
+     "reasoning_tokens": 29,
+     "total_tokens": 1119
+    }
+   },
+   "case_id": "CH2-C09-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 57,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6608,
+    "latency_ms": 1811,
+    "measured_cost_usd": 0.00328,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033216,
+    "response_id": "resp_06ab7caecfeaf2ff016af4b7a647f887d190d83e3c2b26a12e",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:54.115Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1055,
+     "output_tokens": 117,
+     "reasoning_tokens": 80,
+     "total_tokens": 1172
+    }
+   },
+   "case_id": "CH1-C08-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 58,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6397,
+    "latency_ms": 2190,
+    "measured_cost_usd": 0.003478,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032794,
+    "response_id": "resp_01fab67ec79341a2016af4b7a8131087d1b7e20e86bcbd44de",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:55.927Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1024,
+     "output_tokens": 143,
+     "reasoning_tokens": 106,
+     "total_tokens": 1167
+    }
+   },
+   "case_id": "CH4-C08-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 59,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6179,
+    "latency_ms": 1784,
+    "measured_cost_usd": 0.002968,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032358,
+    "response_id": "resp_0f746380fe7d2a5a016af4b7aa427c87d19bae88dcd298025a",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:58.119Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1029,
+     "output_tokens": 91,
+     "reasoning_tokens": 35,
+     "total_tokens": 1120
+    }
+   },
+   "case_id": "CH1-C09-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 60,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6054,
+    "latency_ms": 1989,
+    "measured_cost_usd": 0.003416,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032108,
+    "response_id": "resp_03fabe8cd0293b43016af4b7ac0f6887d1a4e5a59d962377ab",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:44:59.905Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1003,
+     "output_tokens": 141,
+     "reasoning_tokens": 83,
+     "total_tokens": 1144
+    }
+   },
+   "case_id": "CH1-C03-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 61,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6056,
+    "latency_ms": 1675,
+    "measured_cost_usd": 0.003002,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032112,
+    "response_id": "resp_012a15c562c265cd016af4b7ae09b087d1b1b543bec285ea51",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:01.896Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1001,
+     "output_tokens": 100,
+     "reasoning_tokens": 34,
+     "total_tokens": 1101
+    }
+   },
+   "case_id": "CH4-C10-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 62,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6006,
+    "latency_ms": 1538,
+    "measured_cost_usd": 0.002736,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032012,
+    "response_id": "resp_056b0d7d655830e5016af4b7afc50087d1812d22c60f307272",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:03.572Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 998,
+     "output_tokens": 74,
+     "reasoning_tokens": 21,
+     "total_tokens": 1072
+    }
+   },
+   "case_id": "CH6-C02-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 63,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5997,
+    "latency_ms": 2037,
+    "measured_cost_usd": 0.003482,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031994,
+    "response_id": "resp_06559785c383d1a5016af4b7b1488887d1975c7ac816a46602",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:05.111Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1001,
+     "output_tokens": 148,
+     "reasoning_tokens": 86,
+     "total_tokens": 1149
+    }
+   },
+   "case_id": "CH3-C03-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 64,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6662,
+    "latency_ms": 2152,
+    "measured_cost_usd": 0.003876,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033324,
+    "response_id": "resp_0f91b806324f84f0016af4b7b35d8087d1a9549a70f9f93c1d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:07.150Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1093,
+     "output_tokens": 169,
+     "reasoning_tokens": 96,
+     "total_tokens": 1262
+    }
+   },
+   "case_id": "CH3-C03-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 65,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5841,
+    "latency_ms": 1771,
+    "measured_cost_usd": 0.002938,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031682,
+    "response_id": "resp_08481999424c68ad016af4b7b5755087d1ae4db307041cce11",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:09.303Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 959,
+     "output_tokens": 102,
+     "reasoning_tokens": 45,
+     "total_tokens": 1061
+    }
+   },
+   "case_id": "CH2-C05-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 66,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6185,
+    "latency_ms": 1431,
+    "measured_cost_usd": 0.002534,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03237,
+    "response_id": "resp_078255f58d71c56b016af4b7b73cf887d1a9433fca950a100e",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:11.076Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 987,
+     "output_tokens": 56,
+     "reasoning_tokens": 19,
+     "total_tokens": 1043
+    }
+   },
+   "case_id": "CH4-C07-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 67,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6442,
+    "latency_ms": 1853,
+    "measured_cost_usd": 0.00306,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032884,
+    "response_id": "resp_086444e72934024b016af4b7b8a80087d19d7cf6ea6cecd866",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:12.508Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1055,
+     "output_tokens": 95,
+     "reasoning_tokens": 58,
+     "total_tokens": 1150
+    }
+   },
+   "case_id": "CH5-C08-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 68,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6136,
+    "latency_ms": 1778,
+    "measured_cost_usd": 0.003022,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032272,
+    "response_id": "resp_0f628ef2eeac6d74016af4b7ba857487d1bf59e9ff79076ab9",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:14.364Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1021,
+     "output_tokens": 98,
+     "reasoning_tokens": 28,
+     "total_tokens": 1119
+    }
+   },
+   "case_id": "CH6-C09-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 69,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6056,
+    "latency_ms": 1527,
+    "measured_cost_usd": 0.00259,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032112,
+    "response_id": "resp_0db9d8e4c0f5235e016af4b7bc4c6c87d19c02190dc8d21c99",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:16.143Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1005,
+     "output_tokens": 58,
+     "reasoning_tokens": 21,
+     "total_tokens": 1063
+    }
+   },
+   "case_id": "CH3-C06-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 70,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6626,
+    "latency_ms": 2002,
+    "measured_cost_usd": 0.003412,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033252,
+    "response_id": "resp_009bc9faec1a9e65016af4b7bdd23887d1acc3eac3e7883e21",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:17.673Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1091,
+     "output_tokens": 123,
+     "reasoning_tokens": 20,
+     "total_tokens": 1214
+    }
+   },
+   "case_id": "CH3-C04-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 71,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6440,
+    "latency_ms": 1908,
+    "measured_cost_usd": 0.003258,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03288,
+    "response_id": "resp_0506dd1ab964c7f2016af4b7bfe06087d1a3c5be811259ec2d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:19.676Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1059,
+     "output_tokens": 114,
+     "reasoning_tokens": 30,
+     "total_tokens": 1173
+    }
+   },
+   "case_id": "CH5-C05-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 72,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5944,
+    "latency_ms": 2449,
+    "measured_cost_usd": 0.002856,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031888,
+    "response_id": "resp_0280c1626d8be17c016af4b7c1c09c87d186a9e7a4eea6c59d",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:21.586Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 993,
+     "output_tokens": 87,
+     "reasoning_tokens": 28,
+     "total_tokens": 1080
+    }
+   },
+   "case_id": "CH2-C02-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 73,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6715,
+    "latency_ms": 2206,
+    "measured_cost_usd": 0.003556,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03343,
+    "response_id": "resp_0ade7ca3bbbb0dbb016af4b7c42fdc87d1b64c07f67a7cf3eb",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:24.037Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1128,
+     "output_tokens": 130,
+     "reasoning_tokens": 48,
+     "total_tokens": 1258
+    }
+   },
+   "case_id": "CH5-C01-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 74,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6382,
+    "latency_ms": 1225,
+    "measured_cost_usd": 0.002678,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032764,
+    "response_id": "resp_0248d649bdecb169016af4b7c669b487d1a70a605655992db0",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:26.244Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1009,
+     "output_tokens": 66,
+     "reasoning_tokens": 29,
+     "total_tokens": 1075
+    }
+   },
+   "case_id": "CH1-C07-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 75,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6660,
+    "latency_ms": 1882,
+    "measured_cost_usd": 0.002962,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03332,
+    "response_id": "resp_010027350a85e622016af4b7c79fa487d1ae4721f0ff0783f0",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:27.471Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1066,
+     "output_tokens": 83,
+     "reasoning_tokens": 46,
+     "total_tokens": 1149
+    }
+   },
+   "case_id": "CH4-C06-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 76,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6855,
+    "latency_ms": 1587,
+    "measured_cost_usd": 0.003138,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03371,
+    "response_id": "resp_021b6fb078a0fd9a016af4b7c9839c87d19ac3968a94ae304f",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:29.354Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1114,
+     "output_tokens": 91,
+     "reasoning_tokens": 30,
+     "total_tokens": 1205
+    }
+   },
+   "case_id": "CH3-C10-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 77,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6006,
+    "latency_ms": 1769,
+    "measured_cost_usd": 0.003036,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032012,
+    "response_id": "resp_0b94f46136d06998016af4b7cb162487d1bf02e8c7b2ed5da7",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:30.942Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 978,
+     "output_tokens": 108,
+     "reasoning_tokens": 39,
+     "total_tokens": 1086
+    }
+   },
+   "case_id": "CH4-C03-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 78,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 7041,
+    "latency_ms": 1957,
+    "measured_cost_usd": 0.00341,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.034082,
+    "response_id": "resp_0286314ad5fb2ad8016af4b7ccda9087d190fbf3da93679d8c",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:32.713Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1150,
+     "output_tokens": 111,
+     "reasoning_tokens": 46,
+     "total_tokens": 1261
+    }
+   },
+   "case_id": "CH2-C09-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 79,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6692,
+    "latency_ms": 2109,
+    "measured_cost_usd": 0.003742,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033384,
+    "response_id": "resp_032fba9ad0d8ea6c016af4b7ced52887d1b33b9aa4422b5cc8",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:34.672Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1061,
+     "output_tokens": 162,
+     "reasoning_tokens": 74,
+     "total_tokens": 1223
+    }
+   },
+   "case_id": "CH6-C03-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 80,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6822,
+    "latency_ms": 1927,
+    "measured_cost_usd": 0.003278,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033644,
+    "response_id": "resp_068f331f275edf33016af4b7d0f04887d1a8dff6643e89abe2",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:36.782Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1114,
+     "output_tokens": 105,
+     "reasoning_tokens": 28,
+     "total_tokens": 1219
+    }
+   },
+   "case_id": "CH2-C01-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 81,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6446,
+    "latency_ms": 2080,
+    "measured_cost_usd": 0.003162,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032892,
+    "response_id": "resp_0397276e853e3819016af4b7d2f22c87d190d7aea7eaf935dc",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:38.710Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1046,
+     "output_tokens": 107,
+     "reasoning_tokens": 37,
+     "total_tokens": 1153
+    }
+   },
+   "case_id": "CH3-C05-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 82,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6712,
+    "latency_ms": 1957,
+    "measured_cost_usd": 0.003608,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033424,
+    "response_id": "resp_029679c0b03b79df016af4b7d4f0a887d1b4edbeba09469406",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:40.792Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1109,
+     "output_tokens": 139,
+     "reasoning_tokens": 77,
+     "total_tokens": 1248
+    }
+   },
+   "case_id": "CH5-C10-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 83,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6780,
+    "latency_ms": 2876,
+    "measured_cost_usd": 0.004576,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03356,
+    "response_id": "resp_01835a4efe0b8aa7016af4b7d6e86087d1a6e384936cdf0818",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:42.751Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1128,
+     "output_tokens": 232,
+     "reasoning_tokens": 157,
+     "total_tokens": 1360
+    }
+   },
+   "case_id": "CH5-C09-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 84,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6692,
+    "latency_ms": 1962,
+    "measured_cost_usd": 0.00315,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033384,
+    "response_id": "resp_097bcb5265cbdde6016af4b7d9e62c87d194818548824e9153",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:45.628Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1075,
+     "output_tokens": 100,
+     "reasoning_tokens": 37,
+     "total_tokens": 1175
+    }
+   },
+   "case_id": "CH1-C02-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 85,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6950,
+    "latency_ms": 2535,
+    "measured_cost_usd": 0.003688,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.0339,
+    "response_id": "resp_0eca7570f483c1da016af4b7dbbb1087d1af00df5ccd3b7c3a",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:47.591Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1119,
+     "output_tokens": 145,
+     "reasoning_tokens": 60,
+     "total_tokens": 1264
+    }
+   },
+   "case_id": "CH6-C09-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 86,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6576,
+    "latency_ms": 2857,
+    "measured_cost_usd": 0.004814,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033152,
+    "response_id": "resp_0213745ce2e9fe62016af4b7de4ab087d192d0f72928b4d0ae",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:50.128Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1087,
+     "output_tokens": 264,
+     "reasoning_tokens": 194,
+     "total_tokens": 1351
+    }
+   },
+   "case_id": "CH5-C02-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 87,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5658,
+    "latency_ms": 1171,
+    "measured_cost_usd": 0.002202,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031316,
+    "response_id": "resp_039079ed28e48f6f016af4b7e121d487d1add31e03b1b09fdd",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:52.986Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 926,
+     "output_tokens": 35,
+     "reasoning_tokens": 0,
+     "total_tokens": 961
+    }
+   },
+   "case_id": "CH5-C07-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 88,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6010,
+    "latency_ms": 2335,
+    "measured_cost_usd": 0.00287,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03202,
+    "response_id": "resp_05decf82a52bac45016af4b7e24e8087d1a44a89d78cd740ee",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:54.159Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 995,
+     "output_tokens": 88,
+     "reasoning_tokens": 20,
+     "total_tokens": 1083
+    }
+   },
+   "case_id": "CH6-C05-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 89,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5811,
+    "latency_ms": 1260,
+    "measured_cost_usd": 0.002246,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031622,
+    "response_id": "resp_0e8124d1dedc6619016af4b7e4a27c87d19e78b02a3b5a2a2b",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:56.496Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 948,
+     "output_tokens": 35,
+     "reasoning_tokens": 0,
+     "total_tokens": 983
+    }
+   },
+   "case_id": "CH1-C07-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 90,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6981,
+    "latency_ms": 2281,
+    "measured_cost_usd": 0.003282,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033962,
+    "response_id": "resp_06d036bc0b48284f016af4b7e5e9d887d1a46d072f0e40fbfa",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:45:57.756Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1116,
+     "output_tokens": 105,
+     "reasoning_tokens": 45,
+     "total_tokens": 1221
+    }
+   },
+   "case_id": "CH1-C01-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 91,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6567,
+    "latency_ms": 2473,
+    "measured_cost_usd": 0.003316,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033134,
+    "response_id": "resp_0fcc96ca6df890e0016af4b7e8398487d19335519a03ac7361",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:00.039Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1083,
+     "output_tokens": 115,
+     "reasoning_tokens": 36,
+     "total_tokens": 1198
+    }
+   },
+   "case_id": "CH5-C04-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 92,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5959,
+    "latency_ms": 2135,
+    "measured_cost_usd": 0.002962,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031918,
+    "response_id": "resp_05cb939a62ae7421016af4b7eaa81c87d19cce045784023326",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:02.513Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 986,
+     "output_tokens": 99,
+     "reasoning_tokens": 35,
+     "total_tokens": 1085
+    }
+   },
+   "case_id": "CH5-C02-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 93,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5764,
+    "latency_ms": 1334,
+    "measured_cost_usd": 0.002452,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031528,
+    "response_id": "resp_0d028eeb35485da1016af4b7ecd6c087d19b3809d0d31a71a7",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:04.649Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 941,
+     "output_tokens": 57,
+     "reasoning_tokens": 20,
+     "total_tokens": 998
+    }
+   },
+   "case_id": "CH6-C07-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 94,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5968,
+    "latency_ms": 1581,
+    "measured_cost_usd": 0.002598,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031936,
+    "response_id": "resp_031ab81da01d6f4c016af4b7ee22fc87d193bf5e36494813ea",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:05.985Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 984,
+     "output_tokens": 63,
+     "reasoning_tokens": 26,
+     "total_tokens": 1047
+    }
+   },
+   "case_id": "CH2-C06-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 95,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6563,
+    "latency_ms": 2971,
+    "measured_cost_usd": 0.003886,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033126,
+    "response_id": "resp_03405e1d0a0d9c6e016af4b7efba7c87d19b7d8d1b10fb692b",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:07.567Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1053,
+     "output_tokens": 178,
+     "reasoning_tokens": 117,
+     "total_tokens": 1231
+    }
+   },
+   "case_id": "CH4-C02-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 96,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6604,
+    "latency_ms": 1888,
+    "measured_cost_usd": 0.003202,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033208,
+    "response_id": "resp_09ce5df39700994f016af4b7f2c20887d1b958233b2a54399c",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:10.538Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1041,
+     "output_tokens": 112,
+     "reasoning_tokens": 75,
+     "total_tokens": 1153
+    }
+   },
+   "case_id": "CH6-C08-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 97,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6669,
+    "latency_ms": 1715,
+    "measured_cost_usd": 0.00316,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033338,
+    "response_id": "resp_0032bdba3e75a520016af4b7f4aef487d1bb14d33e7fedb880",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:12.428Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1070,
+     "output_tokens": 102,
+     "reasoning_tokens": 33,
+     "total_tokens": 1172
+    }
+   },
+   "case_id": "CH4-C09-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 98,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5806,
+    "latency_ms": 1566,
+    "measured_cost_usd": 0.002726,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031612,
+    "response_id": "resp_0dc4568471636982016af4b7f64f7087d1b1da4a8326a10108",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:14.144Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 958,
+     "output_tokens": 81,
+     "reasoning_tokens": 44,
+     "total_tokens": 1039
+    }
+   },
+   "case_id": "CH5-C08-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 99,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6002,
+    "latency_ms": 2369,
+    "measured_cost_usd": 0.00363,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032004,
+    "response_id": "resp_0143e8b14cbc54cf016af4b7f7ddbc87d1931b81ce1859fda2",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:15.711Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 990,
+     "output_tokens": 165,
+     "reasoning_tokens": 108,
+     "total_tokens": 1155
+    }
+   },
+   "case_id": "CH6-C10-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 100,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5762,
+    "latency_ms": 1201,
+    "measured_cost_usd": 0.002236,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031524,
+    "response_id": "resp_0051439dad6af0f5016af4b7fa41a887d18971afeb7ef87121",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:18.082Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 943,
+     "output_tokens": 35,
+     "reasoning_tokens": 0,
+     "total_tokens": 978
+    }
+   },
+   "case_id": "CH3-C07-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 101,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6434,
+    "latency_ms": 1319,
+    "measured_cost_usd": 0.00275,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032868,
+    "response_id": "resp_01192e297bf75cb4016af4b7fb6cc487d1a4a5c52a75946525",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:19.284Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1035,
+     "output_tokens": 68,
+     "reasoning_tokens": 31,
+     "total_tokens": 1103
+    }
+   },
+   "case_id": "CH2-C07-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 102,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6929,
+    "latency_ms": 2125,
+    "measured_cost_usd": 0.003434,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033858,
+    "response_id": "resp_0917c6a18a80d826016af4b7fcc06c87d18862250af37c0071",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:20.605Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1112,
+     "output_tokens": 121,
+     "reasoning_tokens": 62,
+     "total_tokens": 1233
+    }
+   },
+   "case_id": "CH1-C09-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 103,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6837,
+    "latency_ms": 2026,
+    "measured_cost_usd": 0.003416,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033674,
+    "response_id": "resp_05f6ddc4dc0edfa2016af4b7fee39887d1adca7d3841f83c52",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:22.732Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1123,
+     "output_tokens": 117,
+     "reasoning_tokens": 56,
+     "total_tokens": 1240
+    }
+   },
+   "case_id": "CH2-C03-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 104,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5952,
+    "latency_ms": 2066,
+    "measured_cost_usd": 0.003108,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031904,
+    "response_id": "resp_09647de00526d3f6016af4b800f1ec87d199026ce4029951d9",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:24.759Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 979,
+     "output_tokens": 115,
+     "reasoning_tokens": 62,
+     "total_tokens": 1094
+    }
+   },
+   "case_id": "CH4-C02-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 105,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5971,
+    "latency_ms": 1770,
+    "measured_cost_usd": 0.002952,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031942,
+    "response_id": "resp_055ef0d7cff3b86c016af4b803034487d1a3cb3f7a4114fa49",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:26.826Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 976,
+     "output_tokens": 100,
+     "reasoning_tokens": 44,
+     "total_tokens": 1076
+    }
+   },
+   "case_id": "CH4-C01-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 106,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6076,
+    "latency_ms": 1592,
+    "measured_cost_usd": 0.003004,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032152,
+    "response_id": "resp_070e7b10598cc874016af4b804bef887d186620e0de63a38e0",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:28.598Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1007,
+     "output_tokens": 99,
+     "reasoning_tokens": 62,
+     "total_tokens": 1106
+    }
+   },
+   "case_id": "CH1-C06-en",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 107,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6069,
+    "latency_ms": 1545,
+    "measured_cost_usd": 0.00284,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032138,
+    "response_id": "resp_04d70326dd1b0378016af4b806598c87d1b1be489cfb681d3c",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:30.191Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1005,
+     "output_tokens": 83,
+     "reasoning_tokens": 29,
+     "total_tokens": 1088
+    }
+   },
+   "case_id": "CH1-C10-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 108,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6172,
+    "latency_ms": 1122,
+    "measured_cost_usd": 0.002358,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032344,
+    "response_id": "resp_045597cad3ebbdd3016af4b807e1dc87d1a25a6a02ef830156",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:31.737Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1004,
+     "output_tokens": 35,
+     "reasoning_tokens": 0,
+     "total_tokens": 1039
+    }
+   },
+   "case_id": "CH5-C07-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 109,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5965,
+    "latency_ms": 1544,
+    "measured_cost_usd": 0.002884,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.03193,
+    "response_id": "resp_0da82f3c8bacfaa8016af4b809097c87d1a0707c209bd784da",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:32.860Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 992,
+     "output_tokens": 90,
+     "reasoning_tokens": 27,
+     "total_tokens": 1082
+    }
+   },
+   "case_id": "CH2-C04-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 110,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6623,
+    "latency_ms": 1928,
+    "measured_cost_usd": 0.003246,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033246,
+    "response_id": "resp_0cbdc6613f9bed92016af4b80a90f887d190c9e4e6a7e8bcf3",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:34.406Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1063,
+     "output_tokens": 112,
+     "reasoning_tokens": 47,
+     "total_tokens": 1175
+    }
+   },
+   "case_id": "CH1-C05-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 111,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6556,
+    "latency_ms": 1914,
+    "measured_cost_usd": 0.003256,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033112,
+    "response_id": "resp_09fc5e56e838d6c0016af4b80c7c0887d1a87f0ecd3784136a",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:36.336Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1043,
+     "output_tokens": 117,
+     "reasoning_tokens": 40,
+     "total_tokens": 1160
+    }
+   },
+   "case_id": "CH4-C05-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 112,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5917,
+    "latency_ms": 1550,
+    "measured_cost_usd": 0.002776,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031834,
+    "response_id": "resp_00406bb3453f6805016af4b80e669887d19612ade87b890167",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:38.252Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 973,
+     "output_tokens": 83,
+     "reasoning_tokens": 17,
+     "total_tokens": 1056
+    }
+   },
+   "case_id": "CH5-C04-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 113,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6034,
+    "latency_ms": 1811,
+    "measured_cost_usd": 0.003036,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032068,
+    "response_id": "resp_06f6877079a92c24016af4b80ff58087d1a82c2b7e2b788e5c",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:39.803Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 998,
+     "output_tokens": 104,
+     "reasoning_tokens": 23,
+     "total_tokens": 1102
+    }
+   },
+   "case_id": "CH6-C03-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 114,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6061,
+    "latency_ms": 1440,
+    "measured_cost_usd": 0.002562,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032122,
+    "response_id": "resp_04f2898f1e357472016af4b811df0887d1bff50ee6a7ad1f43",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:41.615Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1006,
+     "output_tokens": 55,
+     "reasoning_tokens": 0,
+     "total_tokens": 1061
+    }
+   },
+   "case_id": "CH3-C01-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 115,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6657,
+    "latency_ms": 3528,
+    "measured_cost_usd": 0.005716,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033314,
+    "response_id": "resp_038ede8bd59f1b5a016af4b813406487d1989adb2c86087818",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:43.058Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1093,
+     "output_tokens": 353,
+     "reasoning_tokens": 296,
+     "total_tokens": 1446
+    }
+   },
+   "case_id": "CH3-C09-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": false,
+    "project_relation": "UNRELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "UNRELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 116,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6009,
+    "latency_ms": 1596,
+    "measured_cost_usd": 0.002908,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032018,
+    "response_id": "resp_00134e655687de42016af4b816bd6c87d1844fa0e128f30eb5",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:46.588Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 999,
+     "output_tokens": 91,
+     "reasoning_tokens": 21,
+     "total_tokens": 1090
+    }
+   },
+   "case_id": "CH2-C01-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 117,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 5867,
+    "latency_ms": 1631,
+    "measured_cost_usd": 0.002728,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.031734,
+    "response_id": "resp_0ac8a7e1131df633016af4b818552487d183b1c1e14fddb58b",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:48.185Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 964,
+     "output_tokens": 80,
+     "reasoning_tokens": 16,
+     "total_tokens": 1044
+    }
+   },
+   "case_id": "CH3-C05-en",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 118,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6589,
+    "latency_ms": 2025,
+    "measured_cost_usd": 0.003442,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033178,
+    "response_id": "resp_0abbd311a7a7a1db016af4b819f4a087d18e2909ff56b6496b",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:49.817Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1071,
+     "output_tokens": 130,
+     "reasoning_tokens": 65,
+     "total_tokens": 1201
+    }
+   },
+   "case_id": "CH2-C05-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 119,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6743,
+    "latency_ms": 2163,
+    "measured_cost_usd": 0.003414,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.033486,
+    "response_id": "resp_08a6f375ad96f8b4016af4b81bfb6087d19b5dfbc76241ea09",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:51.843Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1067,
+     "output_tokens": 128,
+     "reasoning_tokens": 58,
+     "total_tokens": 1195
+    }
+   },
+   "case_id": "CH6-C04-ar-msa",
+   "decision": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "progress_eligible": true,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "CONTENT_BEARING"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "CONTENT_BEARING",
+    "possible_amendment": true,
+    "project_relation": "RELATED"
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 120,
+    "http_diagnostic": null,
+    "http_status": 200,
+    "input_token_bound": 6254,
+    "latency_ms": 1262,
+    "measured_cost_usd": 0.002582,
+    "model": "gpt-6-sol",
+    "reserved_usd": 0.032508,
+    "response_id": "resp_00e4dde9fae7bbc0016af4b81e276c87d180d37056c8bec528",
+    "sent": true,
+    "sent_at_utc": "2026-11-11T18:46:54.009Z",
+    "service_tier": "default",
+    "transport_failure": null,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1011,
+     "output_tokens": 56,
+     "reasoning_tokens": 19,
+     "total_tokens": 1067
+    }
+   },
+   "case_id": "CH3-C07-ar-msa",
+   "decision": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "progress_eligible": false,
+    "project_relation": "RELATED",
+    "reply_new_contribution": "NO_NEW_CONTENT"
+   },
+   "error": null,
+   "reply": {
+    "new_contribution": "NO_NEW_CONTENT",
+    "possible_amendment": false,
+    "project_relation": "RELATED"
+   }
+  }
+ ],
+ "spend": {
+  "committed_bound_usd": 0.380466,
+  "measured_cost_usd": 0.380466,
+  "requests_sent": 120
+ },
+ "stop": null,
+ "untested_cases": []
+}
