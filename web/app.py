@@ -30,7 +30,7 @@ from engine import cap12_form_mockup as _cap12  # Stage 24 / CAP-12 Form Mock-up
 from engine import deterministic_calculation as _dcalc  # Stage 25: shared calculation / units owner
 from engine import cap13_static_reactions_method as _cap13_method  # Stage 25 / CAP-13 Slice 1 method
 from engine import cap13_static_reactions as _cap13  # Stage 25 / CAP-13 Slice 1 consumer
-from engine.cap13_functional_configuration import derive_provisional_fit as _engineering_fit  # bounded idea-to-engineering candidate
+from engine import cap13_functional_configuration as _fit_owner  # bounded idea-to-engineering candidate (CAP13-PROVISIONAL-FIT-CURRENT-ANSWERS-01)
 from engine import functional_need_handoff as _handoff  # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 (read-only proposal)
 from engine import therm01_conduction_method as _therm01_method  # Stage 27 / THERM-01 Slice 1 method
 from engine import therm01_temperature_difference as _therm01  # Stage 27 / THERM-01 Slice 1 consumer
@@ -7621,9 +7621,10 @@ def show_session(sid):
         # integrated composition). It never gates the journey.
         cap13_support_reactions_link=_cap13_link_offered(sid),
         # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the dimensional fit reads
-        # the verbatim original statement, never the display-trimmed summary.
-        engineering_fit_link=(_engineering_fit(_original_idea_text(sid)) is not None
-                              and _cap13_eligible(sid)),
+        # the verbatim original statement, never the display-trimmed summary;
+        # CAP13-PROVISIONAL-FIT-CURRENT-ANSWERS-01 adds the inventor's CURRENT
+        # answers, each read on its own (``_current_engineering_fit``).
+        engineering_fit_state=_engineering_fit_state(sid),
         engineering_fit_lang=_current_ui_lang(),
         # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: InventorAI's proposed
         # reading of the needs the inventor stated, with the existing engineering
@@ -16473,6 +16474,38 @@ def _cap13_eligible(sid):
     return _calc_gate(sid, _cap13)[0]
 
 
+def _current_engineering_fit(sid):
+    """CAP13-PROVISIONAL-FIT-CURRENT-ANSWERS-01: the ONE provisional fit the
+    inventor's current statements give, ``_fit_owner.CONFLICT``, or None.
+
+    Sources, each read on its own by the unchanged CAP-13 grammar
+    (``derive_current_fit``): the verbatim original statement and the CURRENT
+    answered inventor records from the durable ledger, selected by the PR #956
+    filter (``_pcc_view.current_answer_texts``). A missing original statement,
+    an unreadable ledger or any failure gives None: no offer is ever read from
+    part of the inventor's history. Presentation input only; the caller MUST
+    first establish project authorization. Nothing is stored or prefilled."""
+    try:
+        idea = _original_idea_text(sid)
+        if idea is None:
+            return None
+        texts = _pcc_view.current_answer_texts(_get_store().load_contract(sid).assertions)
+        return _fit_owner.derive_current_fit(idea, texts)
+    except Exception:
+        return None
+
+
+def _engineering_fit_state(sid):
+    """``"offer"``, ``"conflict"`` or None for the session page, only on a
+    CAP-13-eligible project (the same gate the view applies)."""
+    if not _cap13_eligible(sid):
+        return None
+    result = _current_engineering_fit(sid)
+    if isinstance(result, _fit_owner.ProvisionalFit):
+        return "offer"
+    return "conflict" if result is _fit_owner.CONFLICT else None
+
+
 def _cap13_link_offered(sid):
     """The session-page link reads the SAME single rule the submission reads,
     so the link and the calculation cannot disagree. Presentation only."""
@@ -16581,9 +16614,11 @@ def cap13_functional_configuration(sid):
     if not _cap13_eligible(sid):
         return _deny_project()
     # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the verbatim original
-    # statement from the project envelope, never the trimmed idea_summary.
-    result = _engineering_fit(_original_idea_text(sid))
-    if result is None:
+    # statement from the project envelope, never the trimmed idea_summary;
+    # CAP13-PROVISIONAL-FIT-CURRENT-ANSWERS-01: or ONE current answer, under
+    # the same rule the session link reads. A conflict offers no page.
+    result = _current_engineering_fit(sid)
+    if not isinstance(result, _fit_owner.ProvisionalFit):
         return _deny_project()
     lang = _current_ui_lang()
     response = make_response(render_template(

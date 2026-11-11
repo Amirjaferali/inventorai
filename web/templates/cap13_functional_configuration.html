@@ -4,8 +4,13 @@
 <section dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}" data-engineering-fit-page style="max-width:700px;margin:auto;padding:20px">
   <h1>{{ 'متطلبات الأبعاد المستخرجة من فكرتك' if lang == 'ar' else 'Dimensional requirements from your idea' }}</h1>
   <p>{{ 'التعرف محدود بالعبارات والأبعاد المكتوبة صراحةً. هذه ليست مواصفة تصميم ولا إثباتًا للملاءمة أو الأمان.' if lang == 'ar' else 'Recognition is limited to explicitly stated phrases and dimensions. This is not a design specification, suitability finding, or safety conclusion.' }}</p>
+  {% if fit.source_type == 'CURRENT_ANSWER' %}
+  <h2>{{ 'إجابتك الحالية المسجلة' if lang == 'ar' else 'Your current recorded answer' }}</h2>
+  <p dir="auto" data-fit-original data-fit-source="answer">{{ fit.source_excerpt }}</p>
+  {% else %}
   <h2>{{ 'نصك الأصلي' if lang == 'ar' else 'Your original statement' }}</h2>
-  <p dir="auto" data-fit-original>{{ fit.source_excerpt }}</p>
+  <p dir="auto" data-fit-original data-fit-source="idea">{{ fit.source_excerpt }}</p>
+  {% endif %}
   <h2>{{ 'متطلبات هندسية أولية من النص' if lang == 'ar' else 'Initial dimensional constraints from the statement' }}</h2>
   <dl>
     <dt>{{ 'أبعاد الجسم المذكورة' if lang == 'ar' else 'Stated object dimensions' }}</dt>

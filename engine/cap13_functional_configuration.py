@@ -1,10 +1,15 @@
 """IDEA-TO-ENGINEERING-CONFIG-01 — request-local functional fit projection.
 
 CAP-13 owns ONE *provisional dimensional envelope*, not a design method.
-Only explicit, bounded EN/AR wording in the inventor's original idea is read.
-No Path-N/ledger/T2-A quantity content, LLM, persistence, shared calculator,
-method admission, material assumption or engineering safety inference is used.
-An unsupported/ambiguous statement has NO positive engineering output.
+Only explicit, bounded EN/AR wording in the inventor's own statements is read:
+the original idea and, since CAP13-PROVISIONAL-FIT-CURRENT-ANSWERS-01, the
+verbatim text of each CURRENT answered inventor record the caller supplies
+(the PR #956 source rule). Each statement is read ON ITS OWN by the same
+grammar; quantities are never combined across statements, and statements that
+disagree give no candidate. No Path-N/T2-A quantity content, LLM, persistence,
+shared calculator, method admission, material assumption or engineering safety
+inference is used. An unsupported/ambiguous statement has NO positive
+engineering output.
 """
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
@@ -13,6 +18,8 @@ import re
 
 GRAMMAR_VERSION = "desktop_raise_explicit_v1"
 CANDIDATE = "PROVISIONAL_DIMENSIONAL_ENVELOPE"
+SOURCE_IDEA = "ORIGINAL_IDEA_STATEMENT"
+SOURCE_ANSWER = "CURRENT_ANSWER"
 _MAX_IDEA_CHARS = 2000
 _MAX_VALUE = Decimal("100000")  # Capture bound only, NEVER a family validity limit.
 _UNITS = r"(?:cm|mm|سم|ملم)"
@@ -82,6 +89,16 @@ def _display_number(number):
     return format(number.normalize(), "f")
 
 
+@dataclass(frozen=True)
+class FitConflict:
+    """The inventor's current statements each hold a candidate, but not the
+    same one: no candidate is offered and none is chosen."""
+    status: str = "CONFLICTING_STATEMENTS"
+
+
+CONFLICT = FitConflict()
+
+
 def derive_provisional_fit(original_idea):
     """Return a strictly bounded candidate or None; never change inventor data.
 
@@ -89,6 +106,46 @@ def derive_provisional_fit(original_idea):
     Only the original statement may be passed by the caller, not T2-A text or
     a display-trimmed excerpt. Recognition does not admit CAP-13 calculations.
     """
+    located = _locate(original_idea, SOURCE_IDEA)
+    return located[0] if located is not None else None
+
+
+def derive_current_fit(original_idea, answer_texts):
+    """The ONE candidate the inventor's current statements give, ``CONFLICT``,
+    or None (CAP13-PROVISIONAL-FIT-CURRENT-ANSWERS-01).
+
+    ``answer_texts`` are the verbatim texts of the CURRENT answered inventor
+    records, already selected by the caller's PR #956 filter. The original idea
+    and then each answer are read on their own by the unchanged grammar. No
+    candidate -> None. Candidates whose dimension pair (in either written
+    order), lift and unit tokens are written identically -> ONE candidate: from
+    the original idea when it holds one, otherwise from the most recent answer,
+    labelled by ``source_type``. Anything else -> ``CONFLICT``; numbers and
+    units are compared as written and never converted or coerced. Raises
+    ``ValueError`` when ``answer_texts`` is not a sequence of strings, so an
+    unreadable history is never read as an empty one."""
+    if not isinstance(answer_texts, (list, tuple)) \
+            or not all(isinstance(text, str) for text in answer_texts):
+        raise ValueError("unreadable answer texts")
+    located = []
+    from_idea = _locate(original_idea, SOURCE_IDEA)
+    if from_idea is not None:
+        located.append(from_idea)
+    for text in answer_texts:
+        found = _locate(text, SOURCE_ANSWER)
+        if found is not None:
+            located.append(found)
+    if not located:
+        return None
+    if len({key for _fit, key in located}) != 1:
+        return CONFLICT
+    return located[0][0] if from_idea is not None else located[-1][0]
+
+
+def _locate(original_idea, source_type):
+    """``(candidate, comparison key)`` for ONE statement, or None. The grammar
+    and every refusal below are the IDEA-TO-ENGINEERING-CONFIG-01 rules,
+    unchanged; only the source label differs."""
     if not isinstance(original_idea, str) or not 0 < len(original_idea) <= _MAX_IDEA_CHARS:
         return None
     if _EXCLUSION.search(original_idea) or _NEGATED.search(original_idea):
@@ -130,11 +187,13 @@ def derive_provisional_fit(original_idea):
                            _positive_number(rise.group("n")))
     if None in (length, depth, lift):
         return None
+    key = (tuple(sorted((size.group("a"), size.group("b")))), size.group("unit"),
+           rise.group("n"), rise.group("unit"))
     return ProvisionalFit(
         status=CANDIDATE,
         grammar_version=GRAMMAR_VERSION,
         source_digest=hashlib.sha256(original_idea.encode("utf-8")).hexdigest(),
-        source_type="ORIGINAL_IDEA_STATEMENT",
+        source_type=source_type,
         source_excerpt=original_idea,
         size_span=original_idea[size.start():size.end()],
         rise_span=original_idea[rise.start():rise.end()],
@@ -145,4 +204,4 @@ def derive_provisional_fit(original_idea):
         lift_unit=rise.group("unit"),
         fit_rule="TOP_PLAN_AT_LEAST_OBJECT_DIMENSIONS_NO_OVERHANG_CANDIDATE",
         engineering_status="NOT_ASSESSED",
-    )
+    ), key
