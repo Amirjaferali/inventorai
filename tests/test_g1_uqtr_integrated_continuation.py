@@ -10,7 +10,7 @@ Synthetic board-in-enclosure data only, answered in ordinary on-topic words. Wha
     (specialist / provisional assumption / evidence requested);
   * unknown and deferred keep their existing pause-and-continue behaviour and get no link;
   * eligibility is the rendered suppressed-question state itself, not an action list;
-  * no link while an ordinary question is served, on a single-domain project, or when the owner
+  * no integrated link while an ordinary question is served, on a single-domain project, or when the owner
     derives nothing usable; every target equals the routed-recovery link's for the same step;
   * the voluntary revisit restores ordinary serving; correction keeps its existing semantics;
   * following the steps reaches the existing planar-clearance check and CAD bundle while
@@ -173,7 +173,10 @@ def test_04_no_link_while_an_ordinary_question_is_served(client):
 
 
 @pytest.mark.parametrize("forced", [None, "declare_interaction"])
-def test_05_single_domain_suppressed_question_gets_no_link(client, monkeypatch, forced):
+def test_05_single_domain_suppressed_question_gets_no_integrated_link(client, monkeypatch, forced):
+    """No INTEGRATED step on a single-domain page. Since G1-SINGLE-DOMAIN-ENGINEERING-
+    CONTINUATION-01 a single-domain Mechanical project gets its own ONE component step instead;
+    any integrated guidance object, even an unusable forced one, keeps precedence."""
     sid = _single_domain(client)
     assert _post(client, sid, action="specialist_requested", response="").status_code == 302
     assert compute_non_answer_suppression(_live(sid)) is not None
@@ -182,7 +185,11 @@ def test_05_single_domain_suppressed_question_gets_no_link(client, monkeypatch, 
                             lambda *_a, **_k: {"kind": forced, "clearance": []})
     page = _raw(client, sid)
     assert _href(page) == _deliverable(sid)
-    assert "data-uqc" not in page
+    if forced:
+        assert "data-uqc" not in page
+    else:
+        assert _links(page) == [("component_inventory", "#component_name")]
+        assert 'data-uqc-scope="single"' in page
 
 
 @pytest.mark.parametrize("derived", [None, {"kind": None, "clearance": []},

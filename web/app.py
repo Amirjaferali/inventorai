@@ -7422,6 +7422,9 @@ def show_session(sid):
     _ptc_view = _part_temperature_change_context(sid, entry)
     _mte_gate = _calc_gate(sid, _mte)
     _mte_tc_view = bool(_scope_view) and _mte_tc_relevance(_ptc_view, _mte_gate)
+    # G1-SINGLE-DOMAIN-ENGINEERING-CONTINUATION-01: the inventory is read ONCE so
+    # the Compass continuation and the inventory section show the same snapshot.
+    _ci_view = _component_inventory_context(sid, entry)
     return render_template("session.html",
         sid=sid,
         project_identification=_project_identification(sid),
@@ -7587,7 +7590,11 @@ def show_session(sid):
         # COMPONENT-INVENTORY-DECLARE-LIST-01: the inventor's declared
         # components, read from durable storage on every render (never from
         # IdeaState); None for a project without a durable record.
-        component_inventory=_component_inventory_context(sid, entry),
+        component_inventory=_ci_view,
+        # G1-SINGLE-DOMAIN-ENGINEERING-CONTINUATION-01: the ONE optional secondary
+        # step a single-domain Mechanical project is offered beside routed
+        # recovery or a suppressed question (template macro below).
+        single_domain_continuation=_single_domain_continuation(sid, _ci_view),
         # PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints,
         # read from the ledger on every render; forms only on a writable page.
         project_constraints=_project_constraints_context(sid, entry, state),
@@ -22292,6 +22299,37 @@ def cap13_planar_moment_withdraw(sid):
                 and stored.revision_no == int(raw_head) + 1)
 
     return _pm_write(sid, part, "withdraw", build, same)
+
+
+# G1-SINGLE-DOMAIN-ENGINEERING-CONTINUATION-01 — the ONE optional secondary step
+# a valid single-domain Mechanical project is offered while the Compass rests on
+# routed recovery or on a suppressed question (the same template rule that offers
+# an integrated project its step). Step A: the existing component declaration
+# form, while no current component exists. Step B: the existing planar-moment
+# page, once at least one current component exists. Route-derived only: nothing is
+# read from the idea or the answers, no component, value or declaration is chosen,
+# and the routed or suppressed point is neither answered nor credited. Fails closed.
+def _single_domain_continuation(sid, component_inventory):
+    """``{"kind": "component_inventory" | "planar_moment"}`` or None.
+
+    None unless the inventory was read whole and the project has no durable
+    composition (an integrated project keeps its own guidance and precedence),
+    and the planar-moment gate admits the project through its Mechanical root
+    (never through a declared part). Step A also needs the existing declaration
+    form on the page (``can_add``)."""
+    ci = component_inventory
+    if not isinstance(ci, dict) or ci.get("status") != "available" or ci.get("has_parts"):
+        return None
+    has_current = bool(ci.get("components"))
+    if not has_current and not ci.get("can_add"):
+        return None
+    try:
+        eligible, part = _calc_gate(sid, _cap13m)
+    except Exception:
+        return None
+    if not eligible or part is not None:
+        return None
+    return {"kind": "planar_moment" if has_current else "component_inventory"}
 
 
 if __name__ == "__main__":
