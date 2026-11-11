@@ -178,7 +178,11 @@ _LATER_CHANGED_TABLES = ("subsystem_interface_observations", "component_prototyp
                          # AMENDED at G1-2 CONSTRAINT-ENGINEERING-LINK-01: one more
                          # additive current-value table with two tombstone triggers
                          # (its own tests pin it); not a CAP-09 schema change.
-                         "constraint_engineering_links")
+                         "constraint_engineering_links",
+                         # AMENDED at G1-PLANAR-MOMENT-SAVED-DECLARATION-01: one more
+                         # additive append-only table of saved planar-moment inputs
+                         # (its own tests pin it); not a CAP-09 schema change.
+                         "planar_moment_revisions")
 
 
 def _schema(path):

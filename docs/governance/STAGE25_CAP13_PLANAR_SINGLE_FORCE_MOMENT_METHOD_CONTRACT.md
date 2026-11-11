@@ -21,6 +21,14 @@ increment's pull request into `feature/atomic-json-session-persistence`. It amen
 §10 (last exclusion), §12 and §13 only; the superseded wording is preserved beside each change. The method, its version,
 equation, roles, units, declarations, screen, numeric domain and numerical acceptance, §7 order, disclosure, sources, the
 method-authority artifact and the shared owner are unchanged.
+SAVED-DECLARATION AMENDMENT: `G1-PLANAR-MOMENT-SAVED-DECLARATION-01 — OWNER-AUTHORIZED AMENDMENT` (with the Owner's two
+narrow corrections: the point and force context are preserved; admission is preserved at the save boundary). The Owner
+authorized ONE bounded increment letting the inventor SAVE the INPUTS of an admitted configuration of this method for ONE
+component they declared and chose (§12A). Applicability: it takes effect only on the verified merge of that increment's
+pull request into `feature/atomic-json-session-persistence`. It amends §10 (the persistence exclusion), §12 and §13 and
+adds §12A only; the superseded wording is preserved beside each change. The method, its version, equation, roles, units,
+declarations, screen, numeric domain and numerical acceptance, §7 order, disclosure, sources, the method-authority artifact,
+the shared owner and calc/units §12 (no result persistence; the owner stays stateless) are unchanged.
 
 ---
 
@@ -181,11 +189,13 @@ No static equilibrium, moment balance, resultant, support reaction or sign / tur
 fastener, shaft, bearing, weld or member capacity, strength, stress, deflection, fatigue or failure check; no torque rating,
 motor or actuator sizing; no thickness, material or specification; no design suitability, stability or safety conclusion;
 no three-dimensional moment, several forces, couples, spread-out loads, friction, motion, impact, vibration or repeated
-loading; no inference of any force, distance, point or declaration; no unit conversion; no persistence, report, PDF,
+loading; no inference of any force, distance, point or declaration; no unit conversion; no persistence of any calculated
+result, and no persistence of inputs other than the inventor's own explicitly saved configurations (§12A); no report, PDF,
 Structured Export, API, evidence, readiness, progression, gap or SafetySignal effect; no AI or provider call; no
 eligibility for any part other than the one declared Mechanical part (§1), and no inference from a part's name or
 function. *(Superseded by the integrated-part eligibility amendment, preserved — was: "no integrated-part eligibility
-(§1).")*
+(§1).")* *(Superseded by the saved-declaration amendment, preserved — was: "no persistence, report, PDF, Structured
+Export, API, evidence, readiness, progression, gap or SafetySignal effect".)*
 
 ## 11. Source and source-use status
 
@@ -213,8 +223,42 @@ The one existing shared owner executes the method through ONE additional immutab
 (`_CAP13_MOMENT_BINDING` in `web/app.py`), beside the two existing bindings; there is no registry, discovery, dynamic
 module path or request-selected method (calc/units contract §13B). Routes: `GET` / `POST /session/<sid>/planar-moment`,
 behind the central project authorization and the global CSRF guard; the session page shows one optional link on an eligible
-project. Eligibility reuses `_calc_gate(sid, consumer)` (§1). Nothing is persisted; the POST renders its result
-directly.
+project. Eligibility reuses `_calc_gate(sid, consumer)` (§1). The calculation itself persists nothing; the POST renders
+its result directly. Saved configurations (§12A) add `POST /session/<sid>/planar-moment/save` and
+`POST /session/<sid>/planar-moment/withdraw` under the same authorization, CSRF guard and gate. *(Superseded by the
+saved-declaration amendment, preserved — was: "Nothing is persisted; the POST renders its result directly.")*
+
+## 12A. Saved configurations — inventor INPUTS only (G1-PLANAR-MOMENT-SAVED-DECLARATION-01)
+
+- **What is saved.** For ONE component the inventor declared and chooses (never inferred, never pre-selected): the exact
+  entered `F` and `d⊥` text, the five declarations, the nine screen answers, the inventor's own description of the chosen
+  point and of the force context (each 1 to 300 characters; documentary only, never used in the computation), the
+  component's revision position, the ONE declared Mechanical part it was saved for (integrated projects; none on a
+  Mechanical-focus project without a composition), and the method identity — id, version, the governed artifact's version
+  and the SHA-256 of its canonical JSON — with the declaration version `planar-moment-declaration/1`. The calculated moment
+  is NEVER stored: every read re-runs the unchanged consumer through `_CAP13_MOMENT_BINDING` (calc/units §12 unchanged).
+- **Owners.** Semantics: `engine/subsystem_model.py` (the Stage-15 declaration owner, the planar-clearance pattern);
+  persistence: ONE additive append-only family `planar_moment_revisions` in `engine/record_store.py` (composite foreign keys
+  to the component and the part; disable-and-preserve rollback; an unknown table shape is refused).
+- **Admission (Owner correction 2).** A configuration is saved only when this method admits it — every declaration
+  applies, no screen item is yes, both values are admitted by §6 — AND the consumer returns SUCCESS; checked by the route
+  and again inside the ONE serialized write (a refused, unavailable or review-required calculation saves nothing and is
+  never labelled saved). The database CHECKs admit only `applies` / `no` answers as a backstop.
+- **Eligibility.** On a project with an integrated composition: only an active component the inventor linked to the
+  declared Mechanical part. Otherwise: any active component of a Mechanical-focus project. The page gate is §1.
+- **Lifecycle.** Declare, up to 20 corrections (each re-stamps the component revision, part and method identity, so a
+  correction is the explicit reconfirmation), ONE reserved terminal withdrawal; withdrawal is not erasure. At most ONE
+  active configuration per component and 50 identities per project — a bounded first-slice restriction, never a statement
+  that a component has only one force or one point. Signed submission identity; exact retry writes nothing; a reused
+  identity for a different action is refused.
+- **States on read.** CURRENT (re-evaluated now; a number only on SUCCESS); RESULT UNAVAILABLE (the re-evaluation refused or
+  could not run; its reason and no number); NEEDS RECONFIRMATION (the component was corrected or withdrawn, the part link or
+  eligibility was lost, or the method / governed artifact changed or cannot be read; no number); WITHDRAWN (history; no
+  number). An unreadable or corrupt history reads UNAVAILABLE, never "none".
+- **Boundary (Owner correction 1).** The component association, the point and the force context are OWNER_STATED /
+  UNVALIDATED. A saved configuration does not show that the component carries that force and is not a complete force or
+  component assessment, evidence, a verified design, a compatibility check or a safety statement. Shown on this method's
+  page only (EN / AR); no report, PDF, export, evidence, readiness, progression or SafetySignal effect; no AI or provider.
 
 ## 13. Verification
 
@@ -223,8 +267,10 @@ products for normal and boundary values; overflow; underflow to zero; exact and 
 refusal versus underflow; non-finite, invalid and out-of-scope input; unit / method / version / adapter integrity failing
 closed; owner artifact v3 and moment artifact tamper; the §7 order and owner correspondence; the Mechanical-root and
 integrated Mechanical-part gate (`tests/test_cap13_planar_moment_integrated_part.py`); the two-support and THERM-01
-methods unchanged; EN / AR fidelity; and real-browser EN / AR journeys. Hosted required CI is the
-merge gate.
+methods unchanged; EN / AR fidelity; and real-browser EN / AR journeys. Saved configurations (§12A):
+`tests/test_g1_planar_moment_saved_declaration.py` (inputs only, admission at the save boundary, eligibility, staleness,
+lifecycle, retry, corruption, web journey, EN / AR), `..._rollback.py` (the pre-increment build against an upgraded
+database) and `..._browser.py` (EN / AR at 390 and 1280 px). Hosted required CI is the merge gate.
 
 ## 14. STOP conditions
 

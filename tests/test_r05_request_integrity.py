@@ -126,6 +126,11 @@ MUTATIONS = (
     # Stage 25 / CAP-13 Planar Moment Slice 1: the request-local planar
     # single-force moment calculation. It persists nothing, but it accepts a POST.
     "/session/<sid>/planar-moment",
+    # G1-PLANAR-MOMENT-SAVED-DECLARATION-01: save / correct and withdraw ONE
+    # saved configuration's INPUTS (never a result) for an inventor-chosen
+    # component; both write durable truth.
+    "/session/<sid>/planar-moment/save",
+    "/session/<sid>/planar-moment/withdraw",
     # Stage 25 / CAP-13 Rotational Load Slice 1: the request-local linear
     # speed-dependent rotational load. It persists nothing, but it accepts a POST.
     "/session/<sid>/rotational-load",

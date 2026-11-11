@@ -25,13 +25,25 @@ dl.result{margin:0 0 8px 0;font-size:14px}
 dl.result dt{color:#555;font-size:13px;margin-top:6px}
 dl.result dd{margin:2px 0 0 0;font-weight:bold}
 ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:anywhere}
+textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;font-family:inherit}
+select{max-width:100%;padding:6px;font-size:13px}
+.pm-item{border:1px solid #e2e6ea;border-radius:4px;padding:10px 12px;margin:10px 0;overflow-wrap:anywhere}
+.pm-state{display:inline-block;font-size:12px;font-weight:bold;padding:2px 8px;border-radius:10px;background:#eef3f8;color:#1f3b57}
+.pm-state[data-pm-state="NEEDS_RECONFIRMATION"],.pm-state[data-pm-state="RESULT_UNAVAILABLE"]{background:#fff8e6;color:#4a3b00}
+.pm-state[data-pm-state="WITHDRAWN"]{background:#f1f1f1;color:#555}
+.pm-actions{margin-top:8px;font-size:13px}
+.pm-actions form{display:inline-block;margin:0}
+.pm-actions button{margin-top:6px;padding:6px 14px;font-size:13px}
 @media(max-width:520px){body{margin:18px auto;padding:0 14px}.box{padding:12px}}
 </style>
 {% endblock %}
 {% block content %}
 {#- Stage 25 / CAP-13 - Planar Single-Force Moment, Slice 1. OPTIONAL, ADVISORY,
-    NON-BINDING and request-local: nothing on this page is saved, and the result
-    is rendered in the response to the submission itself. Nothing is inferred,
+    NON-BINDING and request-local: the calculation itself saves nothing, and the
+    result is rendered in the response to the submission itself.
+    G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the inventor MAY save an admitted
+    configuration's INPUTS for a component they choose (never the result); a
+    saved configuration is re-calculated on every render. Nothing is inferred,
     defaulted or pre-selected: the form only shows back what this same request
     submitted. The result is the MAGNITUDE of the moment of one force about one
     chosen point only, UNVALIDATED, not evidence, and states no equilibrium,
@@ -52,6 +64,11 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
 {% endif %}
 
 {% if error_key %}<div class="error" role="alert" data-cap13m-error>{{ t(error_key) }}</div>{% endif %}
+{% if notice_key %}<div class="notice" role="status" data-pm-notice>{{ t(notice_key) }}</div>{% endif %}
+{% if pm_error_key %}<div class="error" role="alert" data-pm-error>{{ t(pm_error_key) }}</div>{% endif %}
+{% if correcting %}
+<p class="notice" data-pm-correcting>{{ t('UI_PM_CORRECTING') }} <bdi dir="auto">{{ correcting.component_name }}</bdi></p>
+{% endif %}
 
 {% if eligible and not error_key %}
 {% if result %}
@@ -90,11 +107,48 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
     {% endfor %}
   </ul>
 </section>
+{% if saved and saved.available %}
+{#- G1-PLANAR-MOMENT-SAVED-DECLARATION-01: save THIS admitted configuration's
+    inputs for ONE component the inventor chooses; nothing is pre-selected. -#}
+<section class="box" data-pm-save>
+  <p class="copy"><strong>{{ t('UI_PM_SAVE_HEADING') }}</strong></p>
+  <p class="guidance">{{ t('UI_PM_SAVE_NOTE') }}</p>
+  {% set fixed = correcting %}
+  {% set choices = [] %}
+  {% for target in saved.targets %}{% if fixed %}{% if target.id == fixed.component_id %}{% set _ = choices.append(target) %}{% endif %}{% elif not target.active_id %}{% set _ = choices.append(target) %}{% endif %}{% endfor %}
+  {% if choices %}
+  <form method="POST" action="{{ url_for('cap13_planar_moment_save', sid=sid) }}" data-pm-save-form>
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="pm_submission" value="{{ pm_submission }}">
+    {% for decl in declarations %}<input type="hidden" name="{{ decl_field|format(decl) }}" value="{{ echo['declarations'][decl] }}">{% endfor %}
+    {% for item in screen_items %}<input type="hidden" name="{{ screen_field|format(item) }}" value="{{ echo['screen'][item] }}">{% endfor %}
+    {% for role, unit in value_roles %}<input type="hidden" name="{{ value_field|format(role) }}" value="{{ echo['values'][role] }}">{% endfor %}
+    <input type="hidden" name="declaration_id" value="{{ fixed.declaration_id if fixed else '' }}">
+    <input type="hidden" name="expected_head" value="{{ (correct_head if correct_head is not none else fixed.head) if fixed else 'none' }}">
+    <label class="field" for="pm-target">{{ t('UI_PM_FIELD_COMPONENT') }}</label>
+    <select id="pm-target" name="component_target" data-pm-target>
+      {% if not fixed %}<option value="">{{ t('UI_PM_CHOOSE_COMPONENT') }}</option>{% endif %}
+      {% for target in choices %}
+      <option value="{{ target.id }}:{{ target.revision }}" {% if fixed or save_draft.get('component_id') == target.id %}selected{% endif %}>{{ target.name }}</option>
+      {% endfor %}
+    </select>
+    <label class="field" for="pm-point">{{ t('UI_PM_FIELD_POINT') }}</label>
+    <textarea id="pm-point" name="point_description" rows="2" maxlength="{{ pm_text_max }}" dir="auto" data-pm-point>{{ save_draft.get('point_description') or (fixed.point if fixed else '') }}</textarea>
+    <label class="field" for="pm-force">{{ t('UI_PM_FIELD_FORCE') }}</label>
+    <textarea id="pm-force" name="force_context" rows="2" maxlength="{{ pm_text_max }}" dir="auto" data-pm-force>{{ save_draft.get('force_context') or (fixed.force_context if fixed else '') }}</textarea>
+    <p class="guidance">{{ t('UI_PM_TEXT_NOTE') }}</p>
+    <button type="submit">{{ t('UI_PM_SAVE_BUTTON') }}</button>
+  </form>
+  {% else %}
+  <p class="copy" data-pm-no-target>{{ t('UI_PM_SAVE_COMPONENT_NONE') }}</p>
+  {% endif %}
+</section>
+{% endif %}
 {% elif outcome_key %}
 <div class="error" role="alert" data-cap13m-outcome><strong>{{ iso('UI_CAP13M_UNABLE_HEADING') }}</strong>{{ iso(outcome_key) }}</div>
 {% endif %}
 
-<form method="POST" action="{{ url_for('cap13_planar_moment_post', sid=sid) }}" data-cap13m-form>
+<form method="POST" action="{{ url_for('cap13_planar_moment_post', sid=sid, correct=correcting.declaration_id, head=(correct_head if correct_head is not none else correcting.head)) if correcting else url_for('cap13_planar_moment_post', sid=sid) }}" data-cap13m-form>
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {% for decl in declarations %}
   {% set field = decl_field|format(decl) %}
@@ -123,6 +177,66 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
   {% endfor %}
   <button type="submit">{{ t('UI_CAP13M_SUBMIT') }}</button>
 </form>
+
+{#- G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the saved configurations, each
+    re-derived on this render. A number appears ONLY for a CURRENT item whose
+    re-evaluation succeeded; an unreadable history is UNAVAILABLE, never "none". -#}
+<section class="box" data-pm-saved>
+  <p class="copy"><strong>{{ t('UI_PM_SAVED_HEADING') }}</strong></p>
+  <p class="guidance">{{ t('UI_PM_SAVED_INTRO') }}</p>
+  <p class="guidance" data-pm-limit>{{ t('UI_PM_LIMIT_NOTE') }}</p>
+  {% if not saved or not saved.available %}
+  <div class="error" role="alert" data-pm-unavailable>{{ t('UI_PM_UNAVAILABLE') }}</div>
+  {% elif not saved['items'] %}
+  <p class="copy" data-pm-none>{{ t('UI_PM_NONE') }}</p>
+  {% else %}
+  {% for item in saved['items'] %}
+  <div class="pm-item" data-pm-item="{{ item.declaration_id }}">
+    <span class="pm-state" data-pm-state="{{ item.state }}">{{ t('UI_PM_STATE_' ~ item.state) }}</span>
+    <ul class="plain">
+      <li>{{ t('UI_PM_FIELD_COMPONENT') }}: <bdi dir="auto" data-pm-component>{{ item.component_name }}</bdi></li>
+      {% if item.part_name %}<li>{{ t('UI_PM_FIELD_PART') }}: <bdi dir="auto">{{ item.part_name }}</bdi></li>{% endif %}
+      <li>{{ t('UI_PM_FIELD_POINT') }}: <bdi dir="auto" data-pm-point-text>{{ item.point }}</bdi></li>
+      <li>{{ t('UI_PM_FIELD_FORCE') }}: <bdi dir="auto" data-pm-force-text>{{ item.force_context }}</bdi></li>
+      {% for v in item['values'] %}
+      <li>{{ iso('UI_CAP13M_FIELD_' ~ v.role|upper) }}: <bdi dir="ltr" data-pm-input>{{ v.text }}</bdi></li>
+      {% endfor %}
+      <li>{{ t('UI_CAP13M_METHOD_LINE') }}: <bdi dir="ltr">{{ item.method_id }}</bdi> &middot; <bdi dir="ltr">{{ item.method_version }}</bdi></li>
+      <li>{{ t('UI_PM_FIELD_CORRECTIONS') }}: <bdi dir="ltr">{{ item.corrections }}</bdi></li>
+    </ul>
+    {% if item.result %}
+    <dl class="result">
+      <dt>{{ iso('UI_CAP13M_RESULT_M') }}</dt>
+      <dd data-pm-result-value><bdi dir="ltr">{{ item.result.value }} {{ item.result.unit }}</bdi></dd>
+    </dl>
+    <p class="guidance">{{ iso('UI_CAP13M_STATUS') }}</p>
+    <ul class="plain" data-pm-sources>
+      {% for src in item.result.sources %}<li><bdi dir="ltr" lang="en">{{ src.title }} &mdash; {{ src.url }}</bdi></li>{% endfor %}
+      {% for u in item.result.units %}<li><bdi dir="ltr" lang="en">{{ u.token }}: {{ u.title }}, {{ u.edition }} &mdash; {{ u.url }}</bdi></li>{% endfor %}
+    </ul>
+    {% elif item.outcome_key %}
+    <p class="copy" data-pm-outcome>{{ iso(item.outcome_key) }}</p>
+    {% endif %}
+    {% if item.issues %}
+    <ul class="plain" data-pm-issues>{% for key in item.issues %}<li>{{ t(key) }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% if not item.withdrawn %}
+    <div class="pm-actions">
+      <a href="{{ url_for('cap13_planar_moment', sid=sid, correct=item.declaration_id, head=item.head) }}" data-pm-correct>{{ t('UI_PM_CORRECT_LINK') }}</a>
+      <form method="POST" action="{{ url_for('cap13_planar_moment_withdraw', sid=sid) }}" data-pm-withdraw-form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+        <input type="hidden" name="pm_withdraw_submission" value="{{ pm_withdraw_submission }}">
+        <input type="hidden" name="declaration_id" value="{{ item.declaration_id }}">
+        <input type="hidden" name="expected_head" value="{{ item.head }}">
+        <label class="choice"><input type="checkbox" name="withdraw_confirm" value="yes"> {{ t('UI_PM_WITHDRAW_CONFIRM') }}</label>
+        <button type="submit">{{ t('UI_PM_WITHDRAW_BUTTON') }}</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+</section>
 {% endif %}
 
 <p class="links"><a href="{{ url_for('show_session', sid=sid) }}">{{ t('UI_CAP13M_BACK') }}</a></p>

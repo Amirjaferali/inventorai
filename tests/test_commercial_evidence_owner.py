@@ -1400,6 +1400,9 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       # BOARD-OUTLINE-SOURCE-BINDING-01: the source binding of a
                       # file-linked planar clearance revision (not a commercial owner).
                       "planar_clearance_source_bindings",
+                      # G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the inventor's saved
+                      # planar-moment INPUTS (no result; not a commercial owner).
+                      "planar_moment_revisions",
                       # Stage 15 closure: the current-value dependency per
                       # interface and the INSERT-only interface anchor of each
                       # Integration evidence row (neither stores evidence
