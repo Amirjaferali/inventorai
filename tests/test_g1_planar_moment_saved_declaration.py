@@ -337,9 +337,9 @@ def _page(c, sid, **args):
     return r.status_code, r.get_data(as_text=True)
 
 
-def _evaluate(c, sid, correct=None, **over):
+def _evaluate(c, sid, correct=None, head="0", **over):
     r = c.post(URL % sid, data=_moment_form(**over),
-               query_string={"correct": correct} if correct else None)
+               query_string={"correct": correct, "head": head} if correct else None)
     assert r.status_code == 200
     return r.get_data(as_text=True)
 
@@ -670,3 +670,28 @@ def test_every_recoverable_save_refusal_keeps_inputs_and_descriptions(mech_clien
         # not admitted (reachable only by a tampered form or a method change
         # between showing and saving): no save form, the refusal reason shown
         assert "data-pm-save-form" not in body and "data-cap13m-outcome" in body
+
+
+def test_a_correction_opened_in_another_tab_is_refused_as_stale(mech_client):
+    """Codex review (PR #960): the revision opened for correction travels
+    through the calculation step, so tab A cannot silently overwrite tab B."""
+    c, sid = mech_client
+    _save(c, sid, _evaluate(c, sid))
+    page = _page(c, sid)[1]
+    declaration_id = _items(page)[0]
+    link = re.search(r'href="([^"]*correct=%s[^"]*)" data-pm-correct' % declaration_id, page)
+    assert link and "head=0" in _html.unescape(link.group(1))
+    tab_a = _evaluate(c, sid, correct=declaration_id, head="0")           # opened revision 0
+    tab_b = _evaluate(c, sid, correct=declaration_id, head="0", F="25")
+    assert _save(c, sid, tab_b).status_code == 200                          # now revision 1
+    assert _save_form(tab_a)[0]["expected_head"] == "0"
+    r = _save(c, sid, tab_a, point="Tab A wording")
+    assert r.status_code == 409
+    assert ui_text.text("UI_PM_MSG_STALE", "en") in _html.unescape(r.get_data(as_text=True))
+    assert _value(_page(c, sid)[1]) == "2000.0 N·mm"                       # B's change kept
+    # a re-render of tab A after the calculation still carries revision 0
+    again = _evaluate(c, sid, correct=declaration_id, head="0", F="30")
+    assert _save_form(again)[0]["expected_head"] == "0"
+    # a calculation POST that omits the opened revision is not in correction mode
+    plain = c.post(URL % sid, data=_moment_form(), query_string={"correct": declaration_id})
+    assert "data-pm-correcting" not in plain.get_data(as_text=True)

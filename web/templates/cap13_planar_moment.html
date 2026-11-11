@@ -124,7 +124,7 @@ select{max-width:100%;padding:6px;font-size:13px}
     {% for item in screen_items %}<input type="hidden" name="{{ screen_field|format(item) }}" value="{{ echo['screen'][item] }}">{% endfor %}
     {% for role, unit in value_roles %}<input type="hidden" name="{{ value_field|format(role) }}" value="{{ echo['values'][role] }}">{% endfor %}
     <input type="hidden" name="declaration_id" value="{{ fixed.declaration_id if fixed else '' }}">
-    <input type="hidden" name="expected_head" value="{{ fixed.head if fixed else 'none' }}">
+    <input type="hidden" name="expected_head" value="{{ (correct_head if correct_head is not none else fixed.head) if fixed else 'none' }}">
     <label class="field" for="pm-target">{{ t('UI_PM_FIELD_COMPONENT') }}</label>
     <select id="pm-target" name="component_target" data-pm-target>
       {% if not fixed %}<option value="">{{ t('UI_PM_CHOOSE_COMPONENT') }}</option>{% endif %}
@@ -148,7 +148,7 @@ select{max-width:100%;padding:6px;font-size:13px}
 <div class="error" role="alert" data-cap13m-outcome><strong>{{ iso('UI_CAP13M_UNABLE_HEADING') }}</strong>{{ iso(outcome_key) }}</div>
 {% endif %}
 
-<form method="POST" action="{{ url_for('cap13_planar_moment_post', sid=sid, correct=correcting.declaration_id) if correcting else url_for('cap13_planar_moment_post', sid=sid) }}" data-cap13m-form>
+<form method="POST" action="{{ url_for('cap13_planar_moment_post', sid=sid, correct=correcting.declaration_id, head=(correct_head if correct_head is not none else correcting.head)) if correcting else url_for('cap13_planar_moment_post', sid=sid) }}" data-cap13m-form>
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {% for decl in declarations %}
   {% set field = decl_field|format(decl) %}
@@ -222,7 +222,7 @@ select{max-width:100%;padding:6px;font-size:13px}
     {% endif %}
     {% if not item.withdrawn %}
     <div class="pm-actions">
-      <a href="{{ url_for('cap13_planar_moment', sid=sid, correct=item.declaration_id) }}" data-pm-correct>{{ t('UI_PM_CORRECT_LINK') }}</a>
+      <a href="{{ url_for('cap13_planar_moment', sid=sid, correct=item.declaration_id, head=item.head) }}" data-pm-correct>{{ t('UI_PM_CORRECT_LINK') }}</a>
       <form method="POST" action="{{ url_for('cap13_planar_moment_withdraw', sid=sid) }}" data-pm-withdraw-form>
         <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
         <input type="hidden" name="pm_withdraw_submission" value="{{ pm_withdraw_submission }}">

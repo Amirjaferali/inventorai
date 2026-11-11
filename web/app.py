@@ -16679,7 +16679,7 @@ def _cap13m_result_view(result):
 
 def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=None,
                    evaluation=None, error=None, notice=None, correct_id=None,
-                   save_draft=None, pm_error=None):
+                   save_draft=None, pm_error=None, correct_head=None):
     lang = _current_ui_lang()
     view = None
     outcome_key = None
@@ -16732,6 +16732,9 @@ def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=
         # a recoverable save / withdraw refusal: shown WITHOUT hiding the forms,
         # so the inventor can fix the field and retry (the draft is kept)
         pm_error_key=pm_error,
+        # the revision the inventor OPENED for correction, carried through the
+        # calculation step so a concurrent correction is refused as stale
+        correct_head=(correct_head if correcting is not None else None),
         saved=saved,
         correcting=correcting,
         save_draft=save_draft or {},
@@ -16752,9 +16755,9 @@ def cap13_planar_moment(sid):
     eligible, part = _calc_gate(sid, _cap13m)
     # G1-PLANAR-MOMENT-SAVED-DECLARATION-01: "Correct" opens the calculation
     # form pre-filled from a saved configuration (read in that section).
-    captured, correct_id = _pm_correct_request(sid, eligible, prefill=True)
+    captured, correct_id, correct_head = _pm_correct_request(sid, eligible, prefill=True)
     return _render_cap13m(sid, eligible=eligible, declared_part=part, captured=captured,
-                          correct_id=correct_id)
+                          correct_id=correct_id, correct_head=correct_head)
 
 
 @app.route("/session/<sid>/planar-moment", methods=["POST"])
@@ -16776,9 +16779,10 @@ def cap13_planar_moment_post(sid):
     evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
     # G1-PLANAR-MOMENT-SAVED-DECLARATION-01: a correction in progress travels in
     # the query string (the calculation form itself is unchanged and strict).
-    _ignored, correct_id = _pm_correct_request(sid, eligible, prefill=False)
+    _ignored, correct_id, correct_head = _pm_correct_request(sid, eligible, prefill=False)
     return _render_cap13m(sid, declared_part=part, captured=captured,
-                          evaluation=evaluation, correct_id=correct_id)
+                          evaluation=evaluation, correct_id=correct_id,
+                          correct_head=correct_head)
 
 
 # =============================================================================
@@ -21882,23 +21886,37 @@ _PM_STATE_WITHDRAWN = "WITHDRAWN"
 _PM_STATE_NO_RESULT = "RESULT_UNAVAILABLE"
 
 
+_PM_OPENED_HEAD_RE = re.compile(r"^(0|[1-9][0-9]?)$")
+
+
 def _pm_correct_request(sid, eligible, prefill):
-    """``(captured, correct_id)`` for a ``?correct=<declaration id>`` query on
-    the moment page: the id only when it names an ACTIVE saved configuration of
-    THIS project (read from ONE store snapshot), and - for the GET pre-fill -
-    that configuration's CURRENT inputs in the consumer's captured shape.
+    """``(captured, correct_id, opened_head)`` for a
+    ``?correct=<declaration id>&head=<revision>`` query on the moment page: the
+    id only when it names an ACTIVE saved configuration of THIS project (read
+    from ONE store snapshot); ``opened_head`` is the revision the inventor
+    OPENED for correction - carried through the calculation step and used as
+    the save's expected head, so a correction saved meanwhile (another tab) is
+    refused as stale instead of being silently overwritten. Opening without a
+    ``head`` (the GET pre-fill) opens the CURRENT revision. For the GET the
+    opened revision's inputs come back in the consumer's captured shape.
     Shown back only; nothing is evaluated or written. Fails closed to
-    ``(None, None)``."""
+    ``(None, None, None)``."""
     correct_id = request.args.get("correct", "")
+    raw_head = request.args.get("head", "")
     if not eligible or not _subsystem_model.is_valid_planar_moment_id(correct_id):
-        return None, None
+        return None, None, None
+    if raw_head and not _PM_OPENED_HEAD_RE.match(raw_head):
+        return None, None, None
+    if not raw_head and not prefill:
+        return None, None, None          # a calculation POST must carry the opened revision
     try:
         record = _get_store().load_planar_moments(sid)["ledger"].record_for(correct_id)
     except Exception:
-        return None, None
+        return None, None, None
     if record is None or record.withdrawn:
-        return None, None
-    return (record.current.captured() if prefill else None), correct_id
+        return None, None, None
+    opened = int(raw_head) if raw_head else record.head_revision_no
+    return (record.current.captured() if prefill else None), correct_id, opened
 
 
 def _pm_submission_key(sid, nonce, action):
@@ -22021,7 +22039,7 @@ def _pm_write(sid, part, action, build, same, render_extra=None):
         # can fix and retry; only a confirmed save / withdrawal clears them.
         context = dict(extra)
         if error is None:
-            context.update(correct_id=None, save_draft=None)
+            context.update(correct_id=None, save_draft=None, correct_head=None)
         return _render_cap13m(sid, status=status, declared_part=part, pm_error=error,
                               notice=notice, **context)
 
@@ -22134,7 +22152,8 @@ def cap13_planar_moment_save(sid):
              "force_context": force}
     evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
     extra = {"captured": captured, "evaluation": evaluation, "correct_id": correct_id,
-             "save_draft": draft}
+             "save_draft": draft,
+             "correct_head": int(raw_head) if correct_id else None}
     if evaluation["outcome"] != _cap13m.OUTCOME_SUCCESS:
         # Correction 2: only a configuration the existing method admits with
         # SUCCESS is ever saved (re-checked inside the serialized write).
