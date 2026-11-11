@@ -65,6 +65,7 @@ select{max-width:100%;padding:6px;font-size:13px}
 
 {% if error_key %}<div class="error" role="alert" data-cap13m-error>{{ t(error_key) }}</div>{% endif %}
 {% if notice_key %}<div class="notice" role="status" data-pm-notice>{{ t(notice_key) }}</div>{% endif %}
+{% if pm_error_key %}<div class="error" role="alert" data-pm-error>{{ t(pm_error_key) }}</div>{% endif %}
 {% if correcting %}
 <p class="notice" data-pm-correcting>{{ t('UI_PM_CORRECTING') }} <bdi dir="auto">{{ correcting.component_name }}</bdi></p>
 {% endif %}

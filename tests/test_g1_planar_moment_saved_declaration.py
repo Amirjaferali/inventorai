@@ -596,3 +596,30 @@ def test_csrf_and_authorization_guard_both_new_routes(mech_client):
         response = other.post(URL % sid + path, data=data)
         assert response.status_code == 302 and "data-pm-" not in response.get_data(as_text=True)
     assert rows() == []
+
+
+def test_a_recoverable_refusal_keeps_the_forms_the_draft_and_the_correction(mech_client):
+    """Codex review (PR #960): a save refusal must not hide the forms - the
+    inventor fixes the field on the returned page and retries."""
+    c, sid = mech_client
+    r = _save(c, sid, _evaluate(c, sid), point="")
+    body = r.get_data(as_text=True)
+    assert r.status_code == 400 and "data-pm-error" in body
+    assert "data-pm-save-form" in body and "data-cap13m-form" in body and "data-pm-saved" in body
+    assert FORCE in _html.unescape(body)                       # the draft is kept
+    assert _save(c, sid, body).status_code == 200            # fixed and retried on the same page
+    declaration_id = _items(_page(c, sid)[1])[0]
+    raw = _evaluate(c, sid, correct=declaration_id)
+    r = _save(c, sid, raw, force="")
+    body = r.get_data(as_text=True)
+    hidden, _options = _save_form(body)
+    assert r.status_code == 400 and hidden["declaration_id"] == declaration_id
+    assert hidden["expected_head"] == "0" and "data-pm-correcting" in body
+    raw_page = _page(c, sid)[1]
+    block = raw_page.split("data-pm-withdraw-form", 1)[1].split("</form>", 1)[0]
+    data = {n: _html.unescape(v) for n, v in re.findall(
+        r'<input type="hidden" name="([^"]+)" value="([^"]*)"', block)}
+    data.pop("csrf_token")
+    r = c.post(URL % sid + "/withdraw", data=data)            # no confirmation ticked
+    body = r.get_data(as_text=True)
+    assert r.status_code == 400 and "data-pm-error" in body and "data-pm-withdraw-form" in body

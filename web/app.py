@@ -16679,7 +16679,7 @@ def _cap13m_result_view(result):
 
 def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=None,
                    evaluation=None, error=None, notice=None, correct_id=None,
-                   save_draft=None):
+                   save_draft=None, pm_error=None):
     lang = _current_ui_lang()
     view = None
     outcome_key = None
@@ -16729,6 +16729,9 @@ def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=
         screen_no=_cap13m.SCREEN_NO,
         max_value_chars=_cap13m.MAX_VALUE_CHARS,
         notice_key=notice,
+        # a recoverable save / withdraw refusal: shown WITHOUT hiding the forms,
+        # so the inventor can fix the field and retry (the draft is kept)
+        pm_error_key=pm_error,
         saved=saved,
         correcting=correcting,
         save_draft=save_draft or {},
@@ -22014,7 +22017,7 @@ def _pm_write(sid, part, action, build, same, render_extra=None):
     extra = dict(render_extra or {})
 
     def render(status=200, error=None, notice=None):
-        return _render_cap13m(sid, status=status, declared_part=part, error=error,
+        return _render_cap13m(sid, status=status, declared_part=part, pm_error=error,
                               notice=notice, **extra)
 
     domain = _PM_SAVE_DOMAIN if action == "save" else _PM_WITHDRAW_DOMAIN
@@ -22099,7 +22102,7 @@ def cap13_planar_moment_save(sid):
     form = {k: request.form.getlist(k) for k in request.form.keys()}
     if set(form) - (_cap13m.FORM_FIELDS | _PM_SAVE_FIELDS):
         return _render_cap13m(sid, status=400, declared_part=part,
-                              error="UI_PM_MSG_REJECTED")
+                              pm_error="UI_PM_MSG_REJECTED")
     captured = _cap13m.capture_form({k: v for k, v in form.items()
                                      if k in _cap13m.FORM_FIELDS})
     try:
@@ -22116,7 +22119,7 @@ def cap13_planar_moment_save(sid):
             or (raw_head == "none") != (declaration_id == "") \
             or not _subsystem_model.is_valid_component_id(component_id):
         return _render_cap13m(sid, status=400, declared_part=part,
-                              error="UI_PM_MSG_REJECTED")
+                              pm_error="UI_PM_MSG_REJECTED")
     correct_id = declaration_id or None
     draft = {"component_id": component_id, "point_description": point,
              "force_context": force}
@@ -22125,13 +22128,13 @@ def cap13_planar_moment_save(sid):
             and _subsystem_model.valid_planar_moment_text(force)):
         evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
         return _render_cap13m(sid, status=400, declared_part=part, evaluation=evaluation,
-                              error="UI_PM_MSG_TEXT", **extra)
+                              pm_error="UI_PM_MSG_TEXT", **extra)
     # Correction 2: only a configuration the existing method admits with
     # SUCCESS is ever saved (re-checked inside the serialized write).
     evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
     if evaluation["outcome"] != _cap13m.OUTCOME_SUCCESS:
         return _render_cap13m(sid, status=409, declared_part=part, evaluation=evaluation,
-                              error="UI_PM_MSG_NOT_ADMITTED", **extra)
+                              pm_error="UI_PM_MSG_NOT_ADMITTED", **extra)
     values = tuple(captured["values"][r] for r in _subsystem_model.PLANAR_MOMENT_VALUE_ROLES)
     declarations = tuple(captured["declarations"][d] for d in _cap13m.DECLARATION_IDS)
     screen = tuple(captured["screen"][i] for i in _cap13m.SCREEN_ITEMS)
@@ -22181,10 +22184,10 @@ def cap13_planar_moment_withdraw(sid):
             or raw_head == "none" \
             or not _subsystem_model.is_valid_planar_moment_id(declaration_id):
         return _render_cap13m(sid, status=400, declared_part=part,
-                              error="UI_PM_MSG_REJECTED")
+                              pm_error="UI_PM_MSG_REJECTED")
     if request.form.get("withdraw_confirm") != "yes":
         return _render_cap13m(sid, status=400, declared_part=part,
-                              error="UI_PM_MSG_CONFIRM_WITHDRAW")
+                              pm_error="UI_PM_MSG_CONFIRM_WITHDRAW")
 
     def build(snapshot):
         return _subsystem_model.withdrawn_planar_moment(
