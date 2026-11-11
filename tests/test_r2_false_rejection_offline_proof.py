@@ -184,6 +184,11 @@ def test_both_error_directions_on_the_frozen_cases_are_independent(
                and cases_by_id[i]["slot_label"]["new_contribution"] == CONTENT
                for i in addressed_ids)
     recovered, wrong_credit, conservatively_withheld = [], [], []
+    previously_rejected = {
+        "CH1-C03-en", "CH1-C04-en", "CH1-C05-en",
+        "CH2-C01-en", "CH2-C04-ar-msa",
+        "CH3-C01-ar-msa", "CH4-C02-en",
+    }  # incumbent #963 baseline, both prior states; CH4-C03-en already credited
     for case in frozen:
         record = _record(case["current_answer"], case["question_id"])
         slot = case["slot_label"]
@@ -216,6 +221,8 @@ def test_both_error_directions_on_the_frozen_cases_are_independent(
     assert set(recovered) == addressed_ids, ("unrecovered scoped cases",
                                             sorted(addressed_ids - set(recovered)))
     assert len(conservatively_withheld) == 60 - len(addressed_ids)
+    assert set(recovered) & previously_rejected == previously_rejected
+    assert len(set(recovered) & previously_rejected) == 7
     assert wrong_credit == [], wrong_credit
     # A positive oracle says nothing about the 52 unassessed legitimate cases.
     # Distinguish observed composed recovery from model qualification.
