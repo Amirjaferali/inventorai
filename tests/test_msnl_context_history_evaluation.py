@@ -24,6 +24,9 @@ INSTRUCTIONS_SHA256 = "440fd58ed38a221e17524abf8396637d7ca23df2ba921e4a07a46ee2b
 # Run 01 (2026-11-10, INVALID) is permanently bound to its own two files, byte for byte.
 RUN_01_REPORT_SHA256 = "e46c0fae1d6d935269d4eff029b15b76b8e8f2bcdb751782f4e9a4834fc24a18"
 RUN_01_JOURNAL_SHA256 = "e7ff288b72e48c2ba85806cbc792bf9d213bf2a9e7af8235065b2e4b2938ea4a"
+# Run 02 (2026-11-11, INVALID) likewise.
+RUN_02_REPORT_SHA256 = "30eee63bfec46b49b80130c42e35fb8da6659d9e04ba336891d75dac7470a72e"
+RUN_02_JOURNAL_SHA256 = "b4820c70d9b6aafaf2d9d3467cfa0be89a6bb98d7802983353410b5b7e97f877"
 POSITIVE = ("NEW_DETAIL", "PLAIN_LANGUAGE_DETAIL", "RESTATE_THEN_NEW", "AMENDMENT",
             "HISTORY_COUNTERFACTUAL_NEW")
 NEGATIVE = ("PARAPHRASE_OF_PREVIOUS", "CONTENT_FREE_REFERENCE", "UNKNOWN_OR_UNDECIDED",
@@ -471,12 +474,20 @@ def test_uncertain_with_a_quote_is_an_abstention_not_a_rejection(manifest):
     assert report["outcome"] == [h.CH_F2]
 
 
-# ─── run 01's evidence (2026-11-10), permanently bound to run 01 ──────────────
+# ─── recorded runs: each permanently bound to its own two files ───────────────
 
-def _recorded():
-    with open(h.CONTEXT_HISTORY_RUN_01_REPORT_PATH, encoding="utf-8") as fh:
+def _runs():
+    return {"01": (h.CONTEXT_HISTORY_RUN_01_REPORT_PATH, h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH,
+                   RUN_01_REPORT_SHA256, RUN_01_JOURNAL_SHA256),
+            "02": (h.CONTEXT_HISTORY_RUN_02_REPORT_PATH, h.CONTEXT_HISTORY_RUN_02_JOURNAL_PATH,
+                   RUN_02_REPORT_SHA256, RUN_02_JOURNAL_SHA256)}
+
+
+def _recorded(run="01"):
+    report_path, journal_path, _, _ = _runs()[run]
+    with open(report_path, encoding="utf-8") as fh:
         report = json.load(fh)
-    with open(h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH, encoding="utf-8") as fh:
+    with open(journal_path, encoding="utf-8") as fh:
         journal = [json.loads(line) for line in fh]
     return report, journal
 
@@ -492,11 +503,27 @@ def test_run_01_evidence_is_pinned_and_never_the_path_of_a_later_run():
     assert {os.path.dirname(p) for p in run_01} == {h.CONTEXT_HISTORY_EVIDENCE_DIR}
 
 
-def test_the_recorded_run_01_is_internally_consistent(manifest):
+def test_every_recorded_run_is_pinned_distinct_and_the_gate_is_closed():
+    """Each recorded run keeps its own files byte for byte, no two runs share a file,
+    and with run 02's evidence present the gate is closed: a further run needs a new
+    authorization, its own paths and a reviewed commit."""
+    paths = []
+    for report_path, journal_path, report_sha, journal_sha in _runs().values():
+        for path, digest in ((report_path, report_sha), (journal_path, journal_sha)):
+            assert hashlib.sha256(open(path, "rb").read()).hexdigest() == digest
+            assert os.path.dirname(path) == h.CONTEXT_HISTORY_EVIDENCE_DIR
+            paths.append(path)
+    assert len(set(paths)) == len(paths) == 4
+    assert os.path.exists(h.CONTEXT_HISTORY_REPORT_PATH)
+    assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
+
+
+@pytest.mark.parametrize("run", ["01", "02"])
+def test_the_recorded_run_is_internally_consistent(manifest, run):
     """The committed report recomputes from its own rows, agrees with the fsynced
     journal and stayed inside the authorization: gpt-6-sol, Standard tier, at most
     120 requests, under US$6, no retry, no restart, frozen order."""
-    report, journal = _recorded()
+    report, journal = _recorded(run)
     assert report == json.loads(json.dumps(h.context_history_report(
         manifest, report["stop"], report["rows"], report["spend"]), sort_keys=True))
     attempts = [e for e in journal if e["event"] == "attempt"]
@@ -507,6 +534,7 @@ def test_the_recorded_run_01_is_internally_consistent(manifest):
     assert [a["attempt"] for a in attempts] == list(range(1, n + 1))
     order = [c["case_id"] for c in h.ch_ordered(manifest)]
     assert [a["case_id"] for a in attempts] == order[:n] and n == report["spend"]["requests_sent"] <= 120
+    assert len({a["case_id"] for a in attempts}) == n          # no case sent twice
     for row, att in zip(report["rows"], attempts):
         assert row["case_id"] == att["case_id"] and row["attempt"]["attempt"] == att["attempt"]
         assert (row["error"], row["decision"]) == (att["error"], att["decision"])
@@ -523,8 +551,8 @@ def test_the_recorded_run_01_is_internally_consistent(manifest):
     assert journal[-1]["outcome"] == report["outcome"]
 
 
-def test_the_recorded_outcome_is_invalid_by_one_transport_failure_without_retry(manifest):
-    report, journal = _recorded()
+def test_the_recorded_run_01_is_invalid_by_one_transport_failure_without_retry(manifest):
+    report, journal = _recorded("01")
     attempts = [e for e in journal if e["event"] == "attempt"]
     assert report["outcome"] == h.CH_INVALID
     assert report["stop"] == {"reason": toa.ERR_TRANSPORT, "case_id": "CH2-C05-ar-msa"}
@@ -544,9 +572,28 @@ def test_the_recorded_outcome_is_invalid_by_one_transport_failure_without_retry(
     assert h.CH_F1 not in report["outcome"] and h.CH_NOT_FALSIFIED not in report["outcome"]
 
 
+def test_the_recorded_run_02_is_invalid_by_one_http_401_without_retry(manifest):
+    report, journal = _recorded("02")
+    attempts = [e for e in journal if e["event"] == "attempt"]
+    assert report["outcome"] == h.CH_INVALID
+    assert report["stop"] == {"reason": toa.ERR_HTTP_STATUS, "case_id": "CH2-C01-ar-msa"}
+    last = attempts[-1]
+    assert (last["attempt"], last["case_id"], last["error"], last["http_status"], last["sent"]) == \
+        (80, "CH2-C01-ar-msa", toa.ERR_HTTP_STATUS, 401, True)
+    assert last["decision"] is None and last["measured_cost_usd"] is None
+    assert last["model"] == last["service_tier"] == last["response_id"] == "UNAVAILABLE"
+    # never retried, never filled: the failed case and the 40 never sent stay untested
+    order = [c["case_id"] for c in h.ch_ordered(manifest)]
+    assert report["untested_cases"] == order[79:] and len(report["untested_cases"]) == 41
+    assert sum(1 for a in attempts if a["case_id"] == "CH2-C01-ar-msa") == 1
+    assert abs(report["spend"]["committed_bound_usd"]
+               - (report["spend"]["measured_cost_usd"] + last["reserved_usd"])) < 1e-6
+    assert h.CH_F1 not in report["outcome"] and h.CH_NOT_FALSIFIED not in report["outcome"]
+
+
 def test_a_run_whose_evidence_exists_is_refused_and_sends_nothing(monkeypatch):
     """Independent of the live gate: closed, nothing is sent; open, a run whose
-    evidence already exists (run 01's files here) is refused and sends nothing."""
+    evidence already exists (either recorded run's files here) is refused and sends nothing."""
     def boom(*a, **k):
         raise AssertionError("no adapter may be built")
     monkeypatch.setattr(h, "OpenAIMsnlAdapter", boom)
@@ -554,15 +601,17 @@ def test_a_run_whose_evidence_exists_is_refused_and_sends_nothing(monkeypatch):
     out = h.context_history_evaluation("openai", True, True)
     assert out["provider_requests"] == 0 and "not authorized" in out["refused"]
     monkeypatch.setattr(h, "CONTEXT_HISTORY_RUN_AUTHORIZED", True)
-    monkeypatch.setattr(h, "CONTEXT_HISTORY_REPORT_PATH", h.CONTEXT_HISTORY_RUN_01_REPORT_PATH)
-    monkeypatch.setattr(h, "CONTEXT_HISTORY_JOURNAL_PATH", h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH)
-    out = h.context_history_evaluation("openai", True, True)
-    assert out["provider_requests"] == 0 and "already exists" in out["refused"]
+    for report_path, journal_path, _, _ in _runs().values():
+        monkeypatch.setattr(h, "CONTEXT_HISTORY_REPORT_PATH", report_path)
+        monkeypatch.setattr(h, "CONTEXT_HISTORY_JOURNAL_PATH", journal_path)
+        out = h.context_history_evaluation("openai", True, True)
+        assert out["provider_requests"] == 0 and "already exists" in out["refused"]
 
 
-def test_the_evidence_keeps_no_case_text_quote_instructions_or_raw_reply(manifest):
-    texts = [open(p, encoding="utf-8").read() for p in (h.CONTEXT_HISTORY_RUN_01_REPORT_PATH,
-                                                        h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH)]
+@pytest.mark.parametrize("run", ["01", "02"])
+def test_the_evidence_keeps_no_case_text_quote_instructions_or_raw_reply(manifest, run):
+    report_path, journal_path, _, _ = _runs()[run]
+    texts = [open(p, encoding="utf-8").read() for p in (report_path, journal_path)]
     for text in texts:
         assert manifest["candidate"]["instructions"][:60] not in text
         assert "evidence_quote" not in text and "Authorization" not in text
