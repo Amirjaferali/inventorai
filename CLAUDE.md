@@ -1631,7 +1631,7 @@ information, not execution authority.
   - CANDIDATES: none is authorized and none carries standing priority. The (g1) sequence
     continues from step 2 with one Owner-authorized increment at a time.
 
-  **Current (g1) execution checkpoint (newest execution pointer; updated after #952, 2026-11-10; continuity only, not authority).**
+  **Current (g1) execution checkpoint (newest execution pointer; updated after #960, 2026-11-11; continuity only, not authority).**
   Read this checkpoint first, in Claude, Codex or any other agent: it answers, by pointer, the five
   recovery questions below, so a successor does not rebuild the plan from chat or dated records.
   The dated Lean §9.5 entries and the history bullets below stay as evidence behind it and are not
@@ -1657,6 +1657,14 @@ information, not execution authority.
     (FALSIFIED_ELIGIBLE_CREDIT_WITHHELD; gate closed); #951–#952 the context-history evaluation and its
     ONE authorized run (INVALID, transport failure at request 118, no F1–F4 verdict; gate closed). No
     evaluation qualified a method; any further run needs a new Owner authorization and a reviewed commit.
+  - **DELIVERED SINCE #952 — do not repeat** (confirm merge identities on live GitHub): #953 PR #890 recorded as
+    closed without merge; #954 the integrated step offered beside a suppressed question; #955 routine-dispatch automation;
+    #956 and #957 G1-2 store and dimension-handoff hardening; #958 context-history run 02 (INVALID, HTTP 401 at request 80;
+    gate closed; no F1–F4 verdict); #959 allowlisted transport / HTTP failure diagnostics for R2 evaluation runs;
+    #960 saving the INPUTS of one admitted `cap13:planar_single_force_moment` configuration for ONE inventor-chosen
+    component (OWNER_STATED / UNVALIDATED; the moment is recalculated on every read, never stored); and, effective only on
+    its verified merge, G1-PLANAR-MOMENT-REPORT-HANDOFF-01, which shows those saved configurations read-only in the report
+    and PDF (moment contract §12B). Neither is evidence, validation or a capacity, compatibility or safety check.
   - **OPEN OWNER DECISIONS (none requested by this record):** the R2 method decision under the T2-G / R2 owner (Deferred Obligations Register T2-G row and its acceptance obligations A1–A5; R2 and its cross-idea facet stay OPEN, implementation BLOCKED until that separately authorized decision); product admission of a Q10 clarification prompt after its content, attribution and evidence qualification; decisions 1–4 above; OD-2 where proposals would be retained.
   - **History, preserved — post-#860 entries (superseded as current position by the lines above):**
     POSITION was Wave 3 / (g1) step 3; DELIVERED #859 (planar single-force moment, N·mm, UNVALIDATED) and

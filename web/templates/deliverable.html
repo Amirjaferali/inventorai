@@ -360,6 +360,33 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
 </section>
 {% endif %}
+{#- G1-PLANAR-MOMENT-REPORT-HANDOFF-01 — SAVED MOMENT CONFIGURATIONS: the
+    inventor's saved planar-moment configurations, re-derived on read with the
+    SAME items and shared read-only partial as the moment page (no form, no
+    control). A number appears only for a CURRENT item whose re-evaluation
+    succeeded, always with the method's full fixed disclosure; stale, refused
+    and withdrawn items carry their state and no number. No saved
+    configuration -> no section; an unreadable history or a snapshot that does
+    not match this report's project -> UNAVAILABLE, never omitted. A downloaded
+    copy is a fixed snapshot naming its generation time. -#}
+{% set pmr = planar_moment_report if planar_moment_report is defined else none %}
+{% if pmr %}
+{% from "_planar_moment_saved.html" import pm_saved_details with context %}
+<section class="saved-moments-report" id="saved-moments-report" data-pm-report aria-labelledby="saved-moments-report-title" style="border:1px solid #c9d6e3;background:#f5f9fc;border-radius:4px;padding:10px 14px;margin:12px 0">
+  <h2 id="saved-moments-report-title" style="font-size:16px;margin:0 0 8px 0">{{ t('UI_PM_REPORT_HEADING') }}</h2>
+  {% if not pmr.available %}
+  <p style="margin:0;font-size:13px;color:#555" data-pm-report-unavailable>{{ t('UI_PM_REPORT_UNAVAILABLE') }}</p>
+  {% else %}
+  <p style="margin:0 0 6px 0;font-size:13px;color:#555" data-pm-report-boundary>{{ t('UI_PM_REPORT_BOUNDARY') }}</p>
+  {% for item in pmr["items"] %}
+  <div data-pm-report-item style="border:1px solid #e2e6ea;border-radius:4px;padding:8px 12px;margin:8px 0;background:#fff;overflow-wrap:anywhere">
+    {{ pm_saved_details(item) }}
+  </div>
+  {% endfor %}
+  <p style="margin:0;font-size:12px;color:#555" data-pm-report-generated>{{ t('UI_PM_REPORT_GENERATED') }} <bdi dir="ltr">{{ package.generated_at }}</bdi>. {{ t('UI_PM_REPORT_HISTORICAL') }}</p>
+  {% endif %}
+</section>
+{% endif %}
 {#- COMPONENT-DELIVERABLE-VALUE-01 — COMPONENTS YOU HAVE DECLARED: the
     inventor's CURRENT components only (latest corrected wording, original
     declaration order; name, function and part links verbatim, escaped and

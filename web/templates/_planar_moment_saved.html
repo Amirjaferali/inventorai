@@ -1,0 +1,41 @@
+{#- G1-PLANAR-MOMENT-REPORT-HANDOFF-01 — the ONE read-only rendering of a saved
+    planar-moment configuration (one item of ``_pm_saved_view`` in web/app.py),
+    used by the moment page, the HTML report and the PDF. It renders and never
+    computes: every state, number and issue arrives already derived. It holds
+    NO form, link or control - the page adds its own correct / withdraw actions
+    around it; the report and PDF add none. A number appears ONLY for a CURRENT
+    item whose re-evaluation succeeded, and then always with the method's full
+    fixed disclosure (moment contract §9). Inventor text is escaped and
+    isolated with ``dir="auto"``; every number, unit, symbol and identifier sits
+    in an LTR-isolated ``bdi`` so right-to-left reading never reverses it. -#}
+{% macro pm_saved_details(item) %}
+<p style="margin:0 0 4px 0"><span class="pm-state" data-pm-state="{{ item.state }}" style="display:inline-block;font-size:12px;font-weight:bold;padding:2px 8px;border-radius:10px;background:#eef3f8;color:#1f3b57">{{ t('UI_PM_STATE_' ~ item.state) }}</span></p>
+<ul class="plain" style="font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:anywhere">
+  <li>{{ t('UI_PM_FIELD_COMPONENT') }}: <bdi dir="auto" data-pm-component>{{ item.component_name }}</bdi></li>
+  {% if item.part_name %}<li>{{ t('UI_PM_FIELD_PART') }}: <bdi dir="auto" data-pm-part>{{ item.part_name }}</bdi></li>{% endif %}
+  <li>{{ t('UI_PM_FIELD_POINT') }}: <bdi dir="auto" data-pm-point-text>{{ item.point }}</bdi></li>
+  <li>{{ t('UI_PM_FIELD_FORCE') }}: <bdi dir="auto" data-pm-force-text>{{ item.force_context }}</bdi></li>
+  {% for v in item['values'] %}
+  <li>{{ pm_iso('UI_CAP13M_FIELD_' ~ v.role|upper) }}: <bdi dir="ltr" data-pm-input>{{ v.text }}</bdi></li>
+  {% endfor %}
+  <li>{{ t('UI_CAP13M_METHOD_LINE') }}: <bdi dir="ltr" data-pm-method>{{ item.method_id }}</bdi> &middot; <bdi dir="ltr">{{ item.method_version }}</bdi></li>
+  <li>{{ t('UI_PM_FIELD_CORRECTIONS') }}: <bdi dir="ltr">{{ item.corrections }}</bdi></li>
+</ul>
+{% if item.result %}
+<dl class="result" style="margin:0 0 8px 0;font-size:14px;font-weight:bold">
+  <dt style="color:#555;font-size:13px;margin-top:6px;font-weight:normal">{{ pm_iso('UI_CAP13M_RESULT_M') }}</dt>
+  <dd data-pm-result-value><bdi dir="ltr">{{ item.result.value }} {{ item.result.unit }}</bdi></dd>
+</dl>
+<p class="guidance" style="font-size:12px;color:#555;margin:4px 0" data-pm-status>{{ pm_iso('UI_CAP13M_STATUS') }}</p>
+<ol style="font-size:12px;color:#4a3b00;background:#fff8e6;border:1px solid #ecd9a4;border-radius:4px;padding:6px 10px 6px 28px;margin:6px 0;overflow-wrap:anywhere" data-pm-disclosure>{% for part in pm_disclosure() %}<li style="margin:0 0 4px 0">{{ part }}</li>{% endfor %}</ol>
+<ul class="plain" style="font-size:12px;padding-inline-start:20px;margin:6px 0;overflow-wrap:anywhere" data-pm-sources>
+  {% for src in item.result.sources %}<li><bdi dir="ltr" lang="en">{{ src.title }} &mdash; {{ src.url }}</bdi></li>{% endfor %}
+  {% for u in item.result.units %}<li><bdi dir="ltr" lang="en">{{ u.token }}: {{ u.title }}, {{ u.edition }} &mdash; {{ u.url }}</bdi></li>{% endfor %}
+</ul>
+{% elif item.outcome_key %}
+<p class="copy" style="font-size:13px;margin:4px 0" data-pm-outcome>{{ pm_iso(item.outcome_key) }}</p>
+{% endif %}
+{% if item.issues %}
+<ul class="plain" style="font-size:13px;padding-inline-start:20px;margin:6px 0" data-pm-issues>{% for key in item.issues %}<li>{{ t(key) }}</li>{% endfor %}</ul>
+{% endif %}
+{% endmacro %}

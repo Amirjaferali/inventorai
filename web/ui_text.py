@@ -6835,6 +6835,22 @@ UI_STRINGS = {
     "UI_PM_MSG_REJECTED": {
         "en": "Not saved: the form was not complete or not valid. Nothing was changed.",
         "ar": "لم يُحفَظ: النموذج غير مكتمل أو غير صالح. لم يتغيّر شيء."},
+    # G1-PLANAR-MOMENT-REPORT-HANDOFF-01 — the saved configurations in the report / PDF.
+    "UI_PM_REPORT_HEADING": {
+        "en": "Saved moment configurations",
+        "ar": "إعدادات العزم المحفوظة"},
+    "UI_PM_REPORT_BOUNDARY": {
+        "en": "These are configurations you saved for components you chose (OWNER_STATED / UNVALIDATED). Only your inputs and descriptions are kept; each moment shown here was calculated again from them when this report was produced, and only a current configuration shows a number. A saved configuration is NOT EVIDENCE: it does not show that the component can carry this force, that parts are compatible, that anything is safe, or that the design is complete.",
+        "ar": "هذه إعدادات حفظتها أنت لمكوّنات اخترتها (OWNER_STATED / UNVALIDATED). لا يُحفَظ إلا مُدخلاتك ووصفك؛ وكل عزم معروض هنا حُسِب من جديد منها عند إنتاج هذا التقرير، ولا يُعرَض رقم إلا لإعداد حالي. الإعداد المحفوظ ليس دليلًا (NOT EVIDENCE): لا يُثبت أن المكوّن يتحمّل هذه القوة، ولا أن الأجزاء متوافقة، ولا أن شيئًا آمن، ولا أن التصميم مكتمل."},
+    "UI_PM_REPORT_UNAVAILABLE": {
+        "en": "Your saved moment configurations cannot be shown in this report right now: they could not be read, or they do not match the project this report describes. This does not mean that none were saved.",
+        "ar": "يتعذّر عرض إعدادات العزم المحفوظة في هذا التقرير الآن: فإمّا تعذّرت قراءتها، أو أنها لا تطابق المشروع الذي يصفه هذا التقرير. وهذا لا يعني أنك لم تحفظ أيًّا منها."},
+    "UI_PM_REPORT_GENERATED": {
+        "en": "This section was produced at",
+        "ar": "أُنتِج هذا القسم في"},
+    "UI_PM_REPORT_HISTORICAL": {
+        "en": "A downloaded or printed copy is a fixed snapshot of that moment: it is not updated if a component, a configuration or the method changes later.",
+        "ar": "النسخة المُنزَّلة أو المطبوعة لقطة ثابتة لتلك اللحظة: لا تُحدَّث إذا تغيّر لاحقًا مكوّن أو إعداد أو الطريقة."},
     "UI_PM_MSG_CHOOSE_COMPONENT": {
         "en": "Not saved: choose the component this configuration is for.",
         "ar": "لم يُحفَظ: اختر المكوّن الذي يخصّه هذا الإعداد."},
