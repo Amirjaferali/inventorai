@@ -2618,13 +2618,13 @@ body{overflow-wrap:anywhere}
     explicitly specified dimensional need. Never a selected/qualified design. -#}
 {% if engineering_fit_state == 'offer' %}
 <p class="journey-note" data-engineering-fit-link style="margin-top:14px">
-<a href="{{ url_for('cap13_functional_configuration', sid=sid) }}">{{ 'اختياري: متطلبات الأبعاد المستخرجة من فكرتك' if engineering_fit_lang == 'ar' else 'Optional: dimensional requirements from your idea' }}</a>
+<a href="{{ url_for('cap13_functional_configuration', sid=sid) }}">{{ 'اختياري: متطلبات الأبعاد المستخرجة من فكرتك أو من إجابة مسجلة' if engineering_fit_lang == 'ar' else 'Optional: dimensional requirements from your idea or a recorded answer' }}</a>
 <br><span style="color:#777">{{ 'عرض أولي فقط، وليس تصميمًا أو تحققًا هندسيًا.' if engineering_fit_lang == 'ar' else 'A provisional fit only, not a design or engineering assessment.' }}</span>
 </p>
 {% elif engineering_fit_state == 'conflict' %}
 {#- CAP13-PROVISIONAL-FIT-CURRENT-ANSWERS-01: the inventor's current statements
     hold different dimensions or lifts; none is chosen and no view is offered. -#}
-<p class="journey-note" data-engineering-fit-conflict style="margin-top:14px;color:#777">{{ 'فكرتك الأصلية وإجاباتك الحالية لا تذكر أبعاد الجسم أو ارتفاع الرفع بالطريقة نفسها، لذلك لا يُعرض متطلب أبعاد أولي. صحّح الإجابة التي لم تعد تنطبق إن أردت عرضه.' if engineering_fit_lang == 'ar' else 'Your original idea and your current answers do not state the object dimensions or the lift the same way, so no provisional dimensional requirement is shown. Correct the answer that no longer applies if you want it shown.' }}</p>
+<p class="journey-note" data-engineering-fit-conflict style="margin-top:14px;color:#777">{{ 'عباراتك المسجلة لا تذكر أبعاد الجسم أو ارتفاع الرفع بالطريقة نفسها، لذلك لا يُعرض متطلب أبعاد أولي. إذا لم تعد إحدى إجاباتك تنطبق، فصحّحها ليُعرض.' if engineering_fit_lang == 'ar' else 'Your recorded statements do not state the object dimensions or the lift in the same way, so no provisional dimensional requirement is shown. If one of your answers no longer applies, correct it to have the requirement shown.' }}</p>
 {% endif %}
 {#- CAP13-LINK-BEGIN — Stage 25 / CAP-13 Two-Support Static Reactions Slice 1.
     ONE optional link to the request-local calculation page, offered only on an

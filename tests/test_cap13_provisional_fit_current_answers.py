@@ -28,6 +28,9 @@ ANSWER_SWAPPED = "I want to raise the monitor 15 cm above my desk; dimensions 20
 ANSWER_OTHER = "I want to raise the monitor 12 cm above my desk; dimensions 60 x 20 cm"
 IDEA_WITH_FIT = "I want to raise my monitor 15 cm above my desk; dimensions 60 x 20 cm"
 FIT_PAGE = "/session/%s/functional-configuration"
+NOTE_EN = ("Your recorded statements do not state the object dimensions or the lift "
+           "in the same way, so no provisional dimensional requirement is shown.")
+NOTE_AR = "عباراتك المسجلة لا تذكر أبعاد الجسم أو ارتفاع الرفع بالطريقة نفسها"
 
 
 # ==========================================================================
@@ -117,6 +120,7 @@ def test_w01_before_and_after_an_answer_sourced_fit_becomes_available():
     assert _answer(c, sid, ANSWER).status_code in (200, 302)
     body = _page(c, sid)
     assert "data-engineering-fit-link" in body                        # after: the answer is read
+    assert "Optional: dimensional requirements from your idea or a recorded answer" in body
     page = c.get(FIT_PAGE % sid)
     assert page.status_code == 200
     html = page.get_data(as_text=True)
@@ -147,7 +151,8 @@ def test_w03_a_conflict_shows_a_neutral_note_and_offers_nothing(monkeypatch):
     body = _page(c, sid)
     assert "data-engineering-fit-link" not in body
     assert "data-engineering-fit-conflict" in body
-    assert "do not state the object dimensions or the lift the same way" in body
+    assert NOTE_EN in body
+    assert "original idea" not in body.split("data-engineering-fit-conflict", 1)[1].split("</p>", 1)[0]
     assert c.get(FIT_PAGE % sid).status_code != 200
 
 
@@ -157,7 +162,18 @@ def test_w04_the_conflict_note_is_arabic_in_the_arabic_interface():
     assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
     body = _page(c, sid)
     assert "data-engineering-fit-conflict" in body
-    assert "لا تذكر أبعاد الجسم أو ارتفاع الرفع بالطريقة نفسها" in body
+    assert NOTE_AR in body
+    assert "فكرتك الأصلية" not in body.split("data-engineering-fit-conflict", 1)[1].split("</p>", 1)[0]
+
+
+def test_w04b_two_conflicting_answers_get_the_same_neutral_note():
+    c, sid = _mech("cap13cur-w04b@example.com")                       # no candidate in the idea
+    _answer(c, sid, ANSWER)
+    _answer(c, sid, ANSWER_OTHER)
+    body = _page(c, sid)
+    assert "data-engineering-fit-link" not in body
+    assert NOTE_EN in body
+    assert c.get(FIT_PAGE % sid).status_code != 200
 
 
 def test_w05_an_unreadable_history_or_original_idea_offers_nothing(monkeypatch):
