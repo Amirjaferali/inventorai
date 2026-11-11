@@ -4728,6 +4728,31 @@ UI_STRINGS = {
                "يبقى تصريحك أنت، وأي فحص تجريه لاحقًا لا ينطبق إلا ضمن حدوده المعلنة وأدلّته، "
                "ولا يُثبت شيء من ذلك صحة التصميم أو توافق الأجزاء أو أن الفكرة جاهزة."),
     },
+    # G1-SINGLE-DOMAIN-ENGINEERING-CONTINUATION-01: the boundary notes beside the
+    # ONE optional secondary step a single-domain Mechanical project is offered
+    # while a point waits or stays open (the link texts reuse existing keys).
+    "UI_SDC_NOTE_COMPONENTS": {
+        "en": ("Optional while that point stays open: you can list the physical components of "
+               "your invention and what each one does, in your own words. This does not answer "
+               "or resolve the point, and listing a component does not select, check or approve "
+               "it. What you record stays your own statement."),
+        "ar": ("اختياري ما دامت تلك النقطة مفتوحة: يمكنك أن تسرد المكوّنات المادية لاختراعك وما "
+               "يفعله كل منها، بكلماتك أنت. هذا لا يجيب عن النقطة ولا يحلّها، وإدراج مكوّن لا "
+               "يعني اختياره أو فحصه أو اعتماده. ما تسجّله يبقى تصريحك أنت."),
+    },
+    "UI_SDC_NOTE_MOMENT": {
+        "en": ("Optional while that point stays open: for a component you declared, you can "
+               "explore one existing advisory method, the turning effect (moment) of one force "
+               "about a point you choose. You enter every value and statement yourself. This "
+               "does not mean your project needs this calculation or that the component carries "
+               "such a force, and it does not answer the open point, which still needs its own "
+               "input. Nothing it shows validates the design or shows that it is safe."),
+        "ar": ("اختياري ما دامت تلك النقطة مفتوحة: لمكوّن صرّحتَ به، يمكنك أن تستكشف طريقة إرشادية "
+               "موجودة واحدة، هي أثر الدوران (العزم) لقوة واحدة حول نقطة تختارها أنت. أنت من يُدخل "
+               "كل قيمة وكل تصريح. هذا لا يعني أن مشروعك يحتاج إلى هذا الحساب أو أن المكوّن يتحمّل "
+               "مثل هذه القوة، ولا يجيب عن النقطة المفتوحة التي ما زالت تحتاج إلى مدخلاتها الخاصة. "
+               "ولا يُثبت شيء مما يعرضه صحة التصميم أو سلامته."),
+    },
     "UI_NR_RECOVERY_CTA": {
         "en": "See your options",
         "ar": "عرض خياراتك",

@@ -72,8 +72,14 @@
     (`integrated_guidance`) already derived, beside a primary action that stays
     unchanged. One selection rule for every caller: the same target and the same
     availability condition as that step's own primary branch below. It answers,
-    credits and unlocks nothing. `prefix` names the caller's data attributes. -#}
-{% macro integrated_secondary_link(prefix, note_key) %}
+    credits and unlocks nothing. `prefix` names the caller's data attributes.
+    G1-SINGLE-DOMAIN-ENGINEERING-CONTINUATION-01: a project WITHOUT integrated
+    guidance may instead get the ONE step `single_domain_continuation` derives
+    (the existing component form, then the existing planar-moment page) with
+    its own boundary note; integrated guidance always takes precedence and is
+    never imitated. `ns` records that the component step was offered, so the
+    collapsed inventory panel holding its form renders open. -#}
+{% macro integrated_secondary_link(prefix, note_key, ns=none) %}
     {% set link = none %}
     {% if integrated_guidance %}
       {% set link_kind = integrated_guidance.kind %}
@@ -88,9 +94,19 @@
       {% elif link_kind == 'interface_preparation' %}
         {% set link = (url_for('interface_preparation', sid=sid), 'UI_IJG_PREP_CTA') %}
       {% endif %}
+    {% elif single_domain_continuation is defined and single_domain_continuation %}
+      {% set link_kind = single_domain_continuation.kind %}
+      {% if link_kind == 'component_inventory' and component_inventory is defined and component_inventory and component_inventory.can_add %}
+        {% set link = ('#component_name', 'UI_IJG_COMPONENTS_CTA') %}
+        {% set note_key = 'UI_SDC_NOTE_COMPONENTS' %}
+        {% if ns is not none %}{% set ns.ci_open = true %}{% endif %}
+      {% elif link_kind == 'planar_moment' and cap13_planar_moment_link %}
+        {% set link = (url_for('cap13_planar_moment', sid=sid), 'UI_CAP13M_LINK_TEXT') %}
+        {% set note_key = 'UI_SDC_NOTE_MOMENT' %}
+      {% endif %}
     {% endif %}
     {% if link %}
-    <div class="journey-note" data-{{ prefix }}>
+    <div class="journey-note" data-{{ prefix }}{% if not integrated_guidance %} data-{{ prefix }}-scope="single"{% endif %}>
       <p style="margin:0 0 4px 0" data-{{ prefix }}-note>{{ t(note_key) }}</p>
       <a data-{{ prefix }}-link data-{{ prefix }}-kind="{{ link_kind }}" href="{{ link[0] }}">{{ t(link[1]) }}</a>
     </div>
@@ -169,6 +185,9 @@ body{overflow-wrap:anywhere}
 <script defer src="{{ url_for('static', filename='js/journey_feedback.js') }}"></script>
 {% endblock %}
 {% block content %}
+{#- G1-SINGLE-DOMAIN-ENGINEERING-CONTINUATION-01: set by the Compass secondary-link
+    macro when it offers the component step, so that step's form is reachable. -#}
+{% set compass_ns = namespace(ci_open=false) %}
 {# One-shot, truthful client cleanup signals: reaching a session page means the seed
    idea was accepted; `answer-accepted` is set only after a durable accepted answer. #}
 <div id="draft-signals" data-draft-scope="{{ sid }}" data-seed-accepted="{{ '1' if seed_accepted else '0' }}" data-answer-accepted="{{ '1' if answer_accepted else '0' }}" hidden></div>
@@ -445,7 +464,7 @@ body{overflow-wrap:anywhere}
         non-answer suppresses the re-ask of the current point, the same secondary
         integrated step as the routed-recovery branch below (one shared rule).
         The point stays open and its question stays available to revisit. -#}
-    {{ integrated_secondary_link('uqc', 'UI_UQC_NOTE') }}
+    {{ integrated_secondary_link('uqc', 'UI_UQC_NOTE', compass_ns) }}
   {% elif (state.maturity_level < 2 or open_gaps) and question %}
     {% set current_question_primary = true %}
     <p class="journey-note">{{ t('UI_A1_ANSWER_NOTE') }}</p>
@@ -458,7 +477,7 @@ body{overflow-wrap:anywhere}
         as ONE secondary link (never a primary action), with the same target and
         the same availability condition as its own branch below. It answers,
         credits and unlocks nothing; the routed point stays exactly as it is. -#}
-    {{ integrated_secondary_link('rrc', 'UI_RRC_NOTE' if routed_recovery.gap_type == 'PHYSICAL_FEASIBILITY' else 'UI_RRC_NOTE_POINT') }}
+    {{ integrated_secondary_link('rrc', 'UI_RRC_NOTE' if routed_recovery.gap_type == 'PHYSICAL_FEASIBILITY' else 'UI_RRC_NOTE_POINT', compass_ns) }}
   {% elif criticality_step %}
     <a class="journey-primary" data-primary-action href="#criticality-review">{{ t('UI_A1_REVIEW_REQUIREMENT') }}</a>
   {#- INTEGRATED-JOURNEY-GUIDANCE-01: after every existing primary action, an
@@ -1960,7 +1979,7 @@ body{overflow-wrap:anywhere}
     withdrawn components are listed apart as history only. -#}
 {% if component_inventory %}
 {% set ci = component_inventory %}
-<details id="component-inventory" class="component-inventory" data-ci-status="{{ ci.status }}"{% if ci.ack or ci.error %} open{% endif %} style="margin-top:14px;border:1px solid #d6dde8;border-radius:4px;background:#f7f9fc;padding:10px 14px">
+<details id="component-inventory" class="component-inventory" data-ci-status="{{ ci.status }}"{% if ci.ack or ci.error or compass_ns.ci_open %} open{% endif %} style="margin-top:14px;border:1px solid #d6dde8;border-radius:4px;background:#f7f9fc;padding:10px 14px">
   <summary style="cursor:pointer;font-size:13px;color:#2c3e50;font-weight:bold">{{ t('UI_CI_HEADING') }}</summary>
   {% if ci.ack %}<p class="ci-ack" data-ci-ack role="status" style="font-size:13px;color:#1e5631;margin:8px 0">{{ t(ci.ack) }}</p>{% endif %}
   {% if ci.error %}<p class="ci-error" data-ci-error role="alert" style="font-size:13px;color:#8a1f11;margin:8px 0">{{ t(ci.error) }}</p>{% endif %}

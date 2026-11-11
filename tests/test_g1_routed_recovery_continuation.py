@@ -8,7 +8,7 @@ Synthetic data only. What is pinned:
     and the same availability condition as that step's own primary branch;
   * rendering the page or following the link changes nothing: no gap, maturity, routing,
     substantive-attempt, accepted-risk, record or R2 effect;
-  * no link while a governed question is served, on a single-domain project, or when the owner
+  * no integrated link while a governed question is served, on a single-domain project, or when the owner
     derives nothing usable (None, kind None, a declaration form that is not on the page);
   * the existing correction / accepted-risk recovery behaves exactly as before;
   * EN / AR copy states the boundary (the routed point stays open; nothing is resolved or shown
@@ -146,7 +146,11 @@ def test_05_no_link_while_a_governed_question_is_served(client):
 
 
 @pytest.mark.parametrize("forced", [None, "declare_interaction"])
-def test_06_single_domain_routed_recovery_gets_no_link(client, monkeypatch, forced):
+def test_06_single_domain_routed_recovery_gets_no_integrated_link(client, monkeypatch, forced):
+    """No INTEGRATED step on a single-domain page. Since G1-SINGLE-DOMAIN-ENGINEERING-
+    CONTINUATION-01 a single-domain Mechanical project gets its own ONE component step instead
+    (tests/test_g1_single_domain_engineering_continuation.py); any integrated guidance object,
+    even an unusable forced one, keeps precedence and that step is not offered."""
     sid = _start(client)
     for value in (MECH_ANSWER, MECH_ANSWER, WEAK, BA_1, BA_2):
         _answer(client, sid, value)
@@ -155,7 +159,11 @@ def test_06_single_domain_routed_recovery_gets_no_link(client, monkeypatch, forc
                             lambda *_a, **_k: {"kind": forced, "clearance": []})
     page = _raw(client, sid)
     assert _href(page) == "#routed-recovery"
-    assert "data-rrc" not in page
+    if forced:
+        assert "data-rrc" not in page
+    else:
+        assert _links(page) == [("component_inventory", "#component_name")]
+        assert 'data-rrc-scope="single"' in page
 
 
 @pytest.mark.parametrize("derived", [None, {"kind": None, "clearance": []},
