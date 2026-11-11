@@ -28,6 +28,7 @@ NOT authentication, ownership, or authorization.
 """
 import dataclasses
 import json
+import hashlib
 import re
 import sqlite3
 import uuid
@@ -146,6 +147,7 @@ from engine import interface_observation as _observation
 # declaration (semantics owner) and its method consumer's value vocabulary.
 from engine import subsystem_model as _sm
 from engine import mechanical_planar_clearance as _pcc
+from engine import cap13_planar_moment as _cap13m  # G1-PLANAR-MOMENT-SAVED-DECLARATION-01
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
     active_reference_for_anchor, REFERENCE_INSERTED, REFERENCE_EXACT_REPLAY,
@@ -472,6 +474,30 @@ class PlanarClearanceCorrupt(StoreError):
     participation removal generations are malformed, orphaned or of an unknown
     table shape. Fail-closed for the WHOLE collection (UNAVAILABLE, never NOT
     RECORDED): nothing partial is returned, repaired or deleted."""
+
+
+class PlanarMomentRejected(StoreError):
+    """G1-PLANAR-MOMENT-SAVED-DECLARATION-01: a saved planar-moment revision is
+    not admissible against DURABLE truth or is not admitted by the existing
+    method (decided inside the write transaction; nothing written). ``cause`` is
+    the semantic owner's refusal (``engine.subsystem_model.PlanarMomentError``
+    subclass) or ``None``."""
+
+    def __init__(self, message, cause=None):
+        super().__init__(message)
+        self.cause = cause
+
+
+class PlanarMomentConflict(StoreError):
+    """G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the submission identity already
+    names a DIFFERENT committed action. Nothing written."""
+
+
+class PlanarMomentCorrupt(StoreError):
+    """G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the project's saved planar-moment
+    history is malformed, orphaned or of an unknown table shape. Fail-closed for
+    the WHOLE collection (UNAVAILABLE, never NOT RECORDED): nothing partial is
+    returned, repaired or deleted."""
 
 
 class ParticipationPreparationRejected(StoreError):
@@ -2299,6 +2325,125 @@ def _planar_clearance_ddl():
 
 _PLANAR_CLEARANCE_SCHEMA = (_planar_clearance_ddl(),)
 
+
+# G1-PLANAR-MOMENT-SAVED-DECLARATION-01 — ``planar_moment_revisions``: the
+# inventor's append-only, revisioned INPUTS of the existing CAP-13 planar
+# single-force moment for ONE declared component (never a result: calc / units
+# §12 unchanged; the moment is re-derived on every read through the unchanged
+# consumer). ONE row per (declaration, position): position 0 DECLARED, then
+# CORRECTED (each with the COMPLETE material), then at most one terminal
+# WITHDRAWN (no material). Every material row binds the component and its
+# revision position, the declared Mechanical part it was saved for (or NULL),
+# the inventor's point description and force context, the exact entered values,
+# the five declarations and nine screen answers - which, because only an
+# ADMITTED configuration is ever saved, can only read 'applies' / 'no' - and the
+# method identity (id, version, governed artifact version and SHA-256) with the
+# declaration-contract version. Composite foreign keys anchor the component and
+# the part to THIS project. Every row is OWNER_STATED / UNVALIDATED. The CHECKs
+# are a database backstop only; the loader re-validates the WHOLE history.
+# Additive and idempotent; an existing table of any other shape is refused;
+# nothing is backfilled. Rollback is disable-and-preserve.
+_PLANAR_MOMENT_VALUE_COLUMNS = tuple("value_" + r for r in _sm.PLANAR_MOMENT_VALUE_ROLES)
+_PLANAR_MOMENT_DECL_COLUMNS = tuple("decl_" + d for d in _cap13m.DECLARATION_IDS)
+_PLANAR_MOMENT_SCREEN_COLUMNS = tuple("screen_" + s for s in _cap13m.SCREEN_ITEMS)
+_PLANAR_MOMENT_MATERIAL_COLUMNS = (
+    ("component_revision", "part_id", "point_description", "force_context")
+    + _PLANAR_MOMENT_VALUE_COLUMNS + _PLANAR_MOMENT_DECL_COLUMNS
+    + _PLANAR_MOMENT_SCREEN_COLUMNS
+    + ("method_id", "method_version", "artifact_version", "artifact_sha256",
+       "declaration_version"))
+_PLANAR_MOMENT_COLUMNS = (
+    ("project_id", "declaration_id", "revision_no", "revision_id", "kind",
+     "component_id")
+    + _PLANAR_MOMENT_MATERIAL_COLUMNS
+    + ("provenance", "validation_state", "submission_key", "event_seq"))
+
+
+def _planar_moment_ddl():
+    text_check = ("(%(c)s IS NULL OR (typeof(%(c)s) = 'text' AND length(%(c)s) "
+                  "BETWEEN 1 AND %(n)d AND instr(CAST(%(c)s AS BLOB), X'00') = 0))")
+    value_check = ("(%(c)s IS NULL OR (typeof(%(c)s) = 'text' AND length(%(c)s) "
+                   "BETWEEN 1 AND %(n)d AND %(c)s NOT GLOB '*[^0-9.]*'))")
+    required = tuple(c for c in _PLANAR_MOMENT_MATERIAL_COLUMNS if c != "part_id")
+    checks = [
+        "CHECK (typeof(revision_no) = 'integer' AND revision_no BETWEEN 0 AND %d)"
+        % _sm.MAX_PLANAR_MOMENT_REVISION_NO,
+        "CHECK (kind IN ('DECLARED', 'CORRECTED', 'WITHDRAWN'))",
+        "CHECK ((kind = 'DECLARED') = (revision_no = 0))",
+        "CHECK (kind <> 'CORRECTED' OR revision_no <= %d)"
+        % _sm.MAX_PLANAR_MOMENT_CORRECTIONS,
+        "CHECK (typeof(declaration_id) = 'text' AND length(declaration_id) = 36)",
+        "CHECK (typeof(revision_id) = 'text' AND length(revision_id) = 36)",
+        "CHECK (typeof(component_id) = 'text' AND length(component_id) > 0)",
+        "CHECK (part_id IS NULL OR (typeof(part_id) = 'text' AND length(part_id) = 36))",
+        "CHECK (component_revision IS NULL OR (typeof(component_revision) = 'integer' "
+        "AND component_revision >= 0))",
+        "CHECK (provenance = 'OWNER_STATED')",
+        "CHECK (validation_state = 'UNVALIDATED')",
+        "CHECK (typeof(submission_key) = 'text' AND length(submission_key) > 0)",
+        "CHECK (typeof(event_seq) = 'integer' AND event_seq >= 0)",
+        "CHECK ((kind = 'WITHDRAWN' AND " + " AND ".join(
+            "%s IS NULL" % c for c in _PLANAR_MOMENT_MATERIAL_COLUMNS)
+        + ") OR (kind <> 'WITHDRAWN' AND "
+        + " AND ".join("%s IS NOT NULL" % c for c in required) + "))",
+        "CHECK (artifact_sha256 IS NULL OR (typeof(artifact_sha256) = 'text' AND "
+        "length(artifact_sha256) = 64 AND artifact_sha256 NOT GLOB '*[^0-9a-f]*'))",
+    ]
+    checks += ["CHECK " + text_check % {"c": c, "n": _sm.MAX_PLANAR_MOMENT_TEXT_LENGTH}
+               for c in ("point_description", "force_context")]
+    checks += ["CHECK " + text_check % {"c": c, "n": _sm.MAX_PLANAR_MOMENT_VERSION_TEXT}
+               for c in ("method_id", "method_version", "artifact_version",
+                         "declaration_version")]
+    checks += ["CHECK " + value_check % {"c": c, "n": _cap13m.MAX_VALUE_CHARS}
+               for c in _PLANAR_MOMENT_VALUE_COLUMNS]
+    # only an ADMITTED configuration is ever saved
+    checks += ["CHECK (%s IS NULL OR %s = '%s')" % (c, c, _cap13m.ANSWER_APPLIES)
+               for c in _PLANAR_MOMENT_DECL_COLUMNS]
+    checks += ["CHECK (%s IS NULL OR %s = '%s')" % (c, c, _cap13m.SCREEN_NO)
+               for c in _PLANAR_MOMENT_SCREEN_COLUMNS]
+    cols = ["project_id TEXT NOT NULL", "declaration_id TEXT NOT NULL",
+            "revision_no INTEGER NOT NULL", "revision_id TEXT NOT NULL",
+            "kind TEXT NOT NULL", "component_id TEXT NOT NULL",
+            "component_revision INTEGER", "part_id TEXT", "point_description TEXT",
+            "force_context TEXT"]
+    cols += ["%s TEXT" % c for c in _PLANAR_MOMENT_VALUE_COLUMNS
+             + _PLANAR_MOMENT_DECL_COLUMNS + _PLANAR_MOMENT_SCREEN_COLUMNS]
+    cols += ["method_id TEXT", "method_version TEXT", "artifact_version TEXT",
+             "artifact_sha256 TEXT", "declaration_version TEXT",
+             "provenance TEXT NOT NULL", "validation_state TEXT NOT NULL",
+             "submission_key TEXT NOT NULL", "event_seq INTEGER NOT NULL"]
+    keys = ["PRIMARY KEY (project_id, declaration_id, revision_no)",
+            "UNIQUE (project_id, revision_id)",
+            "UNIQUE (project_id, submission_key)",
+            "UNIQUE (project_id, event_seq)",
+            "FOREIGN KEY (project_id) REFERENCES projects(project_id)",
+            "FOREIGN KEY (project_id, component_id) "
+            "REFERENCES project_components(project_id, component_id)",
+            "FOREIGN KEY (project_id, part_id) "
+            "REFERENCES project_subsystems(project_id, subsystem_id)"]
+    return ("CREATE TABLE IF NOT EXISTS planar_moment_revisions (\n    "
+            + ",\n    ".join(cols + keys + checks) + "\n)")
+
+
+_PLANAR_MOMENT_SCHEMA = (_planar_moment_ddl(),)
+
+
+def planar_moment_method_identity():
+    """``(method_id, method_version, artifact_version, artifact_sha256)`` of
+    the CURRENT planar-moment consumer and its validated governed artifact, or
+    None when the artifact cannot be read or validated (fails closed). The
+    digest is the SHA-256 of the artifact's canonical JSON, so any governed edit
+    changes it. Stamped onto every saved configuration inside the serialized
+    write (never taken from the client) and compared on every read."""
+    try:
+        artifact = _cap13m.load_artifact()
+    except _cap13m.MomentKnowledgeError:
+        return None
+    canonical = json.dumps(artifact, sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=True).encode("ascii")
+    return (_cap13m.METHOD_ID, _cap13m.METHOD_VERSION,
+            str(artifact.get("artifact_version")), hashlib.sha256(canonical).hexdigest())
+
 # BOARD-OUTLINE-SOURCE-BINDING-01 — ``planar_clearance_source_bindings``: ONE
 # row per file-linked (``planar-clearance-declaration/2``) revision, keyed by
 # that revision and anchored to it by a composite foreign key. It retains only
@@ -2693,6 +2838,10 @@ PART_TEMPERATURE_CHANGE_UNCHANGED = "UNCHANGED"
 PLANAR_CLEARANCE_INSERTED = "INSERTED"
 PLANAR_CLEARANCE_EXACT_REPLAY = "EXACT_REPLAY"
 
+# G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the outcomes of a saved planar-moment write.
+PLANAR_MOMENT_INSERTED = "INSERTED"
+PLANAR_MOMENT_EXACT_REPLAY = "EXACT_REPLAY"
+
 # COMPONENT-INTERFACE-PARTICIPATION-01: the outcomes of a participation write.
 INTERFACE_PARTICIPATION_SAVED = "SAVED"
 INTERFACE_PARTICIPATION_CLEARED = "CLEARED"
@@ -2859,6 +3008,7 @@ class SqliteRecordStore:
             self._migrate_planar_clearance_sources(self._conn)
             self._migrate_constraint_acceptance(self._conn)
             self._migrate_constraint_engineering_links(self._conn)
+            self._migrate_planar_moments(self._conn)
             self._migrate_decision_comparison(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
@@ -3334,6 +3484,22 @@ class SqliteRecordStore:
             elif found[0] != sql:
                 raise sqlite3.DatabaseError(
                     "a constraint link trigger has an unrecognised shape")
+
+    def _migrate_planar_moments(self, conn) -> None:
+        """G1-PLANAR-MOMENT-SAVED-DECLARATION-01 forward migration: additively
+        create ``planar_moment_revisions`` after the component and composition
+        tables it references, inside the store's single migration transaction.
+        Idempotent on a fresh and on an existing populated database; touches no
+        existing table, column, trigger or row; nothing is backfilled. A table
+        that already exists in any other shape is refused
+        (``sqlite3.DatabaseError``) rather than read as empty. Rollback is
+        disable-and-preserve."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(planar_moment_revisions)").fetchall())
+        if columns and columns != _PLANAR_MOMENT_COLUMNS:
+            raise sqlite3.DatabaseError("planar_moment_revisions has an unrecognised shape")
+        for stmt in _PLANAR_MOMENT_SCHEMA:
+            conn.execute(stmt)
 
     def _migrate_decision_comparison(self, conn) -> None:
         """INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 forward migration:
@@ -5444,6 +5610,198 @@ class SqliteRecordStore:
                     (project_id, revision.revision_id)
                     + tuple(getattr(source, c) for c in _PCC_SOURCE_COLUMNS[2:]))
         return PLANAR_CLEARANCE_INSERTED, revision
+
+    # --- G1-PLANAR-MOMENT-SAVED-DECLARATION-01 (append-only inputs) ----------
+    _PLANAR_MOMENT_SELECT = ", ".join(_PLANAR_MOMENT_COLUMNS[1:])
+
+    @staticmethod
+    def _decode_planar_moment(row):
+        named = dict(zip(_PLANAR_MOMENT_COLUMNS[1:], row))
+        material = None
+        if named["kind"] != _sm.PLANAR_MOMENT_WITHDRAWN:
+            material = _sm.PlanarMomentMaterial(
+                component_id=named["component_id"],
+                component_revision=named["component_revision"],
+                part_id=named["part_id"],
+                point_description=named["point_description"],
+                force_context=named["force_context"],
+                values=tuple(named[c] for c in _PLANAR_MOMENT_VALUE_COLUMNS),
+                declarations=tuple(named[c] for c in _PLANAR_MOMENT_DECL_COLUMNS),
+                screen=tuple(named[c] for c in _PLANAR_MOMENT_SCREEN_COLUMNS),
+                method_id=named["method_id"], method_version=named["method_version"],
+                artifact_version=named["artifact_version"],
+                artifact_sha256=named["artifact_sha256"],
+                declaration_version=named["declaration_version"])
+        revision = _sm.PlanarMomentRevision(
+            revision_id=named["revision_id"], declaration_id=named["declaration_id"],
+            revision_no=named["revision_no"], kind=named["kind"],
+            component_id=named["component_id"], material=material,
+            provenance=named["provenance"], validation_state=named["validation_state"])
+        return revision, named["submission_key"], named["event_seq"]
+
+    @staticmethod
+    def _encode_planar_moment(project_id, revision, submission_key, event_seq):
+        """The row of ``_PLANAR_MOMENT_COLUMNS`` for one revision (a withdrawal
+        stores NULL for every material column). Never a calculated result."""
+        m = revision.material
+        if m is None:
+            material = (None,) * len(_PLANAR_MOMENT_MATERIAL_COLUMNS)
+        else:
+            material = ((m.component_revision, m.part_id, m.point_description,
+                         m.force_context)
+                        + tuple(m.values) + tuple(m.declarations) + tuple(m.screen)
+                        + (m.method_id, m.method_version, m.artifact_version,
+                           m.artifact_sha256, m.declaration_version))
+        row = ((project_id, revision.declaration_id, revision.revision_no,
+                revision.revision_id, revision.kind, revision.component_id)
+               + material
+               + (revision.provenance, revision.validation_state, submission_key,
+                  event_seq))
+        if len(row) != len(_PLANAR_MOMENT_COLUMNS):
+            raise PlanarMomentRejected("revision does not encode")
+        return row
+
+    def _planar_moment_snapshot(self, project_id):
+        self._require_project(project_id)
+        subsystems = self.load_project_subsystems(project_id)
+        root = self._conn.execute(
+            "SELECT confirmed_domain FROM projects WHERE project_id = ?",
+            (project_id,)).fetchone()
+        inventory, _d, _k, _r, _rk = self._component_history(project_id, subsystems)
+        rows = self._conn.execute(
+            "SELECT " + self._PLANAR_MOMENT_SELECT + " FROM planar_moment_revisions "
+            "WHERE project_id = ? ORDER BY event_seq ASC", (project_id,)).fetchall()
+        revisions, keys = [], []
+        try:
+            for index, row in enumerate(rows):
+                revision, key, seq = self._decode_planar_moment(row)
+                if seq != index or not isinstance(key, str) or not key:
+                    raise _sm.PlanarMomentError("event order malformed")
+                revisions.append(revision)
+                keys.append(key)
+            ledger = _sm.project_planar_moments(revisions, inventory, subsystems)
+        except (_sm.PlanarMomentError, TypeError, ValueError):
+            raise PlanarMomentCorrupt("saved planar moment history is malformed") from None
+        return {"subsystems": tuple(subsystems),
+                "root_domain": root[0] if root else None,
+                "inventory": inventory, "ledger": ledger,
+                "_revisions": tuple(revisions), "_keys": tuple(keys)}
+
+    def load_planar_moments(self, project_id: str) -> dict:
+        """G1-PLANAR-MOMENT-SAVED-DECLARATION-01: ONE coherent read snapshot of
+        the durable composition (``subsystems``), the project's immutable
+        ``root_domain`` (its initial analysis focus), the validated component
+        ``inventory`` and the validated saved-configuration ``ledger`` - each
+        validated WHOLE together (the existing corrupt errors and
+        ``PlanarMomentCorrupt``; nothing partial). No project ->
+        ``ProjectNotFound``. IR-01 refuses an unresolved connection before any
+        SELECT. Read-only; writes nothing; holds no calculated result."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            snapshot = self._planar_moment_snapshot(project_id)
+        snapshot.pop("_revisions")
+        snapshot.pop("_keys")
+        return snapshot
+
+    def committed_planar_moment_for_submission(self, project_id: str,
+                                               submission_key: str):
+        """The COMMITTED revision written under ``submission_key`` or ``None``
+        (confirm-by-reload). The whole history is validated first."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(submission_key, str) or not submission_key:
+            return None
+        with self.read_snapshot():
+            snapshot = self._planar_moment_snapshot(project_id)
+        keys = snapshot["_keys"]
+        if submission_key not in keys:
+            return None
+        return snapshot["_revisions"][keys.index(submission_key)]
+
+    def append_planar_moment_revision(self, project_id: str, revision,
+                                      submission_key: str, *, admit=None) -> tuple:
+        """Atomically append ONE saved configuration, correction or terminal
+        withdrawal and return ``(outcome, stored_revision)``:
+        ``PLANAR_MOMENT_EXACT_REPLAY`` with the already-committed revision when
+        ``submission_key`` already names this exact action (recognised first;
+        nothing written), else ``PLANAR_MOMENT_INSERTED``.
+
+        ONE serialized ``BEGIN IMMEDIATE`` transaction against DURABLE truth:
+        the project exists; its composition, WHOLE component history and saved
+        history validate (the corrupt errors); the submission identity is
+        unused or names exactly this action (``PlanarMomentConflict``); for a
+        declaration or correction the material is rebuilt from durable truth -
+        the component is active and may carry this calculation here (on an
+        integrated project: linked to the declared Mechanical part), its
+        revision position is unchanged, and the method identity is the CURRENT
+        consumer's - and must equal the submitted material; then ``admit``
+        (REQUIRED; the caller's run of the existing consumer through its one
+        trusted binding) must return True for that material, so ONLY a
+        configuration the method admits with SUCCESS is ever saved; the
+        lifecycle rules hold. Any refusal raises ``PlanarMomentRejected``
+        carrying the semantic owner's cause; nothing is written. Full rollback
+        on any failure. IR-01: never writes on top of an unresolved
+        connection. No calculated value is written."""
+        if not isinstance(revision, _sm.PlanarMomentRevision):
+            raise PlanarMomentRejected("not a planar moment revision")
+        if not isinstance(submission_key, str) or not submission_key:
+            raise PlanarMomentRejected("a submission identity is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            snap = self._planar_moment_snapshot(project_id)
+            keys, revisions, ledger = snap["_keys"], snap["_revisions"], snap["ledger"]
+            if submission_key in keys:
+                stored = revisions[keys.index(submission_key)]
+                if _sm.same_planar_moment_action(stored, revision):
+                    return PLANAR_MOMENT_EXACT_REPLAY, stored
+                raise PlanarMomentConflict(
+                    "the submission identity already names a different action")
+            try:
+                if revision.kind == _sm.PLANAR_MOMENT_WITHDRAWN:
+                    if revision.material is not None:
+                        raise _sm.PlanarMomentError("a withdrawal carries material")
+                    _sm.withdrawn_planar_moment(
+                        ledger, revision.declaration_id, revision.revision_no - 1)
+                else:
+                    m = revision.material
+                    if not isinstance(m, _sm.PlanarMomentMaterial):
+                        raise _sm.PlanarMomentError("material missing")
+                    rebuilt = _sm.planar_moment_material(
+                        snap["inventory"], snap["subsystems"], snap["root_domain"],
+                        m.component_id, m.component_revision, m.point_description,
+                        m.force_context, m.values, m.declarations, m.screen,
+                        planar_moment_method_identity())
+                    if rebuilt != m or revision.component_id != m.component_id:
+                        raise _sm.PlanarMomentStale("the material is not current")
+                    try:
+                        admitted = admit is not None and admit(m) is True
+                    except Exception:
+                        admitted = False
+                    if not admitted:
+                        raise _sm.PlanarMomentNotAdmitted("the method did not admit it")
+                    if revision.kind == _sm.PLANAR_MOMENT_DECLARED:
+                        if revision.revision_no != 0 or ledger.record_for(
+                                revision.declaration_id) is not None:
+                            raise _sm.PlanarMomentError("not a new identity")
+                        _sm.declared_planar_moment(ledger, m)
+                    elif revision.kind == _sm.PLANAR_MOMENT_CORRECTED:
+                        _sm.corrected_planar_moment(
+                            ledger, revision.declaration_id, revision.revision_no - 1, m)
+                    else:
+                        raise _sm.PlanarMomentError("unknown kind")
+                if revision.revision_id in {r.revision_id for r in revisions}:
+                    raise _sm.PlanarMomentError("revision identity reused")
+                _sm.project_planar_moments(revisions + (revision,), snap["inventory"],
+                                           snap["subsystems"])
+            except _sm.PlanarMomentError as exc:
+                raise PlanarMomentRejected("the revision is not admissible",
+                                           cause=exc) from None
+            self._conn.execute(
+                "INSERT INTO planar_moment_revisions ("
+                + ", ".join(_PLANAR_MOMENT_COLUMNS) + ") VALUES ("
+                + ", ".join("?" * len(_PLANAR_MOMENT_COLUMNS)) + ")",
+                self._encode_planar_moment(project_id, revision, submission_key,
+                                           len(revisions)))
+        return PLANAR_MOMENT_INSERTED, revision
 
     # --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value) -
     def _validated_participation_preparations(self, project_id, interfaces,

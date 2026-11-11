@@ -22,6 +22,7 @@ from flask import (
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
 from engine.domain_rules import get_domain_questions  # Stage 28 Optional Part Slice 2
 from engine import subsystem_model as _subsystem_model  # Stage 15 Slice 1: the ONE subsystem owner
+from engine import record_store as _record_store  # G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the method identity stamp
 from engine import safety_signal as _safety_signal  # 28-T5: part-local advisory (same owner)
 from engine import experiment_result as _experiment_result  # CAP-09 Result Event Slice 1
 from engine import interface_observation as _interface_observation  # Stage 15 Slice 4
@@ -198,6 +199,10 @@ from engine.record_store import (
     PlanarClearanceConflict as _PlanarClearanceConflict,
     PlanarClearanceCorrupt as _PlanarClearanceCorrupt,
     PLANAR_CLEARANCE_INSERTED as PLANAR_CLEARANCE_INSERTED_OUTCOME,
+    PlanarMomentRejected as _PlanarMomentRejected,
+    PlanarMomentConflict as _PlanarMomentConflict,
+    PlanarMomentCorrupt as _PlanarMomentCorrupt,
+    PLANAR_MOMENT_INSERTED as _PLANAR_MOMENT_INSERTED,
     INTERFACE_PARTICIPATION_UNCHANGED as _ICP_UNCHANGED,
     ParticipationPreparationRejected as _ParticipationPreparationRejected,
     ParticipationPreparationStale as _ParticipationPreparationStale,
@@ -16673,7 +16678,8 @@ def _cap13m_result_view(result):
 
 
 def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=None,
-                   evaluation=None, error=None):
+                   evaluation=None, error=None, notice=None, correct_id=None,
+                   save_draft=None):
     lang = _current_ui_lang()
     view = None
     outcome_key = None
@@ -16682,6 +16688,17 @@ def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=
             view = _cap13m_result_view(evaluation["result"])
         else:
             outcome_key = "UI_CAP13M_OUTCOME_%s" % evaluation["outcome"]
+    # G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the saved configurations, read from
+    # ONE store snapshot and re-evaluated through the unchanged consumer on
+    # every render (no stored number). Only on an eligible page.
+    saved = _pm_saved_view(sid, lang) if eligible else None
+    correcting = None
+    if saved is not None and saved["available"] and correct_id:
+        correcting = next((i for i in saved["items"]
+                           if i["declaration_id"] == correct_id and not i["withdrawn"]),
+                          None)
+    if status == 200 and saved is not None and not saved["available"]:
+        status = 503 if evaluation is None and not error else status
     response = make_response(render_template(
         "cap13_planar_moment.html",
         sid=sid,
@@ -16711,6 +16728,15 @@ def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=
         screen_yes=_cap13m.SCREEN_YES,
         screen_no=_cap13m.SCREEN_NO,
         max_value_chars=_cap13m.MAX_VALUE_CHARS,
+        notice_key=notice,
+        saved=saved,
+        correcting=correcting,
+        save_draft=save_draft or {},
+        pm_text_max=_subsystem_model.MAX_PLANAR_MOMENT_TEXT_LENGTH,
+        pm_submission=(_fresh_submission_identity(sid, _PM_SAVE_DOMAIN)
+                       if saved is not None and saved["available"] else None),
+        pm_withdraw_submission=(_fresh_submission_identity(sid, _PM_WITHDRAW_DOMAIN)
+                                if saved is not None and saved["available"] else None),
     ), status)
     response.headers["Cache-Control"] = "no-store"
     return response
@@ -16721,7 +16747,11 @@ def cap13_planar_moment(sid):
     if not _project_authorized(sid):
         return _deny_project()
     eligible, part = _calc_gate(sid, _cap13m)
-    return _render_cap13m(sid, eligible=eligible, declared_part=part)
+    # G1-PLANAR-MOMENT-SAVED-DECLARATION-01: "Correct" opens the calculation
+    # form pre-filled from a saved configuration (read in that section).
+    captured, correct_id = _pm_correct_request(sid, eligible, prefill=True)
+    return _render_cap13m(sid, eligible=eligible, declared_part=part, captured=captured,
+                          correct_id=correct_id)
 
 
 @app.route("/session/<sid>/planar-moment", methods=["POST"])
@@ -16741,8 +16771,11 @@ def cap13_planar_moment_post(sid):
         return _render_cap13m(sid, status=400, declared_part=part,
                               error="UI_CAP13M_ERR_REQUEST")
     evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
+    # G1-PLANAR-MOMENT-SAVED-DECLARATION-01: a correction in progress travels in
+    # the query string (the calculation form itself is unchanged and strict).
+    _ignored, correct_id = _pm_correct_request(sid, eligible, prefill=False)
     return _render_cap13m(sid, declared_part=part, captured=captured,
-                          evaluation=evaluation)
+                          evaluation=evaluation, correct_id=correct_id)
 
 
 # =============================================================================
@@ -21810,6 +21843,359 @@ def _run_config():
 # API blueprint. Registration only — all API behaviour lives in web/api_v1.py.
 from web.api_v1 import api_v1_bp as _api_v1_bp  # noqa: E402  (mount-time import)
 app.register_blueprint(_api_v1_bp)
+
+
+
+# =============================================================================
+# G1-PLANAR-MOMENT-SAVED-DECLARATION-01 — saved planar-moment configurations
+# =============================================================================
+# The inventor may SAVE a configuration of the existing moment calculation for
+# ONE component they declared and choose themselves (never inferred): only the
+# inputs - the exact entered F and d⊥, the five declarations, the nine screen
+# answers - and their own description of the chosen point and of the force
+# context, on the existing Stage-15 declaration owner (``engine/subsystem_model.py``)
+# in ONE append-only family (``planar_moment_revisions``). The moment is NEVER
+# stored: every render re-runs the SAME consumer through the SAME one trusted
+# binding (``_CAP13_MOMENT_BINDING``; calc / units §12 unchanged). A save is
+# accepted only when the existing method admits the configuration with SUCCESS,
+# checked by the route and again inside the ONE serialized write. A changed
+# component, part link, method or governed artifact reads NEEDS RECONFIRMATION
+# with no number; an unreadable history reads UNAVAILABLE, never "none". The
+# association, the point and the force context are OWNER_STATED / UNVALIDATED:
+# nothing here says that the component carries the force, and a saved
+# configuration is not a complete force or component assessment, evidence, a
+# verified design, a compatibility or a safety statement.
+_PM_SAVE_DOMAIN = "pm-save-submission-v1"
+_PM_WITHDRAW_DOMAIN = "pm-withdraw-submission-v1"
+_PM_HEAD_RE = re.compile(r"^(none|0|[1-9][0-9]?)$")
+_PM_COUNT_RE = re.compile(r"^(0|[1-9][0-9]{0,8})$")
+_PM_SAVE_FIELDS = frozenset({"pm_submission", "component_target", "point_description",
+                             "force_context", "declaration_id", "expected_head"})
+# ``component_target`` = "<component_id>:<revision position the form showed>"
+_PM_TARGET_RE = re.compile(r"^(cmp-[0-9a-f]{32}):(0|[1-9][0-9]{0,8})$")
+_PM_STATE_CURRENT = "CURRENT"
+_PM_STATE_RECONFIRM = "NEEDS_RECONFIRMATION"
+_PM_STATE_WITHDRAWN = "WITHDRAWN"
+_PM_STATE_NO_RESULT = "RESULT_UNAVAILABLE"
+
+
+def _pm_correct_request(sid, eligible, prefill):
+    """``(captured, correct_id)`` for a ``?correct=<declaration id>`` query on
+    the moment page: the id only when it names an ACTIVE saved configuration of
+    THIS project (read from ONE store snapshot), and - for the GET pre-fill -
+    that configuration's CURRENT inputs in the consumer's captured shape.
+    Shown back only; nothing is evaluated or written. Fails closed to
+    ``(None, None)``."""
+    correct_id = request.args.get("correct", "")
+    if not eligible or not _subsystem_model.is_valid_planar_moment_id(correct_id):
+        return None, None
+    try:
+        record = _get_store().load_planar_moments(sid)["ledger"].record_for(correct_id)
+    except Exception:
+        return None, None
+    if record is None or record.withdrawn:
+        return None, None
+    return (record.current.captured() if prefill else None), correct_id
+
+
+def _pm_submission_key(sid, nonce, action):
+    """The durable submission identity of ONE action: HMAC over (action,
+    project, nonce) ONLY - never over the material."""
+    msg = _canonical_message("pm-%s-action-v1" % action, sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _pm_admit(material):
+    """The existing method's admission of ONE material: True only when the
+    unchanged consumer, through its ONE trusted binding, returns SUCCESS for
+    exactly these inputs. Run by the route and inside the serialized write."""
+    try:
+        return _cap13m.evaluate(material.captured(), _CAP13_MOMENT_BINDING)["outcome"] \
+            == _cap13m.OUTCOME_SUCCESS
+    except Exception:
+        return False
+
+
+def _pm_saved_view(sid, lang):
+    """``{"available", "items", "targets"}`` from ONE store snapshot. Each item
+    is re-derived on read: CURRENT (re-evaluated now; a number only on
+    SUCCESS), NEEDS_RECONFIRMATION (no number), RESULT_UNAVAILABLE (the method
+    refused or could not run now; no number) or WITHDRAWN (history). An
+    unreadable snapshot is ``available: False`` - never an empty list."""
+    try:
+        snap = _get_store().load_planar_moments(sid)
+    except Exception:
+        return {"available": False, "items": [], "targets": []}
+    inventory, composition = snap["inventory"], snap["subsystems"]
+    identity = _record_store.planar_moment_method_identity()
+    parts = {sub.subsystem_id: sub.display_name for sub in composition}
+    units = dict(_cap13m.VALUE_ROLES)
+    items = []
+    for record in snap["ledger"].records:
+        material = record.current
+        component = inventory.record_for(record.component_id)
+        item = {
+            "declaration_id": record.declaration_id,
+            "component_id": record.component_id,
+            "head": record.head_revision_no,
+            "withdrawn": record.withdrawn,
+            "corrections": record.corrections,
+            "component_name": component.current.display_name if component else None,
+            "part_name": parts.get(material.part_id) if material.part_id else None,
+            "point": material.point_description,
+            "force_context": material.force_context,
+            "values": [{"role": role, "text": text, "unit": units[role]}
+                       for role, text in material.values_map().items()],
+            "method_id": material.method_id,
+            "method_version": material.method_version,
+            "issues": [], "result": None, "outcome_key": None,
+        }
+        if record.withdrawn:
+            item["state"] = _PM_STATE_WITHDRAWN
+        else:
+            issues = _subsystem_model.planar_moment_binding_issues(
+                material, inventory, composition, snap["root_domain"], identity)
+            if issues:
+                item["state"] = _PM_STATE_RECONFIRM
+                item["issues"] = ["UI_PM_ISSUE_" + i for i in issues]
+            else:
+                evaluation = _cap13m.evaluate(material.captured(), _CAP13_MOMENT_BINDING)
+                if evaluation["outcome"] == _cap13m.OUTCOME_SUCCESS:
+                    item["state"] = _PM_STATE_CURRENT
+                    item["result"] = _cap13m_result_view(evaluation["result"])
+                else:
+                    item["state"] = _PM_STATE_NO_RESULT
+                    item["outcome_key"] = "UI_CAP13M_OUTCOME_%s" % evaluation["outcome"]
+        items.append(item)
+    targets = []
+    for component in inventory.records:
+        if component.withdrawn:
+            continue
+        eligible, _part = _subsystem_model.planar_moment_target_part(
+            composition, snap["root_domain"], component.current)
+        if not eligible:
+            continue
+        active = snap["ledger"].active_for(component.component_id)
+        targets.append({"id": component.component_id,
+                        "name": component.current.display_name,
+                        "revision": component.head_revision_no,
+                        "active_id": active.declaration_id if active else None,
+                        "active_head": active.head_revision_no if active else None})
+    return {"available": True, "items": items, "targets": targets}
+
+
+_PM_REFUSAL_MESSAGES = (
+    (_subsystem_model.PlanarMomentStale, "UI_PM_MSG_STALE"),
+    (_subsystem_model.PlanarMomentNotEligible, "UI_PM_MSG_NOT_ELIGIBLE"),
+    (_subsystem_model.PlanarMomentNotAdmitted, "UI_PM_MSG_NOT_ADMITTED"),
+    (_subsystem_model.PlanarMomentActiveExists, "UI_PM_MSG_ACTIVE_EXISTS"),
+    (_subsystem_model.PlanarMomentCorrectionLimit, "UI_PM_MSG_CORRECTION_LIMIT"),
+    (_subsystem_model.PlanarMomentIdentityLimit, "UI_PM_MSG_IDENTITY_LIMIT"),
+    (_subsystem_model.PlanarMomentAlreadyWithdrawn, "UI_PM_MSG_ALREADY_WITHDRAWN"),
+    (_subsystem_model.PlanarMomentUnchanged, "UI_PM_MSG_UNCHANGED"),
+    (_subsystem_model.PlanarMomentUnknown, "UI_PM_MSG_STALE"),
+)
+
+
+def _pm_refusal_key(exc):
+    cause = getattr(exc, "cause", exc)
+    for kind, key in _PM_REFUSAL_MESSAGES:
+        if isinstance(cause, kind):
+            return key
+    return "UI_PM_MSG_REJECTED"
+
+
+def _pm_write(sid, part, action, build, same, render_extra=None):
+    """The shared confirm-by-reload write path of the save and withdraw POSTs
+    (the planar-clearance pattern). Order: committed retry first -> stage ->
+    ONE serialized append (every binding and the method's admission
+    re-checked inside it) -> committed-truth resolution."""
+    extra = dict(render_extra or {})
+
+    def render(status=200, error=None, notice=None):
+        return _render_cap13m(sid, status=status, declared_part=part, error=error,
+                              notice=notice, **extra)
+
+    domain = _PM_SAVE_DOMAIN if action == "save" else _PM_WITHDRAW_DOMAIN
+    field = "pm_submission" if action == "save" else "pm_withdraw_submission"
+    nonce = _verified_submission_identity(sid, request.form.get(field, ""), domain)
+    if nonce is None:
+        return render(400, error="UI_PM_MSG_NOT_SAVED")
+    key = _pm_submission_key(sid, nonce, action)
+    store = _get_store()
+    ack = "UI_PM_MSG_SAVED" if action == "save" else "UI_PM_MSG_WITHDRAWN"
+
+    def settle(stored, fresh=False):
+        if not same(stored):
+            return render(409, error="UI_PM_MSG_NOT_SAVED")
+        if fresh:
+            return render(notice=ack)
+        try:
+            record = store.load_planar_moments(sid)["ledger"].record_for(
+                stored.declaration_id)
+        except Exception:
+            return render(notice="UI_PM_MSG_RECORDED_CURRENCY_UNKNOWN")
+        current = record is not None and record.head.revision_id == stored.revision_id
+        return render(notice=ack if current else "UI_PM_MSG_RECORDED_EARLIER")
+
+    corrupt = (_ProjectNotFound, _PlanarMomentCorrupt, _ProjectSubsystemsCorrupt,
+               _ProjectComponentsCorrupt)
+    try:
+        prior = store.committed_planar_moment_for_submission(sid, key)
+    except corrupt:
+        return render(503, error="UI_PM_MSG_NOT_SAVED")
+    except Exception:
+        return render(503, error="UI_PM_MSG_UNKNOWN")
+    if prior is not None:
+        return settle(prior)
+    try:
+        revision = build(store.load_planar_moments(sid))
+    except _subsystem_model.PlanarMomentError as exc:
+        return render(409, error=_pm_refusal_key(exc))
+    except Exception:
+        return render(503, error="UI_PM_MSG_NOT_SAVED")
+    try:
+        outcome, stored = store.append_planar_moment_revision(sid, revision, key,
+                                                              admit=_pm_admit)
+    except _PlanarMomentRejected as exc:
+        return render(409, error=_pm_refusal_key(exc))
+    except _PlanarMomentConflict:
+        return render(409, error="UI_PM_MSG_NOT_SAVED")
+    except corrupt:
+        return render(503, error="UI_PM_MSG_NOT_SAVED")
+    except Exception:
+        try:
+            prior = store.committed_planar_moment_for_submission(sid, key)
+        except Exception:
+            return render(503, error="UI_PM_MSG_UNKNOWN")
+        if prior is None:
+            return render(503, error="UI_PM_MSG_NOT_SAVED")
+        return settle(prior)
+    return settle(stored, fresh=outcome == _PLANAR_MOMENT_INSERTED)
+
+
+def _pm_single(form, name):
+    values = form.get(name, [])
+    if len(values) > 1:
+        raise ValueError(name)
+    return values[0] if values else ""
+
+
+@app.route("/session/<sid>/planar-moment/save", methods=["POST"])
+def cap13_planar_moment_save(sid):
+    """G1-PLANAR-MOMENT-SAVED-DECLARATION-01 - save (declare) or correct ONE
+    configuration for ONE inventor-chosen component. Order: request integrity
+    (global CSRF guard) -> central authorization -> eligibility (the SAME
+    ``_calc_gate``) -> strict capture -> the existing method's admission
+    (SUCCESS required; anything else saves nothing) -> the shared
+    confirm-by-reload write, which re-checks every binding and the admission
+    inside the serialized transaction. Saving verifies nothing."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13m)
+    if not eligible:
+        return _render_cap13m(sid, eligible=False)
+    form = {k: request.form.getlist(k) for k in request.form.keys()}
+    if set(form) - (_cap13m.FORM_FIELDS | _PM_SAVE_FIELDS):
+        return _render_cap13m(sid, status=400, declared_part=part,
+                              error="UI_PM_MSG_REJECTED")
+    captured = _cap13m.capture_form({k: v for k, v in form.items()
+                                     if k in _cap13m.FORM_FIELDS})
+    try:
+        target = _PM_TARGET_RE.match(_pm_single(form, "component_target"))
+        component_id, raw_revision = target.groups() if target else ("", "")
+        point = _pm_single(form, "point_description").replace("\r\n", "\n").strip()
+        force = _pm_single(form, "force_context").replace("\r\n", "\n").strip()
+        declaration_id = _pm_single(form, "declaration_id")
+        raw_head = _pm_single(form, "expected_head")
+    except ValueError:
+        captured = None
+    if captured is None or not _PM_COUNT_RE.match(raw_revision or "") \
+            or not _PM_HEAD_RE.match(raw_head or "") \
+            or (raw_head == "none") != (declaration_id == "") \
+            or not _subsystem_model.is_valid_component_id(component_id):
+        return _render_cap13m(sid, status=400, declared_part=part,
+                              error="UI_PM_MSG_REJECTED")
+    correct_id = declaration_id or None
+    draft = {"component_id": component_id, "point_description": point,
+             "force_context": force}
+    extra = {"captured": captured, "correct_id": correct_id, "save_draft": draft}
+    if not (_subsystem_model.valid_planar_moment_text(point)
+            and _subsystem_model.valid_planar_moment_text(force)):
+        evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
+        return _render_cap13m(sid, status=400, declared_part=part, evaluation=evaluation,
+                              error="UI_PM_MSG_TEXT", **extra)
+    # Correction 2: only a configuration the existing method admits with
+    # SUCCESS is ever saved (re-checked inside the serialized write).
+    evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
+    if evaluation["outcome"] != _cap13m.OUTCOME_SUCCESS:
+        return _render_cap13m(sid, status=409, declared_part=part, evaluation=evaluation,
+                              error="UI_PM_MSG_NOT_ADMITTED", **extra)
+    values = tuple(captured["values"][r] for r in _subsystem_model.PLANAR_MOMENT_VALUE_ROLES)
+    declarations = tuple(captured["declarations"][d] for d in _cap13m.DECLARATION_IDS)
+    screen = tuple(captured["screen"][i] for i in _cap13m.SCREEN_ITEMS)
+
+    def build(snapshot):
+        material = _subsystem_model.planar_moment_material(
+            snapshot["inventory"], snapshot["subsystems"], snapshot["root_domain"],
+            component_id, int(raw_revision), point, force, values, declarations, screen,
+            _record_store.planar_moment_method_identity())
+        if raw_head == "none":
+            return _subsystem_model.declared_planar_moment(snapshot["ledger"], material)
+        record = snapshot["ledger"].record_for(declaration_id)
+        if record is None or record.component_id != component_id:
+            raise _subsystem_model.PlanarMomentUnknown("not this component's configuration")
+        return _subsystem_model.corrected_planar_moment(
+            snapshot["ledger"], declaration_id, int(raw_head), material)
+
+    def same(stored):
+        m = stored.material
+        return (m is not None and stored.component_id == component_id
+                and m.point_description == point and m.force_context == force
+                and m.values == values and m.declarations == declarations
+                and m.screen == screen
+                and (stored.kind == _subsystem_model.PLANAR_MOMENT_DECLARED
+                     if raw_head == "none" else
+                     (stored.declaration_id == declaration_id
+                      and stored.revision_no == int(raw_head) + 1)))
+
+    return _pm_write(sid, part, "save", build, same,
+                     render_extra={"captured": captured, "evaluation": evaluation,
+                                   "correct_id": None, "save_draft": draft})
+
+
+@app.route("/session/<sid>/planar-moment/withdraw", methods=["POST"])
+def cap13_planar_moment_withdraw(sid):
+    """G1-PLANAR-MOMENT-SAVED-DECLARATION-01 - withdraw ONE saved
+    configuration after an explicit confirmation: ONE terminal revision; the
+    history stays (withdrawal is not erasure)."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13m)
+    if not eligible:
+        return _render_cap13m(sid, eligible=False)
+    raw_head = request.form.get("expected_head", "")
+    declaration_id = request.form.get("declaration_id", "")
+    if not isinstance(raw_head, str) or not _PM_HEAD_RE.match(raw_head) \
+            or raw_head == "none" \
+            or not _subsystem_model.is_valid_planar_moment_id(declaration_id):
+        return _render_cap13m(sid, status=400, declared_part=part,
+                              error="UI_PM_MSG_REJECTED")
+    if request.form.get("withdraw_confirm") != "yes":
+        return _render_cap13m(sid, status=400, declared_part=part,
+                              error="UI_PM_MSG_CONFIRM_WITHDRAW")
+
+    def build(snapshot):
+        return _subsystem_model.withdrawn_planar_moment(
+            snapshot["ledger"], declaration_id, int(raw_head))
+
+    def same(stored):
+        return (stored.kind == _subsystem_model.PLANAR_MOMENT_WITHDRAWN
+                and stored.declaration_id == declaration_id
+                and stored.revision_no == int(raw_head) + 1)
+
+    return _pm_write(sid, part, "withdraw", build, same)
 
 
 if __name__ == "__main__":

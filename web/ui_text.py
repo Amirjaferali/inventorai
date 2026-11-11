@@ -6661,14 +6661,14 @@ UI_STRINGS = {
         "en": "Optional: turning effect (moment) of one force about a point",
         "ar": "اختياري: أثر الدوران (العزم) لقوة واحدة حول نقطة"},
     "UI_CAP13M_LINK_NOTE": {
-        "en": "An advisory calculation for a force and point you declare. It is not saved and is never required.",
-        "ar": "حساب إرشادي لقوة ونقطة تصرّح بهما أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+        "en": "An advisory calculation for a force and point you declare. It is never required, and only the inputs you choose to save are kept.",
+        "ar": "حساب إرشادي لقوة ونقطة تصرّح بهما أنت. لا يكون مطلوبًا أبدًا، ولا يُحفَظ منه إلا المُدخلات التي تختار أنت حفظها."},
     "UI_CAP13M_TITLE": {
         "en": "Moment of one force about a point (optional, non-binding)",
         "ar": "عزم قوة واحدة حول نقطة (اختياري، غير مُلزِم)"},
     "UI_CAP13M_INTRO": {
-        "en": "This page is optional. It calculates the size of the turning effect (moment) of one force about one point you choose, in one plane, from the force F and the perpendicular distance d⊥ that you enter. Nothing is saved.",
-        "ar": "هذه الصفحة اختيارية. تحسب مقدار أثر الدوران (العزم) لقوة واحدة حول نقطة واحدة تختارها، في مستوى واحد، من القوة F والمسافة العمودية d⊥ اللتين تدخلهما أنت. لا يُحفَظ شيء."},
+        "en": "This page is optional. It calculates the size of the turning effect (moment) of one force about one point you choose, in one plane, from the force F and the perpendicular distance d⊥ that you enter. The calculation saves nothing by itself; after a result you may choose to save its inputs for one of your components.",
+        "ar": "هذه الصفحة اختيارية. تحسب مقدار أثر الدوران (العزم) لقوة واحدة حول نقطة واحدة تختارها، في مستوى واحد، من القوة F والمسافة العمودية d⊥ اللتين تدخلهما أنت. لا يحفظ الحساب شيئًا من تلقاء نفسه؛ وبعد ظهور النتيجة يمكنك أن تختار حفظ مُدخلاتها لأحد مكوّناتك."},
     "UI_CAP13M_SCOPE_NOTE": {
         "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that the planar single-force model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED moment magnitude, not an equilibrium, capacity, strength or safety conclusion.",
         "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء انطباق نموذج القوة الواحدة في مستوى واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة مقدار عزم غير مُتحقَّق منه، وليست حكمًا بشأن الاتزان أو القدرة على التحمل أو المقاومة أو السلامة."},
@@ -6705,6 +6705,142 @@ UI_STRINGS = {
     "UI_CAP13M_BACK": {
         "en": "Back to your project",
         "ar": "العودة إلى مشروعك"},
+    # G1-PLANAR-MOMENT-SAVED-DECLARATION-01 — saved configurations (inputs only).
+    "UI_PM_SAVED_HEADING": {
+        "en": "Your saved configurations",
+        "ar": "الإعدادات التي حفظتها"},
+    "UI_PM_SAVED_INTRO": {
+        "en": "Only your inputs and descriptions are saved; the moment is calculated again by the same method every time this page is shown. A saved configuration is your own statement (OWNER_STATED / UNVALIDATED): it does not show that the component carries this force, and it is not a complete force or component assessment, evidence, a verified design, a compatibility check or a safety statement.",
+        "ar": "لا يُحفَظ إلا مُدخلاتك ووصفك؛ ويُحسَب العزم من جديد بالطريقة نفسها في كل مرة تُعرَض فيها هذه الصفحة. الإعداد المحفوظ تصريح منك (OWNER_STATED / UNVALIDATED): لا يُثبت أن المكوّن يتحمّل هذه القوة، وليس تقييمًا كاملًا للقوى أو للمكوّن، ولا دليلًا، ولا تصميمًا مُتحقَّقًا منه، ولا فحص توافق، ولا حكمًا بالسلامة."},
+    "UI_PM_LIMIT_NOTE": {
+        "en": "In this first version each component can hold one active saved configuration. That is a limit of this version, not a statement that the component has only one force or one turning point.",
+        "ar": "في هذا الإصدار الأول يحمل كل مكوّن إعدادًا محفوظًا واحدًا نشطًا. هذا قيد في هذا الإصدار، وليس قولًا بأن للمكوّن قوة واحدة أو نقطة دوران واحدة فقط."},
+    "UI_PM_NONE": {
+        "en": "You have not saved a configuration yet.",
+        "ar": "لم تحفظ أي إعداد بعد."},
+    "UI_PM_UNAVAILABLE": {
+        "en": "Your saved configurations cannot be read right now, so none is shown (this does not mean there are none). Nothing was changed.",
+        "ar": "تعذّرت قراءة الإعدادات المحفوظة الآن، لذلك لا يُعرَض أي منها (وهذا لا يعني عدم وجودها). لم يتغيّر شيء."},
+    "UI_PM_STATE_CURRENT": {
+        "en": "Current: calculated again now from your saved inputs",
+        "ar": "حالي: حُسِب الآن من جديد من مُدخلاتك المحفوظة"},
+    "UI_PM_STATE_NEEDS_RECONFIRMATION": {
+        "en": "Needs reconfirmation: something it depends on has changed, so no result is shown. Correct it to save it again.",
+        "ar": "يحتاج إلى إعادة تأكيد: تغيّر شيء يعتمد عليه، لذلك لا تُعرَض نتيجة. صحّحه لحفظه من جديد."},
+    "UI_PM_STATE_RESULT_UNAVAILABLE": {
+        "en": "No result now: the method did not produce a result for these saved inputs, so no number is shown.",
+        "ar": "لا نتيجة الآن: لم تُعطِ الطريقة نتيجة لهذه المُدخلات المحفوظة، لذلك لا يُعرَض أي رقم."},
+    "UI_PM_STATE_WITHDRAWN": {
+        "en": "Withdrawn by you: kept in the project history (withdrawal is not erasure); no result is shown.",
+        "ar": "سحبته أنت: يبقى في سجل المشروع (السحب ليس محوًا)؛ ولا تُعرَض نتيجة."},
+    "UI_PM_ISSUE_COMPONENT_WITHDRAWN": {
+        "en": "The component has been withdrawn from your component list.",
+        "ar": "سُحِب المكوّن من قائمة مكوّناتك."},
+    "UI_PM_ISSUE_COMPONENT_CHANGED": {
+        "en": "The component's declaration was corrected after this configuration was saved.",
+        "ar": "صُحِّح تصريح المكوّن بعد حفظ هذا الإعداد."},
+    "UI_PM_ISSUE_PART_LINK_LOST": {
+        "en": "The component is no longer one this calculation can be saved for (for example, it is no longer linked to the declared Mechanical part).",
+        "ar": "لم يعد المكوّن ممّا يمكن حفظ هذا الحساب له (مثلًا لم يعد مرتبطًا بالجزء الميكانيكي المصرّح به)."},
+    "UI_PM_ISSUE_METHOD_CHANGED": {
+        "en": "The method or its governed content has changed since saving, or cannot be read now.",
+        "ar": "تغيّرت الطريقة أو محتواها المعتمد منذ الحفظ، أو تتعذّر قراءته الآن."},
+    "UI_PM_FIELD_COMPONENT": {
+        "en": "Component (your choice)",
+        "ar": "المكوّن (من اختيارك)"},
+    "UI_PM_FIELD_PART": {
+        "en": "Saved for the declared Mechanical part",
+        "ar": "حُفِظ للجزء الميكانيكي المصرّح به"},
+    "UI_PM_FIELD_POINT": {
+        "en": "The point you chose (your description)",
+        "ar": "النقطة التي اخترتها (وصفك)"},
+    "UI_PM_FIELD_FORCE": {
+        "en": "The force and its context (your description)",
+        "ar": "القوة وسياقها (وصفك)"},
+    "UI_PM_FIELD_CORRECTIONS": {
+        "en": "Corrections saved so far",
+        "ar": "عدد التصحيحات المحفوظة حتى الآن"},
+    "UI_PM_CHOOSE_COMPONENT": {
+        "en": "— choose a component —",
+        "ar": "— اختر مكوّنًا —"},
+    "UI_PM_SAVE_HEADING": {
+        "en": "Save this configuration for one of your components (optional)",
+        "ar": "حفظ هذا الإعداد لأحد مكوّناتك (اختياري)"},
+    "UI_PM_SAVE_NOTE": {
+        "en": "You choose the component; InventorAI does not decide which component carries this force. Only the inputs above and your two descriptions are saved, never the result.",
+        "ar": "أنت من يختار المكوّن؛ ولا يقرّر InventorAI أي مكوّن يتحمّل هذه القوة. لا يُحفَظ إلا المُدخلات أعلاه ووصفاك، ولا تُحفَظ النتيجة أبدًا."},
+    "UI_PM_TEXT_NOTE": {
+        "en": "Describe the point and the force so the configuration can be understood later (1 to 300 characters each). These descriptions do not change the calculation, and InventorAI does not check them.",
+        "ar": "صِف النقطة والقوة كي يُفهَم الإعداد لاحقًا (من حرف واحد إلى 300 حرف لكل منهما). لا يغيّر هذا الوصف الحساب، ولا يتحقق منه InventorAI."},
+    "UI_PM_SAVE_COMPONENT_NONE": {
+        "en": "No component can hold this configuration yet. Declare the component in your component list on the project page (on an integrated project, link it to the declared Mechanical part); a component that already has a saved configuration is corrected from the list below.",
+        "ar": "لا يوجد بعد مكوّن يمكن أن يحمل هذا الإعداد. صرّح بالمكوّن في قائمة مكوّناتك على صفحة المشروع (وفي المشروع المتكامل اربطه بالجزء الميكانيكي المصرّح به)؛ أما المكوّن الذي له إعداد محفوظ فيُصحَّح من القائمة أدناه."},
+    "UI_PM_SAVE_BUTTON": {
+        "en": "Save this configuration",
+        "ar": "احفظ هذا الإعداد"},
+    "UI_PM_CORRECTING": {
+        "en": "You are correcting the saved configuration of:",
+        "ar": "أنت تصحّح الإعداد المحفوظ للمكوّن:"},
+    "UI_PM_CORRECT_LINK": {
+        "en": "Correct or reconfirm this configuration",
+        "ar": "صحّح هذا الإعداد أو أعد تأكيده"},
+    "UI_PM_WITHDRAW_CONFIRM": {
+        "en": "I want to withdraw it (it stays in the history)",
+        "ar": "أريد سحبه (يبقى في السجل)"},
+    "UI_PM_WITHDRAW_BUTTON": {
+        "en": "Withdraw",
+        "ar": "سحب"},
+    "UI_PM_MSG_SAVED": {
+        "en": "Saved. The result shown below is calculated again from your saved inputs; it is still UNVALIDATED.",
+        "ar": "حُفِظ. النتيجة المعروضة أدناه تُحسَب من جديد من مُدخلاتك المحفوظة، وما زالت غير مُتحقَّق منها (UNVALIDATED)."},
+    "UI_PM_MSG_WITHDRAWN": {
+        "en": "Withdrawn. It stays in the project history.",
+        "ar": "سُحِب. ويبقى في سجل المشروع."},
+    "UI_PM_MSG_RECORDED_EARLIER": {
+        "en": "This was already saved earlier; a later change is now the current one.",
+        "ar": "حُفِظ هذا من قبل؛ والتغيير الأحدث هو الحالي الآن."},
+    "UI_PM_MSG_RECORDED_CURRENCY_UNKNOWN": {
+        "en": "This was saved, but whether it is still the current version cannot be confirmed right now.",
+        "ar": "حُفِظ هذا، لكن يتعذّر الآن التأكد من أنه ما زال الإصدار الحالي."},
+    "UI_PM_MSG_NOT_SAVED": {
+        "en": "Not saved. Nothing was changed. Reload the page and try again.",
+        "ar": "لم يُحفَظ. لم يتغيّر شيء. أعد تحميل الصفحة وحاول مرة أخرى."},
+    "UI_PM_MSG_UNKNOWN": {
+        "en": "It could not be confirmed whether this was saved. Reload the page to see the current state before trying again.",
+        "ar": "تعذّر التأكد من حفظ هذا. أعد تحميل الصفحة لترى الحالة الحالية قبل المحاولة مرة أخرى."},
+    "UI_PM_MSG_STALE": {
+        "en": "Not saved: the component or the saved configuration changed since this page was shown. Reload and check before saving.",
+        "ar": "لم يُحفَظ: تغيّر المكوّن أو الإعداد المحفوظ منذ عرض هذه الصفحة. أعد التحميل وتحقّق قبل الحفظ."},
+    "UI_PM_MSG_NOT_ELIGIBLE": {
+        "en": "Not saved: this component cannot hold this calculation here (it is withdrawn, or on an integrated project it is not linked to the declared Mechanical part).",
+        "ar": "لم يُحفَظ: لا يمكن لهذا المكوّن أن يحمل هذا الحساب هنا (فقد سُحِب، أو لم يُربَط في المشروع المتكامل بالجزء الميكانيكي المصرّح به)."},
+    "UI_PM_MSG_NOT_ADMITTED": {
+        "en": "Not saved: only a configuration that the method accepts and calculates can be saved. Nothing was changed.",
+        "ar": "لم يُحفَظ: لا يُحفَظ إلا إعداد تقبله الطريقة وتحسبه. لم يتغيّر شيء."},
+    "UI_PM_MSG_ACTIVE_EXISTS": {
+        "en": "Not saved: this component already has a saved configuration. Correct that one from the list instead.",
+        "ar": "لم يُحفَظ: لهذا المكوّن إعداد محفوظ بالفعل. صحّح ذلك الإعداد من القائمة بدلًا من ذلك."},
+    "UI_PM_MSG_CORRECTION_LIMIT": {
+        "en": "Not saved: this configuration has reached its limit of corrections. You can still withdraw it.",
+        "ar": "لم يُحفَظ: بلغ هذا الإعداد الحدّ الأقصى للتصحيحات. ما زال بإمكانك سحبه."},
+    "UI_PM_MSG_IDENTITY_LIMIT": {
+        "en": "Not saved: this project has reached its limit of saved configurations.",
+        "ar": "لم يُحفَظ: بلغ هذا المشروع الحدّ الأقصى للإعدادات المحفوظة."},
+    "UI_PM_MSG_ALREADY_WITHDRAWN": {
+        "en": "Not saved: this configuration was withdrawn, and withdrawal is final.",
+        "ar": "لم يُحفَظ: سُحِب هذا الإعداد، والسحب نهائي."},
+    "UI_PM_MSG_UNCHANGED": {
+        "en": "Nothing to save: the correction is identical to the saved configuration.",
+        "ar": "لا شيء للحفظ: التصحيح مطابق للإعداد المحفوظ."},
+    "UI_PM_MSG_REJECTED": {
+        "en": "Not saved: the form was not complete or not valid. Nothing was changed.",
+        "ar": "لم يُحفَظ: النموذج غير مكتمل أو غير صالح. لم يتغيّر شيء."},
+    "UI_PM_MSG_TEXT": {
+        "en": "Not saved: describe both the point and the force (1 to 300 characters each).",
+        "ar": "لم يُحفَظ: صِف النقطة والقوة كلتيهما (من حرف واحد إلى 300 حرف لكل منهما)."},
+    "UI_PM_MSG_CONFIRM_WITHDRAW": {
+        "en": "Not withdrawn: tick the confirmation box first.",
+        "ar": "لم يُسحَب: ضع علامة في مربّع التأكيد أولًا."},
     "UI_CAP13M_RESULT_M": {
         "en": "Moment magnitude about your point (M) — newton millimetre (N·mm)",
         "ar": "مقدار العزم حول نقطتك (M) — نيوتن مليمتر (N·mm)"},

@@ -2438,3 +2438,507 @@ def same_planar_clearance_action(stored, revision):
         return revision.revision_no == 0
     return (stored.declaration_id, stored.revision_no) == (
         revision.declaration_id, revision.revision_no)
+
+
+# =============================================================================
+# G1-PLANAR-MOMENT-SAVED-DECLARATION-01 - the inventor's saved planar-moment
+# configurations (Owner-authorized; the moment contract §§12-13 as amended).
+# =============================================================================
+# ONE revisioned, append-only declaration of the INPUTS of the existing CAP-13
+# planar single-force moment (``cap13:planar_single_force_moment``) for ONE
+# inventor-declared component: the exact entered force and perpendicular
+# distance, the five declarations, the nine screen answers, and the inventor's
+# own description of the chosen point and of the force context. The calculated
+# moment is NEVER stored: it is re-derived on every read through the unchanged
+# consumer (calc / units §12 unchanged; the shared owner stays stateless).
+#
+# Lifecycle (the planar-clearance pattern): revision 0 DECLARED, at most 20
+# CORRECTED revisions (each with the COMPLETE material), then ONE reserved
+# terminal WITHDRAWN revision available whatever the corrections used.
+# Withdrawal is not erasure. A declaration is bound to its component for life.
+# At most ONE active declaration per component and at most 50 lifetime
+# identities per project: bounded first-slice resource limits, never a claim
+# that a component has only one force or one point.
+#
+# Binding: every material revision records the component's revision position,
+# the ONE declared Mechanical part it was saved for (integrated projects; None
+# on a Mechanical-focus project without a composition) and the method identity
+# (method id / version and the governed artifact's version and digest). A
+# component correction or withdrawal, a lost part link, or a changed method or
+# governed artifact leaves the declaration NEEDS RECONFIRMATION - no number is
+# shown - until the inventor explicitly re-saves it as a correction. Every
+# saved configuration was ADMITTED by the existing method at its serialized
+# save (all declarations apply, no screen item is yes, both values are
+# admitted and the consumer returned SUCCESS). The component association, the
+# point and the force context are OWNER_STATED / UNVALIDATED: the declared
+# component is not established to carry that force, and a saved configuration
+# is not a complete force or component assessment, an evidence item, a
+# verified design, a compatibility or a safety statement.
+from engine import cap13_planar_moment as _cap13m  # noqa: E402
+
+PLANAR_MOMENT_DECLARED = "DECLARED"
+PLANAR_MOMENT_CORRECTED = "CORRECTED"
+PLANAR_MOMENT_WITHDRAWN = "WITHDRAWN"
+PLANAR_MOMENT_KINDS = (PLANAR_MOMENT_DECLARED, PLANAR_MOMENT_CORRECTED,
+                       PLANAR_MOMENT_WITHDRAWN)
+MAX_PLANAR_MOMENT_IDENTITIES_PER_PROJECT = 50
+MAX_PLANAR_MOMENT_CORRECTIONS = 20
+# revision 0 + 20 corrections + one reserved terminal withdrawal
+MAX_PLANAR_MOMENT_REVISION_NO = MAX_PLANAR_MOMENT_CORRECTIONS + 1
+MAX_PLANAR_MOMENT_TEXT_LENGTH = 300
+MAX_PLANAR_MOMENT_VERSION_TEXT = 80
+PLANAR_MOMENT_DECLARATION_VERSION = "planar-moment-declaration/1"
+PLANAR_MOMENT_DECLARATION_VERSIONS = (PLANAR_MOMENT_DECLARATION_VERSION,)
+PLANAR_MOMENT_VALUE_ROLES = tuple(role for role, _unit in _cap13m.VALUE_ROLES)
+PLANAR_MOMENT_PART_DOMAIN = _cap13m.ELIGIBLE_ROOT_DOMAIN
+_PLANAR_MOMENT_ID_RE = re.compile(r"^pmd-[0-9a-f]{32}$")
+_PLANAR_MOMENT_REVISION_ID_RE = re.compile(r"^pmr-[0-9a-f]{32}$")
+_PM_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+# Why a CURRENT material needs reconfirmation (fixed order).
+PM_ISSUE_COMPONENT_WITHDRAWN = "COMPONENT_WITHDRAWN"
+PM_ISSUE_COMPONENT_CHANGED = "COMPONENT_CHANGED"
+PM_ISSUE_PART_LINK_LOST = "PART_LINK_LOST"
+PM_ISSUE_METHOD_CHANGED = "METHOD_CHANGED"
+PM_ISSUES = (PM_ISSUE_COMPONENT_WITHDRAWN, PM_ISSUE_COMPONENT_CHANGED,
+             PM_ISSUE_PART_LINK_LOST, PM_ISSUE_METHOD_CHANGED)
+
+
+class PlanarMomentError(ValueError):
+    """A submitted or stored planar-moment declaration violates the bounded
+    contract. Structural message only - never user text."""
+
+
+class PlanarMomentUnknown(PlanarMomentError):
+    """The revision names no declaration of this project."""
+
+
+class PlanarMomentStale(PlanarMomentError):
+    """The declaration or its component changed since the form was shown."""
+
+
+class PlanarMomentAlreadyWithdrawn(PlanarMomentError):
+    """The declaration is withdrawn: withdrawal is terminal."""
+
+
+class PlanarMomentCorrectionLimit(PlanarMomentError):
+    """The declaration holds the maximum number of corrections."""
+
+
+class PlanarMomentIdentityLimit(PlanarMomentError):
+    """The project holds the maximum number of declaration identities."""
+
+
+class PlanarMomentActiveExists(PlanarMomentError):
+    """The component already has an active saved configuration (correct it)."""
+
+
+class PlanarMomentUnchanged(PlanarMomentError):
+    """A correction that restates the current material and bindings exactly."""
+
+
+class PlanarMomentNotEligible(PlanarMomentError):
+    """The component is not an active component this calculation may be saved
+    for (on an integrated project: one linked to the declared Mechanical part;
+    otherwise: a Mechanical-focus project), or the project is not eligible."""
+
+
+class PlanarMomentNotAdmitted(PlanarMomentError):
+    """The configuration is not admitted by the existing method (a declaration
+    does not apply, a screen item is yes, a value is not admitted, or the
+    consumer did not return SUCCESS): nothing is saved."""
+
+
+@dataclass(frozen=True)
+class PlanarMomentMaterial:
+    """The COMPLETE inventor material of one revision. ``values`` follows
+    ``PLANAR_MOMENT_VALUE_ROLES`` (the exact entered text); ``declarations``
+    follows ``_cap13m.DECLARATION_IDS``; ``screen`` follows
+    ``_cap13m.SCREEN_ITEMS``. ``part_id`` is the declared Mechanical part the
+    configuration was saved for, or None (no integrated composition)."""
+    component_id: str
+    component_revision: int
+    part_id: Optional[str]
+    point_description: str
+    force_context: str
+    values: tuple
+    declarations: tuple
+    screen: tuple
+    method_id: str
+    method_version: str
+    artifact_version: str
+    artifact_sha256: str
+    declaration_version: str
+
+    def values_map(self):
+        return dict(zip(PLANAR_MOMENT_VALUE_ROLES, self.values))
+
+    def captured(self):
+        """The consumer's captured-submission shape (``capture_form``'s
+        output) for this material: re-evaluation runs the SAME consumer."""
+        return {"declarations": dict(zip(_cap13m.DECLARATION_IDS, self.declarations)),
+                "screen": dict(zip(_cap13m.SCREEN_ITEMS, self.screen)),
+                "values": self.values_map()}
+
+
+@dataclass(frozen=True)
+class PlanarMomentRevision:
+    """ONE append-only revision. A WITHDRAWN revision carries no material."""
+    revision_id: str
+    declaration_id: str
+    revision_no: int
+    kind: str
+    component_id: str
+    material: Optional[PlanarMomentMaterial]
+    provenance: str = OWNER_STATED
+    validation_state: str = UNVALIDATED
+
+
+@dataclass(frozen=True)
+class PlanarMomentRecord:
+    """ONE declaration identity with its validated history, oldest first."""
+    declaration_id: str
+    component_id: str
+    revisions: tuple
+    withdrawn: bool
+
+    @property
+    def head(self):
+        return self.revisions[-1]
+
+    @property
+    def head_revision_no(self):
+        return self.revisions[-1].revision_no
+
+    @property
+    def current_revision(self):
+        return [r for r in self.revisions if r.material is not None][-1]
+
+    @property
+    def current(self):
+        return self.current_revision.material
+
+    @property
+    def corrections(self):
+        return len([r for r in self.revisions if r.kind == PLANAR_MOMENT_CORRECTED])
+
+
+@dataclass(frozen=True)
+class PlanarMomentLedger:
+    """The ONE authoritative projection of a project's saved configurations,
+    in order of first declaration."""
+    records: tuple
+
+    def record_for(self, declaration_id):
+        for record in self.records:
+            if record.declaration_id == declaration_id:
+                return record
+        return None
+
+    def active_for(self, component_id):
+        for record in self.records:
+            if record.component_id == component_id and not record.withdrawn:
+                return record
+        return None
+
+
+def new_planar_moment_id():
+    return "pmd-" + uuid.uuid4().hex
+
+
+def new_planar_moment_revision_id():
+    return "pmr-" + uuid.uuid4().hex
+
+
+def is_valid_planar_moment_id(value):
+    return isinstance(value, str) and bool(_PLANAR_MOMENT_ID_RE.match(value))
+
+
+def is_valid_planar_moment_revision_id(value):
+    return isinstance(value, str) and bool(_PLANAR_MOMENT_REVISION_ID_RE.match(value))
+
+
+def valid_planar_moment_text(value):
+    """A stored point description or force context: non-empty, already
+    trimmed, at most 300 characters, free of NUL and control characters."""
+    return valid_subsystem_text(value, MAX_PLANAR_MOMENT_TEXT_LENGTH)
+
+
+def planar_moment_admitted_shape(declarations, screen, values):
+    """True only for a COMPLETE configuration the method admits before its
+    owner runs: every declaration applies, every screen item is no, and both
+    values are admitted unsigned decimals greater than zero (the consumer's
+    own grammar). The consumer's SUCCESS is required on top of this."""
+    if tuple(declarations) != (_cap13m.ANSWER_APPLIES,) * len(_cap13m.DECLARATION_IDS):
+        return False
+    if tuple(screen) != (_cap13m.SCREEN_NO,) * len(_cap13m.SCREEN_ITEMS):
+        return False
+    if len(tuple(values)) != len(PLANAR_MOMENT_VALUE_ROLES):
+        return False
+    for text in values:
+        number = _cap13m.parse_number(text)
+        if number is None or number <= 0.0:
+            return False
+    return True
+
+
+def _pm_mechanical_part(composition):
+    matches = [s for s in tuple(composition or ())
+               if getattr(s, "domain", None) == PLANAR_MOMENT_PART_DOMAIN]
+    return matches[0] if len(matches) == 1 else None
+
+
+def planar_moment_target_part(composition, root_domain, component):
+    """The part an ACTIVE ``component`` may be saved for, as ``(eligible,
+    part_id)``: on an integrated project (a declared Mechanical part exists)
+    only a component the inventor linked to that part, saved for it; otherwise
+    any component of a Mechanical-focus project, saved for no part. Nothing is
+    inferred from a name, a function text or a list position."""
+    part = _pm_mechanical_part(composition)
+    if part is not None:
+        if component is not None and part.subsystem_id in component.subsystem_ids:
+            return True, part.subsystem_id
+        return False, None
+    if not tuple(composition or ()) and root_domain == PLANAR_MOMENT_PART_DOMAIN:
+        return component is not None, None
+    return False, None
+
+
+def check_planar_moment_material(material, inventory, composition):
+    """Shape-validate ONE stored or proposed material against the project's
+    DECLARED components (active or withdrawn: a stored binding to a later
+    withdrawn component is valid history) and its composition. Raises
+    ``PlanarMomentError``."""
+    if not isinstance(material, PlanarMomentMaterial):
+        raise PlanarMomentError("not a planar moment material")
+    if not isinstance(inventory, ComponentInventory):
+        raise PlanarMomentError("no validated inventory")
+    if not is_valid_component_id(material.component_id) \
+            or inventory.record_for(material.component_id) is None:
+        raise PlanarMomentError("the material names no component of this project")
+    if not _is_count(material.component_revision, MAX_REVISIONS_PER_COMPONENT):
+        raise PlanarMomentError("component revision position out of range")
+    if material.part_id is not None and material.part_id not in {
+            s.subsystem_id for s in tuple(composition or ())}:
+        raise PlanarMomentError("the material names no part of this project")
+    for text in (material.point_description, material.force_context):
+        if not valid_planar_moment_text(text):
+            raise PlanarMomentError("description invalid")
+    if not isinstance(material.values, tuple) or not isinstance(material.declarations, tuple) \
+            or not isinstance(material.screen, tuple) \
+            or len(material.declarations) != len(_cap13m.DECLARATION_IDS) \
+            or len(material.screen) != len(_cap13m.SCREEN_ITEMS) \
+            or not all(isinstance(v, str) and 0 < len(v) <= _cap13m.MAX_VALUE_CHARS
+                       for v in material.values) \
+            or not planar_moment_admitted_shape(material.declarations, material.screen,
+                                                material.values):
+        raise PlanarMomentNotAdmitted("the configuration is not admitted")
+    for text in (material.method_id, material.method_version, material.artifact_version,
+                 material.declaration_version):
+        if not valid_subsystem_text(text, MAX_PLANAR_MOMENT_VERSION_TEXT):
+            raise PlanarMomentError("version identity malformed")
+    if not isinstance(material.artifact_sha256, str) \
+            or not _PM_SHA256_RE.match(material.artifact_sha256):
+        raise PlanarMomentError("artifact digest malformed")
+    return material
+
+
+def project_planar_moments(revisions, inventory, composition):
+    """Validate a project's COMPLETE declaration history WHOLE and return the
+    ``PlanarMomentLedger``, or raise ``PlanarMomentError`` (nothing partial).
+    Each identity: positions exactly 0..k; revision 0 DECLARED, then CORRECTED
+    (at most 20), then at most one terminal WITHDRAWN; one component for life;
+    distinct revision ids; at most one active identity per component and at
+    most 50 identities per project."""
+    by_id, order, seen = {}, [], set()
+    for rev in tuple(revisions or ()):
+        if not isinstance(rev, PlanarMomentRevision):
+            raise PlanarMomentError("history entry is not a revision")
+        if not is_valid_planar_moment_id(rev.declaration_id) \
+                or not is_valid_planar_moment_revision_id(rev.revision_id):
+            raise PlanarMomentError("identity malformed")
+        if rev.revision_id in seen:
+            raise PlanarMomentError("revision identity duplicated")
+        seen.add(rev.revision_id)
+        if rev.provenance != OWNER_STATED or rev.validation_state != UNVALIDATED:
+            raise PlanarMomentError("provenance / validation state invalid")
+        if not _is_count(rev.revision_no, MAX_PLANAR_MOMENT_REVISION_NO) \
+                or rev.kind not in PLANAR_MOMENT_KINDS:
+            raise PlanarMomentError("revision position or kind invalid")
+        if not is_valid_component_id(rev.component_id) \
+                or inventory.record_for(rev.component_id) is None:
+            raise PlanarMomentError("the revision names no component of this project")
+        if rev.kind == PLANAR_MOMENT_WITHDRAWN:
+            if rev.material is not None:
+                raise PlanarMomentError("a withdrawal carries material")
+        else:
+            check_planar_moment_material(rev.material, inventory, composition)
+            if rev.material.component_id != rev.component_id:
+                raise PlanarMomentError("material component mismatch")
+        if rev.declaration_id not in by_id:
+            by_id[rev.declaration_id] = []
+            order.append(rev.declaration_id)
+        by_id[rev.declaration_id].append(rev)
+    if len(order) > MAX_PLANAR_MOMENT_IDENTITIES_PER_PROJECT:
+        raise PlanarMomentError("too many declaration identities")
+    records, active = [], set()
+    for declaration_id in order:
+        history = sorted(by_id[declaration_id], key=lambda r: r.revision_no)
+        if [r.revision_no for r in history] != list(range(len(history))):
+            raise PlanarMomentError("history is not one contiguous chain")
+        kinds = [r.kind for r in history]
+        if kinds[0] != PLANAR_MOMENT_DECLARED \
+                or any(k != PLANAR_MOMENT_CORRECTED for k in kinds[1:-1]) \
+                or (len(kinds) > 1 and kinds[-1] == PLANAR_MOMENT_DECLARED):
+            raise PlanarMomentError("history kinds out of order")
+        if kinds.count(PLANAR_MOMENT_CORRECTED) > MAX_PLANAR_MOMENT_CORRECTIONS:
+            raise PlanarMomentError("too many corrections")
+        if len({r.component_id for r in history}) != 1:
+            raise PlanarMomentError("declaration changed component")
+        withdrawn = kinds[-1] == PLANAR_MOMENT_WITHDRAWN
+        component_id = history[0].component_id
+        if not withdrawn:
+            if component_id in active:
+                raise PlanarMomentError("two active declarations for one component")
+            active.add(component_id)
+        records.append(PlanarMomentRecord(
+            declaration_id=declaration_id, component_id=component_id,
+            revisions=tuple(history), withdrawn=withdrawn))
+    return PlanarMomentLedger(records=tuple(records))
+
+
+def planar_moment_binding_issues(material, inventory, composition, root_domain,
+                                 current_identity):
+    """Why a CURRENT material needs reconfirmation, as a tuple from
+    ``PM_ISSUES`` in fixed order; empty when every binding still holds.
+    ``current_identity`` is ``(method_id, method_version, artifact_version,
+    artifact_sha256)`` of the CURRENT consumer and governed artifact, read by
+    the store (``engine.record_store.planar_moment_method_identity``; None when
+    the artifact cannot be read: METHOD_CHANGED, fail closed). This module does
+    no IO."""
+    issues = []
+    record = inventory.record_for(material.component_id)
+    if record is None or record.withdrawn:
+        issues.append(PM_ISSUE_COMPONENT_WITHDRAWN)
+    else:
+        if record.head_revision_no != material.component_revision:
+            issues.append(PM_ISSUE_COMPONENT_CHANGED)
+        eligible, part_id = planar_moment_target_part(composition, root_domain,
+                                                      record.current)
+        if not eligible or part_id != material.part_id:
+            issues.append(PM_ISSUE_PART_LINK_LOST)
+    stored = (material.method_id, material.method_version, material.artifact_version,
+              material.artifact_sha256)
+    if current_identity is None or stored != tuple(current_identity) \
+            or material.declaration_version not in PLANAR_MOMENT_DECLARATION_VERSIONS:
+        issues.append(PM_ISSUE_METHOD_CHANGED)
+    return tuple(issues)
+
+
+def planar_moment_material(inventory, composition, root_domain, component_id,
+                           expected_revision, point_description, force_context,
+                           values, declarations, screen, current_identity):
+    """Build the COMPLETE material of a new revision against CURRENT durable
+    truth: the component is an ACTIVE component this calculation may be saved
+    for (``PlanarMomentNotEligible``); its revision position equals what the
+    form showed (``PlanarMomentStale``); the configuration is admitted in
+    shape (``PlanarMomentNotAdmitted``) and every text is admissible. The
+    bindings and the method identity are stamped from durable / current truth,
+    never from the client."""
+    if not isinstance(inventory, ComponentInventory):
+        raise PlanarMomentError("no validated inventory")
+    if current_identity is None:
+        raise PlanarMomentNotAdmitted("the method's governed content is unavailable")
+    record = inventory.record_for(component_id) \
+        if is_valid_component_id(component_id) else None
+    if record is None or record.withdrawn:
+        raise PlanarMomentNotEligible("the component is not an active component")
+    eligible, part_id = planar_moment_target_part(composition, root_domain, record.current)
+    if not eligible:
+        raise PlanarMomentNotEligible("the component cannot carry this calculation here")
+    if expected_revision != record.head_revision_no:
+        raise PlanarMomentStale("the component changed")
+    method_id, method_version, artifact_version, artifact_sha256 = current_identity
+    material = PlanarMomentMaterial(
+        component_id=component_id, component_revision=record.head_revision_no,
+        part_id=part_id, point_description=point_description,
+        force_context=force_context, values=tuple(values),
+        declarations=tuple(declarations), screen=tuple(screen),
+        method_id=method_id, method_version=method_version,
+        artifact_version=artifact_version, artifact_sha256=artifact_sha256,
+        declaration_version=PLANAR_MOMENT_DECLARATION_VERSION)
+    return check_planar_moment_material(material, inventory, composition)
+
+
+def declared_planar_moment(ledger, material):
+    """Revision 0 of a NEW identity: no active declaration exists for the
+    component and an identity is left."""
+    if not isinstance(ledger, PlanarMomentLedger):
+        raise PlanarMomentError("no validated ledger")
+    if ledger.active_for(material.component_id) is not None:
+        raise PlanarMomentActiveExists("an active saved configuration exists")
+    if len(ledger.records) >= MAX_PLANAR_MOMENT_IDENTITIES_PER_PROJECT:
+        raise PlanarMomentIdentityLimit("the identity limit is reached")
+    return PlanarMomentRevision(
+        revision_id=new_planar_moment_revision_id(),
+        declaration_id=new_planar_moment_id(), revision_no=0,
+        kind=PLANAR_MOMENT_DECLARED, component_id=material.component_id,
+        material=material)
+
+
+def _pm_revisable(ledger, declaration_id, expected_head):
+    if not isinstance(ledger, PlanarMomentLedger):
+        raise PlanarMomentError("no validated ledger")
+    record = ledger.record_for(declaration_id) \
+        if is_valid_planar_moment_id(declaration_id) else None
+    if record is None:
+        raise PlanarMomentUnknown("no such declaration")
+    if record.withdrawn:
+        raise PlanarMomentAlreadyWithdrawn("the declaration is withdrawn")
+    if expected_head != record.head_revision_no:
+        raise PlanarMomentStale("the declaration changed")
+    return record
+
+
+def corrected_planar_moment(ledger, declaration_id, expected_head, material):
+    """The next CORRECTED revision with the COMPLETE new material (which
+    re-stamps the component revision, the part and the method identity, so a
+    correction is also the explicit reconfirmation); refuses an exact
+    restatement."""
+    record = _pm_revisable(ledger, declaration_id, expected_head)
+    if material.component_id != record.component_id:
+        raise PlanarMomentError("a correction cannot change the component")
+    if record.corrections >= MAX_PLANAR_MOMENT_CORRECTIONS:
+        raise PlanarMomentCorrectionLimit("the correction limit is reached")
+    if material == record.current:
+        raise PlanarMomentUnchanged("the correction changes nothing")
+    return PlanarMomentRevision(
+        revision_id=new_planar_moment_revision_id(),
+        declaration_id=declaration_id, revision_no=record.head_revision_no + 1,
+        kind=PLANAR_MOMENT_CORRECTED, component_id=record.component_id,
+        material=material)
+
+
+def withdrawn_planar_moment(ledger, declaration_id, expected_head):
+    """The ONE reserved terminal withdrawal (available whatever corrections
+    were used)."""
+    record = _pm_revisable(ledger, declaration_id, expected_head)
+    return PlanarMomentRevision(
+        revision_id=new_planar_moment_revision_id(),
+        declaration_id=declaration_id, revision_no=record.head_revision_no + 1,
+        kind=PLANAR_MOMENT_WITHDRAWN, component_id=record.component_id,
+        material=None)
+
+
+def same_planar_moment_action(stored, revision):
+    """True when ``revision`` restates the action ``stored`` committed: the
+    same kind, component and material, and - except for a first declaration,
+    whose identity is generated afresh on each attempt - the same identity and
+    position."""
+    if (stored.kind, stored.component_id, stored.material) != (
+            revision.kind, revision.component_id, revision.material):
+        return False
+    if stored.kind == PLANAR_MOMENT_DECLARED:
+        return revision.revision_no == 0
+    return (stored.declaration_id, stored.revision_no) == (
+        revision.declaration_id, revision.revision_no)
