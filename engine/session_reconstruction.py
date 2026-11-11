@@ -63,6 +63,8 @@ exception string, and never duplicated into an `AssertionRecord`.
 """
 import contextlib
 import copy
+import hashlib
+import json
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -363,6 +365,163 @@ def _replays_into_own_gap(state, gap_type):
     if gap_type is None:
         return True
     return progression_loop.select_next_gap(state) == gap_type
+
+
+def _answer_replays_here(state, record, version):
+    """Whether an ACTIVE, non-assumption-origin answered ``record`` enters
+    ``run_iteration`` at its own durable replay position, or is left unapplied.
+
+    A named seam over the unchanged predicate (behaviour-preserving extraction):
+    the answer is applicable to its own gap and, under the gap-bound replay
+    versions only, the canonical selector chooses that gap here. Every version
+    replays exactly as before."""
+    return (progression_loop.answer_applicable(state, record.gap_context)
+            and (version not in GAP_BOUND_REPLAY_VERSIONS
+                 or _replays_into_own_gap(state, record.gap_context)))
+
+
+# --------------------------------------------------------------------------
+# R2 contextual admission — OFFLINE CANDIDATE ONLY (no runtime caller)
+# --------------------------------------------------------------------------
+# Owner authorization "R2 OFFLINE CONTEXTUAL ADMISSION PROOF" (2026-11-11).
+# Pure helpers for ONE candidate rule, exercised only by an offline test that
+# injects decisions in memory and composes them at `_answer_replays_here`.
+# Nothing here is called by the web layer, the live progression, reconstruction
+# or any stamped / supported engine contract; there is no table, writer,
+# provider, network or persisted decision, and no engine-contract version is
+# registered for it. It qualifies no method and admits nothing to the product.
+#
+# The candidate rule, per ACTIVE answered record in durable ledger order:
+#   * a decision is VALID only when it names this record, this method and the
+#     source digest recomputed from the CURRENT ledger (`contextual_source_digest`);
+#   * ADMITTED only on a valid RELATED decision, and then the EXISTING governed
+#     progression still decides: RELATED is necessary, never sufficient;
+#   * WITHHELD on a valid UNRELATED decision; PENDING on an absent, UNCERTAIN,
+#     UNAVAILABLE or stale (method / digest mismatch) decision. Neither earns
+#     any credit; the answer stays recorded, verbatim, and is left unapplied;
+#   * the context answer is the latest STRICTLY EARLIER, ACTIVE, ADMITTED answer
+#     (never the record itself, never a later or superseded record), so every
+#     dependency points backwards and the plan is acyclic by construction. A
+#     superseded, no-longer-admitted or re-bound source changes the recomputed
+#     digest of every answer that depended on it, transitively (each digest
+#     chains its context's own digest), so each becomes PENDING until it is
+#     itself reassessed. This selection is an UNQUALIFIED candidate policy:
+#     Run 03 evaluated one authored preceding answer, not arbitrary histories.
+#   * a structurally invalid decision (unknown value, wrong types, a record
+#     that is not in the ledger, a key that names another record) is corrupt
+#     evidence and raises; it is never read as absent.
+CX_RELATED = "RELATED"
+CX_UNRELATED = "UNRELATED"
+CX_UNCERTAIN = "UNCERTAIN"
+CX_UNAVAILABLE = "UNAVAILABLE"
+CX_DECISION_VALUES = frozenset({CX_RELATED, CX_UNRELATED, CX_UNCERTAIN, CX_UNAVAILABLE})
+CX_ADMITTED = "ADMITTED"
+CX_WITHHELD = "WITHHELD_UNRELATED"
+CX_PENDING = "PENDING"
+CX_REASON_ABSENT = "absent"
+CX_REASON_UNCERTAIN = "uncertain"
+CX_REASON_UNAVAILABLE = "unavailable"
+CX_REASON_STALE = "stale"
+CX_CONTEXT_POLICY = "latest-earlier-active-admitted-v0-unqualified"
+
+
+class ContextualDecisionError(ValueError):
+    """Corrupt contextual decision evidence: never read as an absent decision."""
+
+
+@dataclass(frozen=True)
+class ContextualDecision:
+    """One injected contextual decision about one answered record. Carries the
+    closed decision value and the bindings only: no provider output, quote or
+    text."""
+    record_id: str
+    decision: str
+    method_id: str
+    source_digest: str
+
+
+@dataclass(frozen=True)
+class ContextualAdmission:
+    """The candidate outcome for one ACTIVE answered record (derived, never
+    persisted). ``reason`` is set only for PENDING."""
+    record_id: str
+    outcome: str
+    reason: Optional[str]
+    context_record_id: Optional[str]
+    source_digest: str
+
+
+def contextual_source_digest(method_id, seed, record, context_record,
+                             context_digest=None):
+    """SHA-256 over the exact sources one decision is bound to: the method, the
+    project seed, the record's identity, served-question binding and verbatim
+    text, and the selected earlier context record's identity, text and OWN
+    validated source digest (or none). Chaining the context's digest binds a
+    decision to its whole dependency provenance, so a change anywhere upstream
+    (a correction, or the context readmitted against a different context) makes
+    every downstream decision stale until it is itself reassessed."""
+    material = {
+        "policy": CX_CONTEXT_POLICY,
+        "method": method_id,
+        "seed": seed,
+        "record": [record.record_id, record.gap_context,
+                   getattr(record, "question_target", None), record.content],
+        "context": (None if context_record is None
+                    else [context_record.record_id, context_record.content,
+                          context_digest]),
+    }
+    blob = json.dumps(material, ensure_ascii=False, sort_keys=True,
+                      separators=(",", ":"))
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def _check_decisions(ledger, decisions):
+    known = {r.record_id for r in ledger}
+    for key, value in decisions.items():
+        if not isinstance(value, ContextualDecision) \
+                or not all(isinstance(getattr(value, name), str) and getattr(value, name)
+                           for name in ("record_id", "decision", "method_id",
+                                        "source_digest")) \
+                or value.decision not in CX_DECISION_VALUES \
+                or key != value.record_id or value.record_id not in known:
+            raise ContextualDecisionError("corrupt contextual decision evidence")
+
+
+def contextual_admission_plan(seed, ledger, decisions, method_id):
+    """The candidate outcome of every ACTIVE answered record of ``ledger`` (the
+    full durable ledger in authoritative order), keyed by record id. Pure and
+    deterministic; reads only its arguments and calls nothing external."""
+    _check_decisions(ledger, decisions)
+    plan = {}
+    context = None                      # latest strictly earlier ADMITTED record
+    context_digest = None               # its own validated source digest
+    for record in ledger:
+        if record.disposition != DISPOSITION_ANSWERED \
+                or getattr(record, "superseded_by", None) is not None:
+            continue
+        digest = contextual_source_digest(method_id, seed, record, context,
+                                          context_digest)
+        decision = decisions.get(record.record_id)
+        reason = None
+        if decision is None:
+            outcome, reason = CX_PENDING, CX_REASON_ABSENT
+        elif decision.method_id != method_id or decision.source_digest != digest:
+            outcome, reason = CX_PENDING, CX_REASON_STALE
+        elif decision.decision == CX_RELATED:
+            outcome = CX_ADMITTED
+        elif decision.decision == CX_UNRELATED:
+            outcome = CX_WITHHELD
+        elif decision.decision == CX_UNCERTAIN:
+            outcome, reason = CX_PENDING, CX_REASON_UNCERTAIN
+        else:
+            outcome, reason = CX_PENDING, CX_REASON_UNAVAILABLE
+        plan[record.record_id] = ContextualAdmission(
+            record_id=record.record_id, outcome=outcome, reason=reason,
+            context_record_id=None if context is None else context.record_id,
+            source_digest=digest)
+        if outcome == CX_ADMITTED:
+            context, context_digest = record, digest
+    return plan
 
 
 def contract_assertions_seq(contract):
@@ -712,9 +871,7 @@ def _reconstruct(store, project_id: str):
             # canonical selector would integrate it into a different gap. Such
             # an answer stays saved, verbatim and in the ledger, and is left
             # explicitly unapplied. Every earlier version replays as before.
-            if progression_loop.answer_applicable(state, record.gap_context) \
-                    and (version not in GAP_BOUND_REPLAY_VERSIONS
-                         or _replays_into_own_gap(state, record.gap_context)):
+            if _answer_replays_here(state, record, version):
                 last_result = progression_loop.run_iteration(state, record.content)
             else:
                 _unapplied_answers.append(record.record_id)
