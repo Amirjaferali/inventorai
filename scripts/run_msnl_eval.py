@@ -1585,19 +1585,34 @@ def preflight_payload(arm_pack, item, cap, model=toa.MODEL):
 
 def _measured_call(adapter, payload):
     """ONE request through the adapter's own ``_call`` and transport, with the
-    HTTP status, latency and sanitized reply metadata captured on the way."""
+    HTTP status, latency and sanitized reply metadata captured on the way, plus
+    the allowlisted diagnostics of a failure (they change no error kind, retry
+    or outcome): ``sent_at_utc`` (wall-clock send time), ``http_diagnostic``
+    (only for a non-200 status, and only when the transport returned exactly
+    an InventorAI diagnostic document; else UNAVAILABLE) and
+    ``transport_failure`` (the closed category of a transport exception)."""
+    import datetime
     import time
-    meta = {"sent": False, "http_status": _PF_UNAVAILABLE, "latency_ms": _PF_UNAVAILABLE}
+    meta = {"sent": False, "http_status": _PF_UNAVAILABLE, "latency_ms": _PF_UNAVAILABLE,
+            "sent_at_utc": _PF_UNAVAILABLE, "http_diagnostic": None, "transport_failure": None}
     transport = adapter._transport
 
     def measuring(url, headers, body, timeout):
         meta["sent"] = True
+        meta["sent_at_utc"] = datetime.datetime.now(datetime.timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
         start = time.monotonic()
         try:
             status, raw = transport(url, headers, body, timeout)
+        except Exception as exc:
+            meta["transport_failure"] = toa.transport_failure_diagnostic(exc)
+            raise
         finally:
             meta["latency_ms"] = round((time.monotonic() - start) * 1000)
         meta["http_status"] = status if isinstance(status, int) else _PF_UNAVAILABLE
+        if status != 200:
+            meta["http_diagnostic"] = (toa.read_http_diagnostic(raw) if isinstance(raw, bytes)
+                                       else None) or _PF_UNAVAILABLE
         meta.update(preflight_response_meta(raw if isinstance(raw, bytes) else b""))
         return status, raw
     adapter._transport = measuring
@@ -2403,7 +2418,11 @@ def context_history_run(adapter, manifest, journal=None):
                            "http_status": meta["http_status"], "response_id": meta["response_id"],
                            "model": meta["model"], "service_tier": meta["service_tier"],
                            "usage": usage, "input_token_bound": bound, "reserved_usd": round(reserved, 6),
-                           "measured_cost_usd": None if cost is None else round(cost, 6)}}
+                           "measured_cost_usd": None if cost is None else round(cost, 6),
+                           # failure diagnostics (allowlisted; no effect on the outcome)
+                           "sent_at_utc": meta["sent_at_utc"], "latency_ms": meta["latency_ms"],
+                           "http_diagnostic": meta["http_diagnostic"],
+                           "transport_failure": meta["transport_failure"]}}
         rows.append(row)
         _mc_journal(journal, {"event": "attempt", "case_id": case["case_id"], "error": err,
                               "decision": row["decision"], **row["attempt"]})
