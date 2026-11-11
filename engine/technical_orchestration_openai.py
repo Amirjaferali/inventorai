@@ -43,9 +43,26 @@ follows no redirect. Every timeout, transport failure, non-200 status
 (including any 3xx), incomplete or malformed response becomes ``ERROR`` with no proposals; ``last_error_kind`` names the
 category only. A provider object never escapes this module. A provider refusal
 is an ``ABSTAIN``.
+
+DIAGNOSTICS (evaluation only; they change no outcome, retry or error kind)
+-----------
+For a non-2xx response the default transport returns the status and, in place
+of the response body, ONE InventorAI diagnostic document built by
+``http_error_diagnostic``: a validated request id, the provider error type and
+code mapped onto closed lists, and presence-only origin indicators. The raw
+body, every header value other than a validated request id, and any message
+text stay inside the transport and are discarded. ``transport_failure_diagnostic``
+maps a transport exception onto a closed category and its class names without
+ever reading the exception's text (a refused proxy tunnel contributes only its
+three-digit status). A provider-shaped error response is supporting evidence
+about which layer answered, never proof of it.
 """
+import http.client
 import json
 import os
+import re
+import socket
+import ssl
 import urllib.error
 import urllib.request
 
@@ -71,6 +88,176 @@ ERR_TRANSPORT = "transport"
 ERR_HTTP_STATUS = "http_status"
 ERR_INCOMPLETE = "incomplete"
 ERR_MALFORMED = "malformed"
+
+# ─── evaluation diagnostics: allowlisted fields only ─────────────────────────
+DIAGNOSTIC_VERSION = 1
+DIAGNOSTIC_UNAVAILABLE = "UNAVAILABLE"
+DIAGNOSTIC_OTHER = "OTHER"
+HTTP_DIAGNOSTIC_KEY = "inventorai_http_diagnostic"
+MAX_ERROR_BODY_BYTES = 16384        # an error body beyond this is not parsed at all
+# OpenAI request ids ("req_" plus an opaque token); anything else is not kept.
+_REQUEST_ID = re.compile(r"req_[A-Za-z0-9]{8,64}\Z")
+_CLASS_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,63}\Z")
+_TUNNEL_STATUS = re.compile(r"Tunnel connection failed: ([1-5][0-9][0-9])(?![0-9])")
+# Closed lists of provider error types / codes. A value outside them is recorded
+# only as OTHER, so no provider-chosen text is ever stored.
+KNOWN_ERROR_TYPES = frozenset({
+    "invalid_request_error", "authentication_error", "permission_error",
+    "not_found_error", "rate_limit_error", "insufficient_quota", "server_error",
+    "api_error", "tokens", "requests"})
+KNOWN_ERROR_CODES = frozenset({
+    "invalid_api_key", "invalid_organization", "invalid_project",
+    "insufficient_quota", "rate_limit_exceeded", "model_not_found",
+    "unsupported_country_region_territory", "account_deactivated",
+    "invalid_authentication", "server_error"})
+# Closed categories of a transport failure.
+TF_TIMEOUT = "timeout"
+TF_TUNNEL_REFUSED = "tunnel_refused"
+TF_CONNECTION_REFUSED = "connection_refused"
+TF_REMOTE_DISCONNECTED = "remote_disconnected"
+TF_CONNECTION_RESET = "connection_reset"
+TF_CONNECTION_ABORTED = "connection_aborted"
+TF_INCOMPLETE_READ = "incomplete_read"
+TF_TLS = "tls"
+TF_DNS = "dns"
+TF_PROTOCOL = "protocol"
+TF_OTHER = "other"
+TRANSPORT_FAILURE_CATEGORIES = (
+    TF_TIMEOUT, TF_TUNNEL_REFUSED, TF_CONNECTION_REFUSED, TF_REMOTE_DISCONNECTED,
+    TF_CONNECTION_RESET, TF_CONNECTION_ABORTED, TF_INCOMPLETE_READ, TF_TLS, TF_DNS,
+    TF_PROTOCOL, TF_OTHER)
+HTTP_DIAGNOSTIC_FIELDS = (
+    "version", "status", "request_id", "request_id_header", "provider_error_object",
+    "error_type", "error_code", "openai_headers", "server_cloudflare", "www_authenticate")
+
+
+def _closed(value, known):
+    """A provider value from a closed list, OTHER for any other string, else UNAVAILABLE."""
+    if not isinstance(value, str):
+        return DIAGNOSTIC_UNAVAILABLE
+    return value if value in known else DIAGNOSTIC_OTHER
+
+
+def _header_pairs(headers):
+    """(lower-case name, value) pairs of a header mapping; nothing on any surprise."""
+    try:
+        return [(str(k).lower(), v) for k, v in headers.items()]
+    except Exception:
+        return []
+
+
+def http_error_diagnostic(status, headers, body):
+    """The allowlisted diagnostic of ONE non-2xx response: never the body, a
+    message, a header value other than a validated request id, or a Location.
+
+    ``provider_error_object`` says the body was a JSON object whose ``error``
+    object carries a string ``type`` or ``message`` (OpenAI's documented shape);
+    with ``openai_headers`` / ``server_cloudflare`` / ``request_id`` it is
+    supporting evidence about which layer produced the response, not proof."""
+    pairs = _header_pairs(headers)
+    names = {name for name, _value in pairs}
+    raw_id = next((v for name, v in pairs if name == "x-request-id"), None)
+    server = next((v for name, v in pairs if name == "server"), None)
+    diag = {"version": DIAGNOSTIC_VERSION,
+            "status": status if isinstance(status, int) and not isinstance(status, bool)
+            else DIAGNOSTIC_UNAVAILABLE,
+            "request_id": raw_id if isinstance(raw_id, str) and _REQUEST_ID.match(raw_id)
+            else DIAGNOSTIC_UNAVAILABLE,
+            "request_id_header": "x-request-id" in names,
+            "provider_error_object": False,
+            "error_type": DIAGNOSTIC_UNAVAILABLE, "error_code": DIAGNOSTIC_UNAVAILABLE,
+            "openai_headers": any(name.startswith("openai-") for name in names),
+            "server_cloudflare": isinstance(server, str) and server.strip().lower() == "cloudflare",
+            "www_authenticate": "www-authenticate" in names}
+    if isinstance(body, (bytes, bytearray)) and len(body) <= MAX_ERROR_BODY_BYTES:
+        try:
+            data = json.loads(bytes(body).decode("utf-8"))
+        except Exception:
+            data = None
+        error = data.get("error") if isinstance(data, dict) else None
+        if isinstance(error, dict) and (isinstance(error.get("type"), str)
+                                        or isinstance(error.get("message"), str)):
+            diag["provider_error_object"] = True
+            diag["error_type"] = _closed(error.get("type"), KNOWN_ERROR_TYPES)
+            diag["error_code"] = _closed(error.get("code"), KNOWN_ERROR_CODES)
+    return diag
+
+
+def http_diagnostic_document(status, headers, body):
+    """The bytes the default transport returns for a non-2xx response."""
+    return json.dumps({HTTP_DIAGNOSTIC_KEY: http_error_diagnostic(status, headers, body)},
+                      sort_keys=True).encode("utf-8")
+
+
+def read_http_diagnostic(raw):
+    """The diagnostic carried by ``raw`` when it is EXACTLY a document of
+    ``http_diagnostic_document`` (every field present with its allowed shape),
+    else None. Anything else a transport returned is never interpreted."""
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except Exception:
+        return None
+    diag = data.get(HTTP_DIAGNOSTIC_KEY) if isinstance(data, dict) and len(data) == 1 else None
+    if not isinstance(diag, dict) or tuple(sorted(diag)) != tuple(sorted(HTTP_DIAGNOSTIC_FIELDS)):
+        return None
+    flags = ("request_id_header", "provider_error_object", "openai_headers",
+             "server_cloudflare", "www_authenticate")
+    ok = (diag["version"] == DIAGNOSTIC_VERSION
+          and (diag["status"] == DIAGNOSTIC_UNAVAILABLE
+               or (isinstance(diag["status"], int) and not isinstance(diag["status"], bool)))
+          and (diag["request_id"] == DIAGNOSTIC_UNAVAILABLE
+               or (isinstance(diag["request_id"], str) and _REQUEST_ID.match(diag["request_id"])))
+          and diag["error_type"] in KNOWN_ERROR_TYPES | {DIAGNOSTIC_OTHER, DIAGNOSTIC_UNAVAILABLE}
+          and diag["error_code"] in KNOWN_ERROR_CODES | {DIAGNOSTIC_OTHER, DIAGNOSTIC_UNAVAILABLE}
+          and all(diag[f] is True or diag[f] is False for f in flags))
+    return dict(diag) if ok else None
+
+
+def _class_name(exc):
+    name = type(exc).__name__
+    return name if _CLASS_NAME.match(name) else DIAGNOSTIC_OTHER
+
+
+def transport_failure_diagnostic(exc):
+    """The closed category and class names of ONE transport exception. The
+    exception's text is never stored; a refused proxy tunnel contributes only
+    the three-digit status of its fixed "Tunnel connection failed" form."""
+    cause = exc
+    for _ in range(3):                      # urllib wraps socket-level errors in URLError
+        reason = getattr(cause, "reason", None)
+        if isinstance(cause, urllib.error.URLError) and isinstance(reason, BaseException):
+            cause = reason
+        else:
+            break
+    tunnel = DIAGNOSTIC_UNAVAILABLE
+    if isinstance(cause, (socket.timeout, TimeoutError)):
+        category = TF_TIMEOUT
+    elif isinstance(cause, ssl.SSLError):
+        category = TF_TLS
+    elif isinstance(cause, socket.gaierror):
+        category = TF_DNS
+    elif isinstance(cause, http.client.RemoteDisconnected):
+        category = TF_REMOTE_DISCONNECTED
+    elif isinstance(cause, ConnectionRefusedError):
+        category = TF_CONNECTION_REFUSED
+    elif isinstance(cause, ConnectionResetError):
+        category = TF_CONNECTION_RESET
+    elif isinstance(cause, (ConnectionAbortedError, BrokenPipeError)):
+        category = TF_CONNECTION_ABORTED
+    elif isinstance(cause, http.client.IncompleteRead):
+        category = TF_INCOMPLETE_READ
+    elif isinstance(cause, http.client.HTTPException):
+        category = TF_PROTOCOL
+    else:
+        category = TF_OTHER
+        first = cause.args[0] if isinstance(cause, OSError) and cause.args else None
+        found = _TUNNEL_STATUS.match(first) if isinstance(first, str) else None
+        if found:
+            category, tunnel = TF_TUNNEL_REFUSED, int(found.group(1))
+    return {"version": DIAGNOSTIC_VERSION, "category": category,
+            "exception_class": _class_name(exc),
+            "cause_class": _class_name(cause) if cause is not exc else DIAGNOSTIC_UNAVAILABLE,
+            "tunnel_status": tunnel}
 
 
 def _schema(request):
@@ -145,7 +332,18 @@ def _urllib_transport(url, headers, body, timeout):
         with _opener().open(req, timeout=timeout) as resp:
             return resp.status, resp.read()
     except urllib.error.HTTPError as exc:
-        return exc.code, b""
+        # The raw error body never leaves the transport: only its allowlisted
+        # diagnostic is returned (the adapters treat any non-200 as ERROR anyway).
+        try:
+            body = exc.read(MAX_ERROR_BODY_BYTES + 1)
+        except Exception:
+            body = b""
+        finally:
+            try:
+                exc.close()
+            except Exception:
+                pass
+        return exc.code, http_diagnostic_document(exc.code, exc.headers, body)
 
 
 def _output_text(data):
