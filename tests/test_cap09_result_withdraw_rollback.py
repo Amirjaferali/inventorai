@@ -174,7 +174,11 @@ _LATER_CHANGED_TABLES = ("subsystem_interface_observations", "component_prototyp
                          "subsystem_interface_participation_epochs",
                          # AMENDED at BOARD-OUTLINE-SOURCE-BINDING-01: one more
                          # additive insert-only table (its own tests pin it).
-                         "planar_clearance_source_bindings")
+                         "planar_clearance_source_bindings",
+                         # AMENDED at G1-2 CONSTRAINT-ENGINEERING-LINK-01: one more
+                         # additive current-value table with two tombstone triggers
+                         # (its own tests pin it); not a CAP-09 schema change.
+                         "constraint_engineering_links")
 
 
 def _schema(path):

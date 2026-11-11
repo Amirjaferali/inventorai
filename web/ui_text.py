@@ -9636,6 +9636,158 @@ UI_STRINGS = {
         "en": "We could not confirm whether your notes were saved. Reload the page to see what is stored.",
         "ar": "تعذّر التأكد مما إذا كانت ملاحظاتك قد حُفظت. أعد تحميل الصفحة لترى ما هو محفوظ.",
     },
+    "UI_CEL_HEADING": {
+        "en": "Linked engineering check",
+        "ar": "فحص هندسي مرتبط",
+    },
+    "UI_CEL_INTRO": {
+        "en": "You can link this constraint to one saved planar clearance check of an interaction. The link is your own association: InventorAI does not check whether your constraint is met, and the check does not read your constraint.",
+        "ar": "يمكنك ربط هذا القيد بفحص واحد محفوظ للخلوص المستوي لتفاعل ما. هذا الربط من تقديرك أنت: لا يتحقق InventorAI مما إذا كان قيدك مستوفًى، ولا يقرأ الفحص نص قيدك.",
+    },
+    "UI_CEL_UNAVAILABLE": {
+        "en": "The linked check cannot be read right now. Nothing is shown in its place.",
+        "ar": "تعذّرت قراءة الفحص المرتبط حاليًا. ولا يُعرض شيء بدلًا منه.",
+    },
+    "UI_CEL_NONE": {
+        "en": "No check is linked to this constraint.",
+        "ar": "لا يوجد فحص مرتبط بهذا القيد.",
+    },
+    "UI_CEL_LINKED_TO": {
+        "en": "You linked the planar clearance check of the interaction:",
+        "ar": "ربطتَ فحص الخلوص المستوي للتفاعل:",
+    },
+    "UI_CEL_CHECK_VERSION": {
+        "en": "check version",
+        "ar": "إصدار الفحص",
+    },
+    "UI_CEL_OPEN": {
+        "en": "Open the check",
+        "ar": "افتح الفحص",
+    },
+    "UI_CEL_STATUS_CURRENT": {
+        "en": "The link is current: this constraint and the linked check version are unchanged since you linked them.",
+        "ar": "الربط حالي: لم يتغير هذا القيد ولا إصدار الفحص المرتبط منذ أن ربطتهما.",
+    },
+    "UI_CEL_STATUS_EARLIER": {
+        "en": "The link is earlier: something changed after you linked them. It was not moved to any newer version; link again if it still applies.",
+        "ar": "الربط سابق: تغيّر شيء بعد أن ربطتهما. ولم يُنقل إلى أي إصدار أحدث؛ اربطهما من جديد إن كان ذلك لا يزال ينطبق.",
+    },
+    "UI_CEL_REASON_CONSTRAINT": {
+        "en": "This constraint was corrected after you linked it.",
+        "ar": "صُحّح هذا القيد بعد أن ربطته.",
+    },
+    "UI_CEL_REASON_SUPERSEDED": {
+        "en": "The check was corrected after you linked it; the version you linked is no longer current.",
+        "ar": "صُحّح الفحص بعد أن ربطته؛ ولم يعد الإصدار الذي ربطته هو الإصدار الحالي.",
+    },
+    "UI_CEL_REASON_WITHDRAWN": {
+        "en": "The check was withdrawn after you linked it.",
+        "ar": "سُحب الفحص بعد أن ربطته.",
+    },
+    "UI_CEL_REASON_RECONFIRM": {
+        "en": "The check needs reconfirmation: a component, its participation or the method changed after you linked it.",
+        "ar": "يحتاج الفحص إلى إعادة تأكيد: تغيّر أحد المكونات أو مشاركته أو الطريقة بعد أن ربطته.",
+    },
+    "UI_CEL_RESULT_LABEL": {
+        "en": "Saved result of that check, with the values you declared there (its own nominal result, not a check of your constraint):",
+        "ar": "النتيجة المحفوظة لذلك الفحص، بالقيم التي صرّحت بها هناك (نتيجته الاسمية هو، وليست فحصًا لقيدك):",
+    },
+    "UI_CEL_RESULT_MET": {
+        "en": "the required planar clearance is met.",
+        "ar": "الخلوص المستوي المطلوب متحقق.",
+    },
+    "UI_CEL_RESULT_NOT_MET": {
+        "en": "the required planar clearance is not met.",
+        "ar": "الخلوص المستوي المطلوب غير متحقق.",
+    },
+    "UI_CEL_RESULT_MISSING_INFORMATION": {
+        "en": "no comparison yet, because some information is missing.",
+        "ar": "لا توجد مقارنة بعد، لأن بعض المعلومات ناقصة.",
+    },
+    "UI_CEL_RESULT_INAPPLICABLE": {
+        "en": "no comparison, because you said the check does not apply to your configuration.",
+        "ar": "لا توجد مقارنة، لأنك ذكرتَ أن الفحص لا ينطبق على تهيئتك.",
+    },
+    "UI_CEL_RESULT_COULD_NOT_BE_COMPUTED": {
+        "en": "the comparison could not be computed.",
+        "ar": "تعذّر حساب المقارنة.",
+    },
+    "UI_CEL_RESULT_MISSING": {
+        "en": "No current result is shown for an earlier link.",
+        "ar": "لا تُعرض نتيجة حالية لربط سابق.",
+    },
+    "UI_CEL_RESULT_UNAVAILABLE": {
+        "en": "The check's result cannot be shown right now.",
+        "ar": "تعذّر عرض نتيجة الفحص حاليًا.",
+    },
+    "UI_CEL_NOT_ASSESSED": {
+        "en": "Whether your constraint is met: not assessed. The check's result is not a check of your constraint, and nothing here is verification.",
+        "ar": "استيفاء قيدك: لم يُقيَّم. ونتيجة الفحص ليست فحصًا لقيدك، ولا شيء هنا يُعدّ تحققًا.",
+    },
+    "UI_CEL_PICK": {
+        "en": "Saved check to link:",
+        "ar": "الفحص المحفوظ المراد ربطه:",
+    },
+    "UI_CEL_LINK_BUTTON": {
+        "en": "Link this check",
+        "ar": "اربط هذا الفحص",
+    },
+    "UI_CEL_REPLACE_BUTTON": {
+        "en": "Replace the link with this check",
+        "ar": "استبدل الربط بهذا الفحص",
+    },
+    "UI_CEL_UNLINK_BUTTON": {
+        "en": "Remove the link",
+        "ar": "أزل الربط",
+    },
+    "UI_CEL_NO_CANDIDATES": {
+        "en": "There is no current saved planar clearance check to link yet. Save one on an interaction's planar clearance page first.",
+        "ar": "لا يوجد بعد فحص خلوص مستوٍ محفوظ وحالي لربطه. احفظ فحصًا أولًا في صفحة الخلوص المستوي لأحد التفاعلات.",
+    },
+    "UI_CEL_VP_LINKED": {
+        "en": "Engineering check you linked:",
+        "ar": "الفحص الهندسي الذي ربطته:",
+    },
+    "UI_CEL_VP_UNAVAILABLE": {
+        "en": "The engineering check you linked to this constraint cannot be read right now.",
+        "ar": "تعذّرت حاليًا قراءة الفحص الهندسي الذي ربطته بهذا القيد.",
+    },
+    "UI_CEL_MSG_LINKED": {
+        "en": "The check is linked to your constraint. This records your association only; nothing was checked.",
+        "ar": "رُبط الفحص بقيدك. وهذا يسجّل ربطك فقط؛ ولم يُتحقق من شيء.",
+    },
+    "UI_CEL_MSG_UNLINKED": {
+        "en": "The link was removed. Your constraint, its notes and the check are unchanged.",
+        "ar": "أُزيل الربط. ولم يتغير قيدك ولا ملاحظاته ولا الفحص.",
+    },
+    "UI_CEL_MSG_UNCHANGED": {
+        "en": "The link was already exactly this. Nothing was changed.",
+        "ar": "كان الربط على هذا النحو تمامًا. ولم يتغير شيء.",
+    },
+    "UI_CEL_MSG_STALE": {
+        "en": "The constraint or its link changed since this page was shown. Nothing was saved; review the current state and try again.",
+        "ar": "تغيّر القيد أو ربطه منذ عرض هذه الصفحة. ولم يُحفظ شيء؛ راجِع الحالة الحالية وحاول مجددًا.",
+    },
+    "UI_CEL_MSG_TARGET": {
+        "en": "That check is no longer a current saved check or cannot be read. Nothing was saved.",
+        "ar": "لم يعد ذلك الفحص فحصًا محفوظًا حاليًا أو تعذّرت قراءته. ولم يُحفظ شيء.",
+    },
+    "UI_CEL_MSG_CHOOSE": {
+        "en": "Choose a saved check to link. Nothing was saved.",
+        "ar": "اختر فحصًا محفوظًا لربطه. ولم يُحفظ شيء.",
+    },
+    "UI_CEL_MSG_REJECTED": {
+        "en": "The link request was not accepted. Nothing was saved.",
+        "ar": "لم يُقبل طلب الربط. ولم يُحفظ شيء.",
+    },
+    "UI_CEL_MSG_NOT_SAVED": {
+        "en": "The link was not saved. Nothing was changed.",
+        "ar": "لم يُحفظ الربط. ولم يتغير شيء.",
+    },
+    "UI_CEL_MSG_UNKNOWN": {
+        "en": "We could not confirm whether the link was saved. Reload the page to see what is stored.",
+        "ar": "تعذّر التأكد مما إذا كان الربط قد حُفظ. أعد تحميل الصفحة لترى ما هو محفوظ.",
+    },
     "UI_SS_CONSTRAINT_SCOPE": {
         "en": "The project constraints you declared are not read for safety signals. The absence of a warning is not evidence of safety.",
         "ar": "لا تُقرأ قيود المشروع التي أعلنتها بحثًا عن إشارات السلامة. وغياب التحذير ليس دليلًا على السلامة.",

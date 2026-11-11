@@ -609,6 +609,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     # and CAP-09 SLICE 4 the current-value `prototype_test_variables` sibling.
     assert tables == ["component_prototype_needs",   # COMPONENT-PROTOTYPE-NEED-NOTE-01
                       "constraint_acceptance_preparations",   # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01
+                      "constraint_engineering_links",   # G1-2 CONSTRAINT-ENGINEERING-LINK-01
                       "decision_cell_value_events",   # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01
                       "decision_criterion_revisions",   # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01
                       "engine_version_adoptions", "evidence_references",

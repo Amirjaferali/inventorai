@@ -1298,6 +1298,27 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% endif %}
   </div>
   {% endif %}
+  {# G1-2 CONSTRAINT-ENGINEERING-LINK-01: the saved planar clearance check the
+     inventor linked to this constraint - their association, its freshness, the
+     check's nominal result only while the link is current, and that whether the
+     constraint is met is not assessed. #}
+  {% if st.constraint_engineering_link %}
+  {% set cel = st.constraint_engineering_link %}
+  <div class="vp-constraint-link" data-vp-constraint-link="{{ cel.status }}" style="font-size:12px;color:#445;line-height:1.5;margin:0 0 4px 0">
+    {% if cel.status == 'UNAVAILABLE' %}
+    <div>{{ t('UI_CEL_VP_UNAVAILABLE') }}</div>
+    {% else %}
+    <div><strong>{{ t('UI_CEL_VP_LINKED') }}</strong> <bdi dir="auto">{{ cel.check.interface_description }}</bdi> ({{ t('UI_CEL_CHECK_VERSION') }} <bdi dir="ltr">{{ cel.check.revision_no }}</bdi>)</div>
+    {% if cel.status == 'CURRENT' %}
+    {% if cel.result.status == 'available' %}<div data-vp-cel-result="{{ cel.result.outcome }}"><strong>{{ t('UI_CEL_RESULT_LABEL') }}</strong> {{ t('UI_CEL_RESULT_' ~ cel.result.outcome) }}</div>{% else %}<div>{{ t('UI_CEL_RESULT_UNAVAILABLE') }}</div>{% endif %}
+    {% else %}
+    <div data-vp-cel-earlier>{{ t('UI_CEL_STATUS_EARLIER') }}</div>
+    <div>{{ t('UI_CEL_RESULT_MISSING') }}</div>
+    {% endif %}
+    <div style="color:#667">{{ t('UI_CEL_NOT_ASSESSED') }}</div>
+    {% endif %}
+  </div>
+  {% endif %}
   {% if st.advisory %}
   {% for advisory_line in st.advisory.split('\n') %}
   <div class="vp-advisory" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">{{ advisory_line }}</div>
