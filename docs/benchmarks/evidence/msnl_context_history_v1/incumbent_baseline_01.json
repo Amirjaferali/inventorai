@@ -1,0 +1,3201 @@
+{
+ "composition": "scripts/run_msnl_eval.py mc_engine_outcome, unchanged, from an OPEN and a PARTIAL prior at each case's served index, plus the existing addresses_gap and assess_response signals; offline and network-free.",
+ "engine_contract_version": "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4",
+ "identical_text_pairs": [
+  {
+   "case_ids": [
+    "CH1-C01-ar-msa",
+    "CH3-C10-ar-msa"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH1-C01-en",
+    "CH3-C10-en"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH1-C05-ar-msa",
+    "CH1-C06-ar-msa"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH1-C05-en",
+    "CH1-C06-en"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH1-C10-ar-msa",
+    "CH2-C01-ar-msa"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH1-C10-en",
+    "CH2-C01-en"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH2-C05-ar-msa",
+    "CH2-C06-ar-msa"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH2-C05-en",
+    "CH2-C06-en"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH2-C10-ar-msa",
+    "CH3-C01-ar-msa"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH2-C10-en",
+    "CH3-C01-en"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH3-C05-ar-msa",
+    "CH3-C06-ar-msa"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH3-C05-en",
+    "CH3-C06-en"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH4-C01-ar-msa",
+    "CH6-C10-ar-msa"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH4-C01-en",
+    "CH6-C10-en"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH4-C05-ar-msa",
+    "CH4-C06-ar-msa"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH4-C05-en",
+    "CH4-C06-en"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH4-C10-ar-msa",
+    "CH5-C01-ar-msa"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH4-C10-en",
+    "CH5-C01-en"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH5-C05-ar-msa",
+    "CH5-C06-ar-msa"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH5-C05-en",
+    "CH5-C06-en"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH5-C10-ar-msa",
+    "CH6-C01-ar-msa"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH5-C10-en",
+    "CH6-C01-en"
+   ],
+   "categories": [
+    "NEW_DETAIL",
+    "PROJECT_COUNTERFACTUAL"
+   ],
+   "incumbent_granted": [
+    true
+   ]
+  },
+  {
+   "case_ids": [
+    "CH6-C05-ar-msa",
+    "CH6-C06-ar-msa"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  },
+  {
+   "case_ids": [
+    "CH6-C05-en",
+    "CH6-C06-en"
+   ],
+   "categories": [
+    "HISTORY_COUNTERFACTUAL_NEW",
+    "PARAPHRASE_OF_PREVIOUS"
+   ],
+   "incumbent_granted": [
+    false
+   ]
+  }
+ ],
+ "interface_differences": [
+  "Inputs: the incumbent reads the current answer, the gap type and (for serving only) the served question; it never reads the original idea or the preceding answer. The candidate reads all four texts.",
+  "Output: the incumbent yields ONE decision, whether the answer advanced the gap or set the known mechanism; the candidate yields two independent axes (project_relation, new_contribution), a possible_amendment disclosure and a grounded evidence quote.",
+  "No relation axis, no novelty axis, no abstention: F3 (over-abstention) and F4 (relation flip) have no incumbent counterpart, and no M-AMEND reading exists.",
+  "The comparison here is decision against frozen slot label only: false credit = the incumbent credits a case whose frozen label is not (RELATED, CONTENT_BEARING); false rejection = it does not credit a case whose frozen label is (RELATED, CONTENT_BEARING). It is not method equivalence and not an F1-F4 verdict.",
+  "The incumbent reads only the prior answer's quality, never its content, so the PARTIAL prior's placeholder text cannot change a relevance decision; both priors are measured and reported."
+ ],
+ "limits": [
+  "synthetic, author-chosen clear cases (blind-label agreement 120 of 120): not a real-user failure rate",
+  "Mechanism Completeness questions only, two domains, six projects, one preceding answer per case",
+  "English and Modern Standard Arabic only; no dialect",
+  "a fresh offline state per case: the live journey's W2-C serving adjustments, UQTR suppression and need routing are not exercised",
+  "it qualifies, rejects or ranks no method and says nothing about the candidate, which has no valid run"
+ ],
+ "manifest_sha256": "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda56465365fcdaaabda847",
+ "measures": {
+  "OPEN": {
+   "authored_only": {
+    "false_credit": [
+     30,
+     48
+    ],
+    "false_rejection": [
+     23,
+     48
+    ]
+   },
+   "by_category": {
+    "AMENDMENT": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      5,
+      12
+     ]
+    },
+    "CONTENT_FREE_REFERENCE": {
+     "false_credit": [
+      11,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    },
+    "HISTORY_COUNTERFACTUAL_NEW": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      8,
+      12
+     ]
+    },
+    "NEW_DETAIL": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      4,
+      12
+     ]
+    },
+    "OTHER_INVENTION_SHARED_VOCAB": {
+     "false_credit": [
+      12,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    },
+    "PARAPHRASE_OF_PREVIOUS": {
+     "false_credit": [
+      4,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    },
+    "PLAIN_LANGUAGE_DETAIL": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      8,
+      12
+     ]
+    },
+    "PROJECT_COUNTERFACTUAL": {
+     "false_credit": [
+      8,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    },
+    "RESTATE_THEN_NEW": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      6,
+      12
+     ]
+    },
+    "UNKNOWN_OR_UNDECIDED": {
+     "false_credit": [
+      3,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    }
+   },
+   "by_domain": {
+    "electronics_electrical": {
+     "false_credit": [
+      20,
+      30
+     ],
+     "false_rejection": [
+      13,
+      30
+     ]
+    },
+    "mechanical": {
+     "false_credit": [
+      18,
+      30
+     ],
+     "false_rejection": [
+      18,
+      30
+     ]
+    }
+   },
+   "by_project_id": {
+    "CH1": {
+     "false_credit": [
+      5,
+      10
+     ],
+     "false_rejection": [
+      5,
+      10
+     ]
+    },
+    "CH2": {
+     "false_credit": [
+      6,
+      10
+     ],
+     "false_rejection": [
+      7,
+      10
+     ]
+    },
+    "CH3": {
+     "false_credit": [
+      7,
+      10
+     ],
+     "false_rejection": [
+      6,
+      10
+     ]
+    },
+    "CH4": {
+     "false_credit": [
+      5,
+      10
+     ],
+     "false_rejection": [
+      2,
+      10
+     ]
+    },
+    "CH5": {
+     "false_credit": [
+      7,
+      10
+     ],
+     "false_rejection": [
+      8,
+      10
+     ]
+    },
+    "CH6": {
+     "false_credit": [
+      8,
+      10
+     ],
+     "false_rejection": [
+      3,
+      10
+     ]
+    }
+   },
+   "by_variety": {
+    "ar-msa": {
+     "false_credit": [
+      19,
+      30
+     ],
+     "false_rejection": [
+      15,
+      30
+     ]
+    },
+    "en": {
+     "false_credit": [
+      19,
+      30
+     ],
+     "false_rejection": [
+      16,
+      30
+     ]
+    }
+   },
+   "overall": {
+    "false_credit": [
+     38,
+     60
+    ],
+    "false_rejection": [
+     31,
+     60
+    ]
+   }
+  },
+  "PARTIAL": {
+   "authored_only": {
+    "false_credit": [
+     30,
+     48
+    ],
+    "false_rejection": [
+     23,
+     48
+    ]
+   },
+   "by_category": {
+    "AMENDMENT": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      5,
+      12
+     ]
+    },
+    "CONTENT_FREE_REFERENCE": {
+     "false_credit": [
+      11,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    },
+    "HISTORY_COUNTERFACTUAL_NEW": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      8,
+      12
+     ]
+    },
+    "NEW_DETAIL": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      4,
+      12
+     ]
+    },
+    "OTHER_INVENTION_SHARED_VOCAB": {
+     "false_credit": [
+      12,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    },
+    "PARAPHRASE_OF_PREVIOUS": {
+     "false_credit": [
+      4,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    },
+    "PLAIN_LANGUAGE_DETAIL": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      8,
+      12
+     ]
+    },
+    "PROJECT_COUNTERFACTUAL": {
+     "false_credit": [
+      8,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    },
+    "RESTATE_THEN_NEW": {
+     "false_credit": [
+      0,
+      0
+     ],
+     "false_rejection": [
+      6,
+      12
+     ]
+    },
+    "UNKNOWN_OR_UNDECIDED": {
+     "false_credit": [
+      3,
+      12
+     ],
+     "false_rejection": [
+      0,
+      0
+     ]
+    }
+   },
+   "by_domain": {
+    "electronics_electrical": {
+     "false_credit": [
+      20,
+      30
+     ],
+     "false_rejection": [
+      13,
+      30
+     ]
+    },
+    "mechanical": {
+     "false_credit": [
+      18,
+      30
+     ],
+     "false_rejection": [
+      18,
+      30
+     ]
+    }
+   },
+   "by_project_id": {
+    "CH1": {
+     "false_credit": [
+      5,
+      10
+     ],
+     "false_rejection": [
+      5,
+      10
+     ]
+    },
+    "CH2": {
+     "false_credit": [
+      6,
+      10
+     ],
+     "false_rejection": [
+      7,
+      10
+     ]
+    },
+    "CH3": {
+     "false_credit": [
+      7,
+      10
+     ],
+     "false_rejection": [
+      6,
+      10
+     ]
+    },
+    "CH4": {
+     "false_credit": [
+      5,
+      10
+     ],
+     "false_rejection": [
+      2,
+      10
+     ]
+    },
+    "CH5": {
+     "false_credit": [
+      7,
+      10
+     ],
+     "false_rejection": [
+      8,
+      10
+     ]
+    },
+    "CH6": {
+     "false_credit": [
+      8,
+      10
+     ],
+     "false_rejection": [
+      3,
+      10
+     ]
+    }
+   },
+   "by_variety": {
+    "ar-msa": {
+     "false_credit": [
+      19,
+      30
+     ],
+     "false_rejection": [
+      15,
+      30
+     ]
+    },
+    "en": {
+     "false_credit": [
+      19,
+      30
+     ],
+     "false_rejection": [
+      16,
+      30
+     ]
+    }
+   },
+   "overall": {
+    "false_credit": [
+     38,
+     60
+    ],
+    "false_rejection": [
+     31,
+     60
+    ]
+   }
+  }
+ },
+ "preregistration_sha256": "d8896785bb84713fa54c8b59fcfdb30c8f71af9251e5ef4d45f9f20c6267a8c2",
+ "priors_identical": true,
+ "record_id": "msnl-context-history-v1-incumbent-baseline-01",
+ "rows": [
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C01-ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C01-en",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C02-ar-msa",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C02-en",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C03-ar-msa",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C03-en",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C04-ar-msa",
+   "category": "AMENDMENT",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C04-en",
+   "category": "AMENDMENT",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C05-ar-msa",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C05-en",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C06-ar-msa",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C06-en",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C07-ar-msa",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C07-en",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C08-ar-msa",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C08-en",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C09-ar-msa",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C09-en",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH1-C10-ar-msa",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH1-C10-en",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH1",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C01-ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C01-en",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C02-ar-msa",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C02-en",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C03-ar-msa",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C03-en",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C04-ar-msa",
+   "category": "AMENDMENT",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C04-en",
+   "category": "AMENDMENT",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C05-ar-msa",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C05-en",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C06-ar-msa",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C06-en",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C07-ar-msa",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C07-en",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C08-ar-msa",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C08-en",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C09-ar-msa",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C09-en",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH2-C10-ar-msa",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH2",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH2-C10-en",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH2",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH3-C01-ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C01-en",
+   "category": "NEW_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH3-C02-ar-msa",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH3-C02-en",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH3-C03-ar-msa",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C03-en",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C04-ar-msa",
+   "category": "AMENDMENT",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH3-C04-en",
+   "category": "AMENDMENT",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C05-ar-msa",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH3-C05-en",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "mechanical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C06-ar-msa",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH3-C06-en",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C07-ar-msa",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C07-en",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C08-ar-msa",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C08-en",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C09-ar-msa",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C09-en",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C10-ar-msa",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH3-C10-en",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "mechanical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH3",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C01-ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C01-en",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C02-ar-msa",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH4-C02-en",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH4-C03-ar-msa",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C03-en",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C04-ar-msa",
+   "category": "AMENDMENT",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C04-en",
+   "category": "AMENDMENT",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C05-ar-msa",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C05-en",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C06-ar-msa",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C06-en",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH4-C07-ar-msa",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH4",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C07-en",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C08-ar-msa",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH4",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C08-en",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH4",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C09-ar-msa",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH4-C09-en",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH4",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH4-C10-ar-msa",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH4",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH4-C10-en",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH4",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C01-ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C01-en",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C02-ar-msa",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C02-en",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C03-ar-msa",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C03-en",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C04-ar-msa",
+   "category": "AMENDMENT",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C04-en",
+   "category": "AMENDMENT",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C05-ar-msa",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C05-en",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C06-ar-msa",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH5-C06-en",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C07-ar-msa",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C07-en",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C08-ar-msa",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C08-en",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C09-ar-msa",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C09-en",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C10-ar-msa",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH5-C10-en",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH5",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C01-ar-msa",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C01-en",
+   "category": "NEW_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH6-C02-ar-msa",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C02-en",
+   "category": "PLAIN_LANGUAGE_DETAIL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C03-ar-msa",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C03-en",
+   "category": "RESTATE_THEN_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "ASSERTED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C04-ar-msa",
+   "category": "AMENDMENT",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C04-en",
+   "category": "AMENDMENT",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH6-C05-ar-msa",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH6-C05-en",
+   "category": "HISTORY_COUNTERFACTUAL_NEW",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": true,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "positive",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH6-C06-ar-msa",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": false,
+   "case_id": "CH6-C06-en",
+   "category": "PARAPHRASE_OF_PREVIOUS",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": false,
+    "PARTIAL": false
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "OPEN",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C07-ar-msa",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C07-en",
+   "category": "CONTENT_FREE_REFERENCE",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "ASSERTED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "PARTIAL"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C08-ar-msa",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C08-en",
+   "category": "UNKNOWN_OR_UNDECIDED",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C09-ar-msa",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C09-en",
+   "category": "OTHER_INVENTION_SHARED_VOCAB",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C10-ar-msa",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "ar-msa"
+  },
+  {
+   "addresses_gap": true,
+   "case_id": "CH6-C10-en",
+   "category": "PROJECT_COUNTERFACTUAL",
+   "domain": "electronics_electrical",
+   "frozen_progress_positive": false,
+   "granted": {
+    "OPEN": true,
+    "PARTIAL": true
+   },
+   "project_id": "CH6",
+   "quality": "REASONED",
+   "side": "negative",
+   "status_after": {
+    "OPEN": "PARTIAL",
+    "PARTIAL": "CLOSED"
+   },
+   "unadjusted": true,
+   "variety": "en"
+  }
+ ],
+ "status": "SYNTHETIC — OFFLINE INCUMBENT BASELINE; no provider request"
+}
