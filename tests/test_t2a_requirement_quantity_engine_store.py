@@ -617,6 +617,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "need_routing_revisions",
                       "planar_clearance_revisions",   # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01
                       "planar_clearance_source_bindings",   # BOARD-OUTLINE-SOURCE-BINDING-01
+                      "planar_moment_revisions",   # G1-PLANAR-MOMENT-SAVED-DECLARATION-01
                       "project_component_revisions",   # COMPONENT-INVENTORY-CORRECT-WITHDRAW-01
                       "project_components",   # COMPONENT-INVENTORY-DECLARE-LIST-01
                       "project_subsystems",   # Stage 15 Slice 1 sidecar
