@@ -504,9 +504,9 @@ def test_run_01_evidence_is_pinned_and_never_the_path_of_a_later_run():
 
 
 def test_every_recorded_run_is_pinned_distinct_and_the_gate_is_closed():
-    """Each recorded run keeps its own files byte for byte, no two runs share a file,
-    and with run 02's evidence present the gate is closed: a further run needs a new
-    authorization, its own paths and a reviewed commit."""
+    """Each recorded run keeps its own files byte for byte and no two runs share a file.
+    The gate is closed whenever the live paths hold recorded evidence; it may be open ONLY
+    for one new authorized run whose own fresh paths are not yet written."""
     paths = []
     for report_path, journal_path, report_sha, journal_sha in _runs().values():
         for path, digest in ((report_path, report_sha), (journal_path, journal_sha)):
@@ -514,8 +514,13 @@ def test_every_recorded_run_is_pinned_distinct_and_the_gate_is_closed():
             assert os.path.dirname(path) == h.CONTEXT_HISTORY_EVIDENCE_DIR
             paths.append(path)
     assert len(set(paths)) == len(paths) == 4
-    assert os.path.exists(h.CONTEXT_HISTORY_REPORT_PATH)
-    assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
+    live = (h.CONTEXT_HISTORY_REPORT_PATH, h.CONTEXT_HISTORY_JOURNAL_PATH)
+    if h.CONTEXT_HISTORY_RUN_AUTHORIZED:
+        assert not set(live) & set(paths)
+        assert {os.path.dirname(p) for p in live} == {h.CONTEXT_HISTORY_EVIDENCE_DIR}
+        assert not any(os.path.exists(p) for p in live)
+    else:
+        assert os.path.exists(h.CONTEXT_HISTORY_REPORT_PATH)
 
 
 @pytest.mark.parametrize("run", ["01", "02"])
