@@ -21,6 +21,9 @@ from tests.test_msnl_llm_eval_harness import h, _reply
 PREREG_SHA256 = "d8896785bb84713fa54c8b59fcfdb30c8f71af9251e5ef4d45f9f20c6267a8c2"
 MANIFEST_SHA256 = "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda56465365fcdaaabda847"
 INSTRUCTIONS_SHA256 = "440fd58ed38a221e17524abf8396637d7ca23df2ba921e4a07a46ee2b9873c51"
+# Run 01 (2026-11-10, INVALID) is permanently bound to its own two files, byte for byte.
+RUN_01_REPORT_SHA256 = "e46c0fae1d6d935269d4eff029b15b76b8e8f2bcdb751782f4e9a4834fc24a18"
+RUN_01_JOURNAL_SHA256 = "e7ff288b72e48c2ba85806cbc792bf9d213bf2a9e7af8235065b2e4b2938ea4a"
 POSITIVE = ("NEW_DETAIL", "PLAIN_LANGUAGE_DETAIL", "RESTATE_THEN_NEW", "AMENDMENT",
             "HISTORY_COUNTERFACTUAL_NEW")
 NEGATIVE = ("PARAPHRASE_OF_PREVIOUS", "CONTENT_FREE_REFERENCE", "UNKNOWN_OR_UNDECIDED",
@@ -468,21 +471,31 @@ def test_uncertain_with_a_quote_is_an_abstention_not_a_rejection(manifest):
     assert report["outcome"] == [h.CH_F2]
 
 
-# ─── the ONE authorized run's evidence (2026-11-10) ───────────────────────────
+# ─── run 01's evidence (2026-11-10), permanently bound to run 01 ──────────────
 
 def _recorded():
-    with open(h.CONTEXT_HISTORY_REPORT_PATH, encoding="utf-8") as fh:
+    with open(h.CONTEXT_HISTORY_RUN_01_REPORT_PATH, encoding="utf-8") as fh:
         report = json.load(fh)
-    with open(h.CONTEXT_HISTORY_JOURNAL_PATH, encoding="utf-8") as fh:
+    with open(h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH, encoding="utf-8") as fh:
         journal = [json.loads(line) for line in fh]
     return report, journal
 
 
-def test_the_recorded_run_is_internally_consistent_and_the_gate_is_closed(manifest):
+def test_run_01_evidence_is_pinned_and_never_the_path_of_a_later_run():
+    """Run 01 keeps its own two files byte for byte; a later run writes elsewhere, so
+    it can neither overwrite nor reinterpret them."""
+    for path, digest in ((h.CONTEXT_HISTORY_RUN_01_REPORT_PATH, RUN_01_REPORT_SHA256),
+                         (h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH, RUN_01_JOURNAL_SHA256)):
+        assert hashlib.sha256(open(path, "rb").read()).hexdigest() == digest
+    run_01 = {h.CONTEXT_HISTORY_RUN_01_REPORT_PATH, h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH}
+    assert not run_01 & {h.CONTEXT_HISTORY_REPORT_PATH, h.CONTEXT_HISTORY_JOURNAL_PATH}
+    assert {os.path.dirname(p) for p in run_01} == {h.CONTEXT_HISTORY_EVIDENCE_DIR}
+
+
+def test_the_recorded_run_01_is_internally_consistent(manifest):
     """The committed report recomputes from its own rows, agrees with the fsynced
     journal and stayed inside the authorization: gpt-6-sol, Standard tier, at most
     120 requests, under US$6, no retry, no restart, frozen order."""
-    assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
     report, journal = _recorded()
     assert report == json.loads(json.dumps(h.context_history_report(
         manifest, report["stop"], report["rows"], report["spend"]), sort_keys=True))
@@ -531,20 +544,25 @@ def test_the_recorded_outcome_is_invalid_by_one_transport_failure_without_retry(
     assert h.CH_F1 not in report["outcome"] and h.CH_NOT_FALSIFIED not in report["outcome"]
 
 
-def test_a_second_invocation_is_refused_and_sends_nothing(monkeypatch):
+def test_a_run_whose_evidence_exists_is_refused_and_sends_nothing(monkeypatch):
+    """Independent of the live gate: closed, nothing is sent; open, a run whose
+    evidence already exists (run 01's files here) is refused and sends nothing."""
     def boom(*a, **k):
         raise AssertionError("no adapter may be built")
     monkeypatch.setattr(h, "OpenAIMsnlAdapter", boom)
-    out = h.context_history_evaluation("openai", True, True)          # the gate is closed
+    monkeypatch.setattr(h, "CONTEXT_HISTORY_RUN_AUTHORIZED", False)
+    out = h.context_history_evaluation("openai", True, True)
     assert out["provider_requests"] == 0 and "not authorized" in out["refused"]
-    monkeypatch.setattr(h, "CONTEXT_HISTORY_RUN_AUTHORIZED", True)    # even if reopened
+    monkeypatch.setattr(h, "CONTEXT_HISTORY_RUN_AUTHORIZED", True)
+    monkeypatch.setattr(h, "CONTEXT_HISTORY_REPORT_PATH", h.CONTEXT_HISTORY_RUN_01_REPORT_PATH)
+    monkeypatch.setattr(h, "CONTEXT_HISTORY_JOURNAL_PATH", h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH)
     out = h.context_history_evaluation("openai", True, True)
     assert out["provider_requests"] == 0 and "already exists" in out["refused"]
 
 
 def test_the_evidence_keeps_no_case_text_quote_instructions_or_raw_reply(manifest):
-    texts = [open(p, encoding="utf-8").read() for p in (h.CONTEXT_HISTORY_REPORT_PATH,
-                                                        h.CONTEXT_HISTORY_JOURNAL_PATH)]
+    texts = [open(p, encoding="utf-8").read() for p in (h.CONTEXT_HISTORY_RUN_01_REPORT_PATH,
+                                                        h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH)]
     for text in texts:
         assert manifest["candidate"]["instructions"][:60] not in text
         assert "evidence_quote" not in text and "Authorization" not in text

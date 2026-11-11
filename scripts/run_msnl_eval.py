@@ -2184,13 +2184,22 @@ CONTEXT_HISTORY_MANIFEST_SHA256 = "bcdf6e3ea610bdac0acbb9d099bc35d5ea5473fbdbda5
 # gate for exactly ONE run against the frozen manifest and preregistration pinned above. That
 # run took place on 2026-11-10 from commit f0c0052 (118 requests sent, measured US$0.374128,
 # outcome INVALID: a transport failure at request 118, CH2-C05-ar-msa, with no retry; evidence in
-# docs/benchmarks/evidence/msnl_context_history_v1/), so the gate is closed again: any further
-# run needs a new Owner authorization and a reviewed commit that reopens it.
-CONTEXT_HISTORY_RUN_AUTHORIZED = False
+# docs/benchmarks/evidence/msnl_context_history_v1/run_01_*), and the gate was closed again.
+# Owner authorization "G1/R2 CONTEXT-HISTORY RUN 02" (2026-11-11) reopens it for exactly ONE
+# unchanged replication of the same frozen manifest, preregistration, instructions, request
+# order, scoring and F1-F4 (gpt-6-sol, Standard, store=false, synthetic only, at most 120
+# requests, US$6, no retry, no resume, no replacement of a failed case). Run 02 writes ONLY to
+# its own run_02_* files; run 01 and its INVALID outcome stay exactly as recorded (their paths
+# are the RUN_01 constants below). The evidence commit closes the gate again.
+CONTEXT_HISTORY_RUN_AUTHORIZED = True
 CONTEXT_HISTORY_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
                                             "msnl_context_history_v1")
-CONTEXT_HISTORY_JOURNAL_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR, "run_01_journal.jsonl")
-CONTEXT_HISTORY_REPORT_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR, "run_01_report.json")
+CONTEXT_HISTORY_RUN_01_JOURNAL_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR,
+                                                   "run_01_journal.jsonl")
+CONTEXT_HISTORY_RUN_01_REPORT_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR,
+                                                  "run_01_report.json")
+CONTEXT_HISTORY_JOURNAL_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR, "run_02_journal.jsonl")
+CONTEXT_HISTORY_REPORT_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR, "run_02_report.json")
 CH_RELATIONS = ("RELATED", "UNRELATED", "UNCERTAIN")
 CH_CONTRIBUTIONS = ("CONTENT_BEARING", "NO_NEW_CONTENT", "UNCERTAIN")
 CH_FIELDS = ("project_relation", "new_contribution", "possible_amendment", "evidence_quote")
