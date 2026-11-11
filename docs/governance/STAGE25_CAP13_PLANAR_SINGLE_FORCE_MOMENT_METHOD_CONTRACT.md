@@ -29,6 +29,15 @@ pull request into `feature/atomic-json-session-persistence`. It amends §10 (the
 adds §12A only; the superseded wording is preserved beside each change. The method, its version, equation, roles, units,
 declarations, screen, numeric domain and numerical acceptance, §7 order, disclosure, sources, the method-authority artifact,
 the shared owner and calc/units §12 (no result persistence; the owner stays stateless) are unchanged.
+REPORT-HANDOFF AMENDMENT: `G1-PLANAR-MOMENT-REPORT-HANDOFF-01 — OWNER-AUTHORIZED AMENDMENT` (with the Owner's three narrow
+guards: snapshot consistency, read-only presentation, accurate absence and unavailability). The Owner authorized ONE bounded
+increment showing the inventor's saved configurations (§12A) in the existing HTML report and its PDF, read-only (§12B).
+Applicability: it takes effect only on the verified merge of that increment's pull request into
+`feature/atomic-json-session-persistence`. It amends §9 (where the disclosure is shown), §10 (the report / PDF exclusion),
+§12A (the last bullet) and §13 and adds §12B only; the superseded wording is preserved beside each change. The method, its
+version, equation, roles, units, declarations, screen, numeric domain and numerical acceptance, §7 order, disclosure text,
+sources, the method-authority artifact, the shared owner, calc/units §12 and every §12A save / correct / withdraw rule are
+unchanged.
 
 ---
 
@@ -144,7 +153,10 @@ reads nor feeds SafetySignal.
 
 On success the page shows `M` in N·mm exactly as produced, labelled `UNVALIDATED` and `NOT EVIDENCE`, with the method
 identity and version, the method sources and unit records the owner carried, the inputs echoed and this fixed disclosure
-(English; pinned equal to the artifact):
+(English; pinned equal to the artifact). The same complete disclosure accompanies EVERY displayed value of `M`, including the
+re-evaluated value of a saved configuration on this page and in the report / PDF (§§12A, 12B); no value is shown without
+it. *(Superseded by the report-handoff amendment, preserved — the paragraph ended at "(English; pinned equal to the
+artifact):" and named only the page's own result.)*
 
 1. This is the size of the turning effect (moment) of the one force you declared about the one point you chose, in one plane, using your own force F and your own perpendicular distance d⊥.
 2. It does not show that anything is balanced or held in place, and it gives no support reaction, turning direction or combined effect of several forces.
@@ -190,12 +202,15 @@ fastener, shaft, bearing, weld or member capacity, strength, stress, deflection,
 motor or actuator sizing; no thickness, material or specification; no design suitability, stability or safety conclusion;
 no three-dimensional moment, several forces, couples, spread-out loads, friction, motion, impact, vibration or repeated
 loading; no inference of any force, distance, point or declaration; no unit conversion; no persistence of any calculated
-result, and no persistence of inputs other than the inventor's own explicitly saved configurations (§12A); no report, PDF,
-Structured Export, API, evidence, readiness, progression, gap or SafetySignal effect; no AI or provider call; no
+result, and no persistence of inputs other than the inventor's own explicitly saved configurations (§12A); no report or
+PDF surface other than the read-only saved-configuration section of §12B; no Structured Export, API, evidence, readiness,
+progression, gap or SafetySignal effect; no AI or provider call; no
 eligibility for any part other than the one declared Mechanical part (§1), and no inference from a part's name or
 function. *(Superseded by the integrated-part eligibility amendment, preserved — was: "no integrated-part eligibility
 (§1).")* *(Superseded by the saved-declaration amendment, preserved — was: "no persistence, report, PDF, Structured
-Export, API, evidence, readiness, progression, gap or SafetySignal effect".)*
+Export, API, evidence, readiness, progression, gap or SafetySignal effect".)* *(Superseded by the report-handoff
+amendment, preserved — was: "no report, PDF, Structured Export, API, evidence, readiness, progression, gap or SafetySignal
+effect".)*
 
 ## 11. Source and source-use status
 
@@ -258,7 +273,31 @@ saved-declaration amendment, preserved — was: "Nothing is persisted; the POST 
 - **Boundary (Owner correction 1).** The component association, the point and the force context are OWNER_STATED /
   UNVALIDATED. A saved configuration does not show that the component carries that force and is not a complete force or
   component assessment, evidence, a verified design, a compatibility check or a safety statement. Shown on this method's
-  page only (EN / AR); no report, PDF, export, evidence, readiness, progression or SafetySignal effect; no AI or provider.
+  page and, read-only, in the report and PDF (§12B) (EN / AR); no export, evidence, readiness, progression or SafetySignal
+  effect; no AI or provider. *(Superseded by the report-handoff amendment, preserved — was: "Shown on this method's page
+  only (EN / AR); no report, PDF, export, evidence, readiness, progression or SafetySignal effect; no AI or provider.")*
+
+## 12B. Saved configurations in the report and PDF — read-only (G1-PLANAR-MOMENT-REPORT-HANDOFF-01)
+
+- **One derivation, one rendering.** The report adapter `_pm_report_view` (`web/app.py`) reads the saved history ONCE per
+  render through the existing `load_planar_moments` snapshot and hands that snapshot to the page's own derivation
+  `_pm_saved_view`: the same §12A states, the same re-evaluation through `_CAP13_MOMENT_BINDING`, no second calculation,
+  state rule or eligibility rule. The page, the HTML report and the PDF render each item through ONE read-only partial
+  (`web/templates/_planar_moment_saved.html`); the PDF reuses the HTML report's template.
+- **Snapshot consistency (Owner guard 1).** The saved-moment snapshot is a separate read from the report's project state;
+  no single coherent snapshot of both is claimed. Its composition must equal the validated composition of the project the
+  report describes, and its root domain that project's focus; any mismatch, read failure or corrupt history shows the whole
+  section UNAVAILABLE — never a partial list, and never a value re-evaluated against a different project state.
+- **Read-only (Owner guard 2).** The report and PDF carry no form, link or control; save, correct and withdraw stay on this
+  method's page only, and their routes are unchanged.
+- **Absence and unavailability (Owner guard 3).** No saved configuration ever → no section. Saved configurations → every
+  one in its §12A state (CURRENT, RESULT UNAVAILABLE, NEEDS RECONFIRMATION, WITHDRAWN), with its component, part, point,
+  force context, entered values, method identity and correction count. A number appears ONLY for CURRENT, always with the
+  complete §9 disclosure, the method sources and unit records and the `UNVALIDATED` status line; never for any other state.
+- **Boundary and time.** The section states that every configuration is OWNER_STATED / UNVALIDATED, recalculated when the
+  report was produced, NOT EVIDENCE, and not a capacity, compatibility or safety check or a complete design; it shows when the
+  section was produced and that a downloaded copy is a historical record that can be out of date. The report / PDF audience
+  is unchanged (the central project authorization), and opening either writes nothing. EN / AR, right-to-left.
 
 ## 13. Verification
 
@@ -270,7 +309,10 @@ integrated Mechanical-part gate (`tests/test_cap13_planar_moment_integrated_part
 methods unchanged; EN / AR fidelity; and real-browser EN / AR journeys. Saved configurations (§12A):
 `tests/test_g1_planar_moment_saved_declaration.py` (inputs only, admission at the save boundary, eligibility, staleness,
 lifecycle, retry, corruption, web journey, EN / AR), `..._rollback.py` (the pre-increment build against an upgraded
-database) and `..._browser.py` (EN / AR at 390 and 1280 px). Hosted required CI is the merge gate.
+database) and `..._browser.py` (EN / AR at 390 and 1280 px). Report / PDF (§12B):
+`tests/test_g1_planar_moment_report_handoff.py` (every state, no stale number, the complete disclosure, snapshot mismatch,
+no form, one read per render reusing the page derivation, writes nothing, audience, EN / AR in HTML and PDF) and
+`..._browser.py` (EN / AR at 390 and 1280 px). Hosted required CI is the merge gate.
 
 ## 14. STOP conditions
 

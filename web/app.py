@@ -8083,6 +8083,9 @@ def show_deliverable(sid):
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
+        # G1-PLANAR-MOMENT-REPORT-HANDOFF-01: the saved planar-moment
+        # configurations, re-derived on read (the SAME items as the moment page).
+        planar_moment_report=_pm_report_view(sid, state),
         # PATHN-CONSTRAINT-DECLARATION-01: the SAME current-constraint view
         # in the HTML report and the PDF.
         constraint_report=_constraint_report_view(state),
@@ -8283,6 +8286,9 @@ def download_deliverable_pdf(sid):
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),
+            # G1-PLANAR-MOMENT-REPORT-HANDOFF-01: the SAME saved planar-moment
+            # view as the HTML report.
+            planar_moment_report=_pm_report_view(sid, state),
             # PATHN-CONSTRAINT-DECLARATION-01: the SAME current-constraint view
             # in the HTML report and the PDF.
             constraint_report=_constraint_report_view(state),
@@ -21938,16 +21944,19 @@ def _pm_admit(material):
         return False
 
 
-def _pm_saved_view(sid, lang):
-    """``{"available", "items", "targets"}`` from ONE store snapshot. Each item
-    is re-derived on read: CURRENT (re-evaluated now; a number only on
-    SUCCESS), NEEDS_RECONFIRMATION (no number), RESULT_UNAVAILABLE (the method
-    refused or could not run now; no number) or WITHDRAWN (history). An
-    unreadable snapshot is ``available: False`` - never an empty list."""
-    try:
-        snap = _get_store().load_planar_moments(sid)
-    except Exception:
-        return {"available": False, "items": [], "targets": []}
+def _pm_saved_view(sid, lang, snap=None):
+    """``{"available", "items", "targets"}`` from ONE store snapshot (read
+    here, or the one the caller already read - the report adapter passes the
+    snapshot it checked). Each item is re-derived on read: CURRENT
+    (re-evaluated now; a number only on SUCCESS), NEEDS_RECONFIRMATION (no
+    number), RESULT_UNAVAILABLE (the method refused or could not run now; no
+    number) or WITHDRAWN (history). An unreadable snapshot is
+    ``available: False`` - never an empty list."""
+    if snap is None:
+        try:
+            snap = _get_store().load_planar_moments(sid)
+        except Exception:
+            return {"available": False, "items": [], "targets": []}
     inventory, composition = snap["inventory"], snap["subsystems"]
     identity = _record_store.planar_moment_method_identity()
     parts = {sub.subsystem_id: sub.display_name for sub in composition}
@@ -22004,6 +22013,61 @@ def _pm_saved_view(sid, lang):
                         "active_id": active.declaration_id if active else None,
                         "active_head": active.head_revision_no if active else None})
     return {"available": True, "items": items, "targets": targets}
+
+
+def _pm_iso(key):
+    """One copy key in the document's language, its symbols, units and
+    identifiers direction-isolated (the moment page's own isolation rule)."""
+    lang = _current_ui_lang()
+    return _cap13m_isolate(ui_text.text(key, lang), lang)
+
+
+def _pm_disclosure():
+    """The method's fixed disclosure (moment contract §9), item by item, in the
+    document's language - shown beside EVERY displayed result."""
+    lang = _current_ui_lang()
+    return [_cap13m_isolate(part, lang)
+            for part in ui_text.text("UI_CAP13M_DISCLOSURE", lang).split("\n\n")]
+
+
+app.jinja_env.globals["pm_iso"] = _pm_iso
+app.jinja_env.globals["pm_disclosure"] = _pm_disclosure
+
+
+def _pm_report_view(sid, state):
+    """G1-PLANAR-MOMENT-REPORT-HANDOFF-01 - the report / PDF view of the saved
+    planar-moment configurations: ``None`` when none was ever saved (no
+    section; the report is unchanged); ``{"available": False}`` when the
+    saved history cannot be read, or when its snapshot does not describe the
+    project the report describes (a different composition or root domain) -
+    UNAVAILABLE, never omitted and never a mixed report; otherwise
+    ``{"available": True, "items": [...]}`` - the SAME items the moment page
+    shows (``_pm_saved_view``: the one state derivation and re-evaluation; no
+    second calculation), without the save targets. The saved-moment snapshot
+    is ONE store read of its own, separate from the report's state, so it is
+    checked against that state rather than assumed coherent with it. Read
+    only; writes nothing."""
+    unavailable = {"available": False}
+    try:
+        snap = _get_store().load_planar_moments(sid)
+    except Exception:
+        return unavailable
+    try:
+        if not snap["ledger"].records:
+            return None
+        focus = getattr(state, "domain", None) or getattr(state, "domain_signal", None)
+        composition = _subsystem_model.validate_composition(
+            getattr(state, "subsystems", None) or (), focus)
+        if tuple(snap["subsystems"]) != tuple(composition):
+            return unavailable
+        if focus and snap["root_domain"] and snap["root_domain"] != focus:
+            return unavailable
+        view = _pm_saved_view(sid, _current_ui_lang(), snap=snap)
+    except Exception:
+        return unavailable
+    if not view["available"]:
+        return unavailable
+    return {"available": True, "items": view["items"]}
 
 
 _PM_REFUSAL_MESSAGES = (

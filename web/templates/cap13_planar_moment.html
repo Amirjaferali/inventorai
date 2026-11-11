@@ -178,6 +178,7 @@ select{max-width:100%;padding:6px;font-size:13px}
   <button type="submit">{{ t('UI_CAP13M_SUBMIT') }}</button>
 </form>
 
+{% from "_planar_moment_saved.html" import pm_saved_details with context %}
 {#- G1-PLANAR-MOMENT-SAVED-DECLARATION-01: the saved configurations, each
     re-derived on this render. A number appears ONLY for a CURRENT item whose
     re-evaluation succeeded; an unreadable history is UNAVAILABLE, never "none". -#}
@@ -192,34 +193,7 @@ select{max-width:100%;padding:6px;font-size:13px}
   {% else %}
   {% for item in saved['items'] %}
   <div class="pm-item" data-pm-item="{{ item.declaration_id }}">
-    <span class="pm-state" data-pm-state="{{ item.state }}">{{ t('UI_PM_STATE_' ~ item.state) }}</span>
-    <ul class="plain">
-      <li>{{ t('UI_PM_FIELD_COMPONENT') }}: <bdi dir="auto" data-pm-component>{{ item.component_name }}</bdi></li>
-      {% if item.part_name %}<li>{{ t('UI_PM_FIELD_PART') }}: <bdi dir="auto">{{ item.part_name }}</bdi></li>{% endif %}
-      <li>{{ t('UI_PM_FIELD_POINT') }}: <bdi dir="auto" data-pm-point-text>{{ item.point }}</bdi></li>
-      <li>{{ t('UI_PM_FIELD_FORCE') }}: <bdi dir="auto" data-pm-force-text>{{ item.force_context }}</bdi></li>
-      {% for v in item['values'] %}
-      <li>{{ iso('UI_CAP13M_FIELD_' ~ v.role|upper) }}: <bdi dir="ltr" data-pm-input>{{ v.text }}</bdi></li>
-      {% endfor %}
-      <li>{{ t('UI_CAP13M_METHOD_LINE') }}: <bdi dir="ltr">{{ item.method_id }}</bdi> &middot; <bdi dir="ltr">{{ item.method_version }}</bdi></li>
-      <li>{{ t('UI_PM_FIELD_CORRECTIONS') }}: <bdi dir="ltr">{{ item.corrections }}</bdi></li>
-    </ul>
-    {% if item.result %}
-    <dl class="result">
-      <dt>{{ iso('UI_CAP13M_RESULT_M') }}</dt>
-      <dd data-pm-result-value><bdi dir="ltr">{{ item.result.value }} {{ item.result.unit }}</bdi></dd>
-    </dl>
-    <p class="guidance">{{ iso('UI_CAP13M_STATUS') }}</p>
-    <ul class="plain" data-pm-sources>
-      {% for src in item.result.sources %}<li><bdi dir="ltr" lang="en">{{ src.title }} &mdash; {{ src.url }}</bdi></li>{% endfor %}
-      {% for u in item.result.units %}<li><bdi dir="ltr" lang="en">{{ u.token }}: {{ u.title }}, {{ u.edition }} &mdash; {{ u.url }}</bdi></li>{% endfor %}
-    </ul>
-    {% elif item.outcome_key %}
-    <p class="copy" data-pm-outcome>{{ iso(item.outcome_key) }}</p>
-    {% endif %}
-    {% if item.issues %}
-    <ul class="plain" data-pm-issues>{% for key in item.issues %}<li>{{ t(key) }}</li>{% endfor %}</ul>
-    {% endif %}
+    {{ pm_saved_details(item) }}
     {% if not item.withdrawn %}
     <div class="pm-actions">
       <a href="{{ url_for('cap13_planar_moment', sid=sid, correct=item.declaration_id, head=item.head) }}" data-pm-correct>{{ t('UI_PM_CORRECT_LINK') }}</a>
