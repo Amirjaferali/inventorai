@@ -2502,6 +2502,119 @@ def context_history_evaluation(provider, allow_network, managed_credential):
     return out
 
 
+# ─── R2-OFFLINE-BASELINE-01: the INCUMBENT on the same frozen holdout ─────────
+# The deterministic assessment the product uses TODAY, applied offline to the
+# 120 frozen context-history cases, so the R2 defect it is meant to measure is
+# recorded as reproducible evidence. It reuses `mc_engine_outcome` unchanged
+# (the #948 composition: a fresh IdeaState at the case's served index, one call
+# of engine.progression_loop.integrate_response, from an OPEN and a PARTIAL
+# prior) and reads the existing engine.gap_relevance.addresses_gap and
+# engine.progression_loop.assess_response signals. It sends nothing, touches no
+# product code, store, replay or engine contract, changes no frozen label,
+# candidate, F1-F4 or run record, and is NOT an F1-F4 verdict on anything: the
+# incumbent's single "credited or not" output is compared with the frozen slot
+# label only. Only ids and labels are recorded, never case text.
+CONTEXT_HISTORY_INCUMBENT_BASELINE_PATH = os.path.join(CONTEXT_HISTORY_EVIDENCE_DIR,
+                                                       "incumbent_baseline_01.json")
+CONTEXT_HISTORY_INCUMBENT_ENGINE_VERSION = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4"
+CH_INCUMBENT_PRIORS = ("OPEN", "PARTIAL")
+CH_INCUMBENT_PARTIAL_TEXT = "[synthetic prior answer recorded earlier]"
+CH_INCUMBENT_INTERFACE = (
+    "Inputs: the incumbent reads the current answer, the gap type and (for serving only) the served "
+    "question; it never reads the original idea or the preceding answer. The candidate reads all four texts.",
+    "Output: the incumbent yields ONE decision, whether the answer advanced the gap or set the known "
+    "mechanism; the candidate yields two independent axes (project_relation, new_contribution), a "
+    "possible_amendment disclosure and a grounded evidence quote.",
+    "No relation axis, no novelty axis, no abstention: F3 (over-abstention) and F4 (relation flip) have "
+    "no incumbent counterpart, and no M-AMEND reading exists.",
+    "The comparison here is decision against frozen slot label only: false credit = the incumbent "
+    "credits a case whose frozen label is not (RELATED, CONTENT_BEARING); false rejection = it does not "
+    "credit a case whose frozen label is (RELATED, CONTENT_BEARING). It is not method equivalence and "
+    "not an F1-F4 verdict.",
+    "The incumbent reads only the prior answer's quality, never its content, so the PARTIAL prior's "
+    "placeholder text cannot change a relevance decision; both priors are measured and reported.",
+)
+CH_INCUMBENT_LIMITS = (
+    "synthetic, author-chosen clear cases (blind-label agreement 120 of 120): not a real-user failure rate",
+    "Mechanism Completeness questions only, two domains, six projects, one preceding answer per case",
+    "English and Modern Standard Arabic only; no dialect",
+    "a fresh offline state per case: the live journey's W2-C serving adjustments, UQTR suppression and "
+    "need routing are not exercised",
+    "it qualifies, rejects or ranks no method and says nothing about the candidate, which has no valid run",
+)
+
+
+def ch_incumbent_row(case, replay):
+    pack_case = {"domain": case["domain"], "served_index": case["served_index"],
+                 "question_id": case["question_id"], "served_question": case["served_question"],
+                 "text": case["current_answer"]}
+    outcome = {p: mc_engine_outcome({"replay": replay}, pack_case, p) for p in CH_INCUMBENT_PRIORS}
+    from engine.gap_relevance import addresses_gap
+    from engine.idea_state import MECHANISM_COMPLETENESS
+    from engine.progression_loop import assess_response
+    slot = case["slot_label"]
+    return {"case_id": case["case_id"], "category": case["category"], "project_id": case["project_id"],
+            "domain": case["domain"], "variety": case["variety"], "side": case["side"],
+            "frozen_progress_positive": (slot["project_relation"] == "RELATED"
+                                         and slot["new_contribution"] == "CONTENT_BEARING"),
+            "addresses_gap": bool(addresses_gap(case["current_answer"], MECHANISM_COMPLETENESS)),
+            "quality": str(assess_response(case["current_answer"], case["domain"])),
+            "unadjusted": all(outcome[p]["unadjusted"] for p in CH_INCUMBENT_PRIORS),
+            "granted": {p: bool(outcome[p]["granted"]) for p in CH_INCUMBENT_PRIORS},
+            "status_after": {p: outcome[p]["status_after"] for p in CH_INCUMBENT_PRIORS}}
+
+
+def ch_incumbent_counts(rows, prior, key=None):
+    """{group: {"false_credit": [k, negatives], "false_rejection": [k, positives]}}"""
+    out = {}
+    for row in rows:
+        group = out.setdefault(row[key] if key else "overall",
+                               {"false_credit": [0, 0], "false_rejection": [0, 0]})
+        if row["frozen_progress_positive"]:
+            group["false_rejection"][1] += 1
+            group["false_rejection"][0] += not row["granted"][prior]
+        else:
+            group["false_credit"][1] += 1
+            group["false_credit"][0] += row["granted"][prior]
+    return out
+
+
+def context_history_incumbent_baseline(manifest=None):
+    """The incumbent baseline record, recomputed offline from the frozen manifest."""
+    manifest = manifest or context_history_manifest()
+    replay = {"engine_contract_version": CONTEXT_HISTORY_INCUMBENT_ENGINE_VERSION,
+              "prior_partial_text": CH_INCUMBENT_PARTIAL_TEXT}
+    rows = [ch_incumbent_row(c, replay) for c in sorted(manifest["cases"], key=lambda c: c["case_id"])]
+    by_text = {}
+    for case in manifest["cases"]:
+        by_text.setdefault(case["current_answer"], []).append(case["case_id"])
+    index = {r["case_id"]: r for r in rows}
+    pairs = [{"case_ids": sorted(ids), "categories": sorted(index[i]["category"] for i in ids),
+              "incumbent_granted": sorted({index[i]["granted"][p] for i in ids for p in CH_INCUMBENT_PRIORS})}
+             for ids in by_text.values() if len(ids) > 1]
+    authored = [r for r in rows if r["category"] not in ("HISTORY_COUNTERFACTUAL_NEW",
+                                                         "PROJECT_COUNTERFACTUAL")]
+    measures = {prior: {"overall": ch_incumbent_counts(rows, prior)["overall"],
+                        "authored_only": ch_incumbent_counts(authored, prior)["overall"],
+                        **{f"by_{key}": ch_incumbent_counts(rows, prior, key)
+                           for key in ("category", "project_id", "variety", "domain")}}
+                for prior in CH_INCUMBENT_PRIORS}
+    return {"record_id": "msnl-context-history-v1-incumbent-baseline-01",
+            "status": "SYNTHETIC — OFFLINE INCUMBENT BASELINE; no provider request",
+            "manifest_sha256": CONTEXT_HISTORY_MANIFEST_SHA256,
+            "preregistration_sha256": CONTEXT_HISTORY_PREREG_SHA256,
+            "engine_contract_version": CONTEXT_HISTORY_INCUMBENT_ENGINE_VERSION,
+            "composition": ("scripts/run_msnl_eval.py mc_engine_outcome, unchanged, from an OPEN and a "
+                            "PARTIAL prior at each case's served index, plus the existing addresses_gap "
+                            "and assess_response signals; offline and network-free."),
+            "interface_differences": list(CH_INCUMBENT_INTERFACE),
+            "limits": list(CH_INCUMBENT_LIMITS),
+            "priors_identical": all(r["granted"]["OPEN"] == r["granted"]["PARTIAL"] for r in rows),
+            "measures": measures,
+            "identical_text_pairs": sorted(pairs, key=lambda p: p["case_ids"]),
+            "rows": rows}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
