@@ -36,6 +36,21 @@ proxy injects the credential outside this process, so the secret is never in
 it. Either way the credential is never placed in a URL, a result, an error, a
 repr or any output. This module does no logging.
 
+ROUTE (managed mode)
+--------------------
+A request without an ``Authorization`` header (``managed_proxy`` mode) relies
+on the managed environment's relay to inject the credential, so it may leave
+ONLY through that relay. Before any socket is opened the default transport
+validates the route named by ``HTTPS_PROXY`` / ``https_proxy``: a plain
+``http://`` URL of a loopback host (``127.0.0.0/8``, ``::1`` or ``localhost``)
+with an explicit port and no credentials, path, query or fragment, and no
+``NO_PROXY`` / ``no_proxy`` entry that would send the approved host direct. The
+opener is then pinned to that validated route and never reads the environment
+or ``NO_PROXY`` again. A missing, conflicting, malformed, unsupported or
+bypassed route raises ``ManagedRouteUnavailable`` and nothing is sent. This is
+a routing guard only: it does not observe, test or prove credential injection.
+``env`` mode (an ``Authorization`` header) is routed exactly as before.
+
 FAILURE
 -------
 The default transport makes exactly one request to the approved endpoint and
@@ -58,12 +73,14 @@ three-digit status). A provider-shaped error response is supporting evidence
 about which layer answered, never proof of it.
 """
 import http.client
+import ipaddress
 import json
 import os
 import re
 import socket
 import ssl
 import urllib.error
+import urllib.parse
 import urllib.request
 
 from engine.technical_orchestration_shadow import (
@@ -122,10 +139,21 @@ TF_TLS = "tls"
 TF_DNS = "dns"
 TF_PROTOCOL = "protocol"
 TF_OTHER = "other"
+TF_MANAGED_ROUTE_REFUSED = "managed_route_refused"   # refused locally; nothing was sent
 TRANSPORT_FAILURE_CATEGORIES = (
     TF_TIMEOUT, TF_TUNNEL_REFUSED, TF_CONNECTION_REFUSED, TF_REMOTE_DISCONNECTED,
     TF_CONNECTION_RESET, TF_CONNECTION_ABORTED, TF_INCOMPLETE_READ, TF_TLS, TF_DNS,
-    TF_PROTOCOL, TF_OTHER)
+    TF_PROTOCOL, TF_OTHER, TF_MANAGED_ROUTE_REFUSED)
+# The managed relay route (see ROUTE above) and the closed reasons it is refused for.
+MANAGED_ROUTE_ENV = ("HTTPS_PROXY", "https_proxy")
+MANAGED_ROUTE_BYPASS_ENV = ("NO_PROXY", "no_proxy")
+ROUTE_MISSING = "missing"
+ROUTE_CONFLICTING = "conflicting"
+ROUTE_MALFORMED = "malformed"
+ROUTE_UNSUPPORTED = "unsupported"
+ROUTE_BYPASSED = "bypassed"
+MANAGED_ROUTE_REASONS = (ROUTE_MISSING, ROUTE_CONFLICTING, ROUTE_MALFORMED,
+                         ROUTE_UNSUPPORTED, ROUTE_BYPASSED)
 HTTP_DIAGNOSTIC_FIELDS = (
     "version", "status", "request_id", "request_id_header", "provider_error_object",
     "error_type", "error_code", "openai_headers", "server_cloudflare", "www_authenticate")
@@ -230,7 +258,9 @@ def transport_failure_diagnostic(exc):
         else:
             break
     tunnel = DIAGNOSTIC_UNAVAILABLE
-    if isinstance(cause, (socket.timeout, TimeoutError)):
+    if isinstance(cause, ManagedRouteUnavailable):
+        category = TF_MANAGED_ROUTE_REFUSED
+    elif isinstance(cause, (socket.timeout, TimeoutError)):
         category = TF_TIMEOUT
     elif isinstance(cause, ssl.SSLError):
         category = TF_TLS
@@ -316,20 +346,94 @@ class _RefuseRedirects(urllib.request.HTTPRedirectHandler):
         return None
 
 
-def _opener():
+class ManagedRouteUnavailable(Exception):
+    """The managed relay route could not be established; nothing was sent.
+    ``reason`` is one of ``MANAGED_ROUTE_REASONS``; no environment value is
+    ever stored in it."""
+
+    def __init__(self, reason):
+        super().__init__(reason)
+        self.reason = reason
+
+
+def _loopback(host):
+    if host == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
+
+
+def managed_proxy_route(environ=None):
+    """The ONE validated relay route a managed-mode request may use, as a
+    normalized ``http://host:port`` URL, or ``ManagedRouteUnavailable``. Reads
+    only ``HTTPS_PROXY`` / ``https_proxy`` and ``NO_PROXY`` / ``no_proxy``;
+    opens no socket. No address or port is assumed beyond the loopback rule."""
+    env = os.environ if environ is None else environ
+    values = {env.get(name).strip() for name in MANAGED_ROUTE_ENV
+              if isinstance(env.get(name), str) and env.get(name).strip()}
+    if not values:
+        raise ManagedRouteUnavailable(ROUTE_MISSING)
+    if len(values) > 1:
+        raise ManagedRouteUnavailable(ROUTE_CONFLICTING)
+    raw = values.pop()
+    try:
+        parts = urllib.parse.urlsplit(raw)
+        host, port = parts.hostname, parts.port
+    except ValueError:
+        raise ManagedRouteUnavailable(ROUTE_MALFORMED) from None
+    if parts.scheme != "http":
+        raise ManagedRouteUnavailable(ROUTE_UNSUPPORTED)
+    if (not host or port is None or parts.username is not None or parts.password is not None
+            or parts.path not in ("", "/") or parts.query or parts.fragment):
+        raise ManagedRouteUnavailable(ROUTE_MALFORMED)
+    if not _loopback(host):
+        raise ManagedRouteUnavailable(ROUTE_UNSUPPORTED)
+    target = urllib.parse.urlsplit(ENDPOINT).hostname
+    for name in MANAGED_ROUTE_BYPASS_ENV:
+        value = env.get(name)
+        if isinstance(value, str) and value.strip() and \
+                urllib.request.proxy_bypass_environment(target, {"no": value}):
+            raise ManagedRouteUnavailable(ROUTE_BYPASSED)
+    return "http://%s:%d" % ("[%s]" % host if ":" in host else host, port)
+
+
+class _PinnedRelayHandler(urllib.request.ProxyHandler):
+    """Sends the https request through ONE already-validated relay route. It
+    never reads the environment and never consults ``NO_PROXY``, so the route
+    used is exactly the route that was validated."""
+
+    def __init__(self, route):
+        super().__init__({"https": route})
+        self._hostport = urllib.parse.urlsplit(route).netloc
+
+    def proxy_open(self, req, proxy, type):
+        req.set_proxy(self._hostport, "http")
+        return None
+
+
+def _opener(route=None):
     """A private opener for one call. It is never installed globally, so
-    urllib's module-level state is untouched."""
-    return urllib.request.build_opener(_RefuseRedirects)
+    urllib's module-level state is untouched. With a managed relay ``route``
+    the opener is pinned to it in place of urllib's environment proxy lookup."""
+    if route is None:
+        return urllib.request.build_opener(_RefuseRedirects)
+    return urllib.request.build_opener(_PinnedRelayHandler(route), _RefuseRedirects)
 
 
 def _urllib_transport(url, headers, body, timeout):
     """The default transport: ONE HTTPS POST to the approved endpoint and no
-    follow-up request of any kind. Returns (status, body bytes)."""
+    follow-up request of any kind. Returns (status, body bytes). A managed-mode
+    request (no ``Authorization`` header) goes only through the validated relay
+    route, or raises ``ManagedRouteUnavailable`` before any socket is opened."""
     if url != ENDPOINT:
         raise ValueError("the orchestration adapter posts to its approved endpoint only")
+    managed = not any(str(name).lower() == "authorization" for name in headers)
+    route = managed_proxy_route() if managed else None
     req = urllib.request.Request(url, data=body, headers=headers, method="POST")
     try:
-        with _opener().open(req, timeout=timeout) as resp:
+        with _opener(route).open(req, timeout=timeout) as resp:
             return resp.status, resp.read()
     except urllib.error.HTTPError as exc:
         # The raw error body never leaves the transport: only its allowlisted
