@@ -1,19 +1,54 @@
 # -*- coding: utf-8 -*-
-"""R2 FALSE-REJECTION OFFLINE PROOF — injectable boundary, NOT a semantic method.
+"""R2 FALSE-REJECTION OFFLINE PROOF: three independent axes, measured on the real
+engine. Verdict: FALSE CREDIT reduced; FALSE REJECTION BLOCKED / METHOD NOT
+QUALIFIED.
 
-This test-only proof composes the existing #966 source-bound contextual decision
-with TWO additional, independent INJECTED judgements: new contribution and
-served-Mechanism-Completeness relevance. The third judgement is an explicit
-UNQUALIFIED ORACLE INPUT, not inferred from RELATED, CONTENT_BEARING, matching
-words, or the frozen holdout labels. No production caller, provider, writer,
-new engine contract, or application route is introduced.
+This is an Owner-authorized offline proof under PR #967. It has no production
+caller, provider call, writer, engine contract, route or persisted decision.
 
-A positive result here proves only that a correctly supplied three-axis
-decision can be composed with the incumbent's quality and progression rules.
-It does NOT prove an available method can supply the served-gap judgement.
-The 120 frozen cases are reused for a structural/oracle-bound comparison only,
-never as an independently measured model-qualification score.
+THE THREE AXES ARE INDEPENDENT. None implies another:
+  1. project relation: RELATED (#966 source binding and transitive invalidation);
+  2. new contribution: CONTENT_BEARING;
+  3. served-gap relevance: the content addresses the governed Mechanism
+     Completeness question.
+
+COMPOSITION (`_compose`)
+  * WITHHOLD: no credit, and the answer stays recorded verbatim. This applies
+    when any of the following holds:
+      - the relation is not a valid RELATED (UNRELATED, UNCERTAIN, UNAVAILABLE,
+        absent or stale);
+      - the contribution is not CONTENT_BEARING;
+      - served-gap relevance is NOT_ADDRESSED.
+  * INCUMBENT: served-gap relevance is UNCERTAIN, meaning no qualified method
+    exists. The EXISTING governed relevance owner (`addresses_gap` and its W2-C
+    supplement), the quality rules and the T2-G-3 / T2-G-4 stance guards decide,
+    unchanged. The injected axes can only withhold here, never grant.
+  * WIDEN: served-gap relevance is ADDRESSED. This is the ONLY path that could
+    recover a false rejection. Here an injected judgement replaces the governed
+    relevance owner's verdict for this one answer.
+    - No qualified component produces that judgement. It is an ORACLE in these
+      tests, and every WIDEN test is a boundary contract, never evidence.
+
+WHAT IS MEASURED, WITH NO ORACLE
+The recorded Run 03 decisions (#965) are composed with the real engine on the
+frozen #951 holdout and compared with the #963 incumbent baseline:
+  * false credit:    38 / 60  ->  0 / 60
+  * false rejection: 31 / 60  -> 31 / 60
+The figures are identical from an OPEN and from a PARTIAL prior. The relation
+and novelty axes add no new false rejection. Every remaining false rejection is
+a lexical miss of the governed relevance owner, so recovering it needs a
+served-gap method. Run 03 has no served-gap axis, and the hazard test below
+shows why widening without one is unsafe: on a content-free reference, the
+incumbent quality rule does not stop a widened answer from being credited.
+These are observations on one synthetic holdout and one recorded run. They are
+not a real-user rate and not a qualification.
+
+A SECOND, SEPARATE FALSE-REJECTION MODE is found and NOT repaired: the unchanged
+T2-G explicit-unknown rule rejects a mixed answer, meaning a real mechanism
+followed by a pending choice, although the mechanism alone is credited. Neither
+the composition nor widening touches that rule, which does not read relevance.
 """
+import json
 from dataclasses import dataclass
 from types import SimpleNamespace
 
@@ -27,7 +62,7 @@ from engine.idea_state import (
 )
 from tests.test_msnl_llm_eval_harness import h
 
-METHOD = "r2-false-rejection-three-axis/offline-oracle-only"
+METHOD = "r2-false-rejection-three-axis/offline-proof"
 CONTENT = "CONTENT_BEARING"
 NO_CONTENT = "NO_NEW_CONTENT"
 GAP_ADDRESSED = "ADDRESSED"
@@ -35,7 +70,9 @@ GAP_NOT_ADDRESSED = "NOT_ADDRESSED"
 GAP_UNCERTAIN = "UNCERTAIN"
 GAP_VALUES = (GAP_ADDRESSED, GAP_NOT_ADDRESSED, GAP_UNCERTAIN)
 CONTRIBUTION_VALUES = (CONTENT, NO_CONTENT, "UNCERTAIN")
-OLD_PRIORS = ("OPEN", "PARTIAL")
+PRIORS = ("OPEN", "PARTIAL")
+WITHHOLD, INCUMBENT, WIDEN = "WITHHOLD", "INCUMBENT", "WIDEN"
+Q1 = "mechanical:MECHANISM_COMPLETENESS:Q1"
 
 
 @dataclass(frozen=True)
@@ -48,7 +85,7 @@ class InjectedJudgement:
     source_digest: str
 
 
-def _record(text, question_id="mechanical:MECHANISM_COMPLETENESS:Q1", record_id="rec_0"):
+def _record(text, question_id=Q1, record_id="rec_0"):
     return SimpleNamespace(
         record_id=record_id, gap_context=MC,
         question_target="PATHN:" + question_id, disposition="answered",
@@ -56,55 +93,52 @@ def _record(text, question_id="mechanical:MECHANISM_COMPLETENESS:Q1", record_id=
     )
 
 
-def _inject(seed, record, project_relation=sr.CX_RELATED,
-            new_contribution=CONTENT, served_gap_relevance=GAP_ADDRESSED,
-            method=METHOD):
+def _inject(seed, record, project_relation=sr.CX_RELATED, new_contribution=CONTENT,
+            served_gap_relevance=GAP_UNCERTAIN, method=METHOD):
     return InjectedJudgement(
         record_id=record.record_id, project_relation=project_relation,
-        new_contribution=new_contribution,
-        served_gap_relevance=served_gap_relevance, method_id=method,
-        source_digest=sr.contextual_source_digest(method, seed, record, None),
-    )
+        new_contribution=new_contribution, served_gap_relevance=served_gap_relevance,
+        method_id=method,
+        source_digest=sr.contextual_source_digest(method, seed, record, None))
 
 
-def _admission(seed, ledger, injected):
-    """Only an EXACT, source-bound, three-axis affirmative can recover credit.
-
-    #966 owns identity, previous-context binding, decision corruption and stale
-    refusal. The two new axes are test-only injected metadata. Missing axes,
-    UNCERTAIN, source drift and UNRELATED never generate a positive override.
-    """
-    active = {r.record_id: r for r in ledger if r.disposition == "answered"
-              and r.superseded_by is None}
+def _compose(seed, ledger, injected):
+    """(path, reason). The relation axis goes through the merged #966 owner
+    (identity, source binding, staleness, corruption). The other two axes are
+    test-only injected values. No axis implies another, and only WIDEN can
+    replace the governed relevance verdict."""
+    active = {r.record_id for r in ledger
+              if r.disposition == "answered" and r.superseded_by is None}
     if injected is None:
-        return False, "ABSENT"
+        return WITHHOLD, sr.CX_REASON_ABSENT
     if (not isinstance(injected, InjectedJudgement)
             or injected.record_id not in active
             or injected.new_contribution not in CONTRIBUTION_VALUES
             or injected.served_gap_relevance not in GAP_VALUES):
         raise sr.ContextualDecisionError("invalid injected assessment")
-    decision = sr.ContextualDecision(
-        injected.record_id, injected.project_relation,
-        injected.method_id, injected.source_digest)
     plan = sr.contextual_admission_plan(
-        seed, ledger, {injected.record_id: decision}, METHOD)
-    existing = plan[injected.record_id]
-    if existing.outcome != sr.CX_ADMITTED:
-        return False, existing.reason or existing.outcome
+        seed, ledger, {injected.record_id: sr.ContextualDecision(
+            injected.record_id, injected.project_relation, injected.method_id,
+            injected.source_digest)}, METHOD)
+    relation = plan[injected.record_id]
+    if relation.outcome != sr.CX_ADMITTED:
+        return WITHHOLD, relation.reason or relation.outcome
     if injected.new_contribution != CONTENT:
-        return False, "NO_CONFIRMED_NEW_CONTENT"
-    if injected.served_gap_relevance != GAP_ADDRESSED:
-        return False, "SERVED_GAP_NOT_ESTABLISHED"
-    return True, "THREE_AXES_POSITIVE_INJECTED_ONLY"
+        return WITHHOLD, "NO_CONFIRMED_NEW_CONTENT"
+    if injected.served_gap_relevance == GAP_NOT_ADDRESSED:
+        return WITHHOLD, "SERVED_GAP_NOT_ADDRESSED"
+    if injected.served_gap_relevance == GAP_UNCERTAIN:
+        return INCUMBENT, "SERVED_GAP_NOT_ESTABLISHED"
+    return WIDEN, "SERVED_GAP_ADDRESSED_ORACLE_ONLY"
 
 
-def _starting_state(case, prior):
+def _state(domain, served_index, prior):
     state = IdeaState(idea_id="synthetic-r2-proof")
-    state.domain, state.path = case["domain"], "N"
+    state.domain, state.path = domain, "N"
     state.engine_contract_version = sr.ENGINE_CONTRACT_VERSION_T2G4
     state.maturity_level = 1
-    state.gaps.append(Gap(gap_type=MC, status=prior,
-                          opened_at=0, iterations_open=case["served_index"]))
+    state.gaps.append(Gap(gap_type=MC, status=prior, opened_at=0,
+                          iterations_open=served_index))
     if prior == "PARTIAL":
         state.known_mechanism = Evidence(
             content="[previous synthetic statement]", quality=ASSERTED,
@@ -112,237 +146,261 @@ def _starting_state(case, prior):
     return state
 
 
-def _run_injected(case, prior, injected, monkeypatch):
-    """Test-only composition: withheld = #966's skip; recovery = R2 eligibility.
-
-    In production there is NO route invoking this function. The test patches
-    ONLY this exact answer/gap while calling the real run_iteration and
-    integrate_response, so quality, T2-G-3/4 vetoes, maturity and attribution
-    are evaluated by their unchanged owners. An injected judgement itself
-    cannot set any part of the state.
-    """
-    record = _record(case["current_answer"], case["question_id"])
-    state = _starting_state(case, prior)
-    state.assertions = [record]  # documentary source, exact and verbatim
-    admitted, reason = _admission(case["original_idea"], [record], injected)
-    if admitted:
+def _run(seed, text, injected, prior="OPEN", domain="mechanical", served_index=0,
+         question_id=Q1, monkeypatch=None):
+    """The real canonical `run_iteration` / `integrate_response` under T2-G-4.
+    WITHHOLD runs nothing (the #966 unapplied path). INCUMBENT runs the engine
+    unchanged. WIDEN replaces the governed relevance verdict for THIS answer's
+    exact text only; every other sentence-level check, including the T2-G-3 /
+    T2-G-4 stance vetoes, still uses the governed owner."""
+    record = _record(text, question_id)
+    state = _state(domain, served_index, prior)
+    state.assertions = [record]
+    path, reason = _compose(seed, [record], injected)
+    if path == INCUMBENT:
+        pl.run_iteration(state, text)
+    elif path == WIDEN:
         original = pl.addresses_gap
 
-        def recovered_only_for_this_record(text, gap):
-            if text == record.content and gap == record.gap_context:
-                return True
-            return original(text, gap)
-
+        def widened(response, gap):
+            return True if (response == text and gap == MC) else original(response, gap)
         with monkeypatch.context() as scoped:
-            scoped.setattr(pl, "addresses_gap", recovered_only_for_this_record)
-            pl.run_iteration(state, record.content)
-    return state, admitted, reason
+            scoped.setattr(pl, "addresses_gap", widened)
+            pl.run_iteration(state, text)
+    return state, path, reason
 
 
-def _credited(state, answer, prior):
-    gap = state.get_gap(MC)
-    advanced = (prior == "OPEN" and gap.status in ("PARTIAL", "CLOSED")) or (
-        prior == "PARTIAL" and gap.status == "CLOSED")
-    mechanism_set = (state.known_mechanism is not None
-                     and state.known_mechanism.content == answer)
-    return advanced or mechanism_set
+def _credited(state, text, prior):
+    status = state.get_gap(MC).status
+    advanced = (status in ("PARTIAL", "CLOSED")) if prior == "OPEN" else status == "CLOSED"
+    return advanced or (state.known_mechanism is not None
+                        and state.known_mechanism.content == text)
+
+
+# ==========================================================================
+# 1. the measurement, with NO oracle: recorded Run 03 decisions on the engine
+# ==========================================================================
+def _evidence():
+    base = h.CONTEXT_HISTORY_EVIDENCE_DIR
+    with open(h.CONTEXT_HISTORY_INCUMBENT_BASELINE_PATH, encoding="utf-8") as fh:
+        incumbent = {r["case_id"]: r for r in json.load(fh)["rows"]}
+    with open(h.CONTEXT_HISTORY_RUN_03_REPORT_PATH, encoding="utf-8") as fh:
+        run03 = {r["case_id"]: r["decision"] for r in json.load(fh)["rows"]}
+    assert base and set(incumbent) == set(run03) and len(run03) == 120
+    return incumbent, run03
 
 
 @pytest.fixture(scope="module")
-def frozen():
-    # The already-pinned #951/#963/#965 material: NO fixture, hash, label or
-    # result is edited, and NO provider is asked to classify these cases.
+def measured():
+    """Every frozen case through the real engine. The relation and novelty axes
+    are Run 03's RECORDED decisions. No served-gap decision exists, so it is
+    UNCERTAIN everywhere: the only state the evidence supports."""
     manifest = h.context_history_manifest()
-    assert len(manifest["cases"]) == 120
-    return manifest["cases"]
+    incumbent, run03 = _evidence()
+    rows = {}
+    for case in manifest["cases"]:
+        decision = run03[case["case_id"]]
+        for prior in PRIORS:
+            record = _record(case["current_answer"], case["question_id"])
+            judgement = _inject(case["original_idea"], record,
+                                project_relation=decision["project_relation"],
+                                new_contribution=decision["new_contribution"])
+            state, path, _ = _run(case["original_idea"], case["current_answer"], judgement,
+                                  prior, case["domain"], case["served_index"],
+                                  case["question_id"])
+            assert path in (WITHHOLD, INCUMBENT)                # never WIDEN here
+            rows[(case["case_id"], prior)] = {
+                "composed": _credited(state, case["current_answer"], prior),
+                "incumbent": incumbent[case["case_id"]]["granted"][prior],
+                "positive": incumbent[case["case_id"]]["frozen_progress_positive"],
+                "lexical": incumbent[case["case_id"]]["addresses_gap"],
+                "category": case["category"], "path": path}
+    return rows
 
 
-@pytest.mark.parametrize("prior", OLD_PRIORS)
-def test_both_error_directions_on_the_frozen_cases_are_independent(
-        frozen, prior, monkeypatch):
-    """An ORACLE-BOUND compositional ceiling, not accuracy of a classifier.
-
-    A case's FROZEN label supplies each injected judgement for this diagnostic
-    only. This cannot test whether a real method would produce that judgement.
-    The original incumbent's 31/60 false rejections and 38/60 false credits
-    remain the independently recorded baseline and are not overwritten.
-    """
-    recovered, wrong_credit = [], []
-    # Independently inspected SERVED QUESTION examples for this proof. These
-    # IDs are explicit manual ORACLE INJECTIONS, NOT derived from the frozen
-    # project_relation/new_contribution labels. In particular CH2-C02-ar-msa
-    # describes ergonomics and visible indicators; its own question asks for
-    # moving/connected parts and effects, so it is NOT used as an addressed
-    # exemplar. No general served-gap classifier is thereby validated.
-    addressed_ids = {
-        "CH1-C03-en", "CH1-C04-en", "CH1-C05-en",
-        "CH2-C01-en", "CH2-C04-ar-msa",
-        "CH3-C01-ar-msa", "CH4-C02-en", "CH4-C03-en",
-    }
-    cases_by_id = {c["case_id"]: c for c in frozen}
-    assert all(cases_by_id[i]["slot_label"]["project_relation"] == "RELATED"
-               and cases_by_id[i]["slot_label"]["new_contribution"] == CONTENT
-               for i in addressed_ids)
-    recovered, wrong_credit, conservatively_withheld = [], [], []
-    previously_rejected = {
-        "CH1-C03-en", "CH1-C04-en", "CH1-C05-en",
-        "CH2-C01-en", "CH2-C04-ar-msa",
-        "CH3-C01-ar-msa", "CH4-C02-en",
-    }  # incumbent #963 baseline, both prior states; CH4-C03-en already credited
-    for case in frozen:
-        record = _record(case["current_answer"], case["question_id"])
-        slot = case["slot_label"]
-        injection = _inject(
-            case["original_idea"], record,
-            project_relation=slot["project_relation"],
-            new_contribution=slot["new_contribution"],
-            served_gap_relevance=(GAP_ADDRESSED if case["case_id"] in addressed_ids
-                                  else GAP_UNCERTAIN),
-        )
-        state, admitted, _ = _run_injected(case, prior, injection, monkeypatch)
-        credit = _credited(state, case["current_answer"], prior)
-        if case["case_id"] in addressed_ids:
-            if credit:
-                recovered.append(case["case_id"])
-            assert not admitted or state.known_mechanism is None or (
-                state.known_mechanism.provenance == OWNER_STATED
-                and state.known_mechanism.content == case["current_answer"])
-            assert state.maturity_level == 1
-        else:
-            if credit:
-                wrong_credit.append(case["case_id"])
-            assert not admitted
-            assert state.get_gap(MC).status == prior
-            assert state.maturity_level == 1
-            assert state.assertions[0].content == case["current_answer"]
-            assert state.get_gap(MC).evidence == []
-            if slot["project_relation"] == "RELATED" and slot["new_contribution"] == CONTENT:
-                conservatively_withheld.append(case["case_id"])
-    assert set(recovered) == addressed_ids, ("unrecovered scoped cases",
-                                            sorted(addressed_ids - set(recovered)))
-    assert len(conservatively_withheld) == 60 - len(addressed_ids)
-    assert set(recovered) & previously_rejected == previously_rejected
-    assert len(set(recovered) & previously_rejected) == 7
-    assert wrong_credit == [], wrong_credit
-    # A positive oracle says nothing about the 52 unassessed legitimate cases.
-    # Distinguish observed composed recovery from model qualification.
-    families = {"NEW_DETAIL", "PLAIN_LANGUAGE_DETAIL", "AMENDMENT",
-                "RESTATE_THEN_NEW", "HISTORY_COUNTERFACTUAL_NEW"}
-    assert families <= {cases_by_id[i]["category"] for i in recovered}
+@pytest.mark.parametrize("prior", PRIORS)
+def test_false_credit_and_false_rejection_are_measured_separately(measured, prior):
+    rows = [r for (cid, p), r in measured.items() if p == prior]
+    negatives = [r for r in rows if not r["positive"]]
+    positives = [r for r in rows if r["positive"]]
+    assert len(negatives) == len(positives) == 60
+    assert sum(r["incumbent"] for r in negatives) == 38       # #963 baseline
+    assert sum(not r["incumbent"] for r in positives) == 31   # #963 baseline
+    assert sum(r["composed"] for r in negatives) == 0         # false credit 38 -> 0
+    assert sum(not r["composed"] for r in positives) == 31    # false rejection unchanged
+    # no new false rejection: every positive the incumbent credits stays credited
+    assert all(r["composed"] for r in positives if r["incumbent"])
+    # the composition never credits what the incumbent rejects (axes cannot grant)
+    assert not any(r["composed"] and not r["incumbent"] for r in rows)
 
 
-@pytest.mark.parametrize("gap_decision", [GAP_NOT_ADDRESSED, GAP_UNCERTAIN])
-def test_genuinely_new_project_content_outside_served_gap_cannot_advance(
-        gap_decision, monkeypatch):
-    # New physical product information with plausible technical detail, but
-    # shipping-packaging changes do not explain the mechanism of this device.
-    # The independent served-gap verdict is INJECTED, not guessed from words.
-    seed = ("My automatic pill divider moves tablets into a row and cuts each "
-            "tablet into halves when I press a handle.")
-    answer = ("I changed its shipping package to a reusable folded cardboard "
-              "tray with nesting ribs so retailers can stack many boxes.")
-    case = {"domain": "mechanical", "served_index": 0,
-            "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
-            "original_idea": seed, "current_answer": answer}
-    rec = _record(answer, case["question_id"])
-    injection = _inject(seed, rec, new_contribution=CONTENT,
-                        served_gap_relevance=gap_decision)
-    state, admitted, reason = _run_injected(case, "OPEN", injection, monkeypatch)
-    assert not admitted and reason == "SERVED_GAP_NOT_ESTABLISHED"
-    assert state.get_gap(MC).status == "OPEN"
-    assert state.known_mechanism is None and state.maturity_level == 1
-    assert state.assertions[0].content == answer  # no loss of owner statement
+def test_every_remaining_false_rejection_is_a_lexical_served_gap_miss(measured):
+    unresolved = {cid for (cid, p), r in measured.items()
+                  if p == "OPEN" and r["positive"] and not r["composed"]}
+    assert len(unresolved) == 31
+    assert all(not measured[(cid, "OPEN")]["lexical"] for cid in unresolved)
+    assert all(measured[(cid, "OPEN")]["path"] == INCUMBENT for cid in unresolved)
+    by_category = {}
+    for cid in unresolved:
+        cat = measured[(cid, "OPEN")]["category"]
+        by_category[cat] = by_category.get(cat, 0) + 1
+    assert by_category == {"PLAIN_LANGUAGE_DETAIL": 8, "HISTORY_COUNTERFACTUAL_NEW": 8,
+                           "RESTATE_THEN_NEW": 6, "AMENDMENT": 5, "NEW_DETAIL": 4}
 
 
-@pytest.mark.parametrize("relation,contribution,gap_decision", [
-    (sr.CX_UNRELATED, CONTENT, GAP_ADDRESSED),
-    (sr.CX_RELATED, NO_CONTENT, GAP_ADDRESSED),
-    (sr.CX_RELATED, CONTENT, GAP_UNCERTAIN),
-    (sr.CX_RELATED, CONTENT, GAP_NOT_ADDRESSED),
-    (sr.CX_UNCERTAIN, CONTENT, GAP_ADDRESSED),
-    (sr.CX_UNAVAILABLE, CONTENT, GAP_ADDRESSED),
+def test_the_measurement_is_deterministic_and_matches_the_committed_evidence(measured):
+    incumbent, _ = _evidence()
+    for (cid, prior), r in measured.items():
+        if r["path"] == INCUMBENT:                       # the engine ran unchanged
+            assert r["composed"] == incumbent[cid]["granted"][prior], (cid, prior)
+
+
+# ==========================================================================
+# 2. WIDEN: boundary contract only (ORACLE, never evidence)
+# ==========================================================================
+SEED = ("A folding mechanical wheelchair ramp with a spring latch that must stay "
+        "locked flat and fold away without tools.")
+
+
+def test_oracle_widening_can_recover_a_lexical_miss_only_through_the_engine(monkeypatch):
+    """The recovery path exists, and it depends entirely on the oracle."""
+    incumbent, _ = _evidence()
+    case = [c for c in h.context_history_manifest()["cases"]
+            if c["category"] == "PLAIN_LANGUAGE_DETAIL" and c["domain"] == "mechanical"
+            and not incumbent[c["case_id"]]["granted"]["OPEN"]][0]   # a real lexical miss
+    rec = _record(case["current_answer"], case["question_id"])
+    held, path, _ = _run(case["original_idea"], case["current_answer"],
+                         _inject(case["original_idea"], rec), "OPEN", case["domain"],
+                         case["served_index"], case["question_id"])
+    assert path == INCUMBENT and not _credited(held, case["current_answer"], "OPEN")
+    widened, path, _ = _run(case["original_idea"], case["current_answer"],
+                            _inject(case["original_idea"], rec,
+                                    served_gap_relevance=GAP_ADDRESSED),
+                            "OPEN", case["domain"], case["served_index"],
+                            case["question_id"], monkeypatch)
+    assert path == WIDEN and _credited(widened, case["current_answer"], "OPEN")
+    assert widened.known_mechanism.provenance == OWNER_STATED
+    assert widened.maturity_level == 1
+
+
+@pytest.mark.parametrize("text", [
+    "I haven't decided whether the latch should be a spring catch or a magnet. "
+    "I haven't chosen how the ramp will fold either.",                       # T2-G-4
+    "Should the latch be a spring catch? Would a magnet hold it better?",    # T2-G-3
+    "I do not know how it locks. I have no idea what holds it flat.",        # unknown
 ])
-def test_every_required_axis_is_independent_and_withholds_on_uncertainty(
-        relation, contribution, gap_decision):
-    record = _record("A newly stated part rotates and moves the board.")
-    decision = _inject("Synthetic original invention", record,
-                       project_relation=relation, new_contribution=contribution,
-                       served_gap_relevance=gap_decision)
-    allowed, _ = _admission("Synthetic original invention", [record], decision)
-    assert not allowed
+def test_widening_never_overrides_the_existing_stance_guards(monkeypatch, text):
+    rec = _record(text)
+    state, path, _ = _run(SEED, text, _inject(SEED, rec, served_gap_relevance=GAP_ADDRESSED),
+                          monkeypatch=monkeypatch)
+    assert path == WIDEN
+    assert state.get_gap(MC).status == "OPEN" and state.known_mechanism is None
 
 
-def test_absence_stale_question_seed_and_invalid_decision_fail_closed():
+def test_widening_hazard_the_quality_rule_does_not_stop_content_free_text(monkeypatch):
+    """WHY THE METHOD IS NOT QUALIFIED. If the injected axes wrongly mark a
+    content-free reference as CONTENT_BEARING and ADDRESSED, the incumbent
+    quality rule credits it. Once relevance is widened, the injected judgement
+    is effectively sufficient. A served-gap method must therefore be qualified
+    on its own before any widening; the engine is no safety net here."""
+    text = "As I said before, it works the way I described earlier."
+    rec = _record(text)
+    held, path, _ = _run(SEED, text, _inject(SEED, rec))
+    assert path == INCUMBENT and not _credited(held, text, "OPEN")
+    wrong, path, _ = _run(SEED, text, _inject(SEED, rec, served_gap_relevance=GAP_ADDRESSED),
+                          monkeypatch=monkeypatch)
+    assert path == WIDEN and _credited(wrong, text, "OPEN")              # the hazard
+
+
+# ==========================================================================
+# 3. independence, failure policy, mixed answers, source chain, isolation
+# ==========================================================================
+@pytest.mark.parametrize("relation,contribution,gap,expected", [
+    (sr.CX_UNRELATED, CONTENT, GAP_ADDRESSED, WITHHOLD),
+    (sr.CX_UNCERTAIN, CONTENT, GAP_ADDRESSED, WITHHOLD),
+    (sr.CX_UNAVAILABLE, CONTENT, GAP_ADDRESSED, WITHHOLD),
+    (sr.CX_RELATED, NO_CONTENT, GAP_ADDRESSED, WITHHOLD),
+    (sr.CX_RELATED, "UNCERTAIN", GAP_ADDRESSED, WITHHOLD),
+    (sr.CX_RELATED, CONTENT, GAP_NOT_ADDRESSED, WITHHOLD),
+    (sr.CX_RELATED, CONTENT, GAP_UNCERTAIN, INCUMBENT),
+    (sr.CX_RELATED, CONTENT, GAP_ADDRESSED, WIDEN),
+])
+def test_no_axis_implies_another(relation, contribution, gap, expected):
+    rec = _record("A newly stated part rotates and moves the board.")
+    path, _ = _compose("Synthetic invention", [rec],
+                       _inject("Synthetic invention", rec, relation, contribution, gap))
+    assert path == expected
+
+
+def test_new_project_content_outside_the_served_gap_cannot_advance():
+    seed = ("My automatic pill divider moves tablets into a row and cuts each tablet "
+            "into halves when I press a handle.")
+    answer = ("I changed its shipping package to a reusable folded cardboard tray with "
+              "nesting ribs so retailers can stack many boxes.")
+    rec = _record(answer)
+    state, path, reason = _run(seed, answer, _inject(
+        seed, rec, served_gap_relevance=GAP_NOT_ADDRESSED))
+    assert (path, reason) == (WITHHOLD, "SERVED_GAP_NOT_ADDRESSED")
+    assert state.get_gap(MC).status == "OPEN" and state.known_mechanism is None
+    assert state.assertions[0].content == answer                       # kept verbatim
+
+
+def test_absent_stale_and_invalid_decisions_fail_closed():
     seed = "Original invented tool"
-    r = _record("The gate moves up with a small hinge.")
-    assert _admission(seed, [r], None) == (False, "ABSENT")
-    good = _inject(seed, r)
-    assert _admission(seed, [r], good)[0]
-    for altered_seed, altered_record in [
-        ("Another invented tool", r),
-        (seed, _record(r.content, "mechanical:MECHANISM_COMPLETENESS:Q3")),
-        (seed, _record("The gate does not move at all.")),
-    ]:
-        admitted, reason = _admission(altered_seed, [altered_record], good)
-        assert not admitted and reason == sr.CX_REASON_STALE
-    malformed = InjectedJudgement(
-        r.record_id, sr.CX_RELATED, "NOT_AN_AXIS", GAP_ADDRESSED,
-        METHOD, good.source_digest)
+    rec = _record("The gate moves up with a small hinge.")
+    assert _compose(seed, [rec], None) == (WITHHOLD, sr.CX_REASON_ABSENT)
+    good = _inject(seed, rec)
+    assert _compose(seed, [rec], good)[0] == INCUMBENT
+    for other_seed, other in [("Another invented tool", rec),
+                              (seed, _record(rec.content, "mechanical:MECHANISM_COMPLETENESS:Q3")),
+                              (seed, _record("The gate does not move at all."))]:
+        assert _compose(other_seed, [other], good) == (WITHHOLD, sr.CX_REASON_STALE)
     with pytest.raises(sr.ContextualDecisionError):
-        _admission(seed, [r], malformed)
+        _compose(seed, [rec], InjectedJudgement(rec.record_id, sr.CX_RELATED, "NOT_AN_AXIS",
+                                                GAP_UNCERTAIN, METHOD, good.source_digest))
 
 
-def test_mixed_assertion_and_pending_choice_keeps_distinct_facts(monkeypatch):
-    # The first sentence is a real asserted mechanism, the second a separate
-    # undecided choice; there must not be an indiscriminate "contains unknown"
-    # veto. The existing stance owner still decides the progression result.
+def test_a_mixed_answer_is_an_unresolved_incumbent_false_rejection(monkeypatch):
+    """FINDING, not repaired here. A real mechanism followed by a pending choice
+    is REJECTED by the unchanged T2-G explicit-unknown rule
+    (`explicit_unknown_without_mechanism`), although the same mechanism alone
+    is credited. This is a false rejection "merely because uncertainty is
+    present". It is not a lexical miss, and it is not on the frozen holdout.
+
+    The three-axis composition neither causes nor repairs it, and neither does
+    oracle widening, because that rule does not read relevance. The answer
+    stays recorded verbatim. Repairing it means separating clauses in the
+    T2-G owner, which needs its own Owner decision and engine contract."""
     from tests.test_r2_contextual_admission_offline_proof import LEGIT, UNDECIDED
+    alone, path, _ = _run(SEED, LEGIT, _inject(SEED, _record(LEGIT)))
+    assert path == INCUMBENT and _credited(alone, LEGIT, "OPEN")
     text = LEGIT + " " + UNDECIDED
-    case = {"domain": "mechanical", "served_index": 0,
-            "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
-            "original_idea": "A folding wheelchair ramp rests on a doorstep.",
-            "current_answer": text}
-    rec = _record(text, case["question_id"])
-    yes = _inject(case["original_idea"], rec)
-    state, admitted, _ = _run_injected(case, "OPEN", yes, monkeypatch)
-    assert admitted
-    assert state.assertions[0].content == text
-    assert state.known_mechanism is not None
-    assert state.known_mechanism.content == text
-    assert state.known_mechanism.provenance == OWNER_STATED
-    assert state.maturity_level == 1
-
-    # Without a defensible served-gap judgement the identical mixed answer
-    # stays recorded but *none* of its possible credit is inferred.
-    unassessed = _inject(case["original_idea"], rec,
-                         served_gap_relevance=GAP_UNCERTAIN)
-    held, admitted, _ = _run_injected(case, "OPEN", unassessed, monkeypatch)
-    assert not admitted and held.known_mechanism is None
-    assert held.assertions[0].content == text
+    rec = _record(text)
+    for relevance in (GAP_UNCERTAIN, GAP_ADDRESSED):
+        state, path, _ = _run(SEED, text, _inject(SEED, rec, served_gap_relevance=relevance),
+                              monkeypatch=monkeypatch)
+        assert path in (INCUMBENT, WIDEN)
+        assert state.known_mechanism is None and state.get_gap(MC).status == "OPEN"
+        assert state.assertions[0].content == text                     # kept verbatim
 
 
-def test_source_chain_and_historical_contracts_are_not_replaced():
-    # The source-binding and transitive invalidation owner is STILL #966.
-    a = _record("The hinge moves", record_id="rec_0")
-    b = _record("The hook holds", record_id="rec_1")
-    c = _record("The spring releases", record_id="rec_2")
+def test_the_source_chain_stays_with_the_966_owner_and_contracts_are_unchanged():
     seed = "Synthetic mechanical invention"
-    plan_inputs = {}
-    parent, parent_digest = None, None
-    for rec in (a, b, c):
-        digest = sr.contextual_source_digest(
-            METHOD, seed, rec, parent, parent_digest)
-        plan_inputs[rec.record_id] = sr.ContextualDecision(
-            rec.record_id, sr.CX_RELATED, METHOD, digest)
+    chain = [_record(t, record_id="rec_%d" % i)
+             for i, t in enumerate(("The hinge moves", "The hook holds", "The spring releases"))]
+    decisions, parent, parent_digest = {}, None, None
+    for rec in chain:
+        digest = sr.contextual_source_digest(METHOD, seed, rec, parent, parent_digest)
+        decisions[rec.record_id] = sr.ContextualDecision(rec.record_id, sr.CX_RELATED,
+                                                         METHOD, digest)
         parent, parent_digest = rec, digest
-    original = sr.contextual_admission_plan(seed, [a, b, c], plan_inputs, METHOD)
-    assert all(x.outcome == sr.CX_ADMITTED for x in original.values())
-    a.content = "The hinge is replaced with a flexible strip"
-    stale = sr.contextual_admission_plan(seed, [a, b, c], plan_inputs, METHOD)
-    assert all(x.outcome == sr.CX_PENDING for x in stale.values())
-    assert all(x.reason == sr.CX_REASON_STALE for x in stale.values())
+    assert {x.outcome for x in sr.contextual_admission_plan(
+        seed, chain, decisions, METHOD).values()} == {sr.CX_ADMITTED}
+    chain[0].content = "The hinge is replaced with a flexible strip"
+    stale = sr.contextual_admission_plan(seed, chain, decisions, METHOD)
+    assert {(x.outcome, x.reason) for x in stale.values()} == {(sr.CX_PENDING,
+                                                                  sr.CX_REASON_STALE)}
     assert sr.CURRENT_ENGINE_CONTRACT_VERSION == sr.ENGINE_CONTRACT_VERSION_T2G4
-    assert sr.GAP_BOUND_REPLAY_VERSIONS == (
-        sr.ENGINE_CONTRACT_VERSION_XG1, sr.ENGINE_CONTRACT_VERSION_T2G4)
-    assert all("false-rejection" not in version
-               for version in sr.SUPPORTED_ENGINE_CONTRACT_VERSIONS)
+    assert sr.GAP_BOUND_REPLAY_VERSIONS == (sr.ENGINE_CONTRACT_VERSION_XG1,
+                                           sr.ENGINE_CONTRACT_VERSION_T2G4)
+    assert all("false-rejection" not in v for v in sr.SUPPORTED_ENGINE_CONTRACT_VERSIONS)
