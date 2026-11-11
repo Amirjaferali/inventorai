@@ -88,15 +88,15 @@ def _valid_decisions(seed, ledger, values, method=METHOD):
     """Decisions bound exactly as the candidate rule recomputes them: in ledger
     order, each against the latest earlier ADMITTED record. ``values`` maps a
     record id to a decision value; a missing id stays undecided."""
-    out, context = {}, None
+    out, context, context_digest = {}, None, None
     for record in _active(ledger):
         value = values.get(record.record_id)
         if value is None:
             continue
-        digest = sr.contextual_source_digest(method, seed, record, context)
+        digest = sr.contextual_source_digest(method, seed, record, context, context_digest)
         out[record.record_id] = sr.ContextualDecision(record.record_id, value, method, digest)
         if value == sr.CX_RELATED:
-            context = record
+            context, context_digest = record, digest
     return out
 
 
@@ -247,8 +247,10 @@ def test_withheld_answers_never_become_context_and_substitution_is_stale(client,
         [sr.CX_ADMITTED, sr.CX_WITHHELD, sr.CX_ADMITTED]
     # a decision bound to the withheld answer as context is an unverified substitution
     forged = dict(_valid_decisions(seed, ledger, values))
+    a2_digest = plan[a2.record_id].source_digest
     forged[a3.record_id] = sr.ContextualDecision(
-        a3.record_id, sr.CX_RELATED, METHOD, sr.contextual_source_digest(METHOD, seed, a3, a2))
+        a3.record_id, sr.CX_RELATED, METHOD,
+        sr.contextual_source_digest(METHOD, seed, a3, a2, a2_digest))
     plan = sr.contextual_admission_plan(seed, ledger, forged, METHOD)
     assert (plan[a3.record_id].outcome, plan[a3.record_id].reason) == \
         (sr.CX_PENDING, sr.CX_REASON_STALE)
@@ -279,6 +281,15 @@ def test_a_correction_invalidates_every_dependent_decision_transitively(client, 
     state, _ = _composed(appmod, sid, monkeypatch, old)
     assert {a2.record_id, a3.record_id, successor.record_id} <= _unapplied(state)
     assert state.known_mechanism is None                       # nothing is credited
+    # a PARTIAL reassessment of the intermediate answer alone does not revive
+    # the downstream one: its old decision is still bound to a2's old provenance
+    partial = dict(old)
+    partial.update(_valid_decisions(seed, ledger, {a2.record_id: sr.CX_RELATED}))
+    plan = sr.contextual_admission_plan(seed, ledger, partial, METHOD)
+    assert plan[a2.record_id].outcome == sr.CX_ADMITTED
+    assert (plan[a3.record_id].outcome, plan[a3.record_id].reason) == \
+        (sr.CX_PENDING, sr.CX_REASON_STALE)
+    assert plan[a3.record_id].context_record_id == a2.record_id   # same id and text as before
     # reassessed in dependency order, every answer is admitted again
     fresh = _valid_decisions(seed, ledger, {r.record_id: sr.CX_RELATED for r in _active(ledger)})
     plan = sr.contextual_admission_plan(seed, ledger, fresh, METHOD)

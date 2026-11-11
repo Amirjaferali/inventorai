@@ -402,9 +402,10 @@ def _answer_replays_here(state, record, version):
 #   * the context answer is the latest STRICTLY EARLIER, ACTIVE, ADMITTED answer
 #     (never the record itself, never a later or superseded record), so every
 #     dependency points backwards and the plan is acyclic by construction. A
-#     superseded or no-longer-admitted source changes the recomputed digest of
-#     every answer that depended on it, transitively, so each becomes PENDING
-#     until it is reassessed. This selection is an UNQUALIFIED candidate policy:
+#     superseded, no-longer-admitted or re-bound source changes the recomputed
+#     digest of every answer that depended on it, transitively (each digest
+#     chains its context's own digest), so each becomes PENDING until it is
+#     itself reassessed. This selection is an UNQUALIFIED candidate policy:
 #     Run 03 evaluated one authored preceding answer, not arbitrary histories.
 #   * a structurally invalid decision (unknown value, wrong types, a record
 #     that is not in the ledger, a key that names another record) is corrupt
@@ -450,10 +451,15 @@ class ContextualAdmission:
     source_digest: str
 
 
-def contextual_source_digest(method_id, seed, record, context_record):
+def contextual_source_digest(method_id, seed, record, context_record,
+                             context_digest=None):
     """SHA-256 over the exact sources one decision is bound to: the method, the
     project seed, the record's identity, served-question binding and verbatim
-    text, and the selected earlier context record's identity and text (or none)."""
+    text, and the selected earlier context record's identity, text and OWN
+    validated source digest (or none). Chaining the context's digest binds a
+    decision to its whole dependency provenance, so a change anywhere upstream
+    (a correction, or the context readmitted against a different context) makes
+    every downstream decision stale until it is itself reassessed."""
     material = {
         "policy": CX_CONTEXT_POLICY,
         "method": method_id,
@@ -461,7 +467,8 @@ def contextual_source_digest(method_id, seed, record, context_record):
         "record": [record.record_id, record.gap_context,
                    getattr(record, "question_target", None), record.content],
         "context": (None if context_record is None
-                    else [context_record.record_id, context_record.content]),
+                    else [context_record.record_id, context_record.content,
+                          context_digest]),
     }
     blob = json.dumps(material, ensure_ascii=False, sort_keys=True,
                       separators=(",", ":"))
@@ -487,11 +494,13 @@ def contextual_admission_plan(seed, ledger, decisions, method_id):
     _check_decisions(ledger, decisions)
     plan = {}
     context = None                      # latest strictly earlier ADMITTED record
+    context_digest = None               # its own validated source digest
     for record in ledger:
         if record.disposition != DISPOSITION_ANSWERED \
                 or getattr(record, "superseded_by", None) is not None:
             continue
-        digest = contextual_source_digest(method_id, seed, record, context)
+        digest = contextual_source_digest(method_id, seed, record, context,
+                                          context_digest)
         decision = decisions.get(record.record_id)
         reason = None
         if decision is None:
@@ -511,7 +520,7 @@ def contextual_admission_plan(seed, ledger, decisions, method_id):
             context_record_id=None if context is None else context.record_id,
             source_digest=digest)
         if outcome == CX_ADMITTED:
-            context = record
+            context, context_digest = record, digest
     return plan
 
 
