@@ -13,6 +13,10 @@ Synthetic data only. What is pinned:
   * nothing is stored, prefilled or progressed; replay, domain and the CAP-13
     calculation gate are unchanged.
 """
+import random
+import re
+import time
+
 import pytest
 
 import web.app as webapp
@@ -238,3 +242,45 @@ def test_w07_reading_the_offer_changes_no_state_replay_or_domain():
     # the CAP-13 calculation page is unchanged: nothing is prefilled from the answer
     calc = c.get("/session/%s/support-reactions" % sid).get_data(as_text=True)
     assert 'value="60"' not in calc and 'value="15"' not in calc and 'value="20"' not in calc
+
+
+# ==========================================================================
+# 3. bounded scan work (Codex security review on c248795)
+# ==========================================================================
+_OLD_NUMBER = r"[0-9]+(?:\.[0-9]+)?"
+_OLD_DIMENSION = re.compile(
+    rf"(?P<a>{_OLD_NUMBER})\s*[×xX*]\s*(?P<b>{_OLD_NUMBER})\s*(?P<unit>{fit._UNITS})(?![\w/])")
+_OLD_RISE = re.compile(
+    rf"(?P<verb>\braise\b|\blift\b|\belevate\b|رفع|أرفع|ارفع|يرفع)"
+    rf"[^\n.؛!?؟]{{0,80}}?(?P<n>{_OLD_NUMBER})\s*(?P<unit>{fit._UNITS})(?![\w/])",
+    re.IGNORECASE)
+
+
+def _matches(pattern, text):
+    return [(m.span(), m.groupdict()) for m in pattern.finditer(text)]
+
+
+def test_b01_the_digit_run_guard_changes_no_match():
+    """Differential proof: on a seeded random corpus over the grammar's own
+    alphabet (digits, decimal points, operators, units, verbs, breaks), the
+    guarded patterns find exactly the matches, spans and groups the earlier
+    patterns found."""
+    rng = random.Random(968)
+    pieces = ["1", "2", "15", "60", "20", "0", ".", "..", " ", "x", "X", "×", "*", "cm",
+              "mm", "سم", "ملم", "raise ", "lift ", "رفع ", "desk ", ";", "\n", "a", "/", "1.5"]
+    texts = ["".join(rng.choice(pieces) for _ in range(rng.randint(1, 40)))
+             for _ in range(6000)]
+    texts += ["raise 1.2.3x4 cm", "12.x3 cm", "dimensions 60 x 20.5.cm",
+              "raise it " + "9" * 90 + " cm", "x" * 3 + "123x45 cm"]
+    for text in texts:
+        assert _matches(fit._DIMENSION, text) == _matches(_OLD_DIMENSION, text), text
+        assert _matches(fit._RISE, text) == _matches(_OLD_RISE, text), text
+
+
+def test_b02_many_long_digit_answers_are_read_in_linear_time():
+    hostile = ["desk " + "1" * 1990, "raise " * 5 + "desk " + "1" * 1960]
+    answers = [hostile[i % 2] for i in range(400)]
+    start = time.perf_counter()
+    assert fit.derive_current_fit(SEED, answers) is None
+    # about 0.15 s here after the guard (about 30 s before it); a generous bound
+    assert time.perf_counter() - start < 5.0

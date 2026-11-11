@@ -23,7 +23,12 @@ SOURCE_ANSWER = "CURRENT_ANSWER"
 _MAX_IDEA_CHARS = 2000
 _MAX_VALUE = Decimal("100000")  # Capture bound only, NEVER a family validity limit.
 _UNITS = r"(?:cm|mm|سم|ملم)"
-_NUMBER = r"[0-9]+(?:\.[0-9]+)?"
+# A number never starts inside a run of digits: a later start in the same run
+# reaches the same next character as the run's first digit, so it can match
+# nothing the first start does not, but without the guard every digit of a long
+# run restarts a scan to the run's end (quadratic in the run's length). The
+# guard keeps each statement's scan linear; the results are unchanged.
+_NUMBER = r"(?<![0-9])[0-9]+(?:\.[0-9]+)?"
 _DIMENSION = re.compile(
     rf"(?P<a>{_NUMBER})\s*[×xX*]\s*(?P<b>{_NUMBER})\s*(?P<unit>{_UNITS})(?![\w/])"
 )
