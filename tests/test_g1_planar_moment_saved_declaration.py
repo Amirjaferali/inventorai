@@ -623,3 +623,22 @@ def test_a_recoverable_refusal_keeps_the_forms_the_draft_and_the_correction(mech
     r = c.post(URL % sid + "/withdraw", data=data)            # no confirmation ticked
     body = r.get_data(as_text=True)
     assert r.status_code == 400 and "data-pm-error" in body and "data-pm-withdraw-form" in body
+
+
+def test_a_refused_correction_write_keeps_the_correction_identity(mech_client):
+    """Codex review (PR #960): an unchanged correction (a write-level refusal)
+    keeps correction mode; only a confirmed save clears it."""
+    c, sid = mech_client
+    _save(c, sid, _evaluate(c, sid))
+    declaration_id = _items(_page(c, sid)[1])[0]
+    raw = _evaluate(c, sid, correct=declaration_id)
+    r = _save(c, sid, raw)                                     # identical to the saved one
+    body = r.get_data(as_text=True)
+    assert r.status_code == 409
+    assert ui_text.text("UI_PM_MSG_UNCHANGED", "en") in _html.unescape(body)
+    hidden, options = _save_form(body)
+    assert "data-pm-correcting" in body and len(options) == 1
+    assert (hidden["declaration_id"], hidden["expected_head"]) == (declaration_id, "0")
+    r = _save(c, sid, body.replace('value="12.5"', 'value="25"'))   # edit and retry here
+    assert r.status_code == 200 and "data-pm-correcting" not in r.get_data(as_text=True)
+    assert _value(_page(c, sid)[1]) == "2000.0 N·mm"

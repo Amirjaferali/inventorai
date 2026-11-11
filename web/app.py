@@ -22017,8 +22017,13 @@ def _pm_write(sid, part, action, build, same, render_extra=None):
     extra = dict(render_extra or {})
 
     def render(status=200, error=None, notice=None):
+        # A refusal keeps the correction identity and the draft so the inventor
+        # can fix and retry; only a confirmed save / withdrawal clears them.
+        context = dict(extra)
+        if error is None:
+            context.update(correct_id=None, save_draft=None)
         return _render_cap13m(sid, status=status, declared_part=part, pm_error=error,
-                              notice=notice, **extra)
+                              notice=notice, **context)
 
     domain = _PM_SAVE_DOMAIN if action == "save" else _PM_WITHDRAW_DOMAIN
     field = "pm_submission" if action == "save" else "pm_withdraw_submission"
@@ -22165,7 +22170,7 @@ def cap13_planar_moment_save(sid):
 
     return _pm_write(sid, part, "save", build, same,
                      render_extra={"captured": captured, "evaluation": evaluation,
-                                   "correct_id": None, "save_draft": draft})
+                                   "correct_id": correct_id, "save_draft": draft})
 
 
 @app.route("/session/<sid>/planar-moment/withdraw", methods=["POST"])
