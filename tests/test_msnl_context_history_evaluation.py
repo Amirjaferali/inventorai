@@ -27,6 +27,9 @@ RUN_01_JOURNAL_SHA256 = "e7ff288b72e48c2ba85806cbc792bf9d213bf2a9e7af8235065b2e4
 # Run 02 (2026-11-11, INVALID) likewise.
 RUN_02_REPORT_SHA256 = "30eee63bfec46b49b80130c42e35fb8da6659d9e04ba336891d75dac7470a72e"
 RUN_02_JOURNAL_SHA256 = "b4820c70d9b6aafaf2d9d3467cfa0be89a6bb98d7802983353410b5b7e97f877"
+# Run 03 (2026-11-11, NOT_FALSIFIED_ON_THIS_HOLDOUT) likewise.
+RUN_03_REPORT_SHA256 = "7bec1c847dc4cf4d89715e93333f89f9b55c70a6cee947b973a8b028b4dc7a87"
+RUN_03_JOURNAL_SHA256 = "cb0356c1f6a33f6b705c2ebd774351df6b3eb389459f8731af7da875274b46eb"
 POSITIVE = ("NEW_DETAIL", "PLAIN_LANGUAGE_DETAIL", "RESTATE_THEN_NEW", "AMENDMENT",
             "HISTORY_COUNTERFACTUAL_NEW")
 NEGATIVE = ("PARAPHRASE_OF_PREVIOUS", "CONTENT_FREE_REFERENCE", "UNKNOWN_OR_UNDECIDED",
@@ -480,7 +483,9 @@ def _runs():
     return {"01": (h.CONTEXT_HISTORY_RUN_01_REPORT_PATH, h.CONTEXT_HISTORY_RUN_01_JOURNAL_PATH,
                    RUN_01_REPORT_SHA256, RUN_01_JOURNAL_SHA256),
             "02": (h.CONTEXT_HISTORY_RUN_02_REPORT_PATH, h.CONTEXT_HISTORY_RUN_02_JOURNAL_PATH,
-                   RUN_02_REPORT_SHA256, RUN_02_JOURNAL_SHA256)}
+                   RUN_02_REPORT_SHA256, RUN_02_JOURNAL_SHA256),
+            "03": (h.CONTEXT_HISTORY_RUN_03_REPORT_PATH, h.CONTEXT_HISTORY_RUN_03_JOURNAL_PATH,
+                   RUN_03_REPORT_SHA256, RUN_03_JOURNAL_SHA256)}
 
 
 def _recorded(run="01"):
@@ -504,26 +509,22 @@ def test_run_01_evidence_is_pinned_and_never_the_path_of_a_later_run():
 
 
 def test_every_recorded_run_is_pinned_distinct_and_the_gate_is_closed():
-    """Each recorded run keeps its own files byte for byte and no two runs share a file.
-    The gate is closed whenever the live paths hold recorded evidence; it may be open ONLY
-    for one new authorized run whose own fresh paths are not yet written."""
+    """Each recorded run keeps its own files byte for byte, no two runs share a file,
+    and with run 03's evidence present the gate is closed: no further run is authorized."""
     paths = []
     for report_path, journal_path, report_sha, journal_sha in _runs().values():
         for path, digest in ((report_path, report_sha), (journal_path, journal_sha)):
             assert hashlib.sha256(open(path, "rb").read()).hexdigest() == digest
             assert os.path.dirname(path) == h.CONTEXT_HISTORY_EVIDENCE_DIR
             paths.append(path)
-    assert len(set(paths)) == len(paths) == 4
-    live = (h.CONTEXT_HISTORY_REPORT_PATH, h.CONTEXT_HISTORY_JOURNAL_PATH)
-    if h.CONTEXT_HISTORY_RUN_AUTHORIZED:
-        assert not set(live) & set(paths)
-        assert {os.path.dirname(p) for p in live} == {h.CONTEXT_HISTORY_EVIDENCE_DIR}
-        assert not any(os.path.exists(p) for p in live)
-    else:
-        assert os.path.exists(h.CONTEXT_HISTORY_REPORT_PATH)
+    assert len(set(paths)) == len(paths) == 6
+    assert (h.CONTEXT_HISTORY_REPORT_PATH, h.CONTEXT_HISTORY_JOURNAL_PATH) == \
+        (h.CONTEXT_HISTORY_RUN_03_REPORT_PATH, h.CONTEXT_HISTORY_RUN_03_JOURNAL_PATH)
+    assert os.path.exists(h.CONTEXT_HISTORY_REPORT_PATH)
+    assert h.CONTEXT_HISTORY_RUN_AUTHORIZED is False
 
 
-@pytest.mark.parametrize("run", ["01", "02"])
+@pytest.mark.parametrize("run", ["01", "02", "03"])
 def test_the_recorded_run_is_internally_consistent(manifest, run):
     """The committed report recomputes from its own rows, agrees with the fsynced
     journal and stayed inside the authorization: gpt-6-sol, Standard tier, at most
@@ -546,7 +547,7 @@ def test_the_recorded_run_is_internally_consistent(manifest, run):
         for key in ("usage", "measured_cost_usd", "response_id", "model", "service_tier",
                     "input_token_bound", "reserved_usd", "http_status", "sent"):
             assert row["attempt"][key] == att[key], key
-    ok = attempts[:-1]
+    ok = attempts if report["stop"] is None else attempts[:-1]   # a stopped run's last attempt failed
     assert all(a["error"] is None and a["http_status"] == 200 for a in ok)
     assert {a["model"] for a in ok} == {"gpt-6-sol"} and {a["service_tier"] for a in ok} == {"default"}
     assert all(a["usage"]["output_tokens"] <= 2000 and a["usage"]["input_tokens"] <= a["input_token_bound"]
@@ -596,6 +597,31 @@ def test_the_recorded_run_02_is_invalid_by_one_http_401_without_retry(manifest):
     assert h.CH_F1 not in report["outcome"] and h.CH_NOT_FALSIFIED not in report["outcome"]
 
 
+def test_the_recorded_run_03_completed_and_is_not_falsified_on_this_holdout(manifest):
+    """All 120 frozen cases sent once each, in order, every one HTTP 200 on gpt-6-sol /
+    default tier, no error, no retry, no stop; F1-F4 all held. That outcome qualifies no
+    product use."""
+    report, journal = _recorded("03")
+    attempts = [e for e in journal if e["event"] == "attempt"]
+    assert report["outcome"] == [h.CH_NOT_FALSIFIED] and report["stop"] is None
+    assert report["untested_cases"] == [] and report["excluded_disputed"] == []
+    assert [a["case_id"] for a in attempts] == [c["case_id"] for c in h.ch_ordered(manifest)]
+    assert all(a["error"] is None and a["http_status"] == 200 and a["sent"] is True
+               and a["model"] == "gpt-6-sol" and a["service_tier"] == "default"
+               and a["transport_failure"] is None and a["http_diagnostic"] is None
+               for a in attempts)
+    assert report["spend"] == {"requests_sent": 120, "measured_cost_usd": 0.380466,
+                               "committed_bound_usd": 0.380466}
+    overall = report["measures"]["overall"]
+    assert (overall["M-UP"], overall["M-LR"], overall["M-ABST"], overall["M-FLIP"]) == \
+        ([0, 60], [0, 60], [0, 60], [0, 96])
+    # reported, not an F criterion: the amendment flag is a disclosure for the inventor
+    assert overall["M-AMEND-recall"] == [12, 12] and overall["M-AMEND-false-flags"] == [14, 108]
+    assert report["measures"]["relation_confusion"] == {"RELATED->RELATED": 96,
+                                                        "UNRELATED->UNRELATED": 24}
+    assert "qualifies NO product use" in report["meaning"][h.CH_NOT_FALSIFIED]
+
+
 def test_a_run_whose_evidence_exists_is_refused_and_sends_nothing(monkeypatch):
     """Independent of the live gate: closed, nothing is sent; open, a run whose
     evidence already exists (either recorded run's files here) is refused and sends nothing."""
@@ -613,7 +639,7 @@ def test_a_run_whose_evidence_exists_is_refused_and_sends_nothing(monkeypatch):
         assert out["provider_requests"] == 0 and "already exists" in out["refused"]
 
 
-@pytest.mark.parametrize("run", ["01", "02"])
+@pytest.mark.parametrize("run", ["01", "02", "03"])
 def test_the_evidence_keeps_no_case_text_quote_instructions_or_raw_reply(manifest, run):
     report_path, journal_path, _, _ = _runs()[run]
     texts = [open(p, encoding="utf-8").read() for p in (report_path, journal_path)]

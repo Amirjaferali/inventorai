@@ -417,5 +417,5 @@ def test_a_transport_failure_mid_run_is_journaled_and_stops_invalid_once(manifes
 def test_the_gate_stays_closed_and_both_recorded_runs_are_untouched():
     from tests.test_msnl_context_history_evaluation import (
         test_every_recorded_run_is_pinned_distinct_and_the_gate_is_closed as _runs_pinned)
-    _runs_pinned()                         # runs 01 / 02 byte for byte; open only for fresh paths
+    _runs_pinned()                         # runs 01-03 byte for byte; the gate is closed
     assert toa.TIMEOUT_SECONDS == 90 and toa.ENDPOINT == "https://api.openai.com/v1/responses"
