@@ -168,9 +168,22 @@ def test_both_error_directions_on_the_frozen_cases_are_independent(
     remain the independently recorded baseline and are not overwritten.
     """
     recovered, wrong_credit = [], []
-    candidates = [c for c in frozen if c["slot_label"]["project_relation"] == "RELATED"
-                  and c["slot_label"]["new_contribution"] == CONTENT]
-    assert len(candidates) == 60
+    # Independently inspected SERVED QUESTION examples for this proof. These
+    # IDs are explicit manual ORACLE INJECTIONS, NOT derived from the frozen
+    # project_relation/new_contribution labels. In particular CH2-C02-ar-msa
+    # describes ergonomics and visible indicators; its own question asks for
+    # moving/connected parts and effects, so it is NOT used as an addressed
+    # exemplar. No general served-gap classifier is thereby validated.
+    addressed_ids = {
+        "CH1-C03-en", "CH1-C04-en", "CH1-C05-en",
+        "CH2-C01-en", "CH2-C04-ar-msa",
+        "CH3-C01-ar-msa", "CH4-C02-en", "CH4-C03-en",
+    }
+    cases_by_id = {c["case_id"]: c for c in frozen}
+    assert all(cases_by_id[i]["slot_label"]["project_relation"] == "RELATED"
+               and cases_by_id[i]["slot_label"]["new_contribution"] == CONTENT
+               for i in addressed_ids)
+    recovered, wrong_credit, conservatively_withheld = [], [], []
     for case in frozen:
         record = _record(case["current_answer"], case["question_id"])
         slot = case["slot_label"]
@@ -178,18 +191,18 @@ def test_both_error_directions_on_the_frozen_cases_are_independent(
             case["original_idea"], record,
             project_relation=slot["project_relation"],
             new_contribution=slot["new_contribution"],
-            served_gap_relevance=(GAP_ADDRESSED if case in candidates
+            served_gap_relevance=(GAP_ADDRESSED if case["case_id"] in addressed_ids
                                   else GAP_UNCERTAIN),
         )
         state, admitted, _ = _run_injected(case, prior, injection, monkeypatch)
         credit = _credited(state, case["current_answer"], prior)
-        if case in candidates:
+        if case["case_id"] in addressed_ids:
             if credit:
                 recovered.append(case["case_id"])
             assert not admitted or state.known_mechanism is None or (
                 state.known_mechanism.provenance == OWNER_STATED
                 and state.known_mechanism.content == case["current_answer"])
-            assert state.maturity_level == 1  # no direct grant of maturity
+            assert state.maturity_level == 1
         else:
             if credit:
                 wrong_credit.append(case["case_id"])
@@ -198,14 +211,17 @@ def test_both_error_directions_on_the_frozen_cases_are_independent(
             assert state.maturity_level == 1
             assert state.assertions[0].content == case["current_answer"]
             assert state.get_gap(MC).evidence == []
+            if slot["project_relation"] == "RELATED" and slot["new_contribution"] == CONTENT:
+                conservatively_withheld.append(case["case_id"])
+    assert set(recovered) == addressed_ids, ("unrecovered scoped cases",
+                                            sorted(addressed_ids - set(recovered)))
+    assert len(conservatively_withheld) == 60 - len(addressed_ids)
     assert wrong_credit == [], wrong_credit
-    # Representative false-rejections in EACH promised family are recoverable
-    # in both languages where the real existing stance/quality guards allow.
-    by_id = {c["case_id"]: c for c in frozen}
+    # A positive oracle says nothing about the 52 unassessed legitimate cases.
+    # Distinguish observed composed recovery from model qualification.
     families = {"NEW_DETAIL", "PLAIN_LANGUAGE_DETAIL", "AMENDMENT",
                 "RESTATE_THEN_NEW", "HISTORY_COUNTERFACTUAL_NEW"}
-    assert families <= {by_id[i]["category"] for i in recovered}
-    # Do not assert 60/60: a retained T2-G guard may conservatively withhold.
+    assert families <= {cases_by_id[i]["category"] for i in recovered}
 
 
 @pytest.mark.parametrize("gap_decision", [GAP_NOT_ADDRESSED, GAP_UNCERTAIN])
