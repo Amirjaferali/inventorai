@@ -409,7 +409,9 @@ def test_save_reopen_and_recalculate_on_every_render(mech_client):
     ({"value_F": "0"}, "UI_PM_MSG_NOT_ADMITTED"),
     ({"point_description": ""}, "UI_PM_MSG_TEXT"),
     ({"force_context": "x" * 301}, "UI_PM_MSG_TEXT"),
-    ({"component_target": "not-a-target"}, "UI_PM_MSG_REJECTED"),
+    ({"component_target": "not-a-target"}, "UI_PM_MSG_CHOOSE_COMPONENT"),
+    ({"component_target": ""}, "UI_PM_MSG_CHOOSE_COMPONENT"),
+    ({"expected_head": "forged"}, "UI_PM_MSG_REJECTED"),
     ({"pm_submission": "forged"}, "UI_PM_MSG_NOT_SAVED"),
     ({"surprise": "x"}, "UI_PM_MSG_REJECTED"),
 ])
@@ -642,3 +644,29 @@ def test_a_refused_correction_write_keeps_the_correction_identity(mech_client):
     r = _save(c, sid, body.replace('value="12.5"', 'value="25"'))   # edit and retry here
     assert r.status_code == 200 and "data-pm-correcting" not in r.get_data(as_text=True)
     assert _value(_page(c, sid)[1]) == "2000.0 N·mm"
+
+
+@pytest.mark.parametrize("over, error", [
+    ({"component_target": ""}, "UI_PM_MSG_CHOOSE_COMPONENT"),
+    ({"point_description": ""}, "UI_PM_MSG_TEXT"),
+    ({"screen_children": moment.SCREEN_YES}, "UI_PM_MSG_NOT_ADMITTED"),
+])
+def test_every_recoverable_save_refusal_keeps_inputs_and_descriptions(mech_client, over, error):
+    """Codex review (PR #960), fixed at the root: once the calculation inputs
+    are captured, every save refusal shows them, the descriptions and the
+    forms back - never a blank page."""
+    c, sid = mech_client
+    r = _save(c, sid, _evaluate(c, sid), **over)
+    body = _html.unescape(r.get_data(as_text=True))
+    assert r.status_code in (400, 409) and ui_text.text(error, "en") in body
+    assert 'value="12.5"' in body and 'value="80"' in body           # calculation inputs
+    assert "data-cap13m-form" in body and "data-pm-saved" in body
+    if error != "UI_PM_MSG_NOT_ADMITTED":
+        # admitted: the save form is back with both descriptions, ready to retry
+        assert "data-pm-save-form" in body and FORCE in body
+        if "point_description" not in over:
+            assert POINT in body
+    else:
+        # not admitted (reachable only by a tampered form or a method change
+        # between showing and saving): no save form, the refusal reason shown
+        assert "data-pm-save-form" not in body and "data-cap13m-outcome" in body

@@ -6835,6 +6835,9 @@ UI_STRINGS = {
     "UI_PM_MSG_REJECTED": {
         "en": "Not saved: the form was not complete or not valid. Nothing was changed.",
         "ar": "لم يُحفَظ: النموذج غير مكتمل أو غير صالح. لم يتغيّر شيء."},
+    "UI_PM_MSG_CHOOSE_COMPONENT": {
+        "en": "Not saved: choose the component this configuration is for.",
+        "ar": "لم يُحفَظ: اختر المكوّن الذي يخصّه هذا الإعداد."},
     "UI_PM_MSG_TEXT": {
         "en": "Not saved: describe both the point and the force (1 to 300 characters each).",
         "ar": "لم يُحفَظ: صِف النقطة والقوة كلتيهما (من حرف واحد إلى 300 حرف لكل منهما)."},

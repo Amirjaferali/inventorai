@@ -22105,41 +22105,48 @@ def cap13_planar_moment_save(sid):
     if not eligible:
         return _render_cap13m(sid, eligible=False)
     form = {k: request.form.getlist(k) for k in request.form.keys()}
+    # A malformed or forged request (an unknown or repeated field, a malformed
+    # calculation answer or hidden binding) is refused bare: nothing to keep.
     if set(form) - (_cap13m.FORM_FIELDS | _PM_SAVE_FIELDS):
         return _render_cap13m(sid, status=400, declared_part=part,
                               pm_error="UI_PM_MSG_REJECTED")
     captured = _cap13m.capture_form({k: v for k, v in form.items()
                                      if k in _cap13m.FORM_FIELDS})
     try:
-        target = _PM_TARGET_RE.match(_pm_single(form, "component_target"))
-        component_id, raw_revision = target.groups() if target else ("", "")
+        raw_target = _pm_single(form, "component_target")
         point = _pm_single(form, "point_description").replace("\r\n", "\n").strip()
         force = _pm_single(form, "force_context").replace("\r\n", "\n").strip()
         declaration_id = _pm_single(form, "declaration_id")
         raw_head = _pm_single(form, "expected_head")
     except ValueError:
         captured = None
-    if captured is None or not _PM_COUNT_RE.match(raw_revision or "") \
-            or not _PM_HEAD_RE.match(raw_head or "") \
+    if captured is None or not _PM_HEAD_RE.match(raw_head or "") \
             or (raw_head == "none") != (declaration_id == "") \
-            or not _subsystem_model.is_valid_component_id(component_id):
+            or (declaration_id and not _subsystem_model.is_valid_planar_moment_id(declaration_id)):
         return _render_cap13m(sid, status=400, declared_part=part,
                               pm_error="UI_PM_MSG_REJECTED")
+    # From here every refusal is RECOVERABLE: the inventor's inputs, the result,
+    # the descriptions and the correction identity are all shown back.
+    target = _PM_TARGET_RE.match(raw_target)
+    component_id, raw_revision = target.groups() if target else ("", "")
     correct_id = declaration_id or None
     draft = {"component_id": component_id, "point_description": point,
              "force_context": force}
-    extra = {"captured": captured, "correct_id": correct_id, "save_draft": draft}
+    evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
+    extra = {"captured": captured, "evaluation": evaluation, "correct_id": correct_id,
+             "save_draft": draft}
+    if evaluation["outcome"] != _cap13m.OUTCOME_SUCCESS:
+        # Correction 2: only a configuration the existing method admits with
+        # SUCCESS is ever saved (re-checked inside the serialized write).
+        return _render_cap13m(sid, status=409, declared_part=part,
+                              pm_error="UI_PM_MSG_NOT_ADMITTED", **extra)
+    if target is None:
+        return _render_cap13m(sid, status=400, declared_part=part,
+                              pm_error="UI_PM_MSG_CHOOSE_COMPONENT", **extra)
     if not (_subsystem_model.valid_planar_moment_text(point)
             and _subsystem_model.valid_planar_moment_text(force)):
-        evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
-        return _render_cap13m(sid, status=400, declared_part=part, evaluation=evaluation,
+        return _render_cap13m(sid, status=400, declared_part=part,
                               pm_error="UI_PM_MSG_TEXT", **extra)
-    # Correction 2: only a configuration the existing method admits with
-    # SUCCESS is ever saved (re-checked inside the serialized write).
-    evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
-    if evaluation["outcome"] != _cap13m.OUTCOME_SUCCESS:
-        return _render_cap13m(sid, status=409, declared_part=part, evaluation=evaluation,
-                              pm_error="UI_PM_MSG_NOT_ADMITTED", **extra)
     values = tuple(captured["values"][r] for r in _subsystem_model.PLANAR_MOMENT_VALUE_ROLES)
     declarations = tuple(captured["declarations"][d] for d in _cap13m.DECLARATION_IDS)
     screen = tuple(captured["screen"][i] for i in _cap13m.SCREEN_ITEMS)
@@ -22168,9 +22175,7 @@ def cap13_planar_moment_save(sid):
                      (stored.declaration_id == declaration_id
                       and stored.revision_no == int(raw_head) + 1)))
 
-    return _pm_write(sid, part, "save", build, same,
-                     render_extra={"captured": captured, "evaluation": evaluation,
-                                   "correct_id": correct_id, "save_draft": draft})
+    return _pm_write(sid, part, "save", build, same, render_extra=extra)
 
 
 @app.route("/session/<sid>/planar-moment/withdraw", methods=["POST"])
