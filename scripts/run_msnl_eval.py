@@ -1590,7 +1590,8 @@ def _measured_call(adapter, payload):
     or outcome): ``sent_at_utc`` (wall-clock send time), ``http_diagnostic``
     (only for a non-200 status, and only when the transport returned exactly
     an InventorAI diagnostic document; else UNAVAILABLE) and
-    ``transport_failure`` (the closed category of a transport exception)."""
+    ``transport_failure`` (the closed category of a transport exception). A
+    managed relay route refused before any socket is recorded as NOT sent."""
     import datetime
     import time
     meta = {"sent": False, "http_status": _PF_UNAVAILABLE, "latency_ms": _PF_UNAVAILABLE,
@@ -1606,6 +1607,9 @@ def _measured_call(adapter, payload):
             status, raw = transport(url, headers, body, timeout)
         except Exception as exc:
             meta["transport_failure"] = toa.transport_failure_diagnostic(exc)
+            if isinstance(exc, toa.ManagedRouteUnavailable):
+                # refused locally before any socket: the request was never sent
+                meta["sent"], meta["sent_at_utc"] = False, _PF_UNAVAILABLE
             raise
         finally:
             meta["latency_ms"] = round((time.monotonic() - start) * 1000)

@@ -380,6 +380,9 @@ def test_default_transport_is_never_reached_in_tests(monkeypatch):
 #     would follow shows up as a second recorded request.
 # ─────────────────────────────────────────────────────────────────────────────
 
+RELAY = "http://127.0.0.1:43123"
+
+
 class _Wire:
     """Offline stand-in for the network below urllib's handler chain."""
 
@@ -388,7 +391,8 @@ class _Wire:
 
     def _record(self, req):
         self.seen.append({"url": req.full_url, "method": req.get_method(),
-                          "headers": dict(req.header_items()), "data": req.data})
+                          "headers": dict(req.header_items()), "data": req.data,
+                          "via": req.host, "tunnel": getattr(req, "_tunnel_host", None)})
 
     def _response(self, req, status, headers, body):
         import http.client
@@ -414,6 +418,11 @@ class _Wire:
 @pytest.fixture
 def wire(monkeypatch):
     import urllib.request
+    # A managed-mode request may leave only through a validated loopback relay
+    # (R2-MANAGED-EGRESS-FAIL-CLOSED-01): give it one, deterministically, and no bypass.
+    for name in ("HTTPS_PROXY", "https_proxy", "NO_PROXY", "no_proxy"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("HTTPS_PROXY", RELAY)
 
     def install(status, location=None, body=b""):
         w = _Wire(status, location, body)
@@ -636,6 +645,7 @@ def test_managed_mode_real_transport_never_follows_a_redirect(
     assert len(w.seen) == 1, [r["url"] for r in w.seen]          # zero follow-ups
     first = w.seen[0]
     assert first["url"] == toa.ENDPOINT and first["method"] == "POST"
+    assert (first["via"], first["tunnel"]) == ("127.0.0.1:43123", "api.openai.com")  # the relay
     assert _no_authorization(first["headers"])
     assert b"Synthetic buckle clip text." in first["data"]
     assert (res.outcome, res.proposals) == (tos.ERROR, ())
@@ -652,6 +662,7 @@ def test_managed_mode_real_transport_direct_200_is_endpoint_confined(wire, key_g
     req, _ = _request()
     res = tos.evaluate(req, _managed())
     assert len(w.seen) == 1 and w.seen[0]["url"] == toa.ENDPOINT
+    assert (w.seen[0]["via"], w.seen[0]["tunnel"]) == ("127.0.0.1:43123", "api.openai.com")
     assert w.seen[0]["method"] == "POST" and _no_authorization(w.seen[0]["headers"])
     assert json.loads(w.seen[0]["data"])["store"] is False
     assert res.disposition == tos.DISPOSITION_ACCEPTED

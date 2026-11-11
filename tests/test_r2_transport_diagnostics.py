@@ -50,8 +50,12 @@ def _clean(text):
 # ─── a real local server (one scripted behaviour per connection) ─────────────
 
 class _Server:
-    def __init__(self, behave):
-        self.behave, self.requests = behave, []
+    """``relay=True``: acknowledges the managed relay's CONNECT (kept in ``tunnels``)
+    and applies ``behave`` to the request inside the tunnel; ``relay=False``:
+    applies ``behave`` to the first request it receives, the CONNECT included."""
+
+    def __init__(self, behave, relay=False):
+        self.behave, self.requests, self.relay, self.tunnels = behave, [], relay, []
         self.sock = socket.socket()
         self.sock.bind(("127.0.0.1", 0))
         self.sock.listen(4)
@@ -65,22 +69,30 @@ class _Server:
         except OSError:
             return
         with conn:
-            data = b""
             conn.settimeout(5)
             try:
-                while b"\r\n\r\n" not in data:
-                    chunk = conn.recv(65536)
-                    if not chunk:
-                        break
-                    data += chunk
-                head, _, rest = data.partition(b"\r\n\r\n")
-                length = re.search(rb"(?i)content-length:\s*(\d+)", head)
-                while length and len(rest) < int(length.group(1)):
-                    rest += conn.recv(65536)
+                head, rest = self._read(conn, b"")
+                if self.relay and head.startswith(b"CONNECT "):
+                    self.tunnels.append(head)
+                    conn.sendall(b"HTTP/1.1 200 Connection established\r\n\r\n")
+                    head, rest = self._read(conn, rest)
                 self.requests.append(head + b"\r\n\r\n" + rest)
                 self.behave(conn)
             except OSError:
                 pass
+
+    @staticmethod
+    def _read(conn, data):
+        while b"\r\n\r\n" not in data:
+            chunk = conn.recv(65536)
+            if not chunk:
+                break
+            data += chunk
+        head, _, rest = data.partition(b"\r\n\r\n")
+        length = re.search(rb"(?i)content-length:\s*(\d+)", head)
+        while length and len(rest) < int(length.group(1)):
+            rest += conn.recv(65536)
+        return head, rest
 
     def close(self):
         self.sock.close()
@@ -96,10 +108,15 @@ def _response(status, reason, headers, body):
 @pytest.fixture
 def local(monkeypatch):
     """Routes the default transport's ONE https request to a local plain-HTTP
-    socket, through urllib's real handler chain (no network, no proxy)."""
+    socket, through urllib's real handler chain (no network). A managed-mode
+    request may leave only through a validated loopback relay
+    (R2-MANAGED-EGRESS-FAIL-CLOSED-01), so the route is always set: the local
+    server acknowledges its CONNECT and answers inside the tunnel, unless
+    ``proxy=True`` asks it to answer the CONNECT itself."""
     for name in ("HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy",
                  "ALL_PROXY", "all_proxy", "NO_PROXY", "no_proxy"):
         monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:1")     # a valid relay route
     servers = []
 
     def route(port):
@@ -110,11 +127,10 @@ def local(monkeypatch):
         monkeypatch.setattr(urllib.request.HTTPSHandler, "https_open", https_open)
 
     def start(behave, proxy=False):
-        server = _Server(behave)
+        server = _Server(behave, relay=not proxy)
         servers.append(server)
         route(server.port)
-        if proxy:
-            monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:%d" % server.port)
+        monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:%d" % server.port)
         return server
     start.route = route
     yield start
@@ -145,6 +161,7 @@ def test_an_openai_shaped_401_keeps_only_allowlisted_fields(local):
     _clean(raw.decode("utf-8"))
     sent = server.requests[0].decode("utf-8")       # managed mode: no credential sent
     assert "authorization" not in sent.lower() and CASE_TEXT in sent
+    assert server.tunnels[0].startswith(b"CONNECT api.openai.com:")   # through the relay only
 
 
 def test_a_proxy_shaped_401_is_told_apart_but_not_attributed(local):
