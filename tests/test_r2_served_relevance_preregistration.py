@@ -407,7 +407,7 @@ def _lowered(prereg_, **overrides):
                           "P2_min_categories": 2,
                           "P3_min_incumbent_credited_negatives": 1,
                           "P4_min_undisputed_per_scored_category": 0,
-                          "P4_max_disputed_fraction": 1.0})
+                          "P4_max_disputed_fraction": 1.0, "P5_exact_grid": False})
     p["validity"].update(overrides)
     p["varieties"] = ["en"]
     return p
@@ -445,6 +445,39 @@ def test_an_exact_repeat_cannot_falsify_and_is_not_counted(prereg):
     without = [c for c in pack if c["case_id"] != "ov"]
     assert "P3_TOO_FEW_INCUMBENT_CREDITED_NEGATIVES" in h.srv_validity(_lowered(prereg),
                                                                        without + [repeat])
+
+
+def _grid(prereg_):
+    projects = prereg_["projects"]
+    return [{"case_id": "%s-%s-%s" % (p, cat, var), "project_id": p, "category": cat,
+             "variety": var, "domain": projects["domains"][p],
+             "served_index": projects["served_index"][p]}
+            for p in projects["domains"] for cat in prereg_["categories"]
+            for var in prereg_["varieties"]]
+
+
+def test_the_holdout_must_be_exactly_the_frozen_grid(prereg):
+    grid = _grid(prereg)
+    assert len(grid) == prereg["run_plan"]["max_provider_requests"] == 204
+    assert h.srv_grid_errors(prereg, grid) == []
+    four_projects = [c for c in grid if c["project_id"] in ("CH1", "CH2", "CH4", "CH5")]
+    missing = h.srv_grid_errors(prereg, four_projects)
+    assert any(f.startswith("P5_GRID_MISSING:CH3/") for f in missing)
+    assert any(f.startswith("P5_GRID_MISSING:CH6/") for f in missing)
+    duplicated = grid + [dict(grid[0])]
+    assert "P5_GRID_DUPLICATE_CASE_ID" in h.srv_grid_errors(prereg, duplicated)
+    assert any(f.startswith("P5_GRID_REPEATED:") for f in h.srv_grid_errors(prereg, duplicated))
+    wrong = [dict(grid[0], served_index=2)] + grid[1:]
+    assert "P5_GRID_PROJECT_METADATA:" + grid[0]["case_id"] in h.srv_grid_errors(prereg, wrong)
+    assert prereg["validity"]["P5_exact_grid"] is True
+
+
+def test_the_off_question_brief_matches_its_frozen_label(prereg):
+    cat = prereg["categories"]["OFF_QUESTION_NEW_CONTENT"]
+    assert cat["slot_label"]["new_contribution"] == "CONTENT_BEARING"
+    assert cat["slot_label"]["served_question_relevance"] == "NOT_ADDRESSED"
+    assert "how THIS invention is BUILT" in cat["brief"]
+    assert "states nothing about how the device works or is built" not in cat["brief"]
 
 
 def test_constructed_cases_must_reproduce_their_rule(prereg):

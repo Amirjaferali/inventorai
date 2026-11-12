@@ -332,7 +332,7 @@
   "OFF_QUESTION_NEW_CONTENT": {
    "side": "negative",
    "source": "authored",
-   "brief": "A confident new statement about THIS invention that the served question does not ask for: its colour, appearance, size, price, packaging, who will buy it or where it is sold. It may reuse the question's words; it states nothing about how the device works or is built.",
+   "brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
    "slot_label": {
     "project_relation": "RELATED",
     "new_contribution": "CONTENT_BEARING",
@@ -410,7 +410,8 @@
   "P3_definition": "an undisputed, falsifiable negative the unchanged engine credits from either prior",
   "P4_max_disputed_fraction": 0.1,
   "P4_min_undisputed_per_scored_category": 8,
-  "P5": "every constructed case reproduces its construction rule exactly",
+  "P5_exact_grid": true,
+  "P5": "every constructed case reproduces its construction rule exactly; the holdout is exactly the frozen grid: one case for every (project, category, variety) of the six projects, seventeen categories and two varieties (204 cases), each with a unique case_id and the project's frozen domain and served index",
   "failure": "PREPARATION_INVALID: the holdout cannot falsify the candidate in both directions; no run may be proposed; the holdout is not repaired by the same author."
  },
  "measures": {
@@ -499,6 +500,6 @@
   "the HISTORY_COUNTERFACTUAL_NEW construction check verifies a preceding answer other than A, not that it is this project's B (B is not a case field)"
  ],
  "amendments_before_any_case": [
-  "2026-11-12, after the independent review and an automated review of PR #972, before any case was written: sentence-level widening (so the stance vetoes act under WIDEN) and the model-only gates declared (widening applied only to an answer the governed owner rejects, after the follow-up reviews showed that widening the sentences of an answer the engine accepts, through addresses_gap or through the W2-C committed markers, could lift a veto it applies today; the guard is the engine's own not-addressed outcome); P2 / P3 count falsifiable cases only and P2 spans at least 4 categories; the invalidity rule states this design's 204 cases; M-FLIP excludes reported cases; C2 adds A4 category floors; a run must cover every case exactly once."
+  "2026-11-12, after the independent review and an automated review of PR #972, before any case was written: sentence-level widening (so the stance vetoes act under WIDEN) and the model-only gates declared (widening applied only to an answer the governed owner rejects, after the follow-up reviews showed that widening the sentences of an answer the engine accepts, through addresses_gap or through the W2-C committed markers, could lift a veto it applies today; the guard is the engine's own not-addressed outcome); P2 / P3 count falsifiable cases only and P2 spans at least 4 categories; the invalidity rule states this design's 204 cases; M-FLIP excludes reported cases; C2 adds A4 category floors; a run must cover every case exactly once; P5 checks the exact frozen grid and the OFF_QUESTION_NEW_CONTENT brief asks for new build content its CONTENT_BEARING label requires (two automated-review findings)."
  ]
 }

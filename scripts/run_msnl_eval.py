@@ -2648,7 +2648,7 @@ def context_history_incumbent_baseline(manifest=None):
 
 SRV_PREREG_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                "r2_served_relevance_v1_preregistration.json")
-SRV_PREREG_SHA256 = "92a21dd4e620e8d256b7f9bbab745c88a3f7fd603d0c1c12666d51f3e66c0185"
+SRV_PREREG_SHA256 = "020fa7e5d75ad9eeff3da2889f66d3aaa8b7b26239926dd9d7b041ba55f02308"
 SRV_ENGINE_CONTRACT_VERSION = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5"
 SRV_RELEVANCE = ("ADDRESSED", "NOT_ADDRESSED", "UNCERTAIN")
 SRV_STANCE = ("COMMITTED", "MIXED", "NOT_COMMITTED", "UNCERTAIN")
@@ -2916,6 +2916,30 @@ def _srv_construction_errors(prereg, cases):
     return bad
 
 
+def srv_grid_errors(prereg, cases):
+    """P5 grid: the holdout is exactly one case for every frozen (project,
+    category, variety), each with a unique case_id and its project's frozen
+    domain and served index. Returns the failures (empty = the exact grid)."""
+    projects = prereg["projects"]
+    expected = {(p, cat, var) for p in projects["domains"] for cat in prereg["categories"]
+                for var in prereg["varieties"]}
+    failed = []
+    ids = [c.get("case_id") for c in cases]
+    if len(set(ids)) != len(ids):
+        failed.append("P5_GRID_DUPLICATE_CASE_ID")
+    seen = collections.Counter((c.get("project_id"), c.get("category"), c.get("variety"))
+                               for c in cases)
+    failed += ["P5_GRID_MISSING:%s/%s/%s" % key for key in sorted(expected - set(seen))]
+    failed += ["P5_GRID_UNEXPECTED:%s/%s/%s" % key for key in sorted(set(seen) - expected)]
+    failed += ["P5_GRID_REPEATED:%s/%s/%s" % key for key, n in sorted(seen.items()) if n > 1]
+    for c in cases:
+        p = c.get("project_id")
+        if p in projects["domains"] and (c.get("domain") != projects["domains"][p]
+                                         or c.get("served_index") != projects["served_index"][p]):
+            failed.append("P5_GRID_PROJECT_METADATA:" + str(c.get("case_id")))
+    return failed
+
+
 def srv_validity(prereg, cases):
     """P1-P5, computed offline from the frozen cases and the unchanged engine
     before any provider request. Returns the list of failed preconditions
@@ -2936,6 +2960,8 @@ def srv_validity(prereg, cases):
         if expected is None or c["side"] != expected["side"] or \
                 c["slot_label"] != expected["slot_label"] and not c.get("label_disputed"):
             failed.append("P5_CASE_SHAPE:" + c["case_id"])
+    if v.get("P5_exact_grid", True):
+        failed += srv_grid_errors(prereg, cases)
     failed += ["P5_CONSTRUCTION:" + cid for cid in _srv_construction_errors(prereg, cases)]
     live = [c for c in cases if not c.get("label_disputed")]
     pos = [c for c in live if c["side"] == "positive"]
