@@ -1,0 +1,185 @@
+PART 6 of 10 (CASES):
+[
+{
+"key": "K088",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T028",
+"current_answer": "الأجزاء الرئيسية في فكرتي هي مفتاح ميل وشريحة توقيت صغيرة وحلقة من الثنائيات الباعثة للضوء الزرقاء، وكلها داخل غطاء قارورة شرب. يُغلَق مفتاح الميل في كل مرة تُمال فيها القارورة، فيحتسب كل رشفة. وتبدأ شريحة التوقيت العدّ من جديد بعد كل رشفة، فإذا مرت ساعة دون رشفة أضاءت حلقة الضوء لتذكير صاحبها بشرب الماء."
+},
+{
+"key": "K089",
+"original_idea": "T029",
+"served_question": "T030",
+"preceding_answer": "T035",
+"current_answer": "The microcontroller keeps a 30-second rolling record of tilt readings and only buzzes on their average, so a brief bend to pick something up does not count. I have not decided yet whether the buzz should grow stronger if the wearer keeps slouching after the first one."
+},
+{
+"key": "K090",
+"original_idea": "T023",
+"served_question": "T024",
+"preceding_answer": "T025",
+"current_answer": "Each arm ends in a clear acrylic roller wheel about 2 cm across, which rolls along the page instead of pressing on one fixed point. Its job is to let the reader slide a page underneath without lifting the arm. Each arm also has a sliding collar so its length can be set between 8 and 15 cm to suit narrow or wide books."
+},
+{
+"key": "K091",
+"original_idea": "T037",
+"served_question": "T038",
+"preceding_answer": "T039",
+"current_answer": "ما الجزء الأنسب لإبقاء الصفحات منخفضة: ذراع أم مشبك أم قضيب مثقّل؟ ولنفترض أن اللوح فيه حافة في الأسفل؛ هل تكفي مهمتها لمنع الكتاب من الانزلاق، أم سيلزم جزء آخر؟"
+},
+{
+"key": "K092",
+"original_idea": "T007",
+"served_question": "T008",
+"preceding_answer": "T009",
+"current_answer": "سيلاحظ النظام المشكلة عندما يقرأ حسّاس رطوبة خلف مرآة الحمّام قيمة تفوق ثمانين في المئة بعد أن يبدأ أحدهم الاستحمام. وسيستجيب بتشغيل غشاء تسخين رقيق ملصق على ظهر الزجاج، يُبقي المرآة أدفأ من الهواء ببضع درجات فلا يتكثّف عليها البخار. وعندما تنخفض الرطوبة إلى ما دون ستين في المئة، ينطفئ الغشاء مجدداً."
+},
+{
+"key": "K093",
+"original_idea": "T037",
+"served_question": "T038",
+"preceding_answer": "T039",
+"current_answer": "كما ذكرت، يحتاج الحامل إلى لوح قاعدة مائل مع دعامة خلفية، وذراعين فولاذيتين بمفصلتين يضغطهما نابضان، وحافة سفلية. وأضيف مفصلة بسقاطة في موضع التقاء الدعامة باللوح، ولها خمسة حزوز. ومهمتها السماح بضبط زاوية اللوح في أي وضع بين خمس عشرة وستين درجة وإبقائه مقفلاً عليه."
+},
+{
+"key": "K094",
+"original_idea": "T029",
+"served_question": "T030",
+"preceding_answer": "T035",
+"current_answer": "The main parts of my idea are a tilt switch, a small timer chip and a ring of blue LEDs, all inside the cap of a drinking bottle. The tilt switch closes each time the bottle is tipped up, so it counts every sip. The timer chip restarts after each sip, and if an hour passes with no sip, it lights the LED ring to remind the owner to drink water."
+},
+{
+"key": "K095",
+"original_idea": "T020",
+"served_question": "T021",
+"preceding_answer": "T022",
+"current_answer": "As I said, a thermistor at each socket's contacts is read every second by a microcontroller, which opens that socket's relay above 70 degrees and lights a red lamp. In addition, each socket's current is measured through a small shunt resistor. If a socket is hot while drawing only a little current, the controller treats it as a loose contact and cuts it at a lower limit of 55 degrees."
+},
+{
+"key": "K096",
+"original_idea": "T020",
+"served_question": "T021",
+"preceding_answer": "T043",
+"current_answer": "Every outlet has a tiny heat-sensing resistor pushed against the metal grips that hold the plug's prongs. A small processor checks each of these once a second. As soon as one shows more than seventy degrees, the processor opens the switch supplying that outlet and turns on the red lamp next to it."
+},
+{
+"key": "K097",
+"original_idea": "T010",
+"served_question": "T011",
+"preceding_answer": "T012",
+"current_answer": "If the door is opened and shut again after bedtime, for example when someone takes the rubbish out, the little box starts counting again from that moment. It gives you five minutes to lock the door before it warns everyone's phones, so a quick trip outside does not set it off."
+},
+{
+"key": "K098",
+"original_idea": "T010",
+"served_question": "T011",
+"preceding_answer": "T012",
+"current_answer": "What I said before about a Hall-effect sensor and a magnet on the thumb-turn was wrong. The bolt position is read by a small microswitch fitted inside the strike plate in the door frame, which is pressed only when the bolt slides fully in. Also, the unit does not send the alert over Wi-Fi itself; it sends it by Bluetooth to a plug-in hub, and the hub forwards it to the phones."
+},
+{
+"key": "K099",
+"original_idea": "T001",
+"served_question": "T002",
+"preceding_answer": "T044",
+"current_answer": "تحتوي الوحدة على كاشف للمجال المغناطيسي يلتقط مغناطيساً دقيقاً ملصقاً على مقبض تدوير المزلاج، فيخبرها بما إذا كان المزلاج قد دُفع إلى الداخل. ويُعلمها تلامس يعمل بالمغناطيس على الإطار بأن الباب مغلق. وفي العاشرة والنصف ليلاً، إذا كان الباب مغلقاً والمزلاج ما زال مفتوحاً، تدفع الشريحة اللاسلكية في الوحدة تنبيهاً عبر موجّه المنزل إلى هواتف الأسرة."
+},
+{
+"key": "K100",
+"original_idea": "T013",
+"served_question": "T014",
+"preceding_answer": "T019",
+"current_answer": "كما ذكرت سابقاً، يؤدي الضغط على الدواسة إلى سحب كابل فولاذي يدير محور المفصلة عبر بكرة فيرتفع المقعد، ثم يعيد نابضٌ الدواسةَ إلى مكانها. وأضيف أن الدواسة تعمل كذراع بنسبة ثلاثة إلى واحد، فتحرك القدم مسافة أربعة سنتيمترات ينتج سحباً للكابل قدره اثنا عشر سنتيمتراً. وهذا الطول يكفي تماماً لتدوير البكرة تسعين درجة كاملة."
+},
+{
+"key": "K101",
+"original_idea": "T023",
+"served_question": "T024",
+"preceding_answer": "T025",
+"current_answer": "As the seat swings up, an oil-filled rotary damper mounted beside the hinge pin is wound against its resistance. When the foot comes off the pedal, the seat's weight drives the damper backward, so the seat takes about three seconds to settle instead of dropping. A rubber stop on the floor plate halts the pedal at the bottom of its travel, which is exactly where the seat reaches upright."
+},
+{
+"key": "K102",
+"original_idea": "T007",
+"served_question": "T008",
+"preceding_answer": "T009",
+"current_answer": "في كل مقبس حسّاس حرارة صغير من نوع المقاومة الحرارية، مضغوط على الملامسات المعدنية التي تمسك أسنان القابس. ويقرأ متحكّم دقيق جميع الحسّاسات مرة كل ثانية، فإذا تجاوزت قراءة أيٍّ منها سبعين درجة مئوية فتح المرحّل الذي يغذّي ذلك المقبس. ثم يُضاء الضوء الأحمر المجاور لذلك المقبس."
+},
+{
+"key": "K103",
+"original_idea": "T001",
+"served_question": "T002",
+"preceding_answer": "T003",
+"current_answer": "لا تستخدم الوحدة كاميرا في أي خطوة، ولا تُقفل الباب بنفسها. كما أنها لا تتصل بالشرطة ولا بأي شركة حراسة عندما تبدأ المشكلة."
+},
+{
+"key": "K104",
+"original_idea": "T016",
+"served_question": "T017",
+"preceding_answer": "T018",
+"current_answer": "The pedal housing is moulded from glass-filled polypropylene with a matte, easy-to-wipe finish. The complete kit weighs about 600 grams and is packed flat in a box 30 cm long."
+},
+{
+"key": "K105",
+"original_idea": "T001",
+"served_question": "T002",
+"preceding_answer": "T003",
+"current_answer": "غيّرت موعد بدء الفحص: فلم تعد الوحدة تعتمد على موعد نوم محدد. إذ أصبح حسّاس ضوء في واجهة الوحدة يراقب الممر، وبمجرد أن تبقى الإضاءة دون خمسة لوكس تقريباً لمدة خمس عشرة دقيقة، أي حين يُطفأ ضوء المنزل، تبدأ الوحدة فحص المزلاج. ومن ذلك الحين، إذا كان الباب مغلقاً وغير مقفل، ترسل الرسالة إلى الهواتف كما في السابق."
+},
+{
+"key": "K106",
+"original_idea": "T001",
+"served_question": "T002",
+"preceding_answer": "T003",
+"current_answer": "كما ذكرت، يقرأ حسّاس تأثير هول مغناطيساً على مقبض التدوير، ويؤكد مفتاح قصبي أن الباب مغلق، وفي العاشرة والنصف ترسل وحدة الواي فاي إشعاراً إذا كان المزلاج مفتوحاً. وأضيف أنه إذا كانت شبكة الواي فاي المنزلية معطّلة في تلك اللحظة، تنتقل الوحدة إلى جهاز إرسال لاسلكي مدمج بعيد المدى منخفض الطاقة. ويصل هذا الإرسال إلى وحدة صغيرة موصولة بمقبس في غرفة النوم الرئيسية، فتُصدر صفيراً وتومض ليعرف الوالدان أن الباب غير مقفل."
+},
+{
+"key": "K107",
+"original_idea": "T010",
+"served_question": "T011",
+"preceding_answer": "T012",
+"current_answer": "The housing is die-cast zinc with a smooth powder-coated finish. It measures 9 by 6 by 3 cm, weighs about 180 grams, and is packed in a moulded paper-pulp tray."
+},
+{
+"key": "K108",
+"original_idea": "T020",
+"served_question": "T021",
+"preceding_answer": "T022",
+"current_answer": "Power comes from a 120 mAh lithium-polymer cell, which is charged through two gold-plated spring pins on the back that touch a small magnetic dock. A Bluetooth Low Energy radio sends the day's count of slouch buzzes to a phone app, so the wearer can see whether the count is falling week by week."
+},
+{
+"key": "K109",
+"original_idea": "T010",
+"served_question": "T011",
+"preceding_answer": "T012",
+"current_answer": "A small magnet glued to the deadbolt's thumb-turn is detected by a Hall-effect sensor in the unit, so the unit knows whether the bolt is turned to locked. A reed switch on the door frame tells it the door is closed. If at 22:30 the door is closed but the bolt is not locked, the unit's Wi-Fi module sends a push notification through the home router to the phones."
+},
+{
+"key": "K110",
+"original_idea": "T004",
+"served_question": "T005",
+"preceding_answer": "T006",
+"current_answer": "لست متأكداً بعد من الأجزاء التي ستتحرك أو تتصل ببعضها بين المفتاح والأنبوب. فما زلت أختار بين زوج من التروس أو عمود بسيط أو سير صغير، ولا أعرف كيف ستنتقل القوة من جزء إلى الجزء الذي يليه."
+},
+{
+"key": "K111",
+"original_idea": "T004",
+"served_question": "T005",
+"preceding_answer": "T006",
+"current_answer": "كما وصفت، يدير المفتاح محوراً مشقوقاً يلفّ الأنبوب، وتمنع عجلة سقاطة مع لسان قفل الأنبوب من الارتخاء. وأضيف أن المفتاح متصل بالمحور عبر قابض انزلاقي مكوّن من قرصي احتكاك يضغطهما نابض. فإذا كان الأنبوب ملفوفاً بإحكام وواصل المستخدم الإدارة، ينزلق القرصان أحدهما على الآخر بدلاً من أن يتمزق الأنبوب."
+},
+{
+"key": "K112",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T028",
+"current_answer": "الغلاف مصنوع من الألمنيوم المؤكسد بسطح غير لامع، ومقاسه خمسة وثلاثون في عشرين في تسعة مليمترات. ويزن اثني عشر غراماً ويأتي معبّأً في علبة كرتونية صغيرة مستديرة."
+},
+{
+"key": "K113",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T028",
+"current_answer": "يحتفظ المتحكّم الدقيق بسجلّ متجدد لقراءات الميل خلال آخر ثلاثين ثانية، ولا يُطلق الاهتزاز إلا بناءً على متوسطها، فلا يُحتسب انحناء قصير لالتقاط شيء من الأرض. ولم أقرر بعد ما إذا كان ينبغي أن يشتد الاهتزاز إذا استمر مرتدي المشبك في الانحناء بعد الاهتزاز الأول."
+}
+]

@@ -1,0 +1,192 @@
+PART 7 of 10 (CASES):
+[
+{
+"key": "K114",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T028",
+"current_answer": "ما ذكرته سابقاً عن حفظ الزاوية المرجعية بالنقر مرتين قد تغيّر. فالمشبك الآن يتعلّم الزاوية المرجعية بنفسه: خلال الدقائق العشر الأولى بعد تشغيله، يحسب المتحكّم الدقيق متوسط أكثر قراءات مرتديه استقامةً ويحفظه زاويةً مرجعية. كما أنني ذكرت حداً خاطئاً من قبل؛ فالاهتزاز يحدث الآن عندما يتجاوز الميل الزاوية المرجعية بعشرين درجة لمدة خمس وأربعين ثانية."
+},
+{
+"key": "K115",
+"original_idea": "T013",
+"served_question": "T014",
+"preceding_answer": "T019",
+"current_answer": "تضغط بأطراف أصابع قدمك فتميل الدواسة مثل الأرجوحة المتوازنة حول قضيب معدني قريب من الأرض. ثم ينزلق السلك داخل أنبوب بلاستيكي رفيع ملصق على الجهة الخلفية من الحوض، فيتحرك بسلاسة ولا يحتك بالخزف أبداً. كما يحمي الأنبوب السلك من أن تصطدم به القدم أو يعلق بشيء أثناء الوقوف."
+},
+{
+"key": "K116",
+"original_idea": "T029",
+"served_question": "T030",
+"preceding_answer": "T035",
+"current_answer": "I do not know yet what the main parts of my idea will be. I am still choosing between a tilt sensor, a stretch strip on the back or something else, and I have not decided what each part would do."
+},
+{
+"key": "K117",
+"original_idea": "T007",
+"served_question": "T008",
+"preceding_answer": "T009",
+"current_answer": "لا يلاحظ النظام المشكلة بكاميرا ولا بكاشف دخان، ولا يستجيب بإطلاق صفّارة إنذار أو بالاتصال بأحد. كما أنه لا يحتاج إلى تطبيق على الهاتف."
+},
+{
+"key": "K118",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T028",
+"current_answer": "سبق أن وصفت في إجابتي السابقة الأجزاء الرئيسية في فكرتي وما يفعله كل جزء منها. وليس هناك ما أغيّره أو أضيفه إلى ذلك."
+},
+{
+"key": "K119",
+"original_idea": "T037",
+"served_question": "T038",
+"preceding_answer": "T039",
+"current_answer": "تنتهي كل ذراع بعجلة دوّارة من الأكريليك الشفاف قطرها نحو سنتيمترين، تتدحرج على الصفحة بدلاً من الضغط على نقطة ثابتة واحدة. ومهمتها أن تتيح للقارئ تمرير الصفحة تحتها دون رفع الذراع. كما تحتوي كل ذراع على طوق منزلق يسمح بضبط طولها بين ثمانية وخمسة عشر سنتيمتراً لتناسب الكتب الضيقة أو العريضة."
+},
+{
+"key": "K120",
+"original_idea": "T013",
+"served_question": "T014",
+"preceding_answer": "T019",
+"current_answer": "ما قلته سابقاً عن البكرة المثبتة على محور المفصلة كان خطأ. فالكابل ينتهي في الواقع عند ذراع فولاذية قصيرة مثبتة بمسمار ملولب في خلفية المقعد، على بعد نحو ثلاثة سنتيمترات خلف خط المفصلة، فيؤدي سحب الكابل إلى الأسفل إلى رفع المقعد مباشرة بفعل الذراع. كما أن الدواسة تعود إلى وضعها بنابض التوائي ملفوف حول محورها، لا بنابض حلزوني تحتها."
+},
+{
+"key": "K121",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T028",
+"current_answer": "ما الجزء الأنسب لمعرفة متى ينحني الشخص: شيء يتحسّس الميل، أم شيء يتحسّس تمدّد القميص؟ ولنفترض أننا استخدمنا جهاز اهتزاز صغيراً؛ فماذا يجب أن يفعل كل جزء ليخبره متى يهتز؟"
+},
+{
+"key": "K122",
+"original_idea": "T037",
+"served_question": "T038",
+"preceding_answer": "T039",
+"current_answer": "لا أعرف بعد ما الأجزاء الرئيسية التي تحتاج إليها الفكرة لتثبيت الصفحات. فما زلت أختار بين ذراعين أو قضيب أو مشابك، ولم أقرر المهمة التي سيؤديها كل جزء."
+},
+{
+"key": "K123",
+"original_idea": "T016",
+"served_question": "T017",
+"preceding_answer": "T018",
+"current_answer": "Pushing the pedal with your foot draws the steel wire down along the side of the bowl. At the top, that wire is wound round a little wheel on the hinge rod, so it spins the rod and swings the seat up to roughly a right angle. Once you step off, a spring beneath the pedal lifts it again and the wire goes loose."
+},
+{
+"key": "K124",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T028",
+"current_answer": "إذا لم يُقفل أحد الباب خلال عشر دقائق من الإشعار الأول، ترسل الوحدة تنبيهاً ثانياً موسوماً بأنه عاجل، يتجاوز الوضع الصامت في الهواتف. وفي اللحظة نفسها يُصدر طنّان كهرضغطي صغير داخل الوحدة نغمة قصيرة، فيسمعها أي شخص ما زال مستيقظاً قرب الممر. وعندما يُدار المزلاج أخيراً، ترسل الوحدة رسالة أخيرة تفيد بأن الباب أصبح مقفلاً."
+},
+{
+"key": "K125",
+"original_idea": "T007",
+"served_question": "T008",
+"preceding_answer": "T045",
+"current_answer": "لكل مخرج كهربائي مقاومة صغيرة تتحسّس الحرارة ومضغوطة على القطع المعدنية التي تقبض على أسنان القابس. ويفحص معالج صغير كلاً منها مرة في الثانية. وبمجرد أن تُظهر إحداها أكثر من سبعين درجة، يفتح المعالج المفتاح الذي يزوّد ذلك المخرج ويُضيء المصباح الأحمر المجاور له."
+},
+{
+"key": "K126",
+"original_idea": "T016",
+"served_question": "T017",
+"preceding_answer": "T018",
+"current_answer": "I do not know yet what physical steps happen between pressing the pedal and the seat rising. It could be a cable, a stiff rod or a small fluid piston, and I have not chosen one."
+},
+{
+"key": "K127",
+"original_idea": "T023",
+"served_question": "T024",
+"preceding_answer": "T025",
+"current_answer": "The idea does not need any clamp that grips the book's cover, and none of its parts uses magnets or suction. The arms are not driven by any motor."
+},
+{
+"key": "K128",
+"original_idea": "T020",
+"served_question": "T021",
+"preceding_answer": "T022",
+"current_answer": "Each socket has a small temperature sensor, a thermistor, pressed against the metal contacts that grip the plug pins. A microcontroller reads all the sensors once a second, and if any of them is above 70 degrees Celsius it opens the relay that feeds that socket. The red light beside that socket then turns on."
+},
+{
+"key": "K129",
+"original_idea": "T032",
+"served_question": "T033",
+"preceding_answer": "T034",
+"current_answer": "Should the key connect directly to the part that holds the tube, or would a gear between them work better? Suppose a toothed wheel were used to stop the tube unrolling: which part would that wheel connect to, and what would it do to the next part?"
+},
+{
+"key": "K130",
+"original_idea": "T007",
+"served_question": "T008",
+"preceding_answer": "T009",
+"current_answer": "يُصنع الغلاف من البولي كربونات الأبيض المقاوم للاشتعال بسطح لامع. ويبلغ مقاس المشترك ذي المقابس الستة ثمانية وثلاثين في ستة في أربعة سنتيمترات، ويزن نحو ستمئة وخمسين غراماً."
+},
+{
+"key": "K131",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T028",
+"current_answer": "كما ذكرت، يقيس مقياس التسارع ميل أعلى الظهر، ويقارنه متحكّم دقيق بزاوية مرجعية محفوظة، ويهتز محرك الاهتزاز القرصي عندما ينحني مرتدي المشبك لمدة ثلاثين ثانية. وأضيف إلى ذلك جيروسكوباً صغيراً بجوار مقياس التسارع. فهو يقيس سرعة دوران الجسم، فيستطيع المتحكّم تجاهل الحركات السريعة مثل مدّ اليد إلى كوب، ولا يحتسب إلا الانحناء البطيء المستمر."
+},
+{
+"key": "K132",
+"original_idea": "T026",
+"served_question": "T027",
+"preceding_answer": "T046",
+"current_answer": "يوجد في المشبك حسّاس حركة يقرأ الحركة في ثلاثة اتجاهات ويتتبّع مقدار انحناء أعلى الظهر. ويقارن معالج صغير موفّر للبطارية هذا الانحناء بزاوية الظهر المستقيم التي يخزّنها المستخدم بالنقر على المشبك نقرتين وهو منتصب. وحين يزيد الانحناء على تلك الزاوية المخزّنة بخمس عشرة درجة ويستمر نصف دقيقة، يهتز محرك صغير مسطّح."
+},
+{
+"key": "K133",
+"original_idea": "T007",
+"served_question": "T008",
+"preceding_answer": "T009",
+"current_answer": "كما ذكرت، يقرأ متحكّم دقيق كل ثانية مقاومةً حرارية عند ملامسات كل مقبس، فيفتح مرحّل ذلك المقبس فوق سبعين درجة ويُضيء مصباحاً أحمر. وأضيف أن تيار كل مقبس يُقاس عبر مقاومة تحويل صغيرة. فإذا كان المقبس ساخناً بينما يسحب تياراً قليلاً، يعدّه المتحكّم ملامسة مرتخية ويفصله عند حد أدنى قدره خمس وخمسون درجة."
+},
+{
+"key": "K134",
+"original_idea": "T016",
+"served_question": "T017",
+"preceding_answer": "T018",
+"current_answer": "I already explained what happens from the moment someone uses the idea until it produces the result in my earlier answer. The physical steps are the same as before, and nothing has changed since then."
+},
+{
+"key": "K135",
+"original_idea": "T010",
+"served_question": "T011",
+"preceding_answer": "T012",
+"current_answer": "If nobody locks the door within 10 minutes of the first notification, the unit sends a second alert marked urgent, which overrides the phones' silent mode. At the same moment a small piezo buzzer inside the unit plays a short chime, so anyone still awake near the hallway hears it. When the bolt is finally turned, the unit sends a last message saying the door is now locked."
+},
+{
+"key": "K136",
+"original_idea": "T029",
+"served_question": "T030",
+"preceding_answer": "T035",
+"current_answer": "None of the parts is a camera, and the clip does not use a speaker or make any sound. No part of it needs a cable to a computer."
+},
+{
+"key": "K137",
+"original_idea": "T032",
+"served_question": "T033",
+"preceding_answer": "T034",
+"current_answer": "The rod that the tube rolls onto is held at each end by two small side walls. Across the front there is a curved strip of springy metal that leans on the rolled-up tube. Each time you turn the key, that strip smooths the tube flat as it goes round, so no paste stays stuck in the creases."
+},
+{
+"key": "K138",
+"original_idea": "T007",
+"served_question": "T008",
+"preceding_answer": "T009",
+"current_answer": "غيّرت سلوكاً واحداً: لم يعد المشترك يفصل المقبس الساخن وحده. فعندما ترتفع حرارة أي مقبس، يُفتح مرحّل رئيسي عند مدخل المشترك وتنطفئ جميع المقابس معاً، لأن الملامسة الساخنة قد تُسخّن المقابس المجاورة عبر القضيب المعدني المشترك. ويظل الضوء المجاور للمقبس الذي سخن يبيّن أيّها سبّب الفصل."
+},
+{
+"key": "K139",
+"original_idea": "T016",
+"served_question": "T017",
+"preceding_answer": "T047",
+"current_answer": "Pushing the pedal with your foot draws the steel wire down along the side of the bowl. At the top, that wire is wound round a little wheel on the hinge rod, so it spins the rod and swings the seat up to roughly a right angle. Once you step off, a spring beneath the pedal lifts it again and the wire goes loose."
+},
+{
+"key": "K140",
+"original_idea": "T001",
+"served_question": "T002",
+"preceding_answer": "T003",
+"current_answer": "تحتوي الوحدة على كاشف للمجال المغناطيسي يلتقط مغناطيساً دقيقاً ملصقاً على مقبض تدوير المزلاج، فيخبرها بما إذا كان المزلاج قد دُفع إلى الداخل. ويُعلمها تلامس يعمل بالمغناطيس على الإطار بأن الباب مغلق. وفي العاشرة والنصف ليلاً، إذا كان الباب مغلقاً والمزلاج ما زال مفتوحاً، تدفع الشريحة اللاسلكية في الوحدة تنبيهاً عبر موجّه المنزل إلى هواتف الأسرة."
+}
+]

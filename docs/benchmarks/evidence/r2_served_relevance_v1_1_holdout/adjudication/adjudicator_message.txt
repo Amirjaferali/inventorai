@@ -1,0 +1,286 @@
+You are an INDEPENDENT, PROMPT-BLIND ADJUDICATOR for a synthetic evaluation holdout. You work alone in this session; do not use any tool, search or fetch anything. You have not seen, and must not try to infer, any method, model instruction, scoring rule or threshold that these cases will be used to test.
+
+Each case below has four texts (original_idea, served_question, preceding_answer, current_answer), the brief of the category it was written for, a REFERENCE label (fixed by that category) and a BLIND label (given by a separate labeller who saw only the four texts). Decide for each case whether the current_answer as written actually supports the REFERENCE label on the scored judgments: project_relation always; new_contribution, served_question_relevance and stance when the reference relation is RELATED. You may not relabel or edit anything: your only decision is SUPPORTED or DISPUTED.
+
+For OFF_QUESTION_NEW_CONTENT cases apply this additional check: the reference says CONTENT_BEARING and NOT_ADDRESSED. It is SUPPORTED only if the current_answer states genuinely new technical content about how THIS device is built (for example its material, construction or physical dimensions) that is in neither original_idea nor preceding_answer, and says nothing that answers the served question. Mere packaging, colour, decoration or sales wording on its own is NOT technical build content; if that is all the text offers, mark it DISPUTED.
+
+== LABEL RULES ==
+- L1 Judge each case only from its four texts; do not use any other case.
+- L2 project_relation and new_contribution are labelled independently: decide each without looking at the other.
+- L3 A changed, corrected or contradicted design detail is RELATED when it concerns the same invention.
+- L4 An answer about a different device or situation is UNRELATED even when it reuses the question's words.
+- L5 new_contribution compares current_answer with original_idea AND preceding_answer; content already in either is not new.
+- L6 'I do not know / have not decided / am still choosing' with nothing else asserted is NO_NEW_CONTENT.
+- L7 For an UNRELATED answer, still label new_contribution as the text reads (a different device described in new technical detail is CONTENT_BEARING); the evaluation does not score new_contribution where the frozen relation is UNRELATED.
+- L8 Use UNCERTAIN only when the texts genuinely do not allow a decision.
+- L9 possible_amendment is true only when current_answer changes, replaces, corrects or contradicts something stated in original_idea or preceding_answer.
+- L10 served_question_relevance is labelled independently of the other judgments: ADDRESSED when the answer gives at least part of what the served question asks for, even in everyday words.
+- L11 An answer about another aspect of the device (appearance, size, price, packaging, users, where sold) is NOT_ADDRESSED even when it reuses the question's words.
+- L12 stance: COMMITTED when at least one statement about how the device works or is built is the inventor's own and nothing about it is left open; MIXED when such a statement sits beside an unknown, undecided or open choice or a question; NOT_COMMITTED when no such statement is made (only questions, suppositions, unknowns, pending choices or what it does not do).
+- L13 For an UNRELATED answer, still label served_question_relevance and stance as the text reads; they are not scored where the frozen relation is UNRELATED.
+
+== LABEL DEFINITIONS ==
+- RELATED: current_answer is about the invention in original_idea, as the inventor may have developed it: new parts or details, a change / correction / contradiction of something said earlier, or a statement that something about THIS invention is unknown or undecided.
+- UNRELATED: current_answer describes a different device, product or situation, even when it shares words with the question or the idea.
+- CONTENT_BEARING: current_answer asserts, as the inventor's own statement, at least one technical detail about how the device it describes works or is built (parts, steps, movements, sensing, signals, connections, materials, behaviour) that original_idea and preceding_answer do not already state. Everyday wording counts; a repeat alongside the new detail does not cancel it.
+- NO_NEW_CONTENT: current_answer only repeats or rephrases original_idea / preceding_answer, only refers back, only says something is unknown / undecided / still being chosen, only asks or speculates without committing, or says nothing about how the device works or is built.
+- served_question_relevance: rules L10, L11, L13; stance: rule L12.
+
+== OUTPUT ==
+Reply with exactly ONE fenced ```json block mapping every case id to {"decision": "SUPPORTED" or "DISPUTED", "reason": "<one or two sentences>"}.
+
+== CASES ==
+[
+{
+"case": "A01",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "دواسة توضع عند قاعدة المرحاض تتيح للشخص رفع المقعد بقدمه بدلاً من لمسه بيده. عند الضغط على الدواسة يرتفع المقعد، وعند رفع القدم عنها ينخفض المقعد بهدوء. وتُثبَّت المجموعة على معظم المراحيض القياسية بالمشابك دون الحاجة إلى أدوات. والهدف إبعاد اليدين عن سطح يراه كثير من الناس غير صحي.",
+"served_question": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.",
+"preceding_answer": "عندما تضغط القدم على الدواسة إلى الأسفل، يُسحب كابل فولاذي ممتد على جانب الحوض نحو الأسفل. وفي الأعلى يلتف الكابل حول بكرة صغيرة مثبتة على محور مفصلة المقعد، فيؤدي سحبه إلى تدوير المحور ورفع المقعد حتى زاوية تقارب تسعين درجة. ثم يدفع نابض حلزوني أسفل الدواسة الدواسةَ إلى الأعلى عند رفع القدم، فيرتخي الكابل.",
+"current_answer": "يُصنع غلاف الدواسة بالقولبة من البولي بروبيلين المقوّى بالألياف الزجاجية بسطح غير لامع يسهل مسحه. وتزن المجموعة الكاملة نحو ستمئة غرام، وتُعبّأ مسطحة في علبة طولها ثلاثون سنتيمتراً.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A02",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "A pedal at the base of the toilet lets a person raise the seat with their foot instead of touching it. When the pedal is pressed, the seat lifts up, and when the foot is released, the seat lowers gently. The kit clips onto most standard toilets without tools. The goal is to keep hands away from a surface many people find unhygienic.",
+"served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+"preceding_answer": "When the foot presses the pedal down, a steel cable running up the side of the bowl is pulled downward. At the top, the cable wraps around a small pulley fixed to the seat's hinge pin, so pulling it turns the pin and swings the seat up to about 90 degrees. A coil spring under the pedal pushes it back up when the foot is lifted, and the cable goes slack.",
+"current_answer": "The pedal housing is moulded from glass-filled polypropylene with a matte, easy-to-wipe finish. The complete kit weighs about 600 grams and is packed flat in a box 30 cm long.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A03",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "جهاز صغير يُركَّب على الطرف المسطّح المغلق لأنبوب معجون الأسنان ويلفّ الأنبوب كلما استُخدم. يدير المستخدم مفتاحاً على جانب الجهاز قليلاً قبل كل تنظيف للأسنان، فيُعصر الأنبوب من أسفله ويتحرك المعجون نحو الغطاء. ولا يمكن للفّة أن ترتخي من تلقاء نفسها، فيبقى الأنبوب مشدوداً. والغاية استهلاك آخر ما في الأنبوب من معجون دون هدر.",
+"served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+"preceding_answer": "المفتاح مثبّت على محور مشقوق، ويُدخَل الطرف المسطّح للأنبوب في الشقّ. وعند إدارة المفتاح يدور المحور فيلتفّ الأنبوب حوله. وعلى المحور عجلة سقاطة مسنّنة تتعشّق مع لسان قفل محمَّل بنابض في الإطار، فلا يستطيع المحور الدوران إلا في اتجاه اللفّ.",
+"current_answer": "يُصنع الإطار بالقولبة من بلاستيك أكريلونيتريل بيوتادين ستايرين الأبيض غير اللامع بحواف مستديرة. ويبلغ عرضه نحو سبعة سنتيمترات وعمقه ثلاثة سنتيمترات، ويزن خمسة وأربعين غراماً. وتُعبّأ كل قطعة في غلاف من الورق المعاد تدويره.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A04",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "A small clip-on device slides over the flat sealed end of a toothpaste tube and rolls the tube up as it is used. The user turns a key on the side a little before each brushing, and the tube is squeezed from the bottom so the paste moves toward the cap. The roll cannot loosen by itself, so the tube stays tight. The aim is to use the last of the paste without waste.",
+"served_question": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+"preceding_answer": "The key is fixed to a slotted spindle, and the flat end of the tube is slid into the slot. Turning the key rotates the spindle, which winds the tube around itself. A toothed ratchet wheel on the spindle meets a spring-loaded pawl in the frame, so the spindle can turn only in the winding direction.",
+"current_answer": "The frame is moulded in matte white ABS plastic with rounded edges. It measures about 7 cm wide and 3 cm deep and weighs 45 grams. Each unit is packed in a recycled paper sleeve.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A05",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "حامل يوضع على الطاولة ويُبقي الكتاب الورقي أو الكتاب المدرسي مفتوحاً على الصفحة المطلوبة دون أن يمسكه القارئ. ترتكز ذراعان على الصفحات قرب حوافها الخارجية وتمنعانها من الانقلاب. ولتقليب الصفحة يرفع القارئ إحدى الذراعين قليلاً ويمرّر الصفحة تحتها ثم يتركها. ويُطوى الحامل كله ليصبح مسطّحاً ويتّسع له الحقيبة.",
+"served_question": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.",
+"preceding_answer": "يحتاج الحامل إلى لوح قاعدة مائل يستند إليه ظهر الكتاب، ويُثبَّت بزاوية تقارب ثلاثين درجة بواسطة دعامة تنفتح من الخلف. وتُركَّب ذراعان رفيعتان من الفولاذ بمفصلتين عند الزاويتين العلويتين للوح، ويضغط نابض حلزوني عند كل مفصلة ذراعَها نحو الصفحات. وتمنع حافة بارزة على طول أسفل اللوح الكتابَ من الانزلاق إلى الأسفل.",
+"current_answer": "يُقطع اللوح من خشب الخيزران الرقائقي بسماكة أربعة مليمترات ويُطلى بورنيش شفاف نصف لامع. ويبلغ مقاس الحامل وهو مطوي خمسة وعشرين في عشرين في سنتيمتر ونصف، ويزن نحو ثلاثمئة وعشرين غراماً.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A06",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "A holder that sits on a table and keeps a paperback or textbook open at the right page without the reader holding it. Two arms rest on the pages near the outer edges and stop them from flipping over. To turn a page, the reader lifts one arm slightly, slides the page under it and lets go. The whole holder folds flat to fit in a bag.",
+"served_question": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+"preceding_answer": "It needs a tilted base board that the back of the book rests against, held at about 30 degrees by a fold-out strut at the back. Two thin steel arms are hinged at the top corners of the board, and a coil spring at each hinge presses its arm down onto the pages. A ledge along the bottom of the board stops the book from sliding down.",
+"current_answer": "The board is cut from 4 mm bamboo plywood with a clear satin lacquer finish. Folded, the holder measures 25 by 20 by 1.5 cm and weighs about 320 grams.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A07",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "مشترك كهربائي منزلي يراقب كل مقبس من مقابسه بحثاً عن قابس تزداد حرارته إلى حد خطير، كأن يكون القابس مرتخياً أو تالفاً. فإذا ارتفعت حرارة أحد المقابس، يفصل المشترك ذلك المقبس وحده ويُبقي المقابس الأخرى تعمل. ويبيّن ضوء بجوار المقبس أيّها فُصل. والهدف منع الأعطال الصغيرة من التحوّل إلى حرائق خلف الأثاث.",
+"served_question": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+"preceding_answer": "في كل مقبس حسّاس حرارة صغير من نوع المقاومة الحرارية، مضغوط على الملامسات المعدنية التي تمسك أسنان القابس. ويقرأ متحكّم دقيق جميع الحسّاسات مرة كل ثانية، فإذا تجاوزت قراءة أيٍّ منها سبعين درجة مئوية فتح المرحّل الذي يغذّي ذلك المقبس. ثم يُضاء الضوء الأحمر المجاور لذلك المقبس.",
+"current_answer": "يُصنع الغلاف من البولي كربونات الأبيض المقاوم للاشتعال بسطح لامع. ويبلغ مقاس المشترك ذي المقابس الستة ثمانية وثلاثين في ستة في أربعة سنتيمترات، ويزن نحو ستمئة وخمسين غراماً.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A08",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "A household power strip that watches each of its sockets for a plug that is getting dangerously hot, for example because the plug is loose or damaged. If one socket overheats, the strip switches off only that socket and leaves the others working. A light next to the socket shows which one was cut. The aim is to stop small faults from turning into fires behind furniture.",
+"served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+"preceding_answer": "Each socket has a small temperature sensor, a thermistor, pressed against the metal contacts that grip the plug pins. A microcontroller reads all the sensors once a second, and if any of them is above 70 degrees Celsius it opens the relay that feeds that socket. The red light beside that socket then turns on.",
+"current_answer": "The housing is made of flame-retardant white polycarbonate with a gloss finish. The six-socket strip measures 38 by 6 by 4 cm and weighs about 650 grams.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A09",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "مشبك صغير يُثبَّت على الجهة الخلفية لياقة القميص ويذكّر مرتديه بالجلوس أو الوقوف باستقامة. فعندما يتراخى مرتديه وينحني لأكثر من فترة قصيرة، يُصدر المشبك اهتزازاً لطيفاً. ويُشحن خلال الليل ويكفي يوم عمل كاملاً. والهدف مساعدة موظفي المكاتب والطلاب على اكتساب عادات قوام أفضل دون أن يضطر أحد إلى تكرار التنبيه عليهم.",
+"served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+"preceding_answer": "داخل المشبك مقياس تسارع ثلاثي المحاور يقيس مقدار ميل أعلى الظهر. ويقارن متحكّم دقيق منخفض الاستهلاك هذا الميل بزاوية مرجعية يحفظها مرتدي المشبك بالنقر عليه مرتين وهو جالس باستقامة. ويُحدث محرك اهتزاز على شكل قرص معدني صغير الاهتزازَ عندما يتجاوز الميل الزاوية المرجعية بأكثر من خمس عشرة درجة لمدة ثلاثين ثانية.",
+"current_answer": "الغلاف مصنوع من الألمنيوم المؤكسد بسطح غير لامع، ومقاسه خمسة وثلاثون في عشرين في تسعة مليمترات. ويزن اثني عشر غراماً ويأتي معبّأً في علبة كرتونية صغيرة مستديرة.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A10",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "A small clip worn on the back of a shirt collar that reminds the wearer to sit or stand up straight. When the wearer slouches for more than a short while, the clip gives a gentle buzz. It recharges overnight and lasts a full working day. The aim is to help office workers and students build better posture habits without anyone having to nag them.",
+"served_question": "What are the main parts of your idea, in your own words, and what does each part do?",
+"preceding_answer": "Inside the clip there is a three-axis accelerometer that measures how far the upper back is tilted. A low-power microcontroller compares that tilt with a reference angle, which the wearer saves by double-tapping the clip while sitting straight. A coin-shaped vibration motor makes the buzz when the tilt is more than 15 degrees past the reference for 30 seconds.",
+"current_answer": "The case is anodised aluminium with a matte finish and measures 35 by 20 by 9 mm. It weighs 12 grams and comes packed in a small round cardboard tin.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A11",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "وحدة صغيرة تُركَّب على الجهة الداخلية من باب المنزل الأمامي وتلاحظ حين يُترك المزلاج غير مقفل في آخر المساء. فإذا كان الباب مغلقاً لكنه غير مقفل بعد موعد نوم محدد، ترسل الوحدة رسالة إلى هواتف أفراد الأسرة. وتُركَّب فوق القفل الموجود دون تغييره. والهدف ألّا تخلد الأسرة إلى النوم والباب الأمامي غير مقفل.",
+"served_question": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.",
+"preceding_answer": "يكشف حسّاس من نوع تأثير هول داخل الوحدة مغناطيساً صغيراً ملصقاً على مقبض تدوير المزلاج، فتعرف الوحدة ما إذا كان المزلاج مُداراً إلى وضع القفل. ويُعلمها مفتاح قصبي على إطار الباب بأن الباب مغلق. فإذا كان الباب في الساعة العاشرة والنصف مساءً مغلقاً والمزلاج غير مقفل، ترسل وحدة الواي فاي في الجهاز إشعاراً فورياً عبر موجّه الشبكة المنزلية إلى الهواتف.",
+"current_answer": "الغلاف مصنوع من الزنك المصبوب بقالب ومطلي بطلاء مسحوق أملس. ومقاسه تسعة في ستة في ثلاثة سنتيمترات، ويزن نحو مئة وثمانين غراماً، ويُعبّأ في صينية مشكّلة من لبّ الورق.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+},
+{
+"case": "A12",
+"category": "OFF_QUESTION_NEW_CONTENT",
+"category_brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+"original_idea": "A small unit mounted on the inside of the front door that notices when the deadbolt has been left unlocked late in the evening. If the door is closed but not locked after a set bedtime, it sends a message to the household's phones. It fits over the existing lock without changing it. The aim is to stop families going to sleep with the front door unlocked.",
+"served_question": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+"preceding_answer": "A small magnet glued to the deadbolt's thumb-turn is detected by a Hall-effect sensor in the unit, so the unit knows whether the bolt is turned to locked. A reed switch on the door frame tells it the door is closed. If at 22:30 the door is closed but the bolt is not locked, the unit's Wi-Fi module sends a push notification through the home router to the phones.",
+"current_answer": "The housing is die-cast zinc with a smooth powder-coated finish. It measures 9 by 6 by 3 cm, weighs about 180 grams, and is packed in a moulded paper-pulp tray.",
+"reference_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+},
+"blind_label": {
+"project_relation": "RELATED",
+"new_contribution": "CONTENT_BEARING",
+"served_question_relevance": "NOT_ADDRESSED",
+"stance": "COMMITTED"
+}
+}
+]

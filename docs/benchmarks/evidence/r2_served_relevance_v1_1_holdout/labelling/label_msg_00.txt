@@ -1,0 +1,37 @@
+You are an INDEPENDENT BLIND LABELLER for a synthetic evaluation holdout. You work alone in this session; do not use any tool, search or fetch anything. You are given only the label rules, the label definitions and the cases. You are not told how cases were written, what category any case belongs to, or what will be evaluated. Label each case from its four texts only (original_idea, served_question, preceding_answer, current_answer).
+
+== LABEL RULES (verbatim) ==
+- L1 Judge each case only from its four texts; do not use any other case.
+- L2 project_relation and new_contribution are labelled independently: decide each without looking at the other.
+- L3 A changed, corrected or contradicted design detail is RELATED when it concerns the same invention.
+- L4 An answer about a different device or situation is UNRELATED even when it reuses the question's words.
+- L5 new_contribution compares current_answer with original_idea AND preceding_answer; content already in either is not new.
+- L6 'I do not know / have not decided / am still choosing' with nothing else asserted is NO_NEW_CONTENT.
+- L7 For an UNRELATED answer, still label new_contribution as the text reads (a different device described in new technical detail is CONTENT_BEARING); the evaluation does not score new_contribution where the frozen relation is UNRELATED.
+- L8 Use UNCERTAIN only when the texts genuinely do not allow a decision.
+- L9 possible_amendment is true only when current_answer changes, replaces, corrects or contradicts something stated in original_idea or preceding_answer.
+- L10 served_question_relevance is labelled independently of the other judgments: ADDRESSED when the answer gives at least part of what the served question asks for, even in everyday words.
+- L11 An answer about another aspect of the device (appearance, size, price, packaging, users, where sold) is NOT_ADDRESSED even when it reuses the question's words.
+- L12 stance: COMMITTED when at least one statement about how the device works or is built is the inventor's own and nothing about it is left open; MIXED when such a statement sits beside an unknown, undecided or open choice or a question; NOT_COMMITTED when no such statement is made (only questions, suppositions, unknowns, pending choices or what it does not do).
+- L13 For an UNRELATED answer, still label served_question_relevance and stance as the text reads; they are not scored where the frozen relation is UNRELATED.
+
+== LABEL DEFINITIONS ==
+project_relation: RELATED | UNRELATED | UNCERTAIN
+- RELATED: current_answer is about the invention in original_idea, as the inventor may have developed it: new parts or details, a change / correction / contradiction of something said earlier, or a statement that something about THIS invention is unknown or undecided.
+- UNRELATED: current_answer describes a different device, product or situation, even when it shares words with the question or the idea.
+new_contribution: CONTENT_BEARING | NO_NEW_CONTENT | UNCERTAIN
+- CONTENT_BEARING: current_answer asserts, as the inventor's own statement, at least one technical detail about how the device it describes works or is built (parts, steps, movements, sensing, signals, connections, materials, behaviour) that original_idea and preceding_answer do not already state. Everyday wording counts; a repeat alongside the new detail does not cancel it.
+- NO_NEW_CONTENT: current_answer only repeats or rephrases original_idea / preceding_answer, only refers back, only says something is unknown / undecided / still being chosen, only asks or speculates without committing, or says nothing about how the device works or is built.
+served_question_relevance: ADDRESSED | NOT_ADDRESSED | UNCERTAIN (rules L10, L11, L13)
+stance: COMMITTED | MIXED | NOT_COMMITTED | UNCERTAIN (rule L12)
+possible_amendment: true | false (rule L9)
+confidence: HIGH | MEDIUM | LOW (your own confidence in the case's labels)
+UNCERTAIN only when the texts genuinely do not allow a decision (L8). Never judged: design quality, feasibility, safety, completeness or engineering correctness; whether earlier answers were credited; any real person or project.
+
+== HOW THIS WORKS ==
+The material comes in numbered PARTS. Long texts that several cases share are given once in a TEXTS table and referenced by id (T001, ...); each case gives its current_answer in full.
+Reply to each PART only with "received PART n". Do not label anything until a message says exactly "LABEL" followed by a key range (for example "LABEL K001-K050"). Then reply with exactly ONE fenced ```json block mapping every key in that range to its labels:
+{"K001": {"project_relation": "...", "new_contribution": "...", "served_question_relevance": "...", "stance": "...", "possible_amendment": false, "confidence": "HIGH", "note": "<optional, short>"}, ...}
+Label each case on its own (L1).
+
+There will be 10 PARTS. PART 1 follows in the next message.

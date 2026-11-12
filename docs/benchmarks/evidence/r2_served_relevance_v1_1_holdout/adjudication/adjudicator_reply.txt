@@ -1,0 +1,16 @@
+```json
+{
+"A01": {"decision": "SUPPORTED", "reason": "The answer gives new build details: a glass-filled polypropylene moulded housing, a weight of about 600 g and a flat-pack box size. None of it describes the steps from pressing the pedal to the seat rising."},
+"A02": {"decision": "SUPPORTED", "reason": "The answer gives new material, weight and dimension details that are in neither earlier text. It says nothing about the physical steps the question asks for, and it is stated with confidence."},
+"A03": {"decision": "SUPPORTED", "reason": "The answer gives new build details: a moulded ABS frame and its size and weight. It does not say which parts move or how they act on each other."},
+"A04": {"decision": "SUPPORTED", "reason": "The ABS frame material and the stated size and weight are new build content. The answer does not cover moving parts or how force is passed between them."},
+"A05": {"decision": "SUPPORTED", "reason": "The 4 mm bamboo plywood board, the folded dimensions and the weight are new build content. The answer does not name the main parts or the job each one does."},
+"A06": {"decision": "SUPPORTED", "reason": "The answer gives new board material, thickness, folded size and weight. It does not say what parts the holder needs or what each one does."},
+"A07": {"decision": "SUPPORTED", "reason": "The flame-retardant polycarbonate housing, the dimensions and the weight are new build content. The answer does not explain how overheating is detected or how the strip responds."},
+"A08": {"decision": "SUPPORTED", "reason": "The housing material, size and weight are new technical build details. Nothing in the answer addresses how the problem is noticed or what the strip does about it."},
+"A09": {"decision": "SUPPORTED", "reason": "The anodised aluminium case, its dimensions and its weight are new build content. The answer does not list the main parts or what each one does."},
+"A10": {"decision": "SUPPORTED", "reason": "The case material, dimensions and weight are new details stated with confidence. The answer does not describe the parts or their functions."},
+"A11": {"decision": "SUPPORTED", "reason": "The die-cast zinc housing, the dimensions and the weight are new build content. The answer gives no steps from the bolt being left unlocked to someone being told."},
+"A12": {"decision": "SUPPORTED", "reason": "The die-cast zinc housing, the size and the weight are new technical build details. The answer does not walk through the detection and notification sequence."}
+}
+```

@@ -1,0 +1,13 @@
+PART 2 of 10 (TEXTS):
+{
+"T039": "يحتاج الحامل إلى لوح قاعدة مائل يستند إليه ظهر الكتاب، ويُثبَّت بزاوية تقارب ثلاثين درجة بواسطة دعامة تنفتح من الخلف. وتُركَّب ذراعان رفيعتان من الفولاذ بمفصلتين عند الزاويتين العلويتين للوح، ويضغط نابض حلزوني عند كل مفصلة ذراعَها نحو الصفحات. وتمنع حافة بارزة على طول أسفل اللوح الكتابَ من الانزلاق إلى الأسفل.",
+"T040": "I would like to offer it in brushed silver and antique brass so it matches common door hardware. Renters are a large market because it does not change the lock. I would sell it with an optional subscription that adds extra family members.",
+"T041": "المستخدمون الرئيسيون الذين أتصوّرهم هم الطلاب ومن يطبخون في المنزل، إذ يمكن للطاهي إبقاء كتاب الوصفات مفتوحاً بينما يداه متّسختان. وأودّ أن يُباع في المكتبات قرب صندوق الدفع. وينبغي أن يكون سعره منخفضاً بما يكفي ليُشترى دون تفكير طويل.",
+"T042": "It is meant for households with children who leave tubes half squeezed, and for people with weak hands who find pressing a tube difficult. I would sell it in pharmacies next to the toothbrushes. It should suit tubes from 50 ml to 125 ml.",
+"T043": "I would make it in a four-socket and a six-socket version, each with a choice of 1.5 m or 3 m cable. It would mostly be sold for home offices and children's rooms, where many chargers are plugged in at once.",
+"T044": "أودّ طرحه بلون فضي مصقول وبلون نحاسي عتيق ليتناسق مع تجهيزات الأبواب الشائعة. ويمثّل المستأجرون سوقاً كبيرة لأنه لا يغيّر القفل. وسأبيعه مع اشتراك اختياري يتيح إضافة أفراد آخرين من الأسرة.",
+"T045": "سأصنعه بنسخة ذات أربعة مقابس وأخرى ذات ستة مقابس، ولكل منهما خيار كابل بطول متر ونصف أو ثلاثة أمتار. وسيُباع غالباً للمكاتب المنزلية وغرف الأطفال، حيث تُوصَل شواحن كثيرة في وقت واحد.",
+"T046": "أتصوّر بيعه باللون الأسود والكحلي والأبيض حتى لا يلفت النظر على الملابس. وعلى الأرجح سيكون أول الزبائن شركات تشتريه لبرامج رعاية صحة موظفيها. ولاحقاً سأبيعه مباشرة للطلاب قبل موسم الامتحانات.",
+"T047": "I plan to offer it in two versions, one for round bowls and one for elongated bowls. Each version would come in white or light grey so it blends with common bathroom fittings. I would sell it mainly to families and to small offices.",
+"T048": "الجهاز موجّه إلى الأسر التي فيها أطفال يتركون الأنابيب نصف معصورة، وإلى من يعانون ضعفاً في اليدين ويجدون صعوبة في الضغط على الأنبوب. وسأبيعه في الصيدليات بجوار فراشي الأسنان. وينبغي أن يناسب الأنابيب من خمسين إلى مئة وخمسة وعشرين مليلتراً."
+}

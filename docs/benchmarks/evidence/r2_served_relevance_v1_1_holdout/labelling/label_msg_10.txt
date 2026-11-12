@@ -1,0 +1,52 @@
+PART 10 of 10 (CASES):
+[
+{
+"key": "K198",
+"original_idea": "T004",
+"served_question": "T005",
+"preceding_answer": "T006",
+"current_answer": "يُصنع الإطار بالقولبة من بلاستيك أكريلونيتريل بيوتادين ستايرين الأبيض غير اللامع بحواف مستديرة. ويبلغ عرضه نحو سبعة سنتيمترات وعمقه ثلاثة سنتيمترات، ويزن خمسة وأربعين غراماً. وتُعبّأ كل قطعة في غلاف من الورق المعاد تدويره."
+},
+{
+"key": "K199",
+"original_idea": "T001",
+"served_question": "T002",
+"preceding_answer": "T003",
+"current_answer": "سبق أن شرحت في إجابتي السابقة ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها. ولم يتغير شيء في تلك الخطوات."
+},
+{
+"key": "K200",
+"original_idea": "T037",
+"served_question": "T038",
+"preceding_answer": "T039",
+"current_answer": "يُقطع اللوح من خشب الخيزران الرقائقي بسماكة أربعة مليمترات ويُطلى بورنيش شفاف نصف لامع. ويبلغ مقاس الحامل وهو مطوي خمسة وعشرين في عشرين في سنتيمتر ونصف، ويزن نحو ثلاثمئة وعشرين غراماً."
+},
+{
+"key": "K201",
+"original_idea": "T032",
+"served_question": "T033",
+"preceding_answer": "T034",
+"current_answer": "The flattened bottom of the tube is pushed into a split shaft, and that shaft is attached to the key. Every twist of the key spins the shaft and rolls the tube onto it. A toothed wheel on the shaft is caught by a sprung catch on the housing, which lets the shaft rotate only the way that rolls the tube up."
+},
+{
+"key": "K202",
+"original_idea": "T007",
+"served_question": "T008",
+"preceding_answer": "T009",
+"current_answer": "ما أفضل طريقة لكي يلاحظ النظام المشكلة: أن يتحسّس الحرارة عند المقبس، أم أن يراقب مقدار الكهرباء الذي يسحبه القابس؟ ولنفترض أنه لاحظ مقبساً ساخناً؛ هل الأفضل أن يستجيب بقطع الكهرباء فوراً أم بالتحذير أولاً؟"
+},
+{
+"key": "K203",
+"original_idea": "T010",
+"served_question": "T011",
+"preceding_answer": "T012",
+"current_answer": "After the alert goes out, the unit keeps checking the bolt every minute, and as soon as it is locked it clears the alert from all the phones so nobody gets up for nothing. I have not decided yet whether the message should go to every phone in the household or only to the person who set the unit up."
+},
+{
+"key": "K204",
+"original_idea": "T004",
+"served_question": "T005",
+"preceding_answer": "T006",
+"current_answer": "يُدفع القاع المسطّح للأنبوب داخل عمود مشطور، وهذا العمود موصول بالمفتاح. وكل لفّة للمفتاح تدير العمود فيلتفّ الأنبوب عليه. وهناك عجلة مسنّنة على العمود يمسكها مِزلاج ذو نابض في الهيكل، فلا يسمح للعمود بالدوران إلا في الاتجاه الذي يلفّ الأنبوب."
+}
+]

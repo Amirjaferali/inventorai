@@ -1,0 +1,113 @@
+{
+ "preregistration": "r2-served-relevance-v1.1-preregistration",
+ "preregistration_sha256": "954ea5dc3fcdba173ddc11c0fda7347314725d6ec0cdaa38eeac73de13c74dbf",
+ "engine_contract_version": "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5",
+ "computed": "offline and deterministically from the frozen cases and the unchanged engine, after blind labelling and adjudication, before any model request",
+ "outcome": "PREPARATION_INVALID",
+ "failed_preconditions": [
+  "P1_TOO_FEW_INCUMBENT_REJECTED_POSITIVES"
+ ],
+ "P1": {
+  "incumbent_rejected_positives": 29,
+  "min": 24,
+  "per_project": {
+   "CH1": 5,
+   "CH2": 5,
+   "CH3": 10,
+   "CH4": 3,
+   "CH5": 5,
+   "CH6": 1
+  },
+  "min_per_project": 2,
+  "per_variety": {
+   "ar-msa": 15,
+   "en": 14
+  },
+  "min_per_variety": 8,
+  "per_domain": {
+   "mechanical": 20,
+   "electronics_electrical": 9
+  },
+  "per_category": {
+   "PLAIN_LANGUAGE_DETAIL": 8,
+   "AMENDMENT": 5,
+   "CORRECTION_OF_PRECEDING": 8,
+   "RESTATE_THEN_NEW": 3,
+   "NEW_DETAIL": 3,
+   "HISTORY_COUNTERFACTUAL_NEW": 2
+  },
+  "case_ids": [
+   "CH1-C02-ar-msa",
+   "CH1-C04-ar-msa",
+   "CH1-C04-en",
+   "CH1-C05-ar-msa",
+   "CH1-C05-en",
+   "CH2-C02-ar-msa",
+   "CH2-C02-en",
+   "CH2-C03-en",
+   "CH2-C04-en",
+   "CH2-C05-en",
+   "CH3-C01-ar-msa",
+   "CH3-C01-en",
+   "CH3-C02-ar-msa",
+   "CH3-C02-en",
+   "CH3-C03-ar-msa",
+   "CH3-C03-en",
+   "CH3-C04-ar-msa",
+   "CH3-C05-ar-msa",
+   "CH3-C05-en",
+   "CH3-C06-en",
+   "CH4-C01-ar-msa",
+   "CH4-C02-ar-msa",
+   "CH4-C05-ar-msa",
+   "CH5-C02-ar-msa",
+   "CH5-C04-en",
+   "CH5-C05-ar-msa",
+   "CH5-C05-en",
+   "CH5-C06-ar-msa",
+   "CH6-C02-en"
+  ]
+ },
+ "P2": {
+  "falsifiable_negatives": 108,
+  "hazard_bearing": 85,
+  "min": 24,
+  "categories": {
+   "OTHER_INVENTION_SHARED_VOCAB": 12,
+   "PROJECT_COUNTERFACTUAL": 12,
+   "CONTENT_FREE_REFERENCE": 12,
+   "PARAPHRASE_OF_PREVIOUS": 12,
+   "NEGATION_ONLY": 12,
+   "OFF_QUESTION_NEW_CONTENT": 12,
+   "INSTRUCTION_INJECTION": 12,
+   "QUESTION_OR_SUPPOSITION": 1
+  },
+  "min_categories": 4
+ },
+ "P3": {
+  "incumbent_credited_falsifiable_negatives": 71,
+  "min": 6,
+  "categories": {
+   "OTHER_INVENTION_SHARED_VOCAB": 12,
+   "PROJECT_COUNTERFACTUAL": 9,
+   "CONTENT_FREE_REFERENCE": 12,
+   "PARAPHRASE_OF_PREVIOUS": 10,
+   "NEGATION_ONLY": 12,
+   "OFF_QUESTION_NEW_CONTENT": 5,
+   "INSTRUCTION_INJECTION": 10,
+   "QUESTION_OR_SUPPOSITION": 1
+  }
+ },
+ "P4": {
+  "disputed": 0,
+  "max_fraction": 0.1,
+  "cases": 204
+ },
+ "P5": {
+  "grid_errors": [],
+  "construction_errors": []
+ },
+ "v1_authoring_overlap": [],
+ "label_agreement": "204 of 204: blind label equals the frozen slot label on every scored axis (project_relation; new_contribution, served_question_relevance and stance where RELATED); no UNCERTAIN; possible_amendment differs on 2 (CH3-C01-en, CH3-C01-ar-msa; disclosure only)",
+ "adjudication": "12 OFF_QUESTION_NEW_CONTENT cases audited for genuine build content (Owner requirement) plus every scored-axis disagreement (none): 12 SUPPORTED, 0 DISPUTED"
+}
