@@ -367,7 +367,10 @@ def test_no_runtime_module_references_the_candidate_and_no_contract_is_registere
                 with open(path, encoding="utf-8") as fh:
                     text = fh.read()
                 assert not any(n in text for n in names), path
-    assert sr.CURRENT_ENGINE_CONTRACT_VERSION == T2G4
-    assert sr.GAP_BOUND_REPLAY_VERSIONS == (sr.ENGINE_CONTRACT_VERSION_XG1, T2G4)
+    # The only version added since is T2-G-5 (the separately authorized
+    # exact-repeat repair), not this candidate.
+    assert sr.CURRENT_ENGINE_CONTRACT_VERSION == sr.ENGINE_CONTRACT_VERSION_T2G5
+    assert sr.GAP_BOUND_REPLAY_VERSIONS == (sr.ENGINE_CONTRACT_VERSION_XG1, T2G4,
+                                           sr.ENGINE_CONTRACT_VERSION_T2G5)
     assert not any("context" in v or "cx" in v.split("-")
                    for v in sr.SUPPORTED_ENGINE_CONTRACT_VERSIONS)

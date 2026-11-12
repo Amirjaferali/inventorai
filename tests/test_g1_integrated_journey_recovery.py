@@ -32,7 +32,7 @@ from tests.test_stage15_integrated_invention_entry import (  # noqa: F401  (fixt
 from tests.test_g1_integrated_engineering_continuation import (
     PARTS, _answer, _kind, _raw)
 from tests.test_28t5_nonfocused_required_part_questions import _ids, _part, _save as _save_part
-from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, PF_STRONG, BA_1, BA_2
+from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, MECH_2 as MECH_ANSWER_2, PF_STRONG, BA_1, BA_2
 from tests.test_p10_d3a_self_service_project_export import _client_for
 from web import ui_text
 
@@ -151,7 +151,7 @@ def test_r04_the_new_project_reaches_the_existing_919_continuation(client):
     sid = _single(client)
     new = _created(_compose(client, _hidden_idea(_restart(client, sid).get_data(as_text=True)),
                             focus=MECH, **PARTS))
-    for value in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, PF_STRONG, BA_1, BA_2):
         _answer(client, new, value)
     assert _save_part(client, new, _part(new, ELEC),
                       {q: "My own words about it." for q in _ids(ELEC)}).status_code == 200
@@ -364,7 +364,7 @@ def test_r15_one_recovered_idea_reaches_cad_then_corrects_and_withdraws(client):
 
     # The actual governed-answer and nonfocused-part flows precede the
     # existing #919 integrated engineering continuation.
-    for answer in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+    for answer in (MECH_ANSWER, MECH_ANSWER_2, PF_STRONG, BA_1, BA_2):
         _answer(client, project, answer)
     assert _save_part(client, project, _part(project, ELEC),
                       {q: "My own words about it." for q in _ids(ELEC)}).status_code == 200

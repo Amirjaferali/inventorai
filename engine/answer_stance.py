@@ -1083,7 +1083,7 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
 
 
 def t2g_rule_level(state, gap_type=None, domain=None):
-    """The T-2-G rule level this project runs under: 0, 1, 2, 3 or 4.
+    """The T-2-G rule level this project runs under: 0, 1, 2, 3, 4 or 5.
 
     Read from the project's OWN persisted engine-contract version — never from
     a request field, the UI language, a timestamp or a default. An absent,
@@ -1092,12 +1092,14 @@ def t2g_rule_level(state, gap_type=None, domain=None):
     exactly; level 2 adds the bounded concise/mixed paths for T2-G-2 projects
     only; level 3 adds the T2-G-3 question / supposition refusal for T2-G-3
     projects only; level 4 adds the T2-G-4 pending-decision refusal for T2-G-4
+    projects only; level 5 adds the T2-G-5 exact-repeat rule for T2-G-5
     projects only. Outside the named gap and domains the level is 0 at every
     version."""
     from engine.session_reconstruction import (
         ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
         ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3,
-        ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_T2G4)
+        ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_T2G4,
+        ENGINE_CONTRACT_VERSION_T2G5)
     # Safe Question Reduction Slice 1: the routing-aware version carries every
     # T2-G-2 rule unchanged (routing is additive to it, not a rule change).
     levels = {ENGINE_CONTRACT_VERSION_T2G1: 1, ENGINE_CONTRACT_VERSION_T2G2: 2,
@@ -1105,7 +1107,9 @@ def t2g_rule_level(state, gap_type=None, domain=None):
               # The cross-gap replay repair carries every T2-G-3 rule unchanged.
               ENGINE_CONTRACT_VERSION_XG1: 3,
               # T2-G-4 adds the pending-decision refusal on top of level 3.
-              ENGINE_CONTRACT_VERSION_T2G4: 4}
+              ENGINE_CONTRACT_VERSION_T2G4: 4,
+              # T2-G-5 adds the exact-repeat rule on top of level 4.
+              ENGINE_CONTRACT_VERSION_T2G5: 5}
     level = levels.get(getattr(state, "engine_contract_version", None), 0)
     if not level:
         return 0

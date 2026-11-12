@@ -69,6 +69,7 @@ NR1 = SR.ENGINE_CONTRACT_VERSION_NR1
 T2G3 = SR.ENGINE_CONTRACT_VERSION_T2G3
 XG1 = SR.ENGINE_CONTRACT_VERSION_XG1
 T2G4 = SR.ENGINE_CONTRACT_VERSION_T2G4
+T2G5 = SR.ENGINE_CONTRACT_VERSION_T2G5
 T2G2 = SR.ENGINE_CONTRACT_VERSION_T2G2
 
 SEED = ("A folding mechanical wheelchair ramp with a spring latch. The "
@@ -77,6 +78,12 @@ SEED = ("A folding mechanical wheelchair ramp with a spring latch. The "
 MECH = ("The load path runs from the deck panel into the hinge line and the "
         "spring latch transfers force into the frame rail, so the ramp stays "
         "locked flat.")
+# T2-G-5: a word-for-word repeat of MECH no longer moves Mechanism
+# Completeness on a newly created project, so the web journeys close it with a
+# genuine, different follow-up (the in-memory NR1 journeys keep MECH twice).
+MECH_2 = ("When the ramp is laid flat the spring pushes the latch pin into a "
+          "hole in the frame rail, and the pin then carries the deck load "
+          "across the hinge line until the handle pulls it back.")
 PF_STRONG = ("The physical principle is a compressed spring whose stored energy "
              "pushes the latch pin into the rail, and the steel material is "
              "rated to withstand the deck load, so the locking is feasible.")
@@ -210,7 +217,7 @@ def _routed_form(c, sid):
 
 def _web_to_ba(c, sid):
     _answer(c, sid, MECH)
-    _answer(c, sid, MECH)
+    _answer(c, sid, MECH_2)
     _answer(c, sid, PF_STRONG)
     assert pl.select_next_gap(_live(sid)) == BOUNDARY_AMBIGUITY
 
@@ -257,7 +264,7 @@ def test_01_pf_q2_is_no_longer_mandatory_owner_work():
 def test_01b_web_never_serves_pf_q2_in_the_question_slot(client):
     sid = _start(client)
     seen = []
-    for text in (MECH, MECH, PF_STRONG, BA_1, BA_2):
+    for text in (MECH, MECH_2, PF_STRONG, BA_1, BA_2):
         seen.append(_answer_form_target(client, sid)["q"])
         _answer(client, sid, text)
     assert ID(PF_Q1) in seen
@@ -274,7 +281,7 @@ def test_02_pf_q1_remains_owner_visible_and_unchanged(client):
     assert pnq.get_served_question(PHYSICAL_FEASIBILITY, 0, domain="mechanical").routing is None
     sid = _start(client)
     _answer(client, sid, MECH)
-    _answer(client, sid, MECH)
+    _answer(client, sid, MECH_2)
     assert _answer_form_target(client, sid)["q"] == ID(PF_Q1)
     assert PF_Q1_TEXT in _body(client, sid)
 
@@ -457,7 +464,7 @@ def test_07d_explicit_od_r1_acceptance_of_routed_pf_reaches_level_2(client):
 def test_07e_od_r1_safeguards_are_unchanged_for_routed_pf(client):
     sid = _start(client)
     _answer(client, sid, MECH)
-    _answer(client, sid, MECH)
+    _answer(client, sid, MECH_2)
     # PF served but no substantive attempt yet: the W2-D gate refuses
     _accept_pf_via_route(client, sid)
     assert _live(sid).get_gap(PHYSICAL_FEASIBILITY).status == OPEN
@@ -782,22 +789,23 @@ def test_18b_routing_on_a_non_routing_version_fails_closed(client):
 
 
 def test_19_new_routing_aware_project_uses_the_new_behavior(client):
-    # The current stamp (T2-G-4) carries the NR1 routing unchanged, as
-    # T2-G-3 and the cross-gap replay repair did.
-    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == T2G4
+    # The current stamp (T2-G-5) carries the NR1 routing unchanged, as
+    # T2-G-3, the cross-gap replay repair and T2-G-4 did.
+    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == T2G5
     assert nr.is_routing_aware(NR1) and nr.is_routing_aware(T2G3) \
-        and nr.is_routing_aware(XG1) and nr.is_routing_aware(T2G4)
+        and nr.is_routing_aware(XG1) and nr.is_routing_aware(T2G4) \
+        and nr.is_routing_aware(T2G5)
     sid = _start(client)
-    assert _live(sid).engine_contract_version == T2G4
+    assert _live(sid).engine_contract_version == T2G5
     rows = _store().load_need_routing(sid)
     assert [(r.gap_type, r.question_id, r.operation, r.required_input,
              r.after_assertion_seq) for r in rows] == [
         (PHYSICAL_FEASIBILITY, PF_Q2, "ROUTE", "SPECIALIST", -1)]
     assert NR1 in SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS
     # T2-G-2 rules are carried unchanged, plus the T2-G-3 rule and the T2-G-4
-    # undecided-choice rule (level 4)
+    # undecided-choice rule (level 4) and the T2-G-5 exact-repeat rule (level 5)
     from engine.answer_stance import t2g_rule_level
-    assert t2g_rule_level(_live(sid), MECHANISM_COMPLETENESS) == 4
+    assert t2g_rule_level(_live(sid), MECHANISM_COMPLETENESS) == 5
 
 
 def test_20_mechanism_completeness_is_rejected_at_every_boundary(client):
@@ -859,7 +867,7 @@ def test_22_optional_note_binds_to_pf_q2_while_ba_is_primary(client):
     _web_to_ba(client, sid)
     form = _routed_form(client, sid)
     assert _decode(form["answer_target"]) == {
-        "k": "ROUTED_NEED", "q": ID(PF_Q2), "g": PHYSICAL_FEASIBILITY, "v": T2G4}
+        "k": "ROUTED_NEED", "q": ID(PF_Q2), "g": PHYSICAL_FEASIBILITY, "v": T2G5}
     before = _facts(_live(sid))
     client.post(f"/session/{sid}", data=dict(
         form, action="provisional_assumption", response=NOTE), answer_binding=False)

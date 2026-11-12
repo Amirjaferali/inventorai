@@ -37,7 +37,7 @@ from engine.idea_state import (
 from web import ui_text
 import web.app as appmod
 from tests.test_safe_question_routing_pf_q2 import (  # noqa: F401  (fixture)
-    client, SEED, MECH, PF_STRONG, BA_1, BA_2, ELEC_SEED, NR1, T2G2, PF_Q1,
+    client, SEED, MECH, MECH_2, PF_STRONG, BA_1, BA_2, ELEC_SEED, NR1, T2G2, PF_Q1,
     PF_Q2, ID, _start, _stamped_start, _answer, _live, _store, _body,
     _answer_form_target, _accept_pf_via_route, _facts, _row_counts, _decode,
     _routed_form,
@@ -58,7 +58,7 @@ def _token(c, sid):
 def _to_stuck(c, sid):
     """MC closed, one WEAK PF attempt, BA closed: the dead end before repair."""
     _answer(c, sid, MECH)
-    _answer(c, sid, MECH)
+    _answer(c, sid, MECH_2)
     _answer(c, sid, WEAK)
     _answer(c, sid, BA_1)
     _answer(c, sid, BA_2)
@@ -159,7 +159,7 @@ def test_03_pf_stays_routed_to_specialist_and_non_owner(client):
 
 def test_04_mandatory_visible_inventory_stays_nine(client):
     sid = _start(client)
-    walk = [WEAK] * 4 + [MECH, MECH] + [WEAK] + [WEAK] * 4 + [BA_1, BA_2]
+    walk = [WEAK] * 4 + [MECH, MECH_2] + [WEAK] + [WEAK] * 4 + [BA_1, BA_2]
     seen = []
     for text in walk:
         q = _answer_form_target(client, sid)["q"]
@@ -251,7 +251,7 @@ def test_08_09_forged_null_question_posts_fail_safely_without_orphans(client):
 def test_10_substantive_pf_still_opens_the_existing_od_r1_path(client):
     sid = _start(client)
     _answer(client, sid, MECH)
-    _answer(client, sid, MECH)
+    _answer(client, sid, MECH_2)
     _answer(client, sid, PF_STRONG)
     assert pl.substantive_attempt_recorded(_live(sid), PHYSICAL_FEASIBILITY)
     body = _body(client, sid)
@@ -263,7 +263,7 @@ def test_10_substantive_pf_still_opens_the_existing_od_r1_path(client):
 def test_11_12_open_pf_blocks_and_explicit_acceptance_progresses(client):
     sid = _start(client)
     _answer(client, sid, MECH)
-    _answer(client, sid, MECH)
+    _answer(client, sid, MECH_2)
     _answer(client, sid, PF_STRONG)
     _answer(client, sid, BA_1)
     _answer(client, sid, BA_2)
@@ -295,8 +295,8 @@ def test_13_14_mechanism_and_boundary_serving_are_unchanged(client):
         _answer(client, sid, WEAK)
     assert served == [ID("mechanical:MECHANISM_COMPLETENESS:Q%d" % i)
                       for i in (1, 2, 3, 4)]
-    for _ in range(3):
-        _answer(client, sid, MECH)
+    for text in (MECH, MECH_2, MECH):
+        _answer(client, sid, text)
         if pl.select_next_gap(_live(sid)) == PHYSICAL_FEASIBILITY:
             break
     assert _answer_form_target(client, sid)["q"] == ID(PF_Q1)

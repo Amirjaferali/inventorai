@@ -20,7 +20,7 @@ from engine.session_reconstruction import (
     ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_T2G3,
     ENGINE_CONTRACT_VERSION_XG1,
-    ENGINE_CONTRACT_VERSION_T2G4,
+    ENGINE_CONTRACT_VERSION_T2G4, ENGINE_CONTRACT_VERSION_T2G5,
     RECONSTRUCTION_VERSION, ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS, reconstruct_readonly_state)
 from engine import need_routing as nr
@@ -102,12 +102,13 @@ def test_one_new_version_is_added_and_every_earlier_one_is_kept():
     # (and T2-G-4 follows XG1, carrying every level-3 rule)
     assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == PRIOR_VERSIONS + (
         ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1,
-        ENGINE_CONTRACT_VERSION_T2G4)
+        ENGINE_CONTRACT_VERSION_T2G4, ENGINE_CONTRACT_VERSION_T2G5)
     assert st.t2g_rule_level(_State(ENGINE_CONTRACT_VERSION_XG1), MC) == 3
     # routing materialization is carried, not replaced
     assert ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS == (
         ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3,
-        ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_T2G4)
+        ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_T2G4,
+        ENGINE_CONTRACT_VERSION_T2G5)
 
 
 def test_the_rule_level_is_three_only_for_the_new_version():
@@ -212,12 +213,14 @@ def test_a_real_start_records_the_new_version_and_its_routing(client):
     sid = _start(c)
     # The current stamp is T2-G-4, which carries the T2-G-3 rules (as level
     # 4, a superset), the XG1 replay repair and the NR1 routing unchanged.
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G4
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G4
-    assert st.t2g_rule_level(_snapshot_state(appmod, sid), MC) == 4
+    # (T2-G-5 follows it, carrying every level-4 rule, and is now stamped.)
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G5
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G5
+    assert st.t2g_rule_level(_snapshot_state(appmod, sid), MC) == 5
     assert nr.is_routing_aware(ENGINE_CONTRACT_VERSION_T2G3)
     assert nr.is_routing_aware(ENGINE_CONTRACT_VERSION_XG1)
     assert nr.is_routing_aware(ENGINE_CONTRACT_VERSION_T2G4)
+    assert nr.is_routing_aware(ENGINE_CONTRACT_VERSION_T2G5)
     rows = appmod._get_store().load_need_routing(sid)
     assert [(r.gap_type, r.operation, r.required_input) for r in rows] == [
         ("PHYSICAL_FEASIBILITY", "ROUTE", "SPECIALIST")]
@@ -403,7 +406,7 @@ def test_live_cold_and_resumed_agree(client, answer):
     appmod.SESSION_STORE.clear()
     session = reconstruct_readonly_state(appmod._get_store(), sid)
     assert session.review.level == 1
-    assert session.state.engine_contract_version == ENGINE_CONTRACT_VERSION_T2G4
+    assert session.state.engine_contract_version == ENGINE_CONTRACT_VERSION_T2G5
     assert appmod._resolve_question_context(session.state, None).identity == \
         live["identity"]
     assert (session.state.known_mechanism is None) == \

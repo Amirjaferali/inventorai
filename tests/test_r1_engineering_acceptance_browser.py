@@ -22,7 +22,7 @@ from playwright.sync_api import expect
 
 from web.ui_text import text
 from tests.test_draft_l2_local_continuity import server, page, _browser  # noqa: F401
-from tests.test_safe_question_routing_pf_q2 import BA_1, BA_2, MECH, PF_STRONG
+from tests.test_safe_question_routing_pf_q2 import BA_1, BA_2, MECH, MECH_2, PF_STRONG
 from tests.test_safe_question_routing_pf_q2_weak_recovery_browser import _answer, _start_mechanical
 
 SUBMIT = "main input[type=submit], main button[type=submit]"
@@ -60,7 +60,7 @@ def test_mechanical_report_and_cap12_advisory(server, page, lang):
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.set_viewport_size({"width": 390, "height": 900})
     sid = _start_mechanical(page, server, lang)
-    for value in (MECH, MECH, PF_STRONG, BA_1, BA_2):
+    for value in (MECH, MECH_2, PF_STRONG, BA_1, BA_2):
         _answer(page, value)
     expect(page.locator("#answer-form")).to_have_count(0)  # the governed questions are done
 

@@ -45,7 +45,7 @@ from tests.test_component_inventory_declare_list import (
     _declare as _declare_component, _form as _component_form,
 )
 from tests.test_safe_question_routing_pf_q2 import (
-    BA_1, BA_2, MECH, PF_Q1, PF_Q2, PF_STRONG, SEED, _answer_form_target,
+    BA_1, BA_2, MECH, MECH_2, PF_Q1, PF_Q2, PF_STRONG, SEED, _answer_form_target,
 )
 from tests.test_stage15_integration_closure import _dep_save
 from tests.test_stage15_interface_observations import _observe, _record_form
@@ -170,7 +170,7 @@ def test_a_mechanical_r1_journey(monkeypatch):
     sid = _start(client, SEED, MECHANICAL)
 
     # A1 — the governed Mechanical question journey, with PF:Q2 routed away.
-    served = [_answer(client, sid, text) for text in (MECH, MECH, PF_STRONG, BA_1, BA_2)]
+    served = [_answer(client, sid, text) for text in (MECH, MECH_2, PF_STRONG, BA_1, BA_2)]
     assert all(q.startswith("PATHN:mechanical:") for q in served), served
     assert "PATHN:" + PF_Q1 in served and "PATHN:" + PF_Q2 not in served
     state = _state(sid)

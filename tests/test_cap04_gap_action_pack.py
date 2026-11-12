@@ -257,12 +257,12 @@ def _answer(c, sid, value):
 
 
 def _routed_project(c, appmod, lang="en"):
-    from tests.test_safe_question_routing_pf_q2 import MECH
+    from tests.test_safe_question_routing_pf_q2 import MECH, MECH_2
     with c.session_transaction() as session:
         session["ui_lang"] = lang
     r = c.post("/start", data={"idea": SEED, "domain_confirm": "mechanical"})
     sid = r.headers["Location"].rsplit("/", 1)[-1]
-    for value in (MECH, MECH):
+    for value in (MECH, MECH_2):
         _answer(c, sid, value)
     return sid
 

@@ -14,7 +14,7 @@ import pytest
 from playwright.sync_api import expect
 
 from tests.test_draft_l2_local_continuity import server, page, _browser  # noqa: F401
-from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, BA_1, BA_2
+from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, MECH_2 as MECH_ANSWER_2, BA_1, BA_2
 from tests.test_safe_question_routing_pf_q2_weak_recovery import WEAK
 from tests.test_safe_question_routing_pf_q2_weak_recovery_browser import _answer, _start_mechanical
 from web.ui_text import text
@@ -31,7 +31,7 @@ def test_blocked_point_to_component_to_saved_moment_and_report(server, page, lan
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     sid = _start_mechanical(page, server, lang)
-    for value in (MECH_ANSWER, MECH_ANSWER, WEAK, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, WEAK, BA_1, BA_2):
         _answer(page, value)
 
     # Step A at phone width: one primary action, one secondary step to the existing form.

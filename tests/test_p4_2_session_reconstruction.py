@@ -237,9 +237,11 @@ def test_start_persists_reconstruction_inputs(client):
     # NeedRouting + the question / supposition rule); all five stay supported.
     # T2-G-4: a fresh /start now records the T2-G-4 version (XG1 + the
     # undecided-choice rule); all seven stay supported.
-    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_T2G4
+    # T2-G-5: a fresh /start now records the T2-G-5 version (T2-G-4 + the
+    # exact-repeat rule); all eight stay supported.
+    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_T2G5
     assert inputs["engine_contract_version"] in SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS
-    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 7
+    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 8
 
 
 def test_a_project_created_under_t2g1_keeps_that_stamp(client):

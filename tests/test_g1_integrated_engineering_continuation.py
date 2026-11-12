@@ -34,7 +34,7 @@ from tests.test_component_inventory_declare_list import _declare as _declare_com
 from tests.test_component_inventory_correct_withdraw import _form_for, _post_withdraw
 from tests.test_component_interface_participation import _form as _icp_form, _post as _icp_post
 from tests.test_board_enclosure_planar_clearance import _page as _pcc_page, _save as _pcc_save
-from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, PF_STRONG, BA_1, BA_2, _start
+from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, MECH_2 as MECH_ANSWER_2, PF_STRONG, BA_1, BA_2, _start
 from web import planar_clearance as view_mod
 from web import ui_text
 
@@ -82,7 +82,7 @@ def _dump():
 def _project(c, lang=None):
     """The integrated invention with its focus questioning and other-part questions done."""
     sid = _created(_compose(c, IDEA, focus=MECH, lang=lang, **PARTS))
-    for value in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, PF_STRONG, BA_1, BA_2):
         _answer(c, sid, value)
     r = _save_part(c, sid, _part(sid, ELEC), {q: "My own words about it." for q in _ids(ELEC)})
     assert r.status_code == 200
@@ -192,14 +192,14 @@ def test_e03_a_waiting_question_keeps_priority_and_no_link_is_shown(client):
 
 def test_e04_the_other_part_questions_still_come_first(client):
     sid = _created(_compose(client, IDEA, focus=MECH, **PARTS))
-    for value in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, PF_STRONG, BA_1, BA_2):
         _answer(client, sid, value)
     assert _kind(_raw(client, sid)) == "part_questions"
 
 
 def test_e05_single_domain_projects_never_gain_an_integrated_action(client):
     sid = _start(client)
-    for value in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, PF_STRONG, BA_1, BA_2):
         _answer(client, sid, value)
     page = _raw(client, sid)
     assert "data-ijg" not in page

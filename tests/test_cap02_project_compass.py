@@ -25,7 +25,7 @@ import web.app as appmod
 from web.ui_text import text
 from tests.test_deliverable_hygiene import PROHIBITED_TOKENS
 from tests.test_safe_question_routing_pf_q2 import (  # noqa: F401  (fixture)
-    client, MECH, PF_STRONG, BA_1, BA_2, _start, _answer, _body, _live,
+    client, MECH, MECH_2, PF_STRONG, BA_1, BA_2, _start, _answer, _body, _live,
     _accept_pf_via_route,
 )
 from tests.test_safe_question_routing_pf_q2_weak_recovery import (
@@ -360,7 +360,7 @@ def test_n_handoff_stays_the_primary_action(client):
     # click away as a plain link. With the planning recorded the handoff is primary again
     # (tests/test_experiment_planning_journey_guidance.py).
     sid = _start(client)
-    for value in (MECH, MECH, PF_STRONG, BA_1, BA_2):
+    for value in (MECH, MECH_2, PF_STRONG, BA_1, BA_2):
         _answer(client, sid, value)
     page = _raw(client, sid)
     primary = _primary(page)

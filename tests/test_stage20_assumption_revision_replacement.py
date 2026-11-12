@@ -53,7 +53,7 @@ from engine.requirement_landscape import derive_requirement_landscape
 from web import ui_text
 import web.app as appmod
 from tests.test_safe_question_routing_pf_q2 import (  # noqa: F401  (fixture)
-    client, MECH, PF_STRONG, BA_1, BA_2, NOTE, PF_Q2, ID, NR1, _start, _answer,
+    client, MECH, MECH_2, PF_STRONG, BA_1, BA_2, NOTE, PF_Q2, ID, NR1, _start, _answer,
     _live, _store, _routed_form, _web_to_ba, _accept_pf_via_route,
 )
 from tests.test_cap08_assumption_dependency import _assume, _raw, _declare
@@ -493,7 +493,7 @@ def test_d02_missing_historical_gap_is_skipped_never_created(client, monkeypatch
 
 def test_d03_closed_historical_gap_is_skipped_and_stays_closed(client):
     sid, a = _project_with_assumption(client)              # assumption on MECHANISM
-    _answer(client, sid, MECH)
+    _answer(client, sid, MECH_2)   # T2-G-5: a genuine follow-up, not a repeat
     state = _live(sid)
     assert state.get_gap(MECHANISM_COMPLETENESS).status == CLOSED
     before = _progress(state)
@@ -511,7 +511,7 @@ def test_d03_closed_historical_gap_is_skipped_and_stays_closed(client):
 # ==========================================================================
 def test_e01_skipped_answer_counts_under_the_replay_bound(client, monkeypatch):
     sid, a = _project_with_assumption(client)
-    _answer(client, sid, MECH)
+    _answer(client, sid, MECH_2)   # T2-G-5: a genuine follow-up, not a repeat
     _act(client, sid, a.record_id, "replace_with_answer", MECH + " (skip me)")
     answered = [r for r in _rows(sid) if r.disposition == "answered"]
     assert _recon(sid).review.assumption_origin_outcomes[0].applied is False
@@ -525,7 +525,7 @@ def test_e02_routing_revisions_at_a_skipped_position_still_apply(client):
     _answer(client, sid, MECH)
     _assume(client, sid, "Assume the hinge pin carries the full deck load.")
     [a] = _active_assumptions(_live(sid))
-    _answer(client, sid, MECH)                            # MECHANISM closes
+    _answer(client, sid, MECH_2)                          # MECHANISM closes
     _act(client, sid, a.record_id, "replace_with_answer", MECH + " (skip me)")
     _notice(sid)
     skipped_seq = len(_rows(sid)) - 1
@@ -547,7 +547,7 @@ def test_e02_routing_revisions_at_a_skipped_position_still_apply(client):
 
 def test_e03_skip_is_no_progression_but_ledger_views_may_recompute(client, monkeypatch):
     sid, a = _project_with_assumption(client)
-    _answer(client, sid, MECH)
+    _answer(client, sid, MECH_2)   # T2-G-5: a genuine follow-up, not a repeat
     before_state = _live(sid)
     before = _progress(before_state)
     landscape_before = [r.requirement_id for r in
@@ -617,7 +617,7 @@ def test_f02_unreadable_committed_routing_fails_closed(client, monkeypatch):
 def test_g01_skipped_replacement_does_not_revoke_accepted_risk(client):
     sid = _start(client)
     _answer(client, sid, MECH)
-    _answer(client, sid, MECH)                            # PF served (Q1)
+    _answer(client, sid, MECH_2)                          # PF served (Q1)
     assert pl.select_next_gap(_live(sid)) == PHYSICAL_FEASIBILITY
     _assume(client, sid, "Assume the steel rail is strong enough.")
     [a] = _active_assumptions(_live(sid))
@@ -801,7 +801,7 @@ def test_j01_cold_and_writable_resume_preserve_classifications_and_ledger(client
     sid, a = _project_with_assumption(client)
     _act(client, sid, a.record_id, "revise_assumption", REVISED)
     [rev] = _active_assumptions(_live(sid))
-    _answer(client, sid, MECH)                           # MECHANISM closes
+    _answer(client, sid, MECH_2)                         # MECHANISM closes
     _act(client, sid, rev.record_id, "replace_with_answer", MECH + " (skip me)")
     _notice(sid)
     live = _live(sid)

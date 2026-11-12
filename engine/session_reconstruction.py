@@ -141,14 +141,29 @@ ENGINE_CONTRACT_VERSION_XG1 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1"
 # projects only: every existing project keeps its recorded version and replays
 # exactly as before; nothing is adopted or migrated automatically.
 ENGINE_CONTRACT_VERSION_T2G4 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4"
+
+# T2-G-5 (exact-repeat false-credit repair): the EIGHTH supported
+# engine-contract version. It carries every T2-G-4 rule (T2-G-3, NR1 routing
+# and gap-bound replay) unchanged, and is the ONLY version under which a
+# Mechanism Completeness answer that repeats, word for word, an earlier answer
+# that already moved that gap's status earns no further credit (the bounded
+# identity rule owned by `engine/answer_stance.py`). The record of which
+# answers moved the gap is derived in memory by the same progression call live
+# and in replay, never stored. Stamped on NEW projects only: every existing
+# project keeps its recorded version and replays exactly as before; nothing is
+# adopted or migrated automatically.
+ENGINE_CONTRACT_VERSION_T2G5 = \
+    "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5"
 ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS = (ENGINE_CONTRACT_VERSION_NR1,
                                           ENGINE_CONTRACT_VERSION_T2G3,
                                           ENGINE_CONTRACT_VERSION_XG1,
-                                          ENGINE_CONTRACT_VERSION_T2G4)
+                                          ENGINE_CONTRACT_VERSION_T2G4,
+                                          ENGINE_CONTRACT_VERSION_T2G5)
 
 # The versions whose replay credits a gap-bound answer only to its own gap.
 GAP_BOUND_REPLAY_VERSIONS = (ENGINE_CONTRACT_VERSION_XG1,
-                             ENGINE_CONTRACT_VERSION_T2G4)
+                             ENGINE_CONTRACT_VERSION_T2G4,
+                             ENGINE_CONTRACT_VERSION_T2G5)
 
 # Both exact versions are supported through the ONE existing progression and
 # reconstruction path — the earlier stamp is NOT replaced, so no valid legacy
@@ -161,11 +176,12 @@ SUPPORTED_ENGINE_CONTRACT_VERSIONS = (
     ENGINE_CONTRACT_VERSION_T2G3,
     ENGINE_CONTRACT_VERSION_XG1,
     ENGINE_CONTRACT_VERSION_T2G4,
+    ENGINE_CONTRACT_VERSION_T2G5,
 )
 
 # The version a newly created supported project records. Separate name so the
 # "what do we stamp now" decision is never confused with "what do we support".
-CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G4
+CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G5
 
 # Deterministic Path-N support only.
 SUPPORTED_PATH = "N"
