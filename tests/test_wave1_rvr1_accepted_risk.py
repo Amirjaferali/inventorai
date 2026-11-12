@@ -192,12 +192,21 @@ def _token(c, sid):
     m = re.search(r'name="answer_token" value="([^"]+)"', page)
     return html.unescape(m.group(1))
 
+# T2-G-5: a word-for-word repeat of MECH no longer moves Mechanism
+# Completeness on a newly created project, so the walk alternates MECH with a
+# genuine, different follow-up.
+MECH_FOLLOW_UP = ("When the ramp is laid flat the spring pushes the latch pin into "
+                  "a hole in the frame rail, and the pin then carries the deck load "
+                  "across the hinge line until the handle pulls it back.")
+
+
 def _answer_until(c, appmod, sid, gap, max_steps=8):
     from engine.progression_loop import select_next_gap as sng
     state = appmod.SESSION_STORE[sid]["state"]
     steps = 0
     while sng(state) == gap and steps < max_steps:
-        c.post(f"/session/{sid}", data={"response": MECH,
+        text = MECH if steps % 2 == 0 else MECH_FOLLOW_UP
+        c.post(f"/session/{sid}", data={"response": text,
                                         "answer_token": _token(c, sid),
                                         "action": "answered"})
         steps += 1

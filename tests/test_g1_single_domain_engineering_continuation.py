@@ -35,7 +35,7 @@ from tests.test_g1_routed_recovery_continuation import (
     LINK_RE as RRC_LINK_RE, _integrated as _routed_integrated, _snapshot, _to_routed_recovery)
 from tests.test_g1_uqtr_integrated_continuation import UQC_LINK_RE, _deliverable, _post
 from tests.test_safe_question_routing_pf_q2 import (
-    BA_1, BA_2, ELEC_SEED, MECH as MECH_ANSWER, _start)
+    BA_1, BA_2, ELEC_SEED, MECH as MECH_ANSWER, MECH_2 as MECH_ANSWER_2, _start)
 from tests.test_safe_question_routing_pf_q2_weak_recovery import WEAK
 from tests.test_stage15_integrated_invention_entry import _live, _pdf_source
 from web import ui_text
@@ -49,7 +49,7 @@ def _routed(c, lang=None):
     """A single-domain Mechanical project: Mechanism and Boundary answered in the inventor's own
     words and ONE non-substantive Physical Feasibility answer, so the routed point waits."""
     sid = _start(c, lang=lang or "en")
-    for value in (MECH_ANSWER, MECH_ANSWER, WEAK, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, WEAK, BA_1, BA_2):
         _answer(c, sid, value)
     state = _live(sid)
     assert state.get_gap(PF).status == "OPEN" and nr.gap_has_outstanding_routing(state, PF)

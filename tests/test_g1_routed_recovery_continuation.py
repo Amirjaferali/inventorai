@@ -28,7 +28,8 @@ from tests.test_g1_integrated_engineering_continuation import (
     IDEA, PARTS, _answer, _participate, _primary, _raw, _to_participation, client)  # noqa: F401
 from tests.test_28t5_nonfocused_required_part_questions import _ids, _part, _save as _save_part
 from tests.test_safe_question_routing_pf_q2 import (
-    BA_1, BA_2, MECH as MECH_ANSWER, PF_STRONG, _accept_pf_via_route, _facts, _start)
+    BA_1, BA_2, MECH as MECH_ANSWER, MECH_2 as MECH_ANSWER_2, PF_STRONG, _accept_pf_via_route,
+    _facts, _start)
 from tests.test_safe_question_routing_pf_q2_weak_recovery import WEAK, _correct
 from tests.test_stage15_integrated_invention_entry import ELEC, MECH, _compose, _created, _live
 from web import ui_text
@@ -43,7 +44,7 @@ def _integrated(c, lang=None):
 def _to_routed_recovery(c, sid):
     """Mechanism and Boundary closed by the inventor's own answers; ONE non-substantive Physical
     Feasibility answer, so the routed point waits and accepting it as a risk is not available."""
-    for value in (MECH_ANSWER, MECH_ANSWER, WEAK, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, WEAK, BA_1, BA_2):
         _answer(c, sid, value)
     state = _live(sid)
     assert state.get_gap(PF).status == "OPEN"
@@ -152,7 +153,7 @@ def test_06_single_domain_routed_recovery_gets_no_integrated_link(client, monkey
     (tests/test_g1_single_domain_engineering_continuation.py); any integrated guidance object,
     even an unusable forced one, keeps precedence and that step is not offered."""
     sid = _start(client)
-    for value in (MECH_ANSWER, MECH_ANSWER, WEAK, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, WEAK, BA_1, BA_2):
         _answer(client, sid, value)
     if forced:   # even a forced kind finds no interaction form on a single-domain page
         monkeypatch.setattr(appmod, "_integrated_journey_guidance",

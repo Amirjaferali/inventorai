@@ -400,7 +400,10 @@ def test_the_source_chain_stays_with_the_966_owner_and_contracts_are_unchanged()
     stale = sr.contextual_admission_plan(seed, chain, decisions, METHOD)
     assert {(x.outcome, x.reason) for x in stale.values()} == {(sr.CX_PENDING,
                                                                   sr.CX_REASON_STALE)}
-    assert sr.CURRENT_ENGINE_CONTRACT_VERSION == sr.ENGINE_CONTRACT_VERSION_T2G4
+    # The only version added since is T2-G-5 (the separately authorized
+    # exact-repeat repair), not this candidate.
+    assert sr.CURRENT_ENGINE_CONTRACT_VERSION == sr.ENGINE_CONTRACT_VERSION_T2G5
     assert sr.GAP_BOUND_REPLAY_VERSIONS == (sr.ENGINE_CONTRACT_VERSION_XG1,
-                                           sr.ENGINE_CONTRACT_VERSION_T2G4)
+                                           sr.ENGINE_CONTRACT_VERSION_T2G4,
+                                           sr.ENGINE_CONTRACT_VERSION_T2G5)
     assert all("false-rejection" not in v for v in sr.SUPPORTED_ENGINE_CONTRACT_VERSIONS)
