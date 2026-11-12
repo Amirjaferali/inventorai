@@ -2648,7 +2648,7 @@ def context_history_incumbent_baseline(manifest=None):
 
 SRV_PREREG_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                "r2_served_relevance_v1_preregistration.json")
-SRV_PREREG_SHA256 = "907ec9fdfd5b12bc7426497f6692ac8d3ba7732a0658c9384e4e7445edf664bf"
+SRV_PREREG_SHA256 = "60895d772ce2bed617dd1c92f1c9ce6347d8cc87f43120da8d73a700496050b6"
 SRV_ENGINE_CONTRACT_VERSION = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5"
 SRV_RELEVANCE = ("ADDRESSED", "NOT_ADDRESSED", "UNCERTAIN")
 SRV_STANCE = ("COMMITTED", "MIXED", "NOT_COMMITTED", "UNCERTAIN")
@@ -2760,14 +2760,16 @@ def srv_compose(case, decision):
 
 
 class _srv_widened:
-    """Within the block, the engine's Mechanism Completeness relevance verdict
-    is ADDRESSED for ``text`` itself AND for every sentence or clause taken
-    from it (a non-empty substring of ``text``); every other call is the
-    governed owner's. Widening the sentence-level checks too is what lets the
-    T2-G-1 / T2-G-3 / T2-G-4 stance vetoes read an answer the lexical owner
-    rejected: without it no sentence of such an answer is relevant and the
-    vetoes cannot fire. It can only add vetoes, never credit. Evaluation-only
-    and always restored."""
+    """Within the block, ONLY when the governed owner rejects ``text`` as a
+    whole, the engine's Mechanism Completeness relevance verdict is ADDRESSED
+    for ``text`` AND for every sentence or clause taken from it (a non-empty
+    substring of ``text``); every other call, and every call at all when the
+    owner already accepts ``text``, is the governed owner's. Widening the
+    sentence-level checks too is what lets the T2-G-1 / T2-G-3 / T2-G-4
+    stance vetoes read an answer the lexical owner rejected: without it no
+    sentence of such an answer is relevant and the vetoes cannot fire. Leaving
+    an accepted answer untouched keeps every veto the engine applies to it
+    today. Evaluation-only and always restored."""
 
     def __init__(self, text):
         self.text = text
@@ -2777,6 +2779,8 @@ class _srv_widened:
         from engine.idea_state import MECHANISM_COMPLETENESS
         self._module, self._original = progression_loop, progression_loop.addresses_gap
         original, text = self._original, self.text
+        if original(text, MECHANISM_COMPLETENESS):
+            return self                       # already accepted: nothing is widened
 
         def widened(response, gap_type):
             if gap_type == MECHANISM_COMPLETENESS and isinstance(response, str) \

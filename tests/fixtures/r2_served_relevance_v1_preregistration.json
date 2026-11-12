@@ -93,7 +93,7 @@
    "R3 WITHHOLD when stance is NOT_COMMITTED.",
    "R4 WITHHOLD when the decided served_question_relevance is NOT_ADDRESSED.",
    "R5 INCUMBENT when stance is UNCERTAIN, or the decided served_question_relevance is UNCERTAIN or UNGROUNDED: the unchanged engine decides, including the lexical relevance owner.",
-   "R6 WIDEN otherwise (RELATED, grounded CONTENT_BEARING, grounded ADDRESSED, stance COMMITTED or MIXED): the unchanged engine decides with ONE change, the Mechanism Completeness relevance verdict is ADDRESSED for this exact answer text and for every sentence or clause taken from it, so the stance vetoes read every sentence of it."
+   "R6 WIDEN otherwise (RELATED, grounded CONTENT_BEARING, grounded ADDRESSED, stance COMMITTED or MIXED): the unchanged engine decides with ONE change, made only when the governed relevance owner rejects this exact answer text: the Mechanism Completeness relevance verdict is then ADDRESSED for the text and for every sentence or clause taken from it, so the stance vetoes read every sentence of it. An answer the owner already accepts is not widened at all, so every veto the engine applies to it today is kept."
   ],
   "meaning": {
    "WITHHOLD": "no credit; the answer stays recorded verbatim (the #966 unapplied path)",
@@ -105,7 +105,7 @@
    "the T2-G-5 exact-repeat rule, the quality ladder, the CLOSED guard and the routed-need guard",
    "the credited content is the inventor's verbatim answer; no quote, label or restatement is ever credited"
   ],
-  "model_only_gates": "Once relevance is widened, NO deterministic owner withholds a content-free reference, a bare unknown that names no topic, or an instruction aimed at the assessor: the lexical relevance gate being replaced was their only barrier (#967). For them the model's novelty and relevance judgments are the gate. That dependence is declared here, not hidden; it is what C1 measures, and P2 requires enough such hazard-bearing negatives for C1 to falsify it.",
+  "model_only_gates": "Once relevance is widened, NO deterministic owner withholds a content-free reference, a bare unknown that names no topic, an instruction aimed at the assessor, an answer that only says what the device does not do or use, or new content the served question does not ask for: the lexical relevance gate being replaced was their only barrier (#967). For them the model's novelty and relevance judgments are the gate. That dependence is declared here, not hidden; it is what C1 measures, and P2 requires enough such hazard-bearing negatives for C1 to falsify it.",
   "never": [
    "an AI judgment is never credited as the inventor's answer",
    "no composition path closes a gap, sets readiness, validates or adopts anything by itself",
@@ -499,6 +499,6 @@
   "the HISTORY_COUNTERFACTUAL_NEW construction check verifies a preceding answer other than A, not that it is this project's B (B is not a case field)"
  ],
  "amendments_before_any_case": [
-  "2026-11-12, after the independent review and an automated review of PR #972, before any case was written: sentence-level widening (so the stance vetoes act under WIDEN) and the model-only gates declared; P2 / P3 count falsifiable cases only and P2 spans at least 4 categories; the invalidity rule states this design's 204 cases; M-FLIP excludes reported cases; C2 adds A4 category floors; a run must cover every case exactly once."
+  "2026-11-12, after the independent review and an automated review of PR #972, before any case was written: sentence-level widening (so the stance vetoes act under WIDEN) and the model-only gates declared (widening applied only to an answer the governed owner rejects, after the follow-up review showed that widening an accepted answer's sentences could lift a veto the engine applies today); P2 / P3 count falsifiable cases only and P2 spans at least 4 categories; the invalidity rule states this design's 204 cases; M-FLIP excludes reported cases; C2 adds A4 category floors; a run must cover every case exactly once."
  ]
 }
