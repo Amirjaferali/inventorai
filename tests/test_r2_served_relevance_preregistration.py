@@ -3,7 +3,8 @@
 
 Owner authorization "R2 POSITIVE SEMANTIC RELEVANCE — ONE BOUNDED OFFLINE
 PREPARATION" (2026-11-12). These tests pin the preregistration
-(`tests/fixtures/r2_served_relevance_v1_preregistration.json`), the decision and
+(`tests/fixtures/r2_served_relevance_v1_1_preregistration.json`, v1 plus the
+repaired author protocol; v1 is kept unchanged), the decision and
 grounding rules G1-G3, the composition R1-R6 through the REAL engine, the
 validity preconditions P1-P5 and the criteria C1-C5. Every text below is a
 test-authored synthetic example that checks the RULES; none is a holdout case,
@@ -78,8 +79,10 @@ def test_the_preregistration_is_pinned_and_frozen(prereg):
     cand = prereg["candidate"]
     assert hashlib.sha256(cand["instructions"].encode("utf-8")).hexdigest() == \
         cand["instructions_sha256"]
-    assert prereg["prereg_id"] == "r2-served-relevance-v1-preregistration"
-    assert "frozen before any case was written" in prereg["status"]
+    # v1.1 supersedes v1 for authoring only; every other field is v1's (see
+    # tests/test_r2_served_relevance_v1_1_author_protocol.py).
+    assert prereg["prereg_id"] == "r2-served-relevance-v1.1-preregistration"
+    assert "author protocol frozen before any v1.1 case was written" in prereg["status"]
 
 
 def test_the_candidate_is_the_not_falsified_candidate_plus_two_recorded_segments(prereg):
@@ -157,7 +160,8 @@ def test_the_author_brief_excludes_every_earlier_evaluation_invention(prereg):
 
 def test_no_holdout_no_evidence_and_no_run_path_exist_yet(prereg):
     assert not [f for f in os.listdir(FIXTURES) if f.startswith("r2_served_relevance")
-                and f != "r2_served_relevance_v1_preregistration.json"]
+                and f not in ("r2_served_relevance_v1_preregistration.json",
+                              "r2_served_relevance_v1_1_preregistration.json")]
     assert not os.path.exists(os.path.join(ROOT, "docs", "benchmarks", "evidence",
                                            "r2_served_relevance_v1"))
     for name in dir(h):

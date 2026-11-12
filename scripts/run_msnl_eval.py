@@ -2646,9 +2646,20 @@ def context_history_incumbent_baseline(manifest=None):
 # preregistration (candidate, composition, criteria, holdout design) is frozen
 # before any case exists; the holdout is authored later, independently.
 
+# v1.1 supersedes v1 for authoring only (Owner, 2026-11-12): v1's author
+# message exceeded I2 and added a guidance sentence, so its authoring is
+# diagnostic only. v1.1 keeps every v1 field byte-identical except
+# prereg_id, status and I2, and adds the frozen author protocol and the
+# supersession record. v1 stays pinned and unchanged.
 SRV_PREREG_PATH = os.path.join(_ROOT, "tests", "fixtures",
-                               "r2_served_relevance_v1_preregistration.json")
-SRV_PREREG_SHA256 = "020fa7e5d75ad9eeff3da2889f66d3aaa8b7b26239926dd9d7b041ba55f02308"
+                               "r2_served_relevance_v1_1_preregistration.json")
+SRV_PREREG_SHA256 = "954ea5dc3fcdba173ddc11c0fda7347314725d6ec0cdaa38eeac73de13c74dbf"
+SRV_PREREG_V1_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                  "r2_served_relevance_v1_preregistration.json")
+SRV_PREREG_V1_SHA256 = "020fa7e5d75ad9eeff3da2889f66d3aaa8b7b26239926dd9d7b041ba55f02308"
+SRV_V1_1_CHANGED = ("prereg_id", "status", "independence")
+SRV_V1_1_ADDED = ("author_protocol", "supersedes")
+SRV_NOT_AUTHORED = "Not authored separately"
 SRV_ENGINE_CONTRACT_VERSION = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5"
 SRV_RELEVANCE = ("ADDRESSED", "NOT_ADDRESSED", "UNCERTAIN")
 SRV_STANCE = ("COMMITTED", "MIXED", "NOT_COMMITTED", "UNCERTAIN")
@@ -2663,11 +2674,75 @@ SRV_CRITERIA = ("C1_FALSIFIED_FALSE_CREDIT", "C2_FALSIFIED_INSUFFICIENT_RECOVERY
 SRV_PREPARATION_INVALID = "PREPARATION_INVALID"
 
 
+def _srv_check_served_questions(prereg):
+    """Each project's frozen domain and served questions: English from the
+    unchanged engine, Arabic from the hash-pinned mechanism-content v1 pack."""
+    from engine.path_n_questions import get_served_question
+    projects = prereg["projects"]
+    pack = _load(MECHANISM_PACK_PATH, MECHANISM_PACK_SHA256)
+    arabic = {(c["question_id"], c["served_index"]): c["served_question"]
+              for c in pack["cases"] if c["variety"] == "ar-msa"}
+    frozen = prereg["author_protocol"]["served_questions"]
+    if list(frozen) != list(projects["domains"]):
+        raise PackError("the author message names other projects")
+    for pid, q in frozen.items():
+        domain, index = projects["domains"][pid], projects["served_index"][pid]
+        served = get_served_question("MECHANISM_COMPLETENESS", index, domain=domain)
+        if q["domain"] != domain or q["question_id"] != served.question_id \
+                or q["en"] != served.text or q["ar-msa"] != arabic.get((served.question_id, index)):
+            raise PackError("the author message's served question differs for " + pid)
+
+
+def srv_author_message(prereg):
+    """The complete first message to the independent author, rendered ONLY
+    from the I2-permitted fields: author_brief, each category's brief and
+    side, label_rules, the served questions with their project domains, and
+    the neutral output format. Nothing else in the preregistration (candidate,
+    composition, criteria, validity, slot labels, partner pairs, construction
+    rules) is read, so no such content can reach the author."""
+    proto = prereg["author_protocol"]
+    cats = prereg["categories"]
+    authored = [k for k in cats if not cats[k]["brief"].startswith(SRV_NOT_AUTHORED)]
+    lines = list(proto["opening"]) + ["", "== AUTHOR BRIEF =="]
+    lines += ["- " + s for s in prereg["author_brief"]]
+    lines += ["", "== PROJECTS: domain and the served question each current answer replies to =="]
+    for pid, q in proto["served_questions"].items():
+        lines += ["%s (%s):" % (pid, q["domain"]), "  en: " + q["en"], "  ar-msa: " + q["ar-msa"]]
+    lines += ["", "== CATEGORIES (brief and side) =="]
+    lines += ["%s [side: %s]: %s" % (k, c["side"], c["brief"]) for k, c in cats.items()]
+    lines += ["", "== LABEL RULES =="] + ["- " + s for s in prereg["label_rules"]]
+    lines += ["", "== OUTPUT FORMAT =="]
+    lines += [s.replace("{authored}", ", ".join(authored)) for s in proto["output_format"]]
+    return "\n".join(lines) + "\n"
+
+
 def srv_preregistration():
-    """The hash-pinned preregistration; refuses (PackError) any drift, and any
-    candidate that is not exactly the context-history instructions with the
-    recorded segment replacements."""
+    """The hash-pinned v1.1 preregistration; refuses (PackError) any drift:
+    every v1 field outside prereg_id, status and I2 must be byte-identical to
+    the pinned v1, the frozen author message must be exactly the rendering of
+    the permitted fields, and the candidate must be exactly the
+    context-history instructions with the recorded segment replacements."""
     prereg = _load(SRV_PREREG_PATH, SRV_PREREG_SHA256)
+    v1 = _load(SRV_PREREG_V1_PATH, SRV_PREREG_V1_SHA256)
+    if set(prereg) != set(v1) | set(SRV_V1_1_ADDED):
+        raise PackError("v1.1 adds or drops a field other than the author protocol")
+    for key in v1:
+        if key not in SRV_V1_1_CHANGED and prereg[key] != v1[key]:
+            raise PackError("v1.1 changes the v1 field " + key)
+    if [i for i, (a, b) in enumerate(zip(prereg["independence"], v1["independence"])) if a != b] \
+            != [1] or len(prereg["independence"]) != len(v1["independence"]):
+        raise PackError("v1.1 may change I2 only")
+    sup = prereg["supersedes"]
+    if (sup["preregistration_sha256"], sup["prereg_id"]) != (SRV_PREREG_V1_SHA256, v1["prereg_id"]):
+        raise PackError("v1.1 supersedes another preregistration")
+    proto = prereg["author_protocol"]
+    if srv_author_message(prereg) != proto["first_message"] or \
+            hashlib.sha256(proto["first_message"].encode("utf-8")).hexdigest() != \
+            proto["first_message_sha256"]:
+        raise PackError("the frozen author message is not the rendering of the permitted fields")
+    if proto["continuation_message"] != "next":
+        raise PackError("the continuation message is not the fixed neutral 'next'")
+    _srv_check_served_questions(prereg)
     base = _load(CONTEXT_HISTORY_PREREG_PATH, CONTEXT_HISTORY_PREREG_SHA256)
     cand = prereg["candidate"]
     if prereg["base"]["context_history_preregistration_sha256"] != CONTEXT_HISTORY_PREREG_SHA256:
@@ -2684,6 +2759,24 @@ def srv_preregistration():
     if prereg["engine"]["engine_contract_version"] != SRV_ENGINE_CONTRACT_VERSION:
         raise PackError("the preregistration names another engine contract")
     return prereg
+
+
+def srv_v1_authoring_overlap(prereg, cases):
+    """Case ids of formal cases that share a text with the diagnostic v1
+    authoring record (whose files must match their pinned digests). v1's
+    authoring is invalid under its I2 and never enters a formal holdout."""
+    sup = prereg["supersedes"]["v1_authoring"]
+    record = []
+    for name, digest in sup["record"].items():
+        with open(os.path.join(_ROOT, sup["record_dir"], name), "rb") as fh:
+            raw = fh.read()
+        if hashlib.sha256(raw).hexdigest() != digest:
+            raise PackError("the v1 authoring record has drifted: " + name)
+        record.append(" ".join(raw.decode("utf-8").split()))
+    record = "\n".join(record)
+    fields = ("original_idea", "preceding_answer", "current_answer")
+    return [c["case_id"] for c in cases
+            if any(" ".join(c[f].split()) in record for f in fields if c.get(f))]
 
 
 def srv_payload(prereg, case, model):

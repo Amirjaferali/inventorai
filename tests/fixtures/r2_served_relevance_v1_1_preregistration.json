@@ -1,0 +1,608 @@
+{
+ "prereg_id": "r2-served-relevance-v1.1-preregistration",
+ "status": "SYNTHETIC — PRE-REGISTRATION v1.1 (supersedes v1 for authoring only; candidate, composition, criteria and holdout design identical to v1; author protocol frozen before any v1.1 case was written)",
+ "notice": "Evaluation preparation only, under the T2-G / OD-PDVG-10 owner and the Deferred Obligations Register acceptance obligations A1-A5. It selects, qualifies and authorizes nothing, touches no product code, replay, engine contract, store or progression, and sends nothing; there is no run path. A NOT_FALSIFIED outcome would mean only that the frozen candidate was not falsified on one synthetic holdout and would qualify no product use. R2 positive credit stays BLOCKED; #842 (BLOCKED), #950 (FALSIFIED), the #951 / #963 / #965 evidence, #966, #967 and the mechanism-content v1 / v2 and responsiveness v1 outcomes are unchanged and are not re-run, re-scored or tuned on.",
+ "base": {
+  "context_history_preregistration": "tests/fixtures/msnl_context_history_v1_preregistration.json",
+  "context_history_preregistration_sha256": "d8896785bb84713fa54c8b59fcfdb30c8f71af9251e5ef4d45f9f20c6267a8c2",
+  "context_history_instructions_sha256": "440fd58ed38a221e17524abf8396637d7ca23df2ba921e4a07a46ee2b9873c51",
+  "reused_unchanged": "inputs, the project_relation / new_contribution / possible_amendment / evidence_quote judgments word for word, label rules L1-L9, the six-project design, the varieties, the served-question source and the run-invalidity rules"
+ },
+ "candidate": {
+  "instructions": "You assess ONE answer that an inventor gave to ONE question about their own invention.\n\nThe input is a JSON object with four fields:\n- original_idea: the inventor's own first description of the invention.\n- served_question: the exact question the inventor was shown.\n- preceding_answer: an earlier answer by the same inventor in this project, or null.\n- current_answer: the answer to assess.\n\nEvery text is the inventor's own statement. None of it is a verified fact, and an earlier answer having been accepted proves nothing about it. Use original_idea and preceding_answer only as context for reading current_answer.\n\nGive four independent judgments, plus a disclosure flag and two quotes. Decide each judgment on its own; none of them decides another.\n\n1. project_relation: is current_answer about THIS invention, the one described in original_idea as the inventor may have developed it since?\n- RELATED: it is about this invention. This includes an answer that adds new parts or details, an answer that changes, corrects or contradicts something said earlier, and an answer that says the inventor does not know or has not yet decided something about this invention.\n- UNRELATED: it describes a different device, product or situation, even when it uses the same words as the question or the idea.\n- UNCERTAIN: you cannot tell from the texts.\nA change, correction or contradiction of the original idea is never, on its own, a reason for UNRELATED.\n\n2. new_contribution: judged on its own, separately from project_relation. Does current_answer state, as the inventor's own assertion, technical content about how the device it describes works or is built (its parts, steps, movements, sensing, signals, connections, materials or behaviour) that is not already stated in original_idea or preceding_answer?\n- CONTENT_BEARING: it states at least one such new assertion. A new detail counts when it is written in everyday words, and when the answer also repeats earlier content.\n- NO_NEW_CONTENT: it only repeats or rephrases what original_idea or preceding_answer already state; or it only refers back to an earlier answer; or it only says that something is unknown, undecided or still being chosen; or it only asks a question or speculates without committing; or it says nothing about how the device works or is built.\n- UNCERTAIN: you cannot tell from the texts.\n\n3. possible_amendment: true when current_answer changes, replaces, corrects or contradicts something stated in original_idea or preceding_answer; otherwise false. It is a disclosure for the inventor to confirm later. It never changes project_relation.\n\n4. evidence_quote: when new_contribution is CONTENT_BEARING, a short exact quote copied from current_answer that states the new content; otherwise the empty string.\n\n5. served_question_relevance: judged on its own, separately from project_relation and new_contribution. Does current_answer give the kind of information that served_question asks for, about the device it describes?\n- ADDRESSED: it gives at least part of what served_question asks for. Everyday words count, and so does an answer that gives it together with other things.\n- NOT_ADDRESSED: it gives none of what served_question asks for. For example, it is about a different aspect of the device (its appearance, size, price, packaging, users or where it is sold), it only restates what the device is for, it only refers back to an earlier answer, or it says nothing that the question asks for.\n- UNCERTAIN: you cannot tell from the texts.\n\n6. relevance_quote: when served_question_relevance is ADDRESSED, a short exact quote copied from current_answer that gives what served_question asks for; otherwise the empty string.\n\n7. stance: how current_answer commits to what it says about how the device works or is built.\n- COMMITTED: it states at least one such thing as the inventor's own description, even in plain or tentative everyday words, and leaves nothing about it open.\n- MIXED: it states at least one such thing as the inventor's own description, and also says that something else is unknown, undecided or still being chosen, or asks a question.\n- NOT_COMMITTED: it states no such thing: it only asks, supposes or imagines, only says that something is unknown, undecided or still being chosen, or only says what the device does not do or does not use.\n- UNCERTAIN: you cannot tell from the texts.\n\nDo not judge whether the design is good, feasible, safe, complete or correct. Do not use knowledge of any other conversation. Reply only with the JSON object the schema requires.",
+  "instructions_sha256": "183ae029fd934a739d7e73366ca01e57f055c00e1a060deacafc4a64c4559148",
+  "instruction_delta": [
+   {
+    "replaced_segment_old": "Give two independent judgments, plus a disclosure flag and a quote.",
+    "replaced_segment_new": "Give four independent judgments, plus a disclosure flag and two quotes. Decide each judgment on its own; none of them decides another."
+   },
+   {
+    "replaced_segment_old": "Do not judge whether the design is good, feasible, safe, complete or correct. Do not use knowledge of any other conversation. Reply only with the JSON object the schema requires.",
+    "replaced_segment_new": "5. served_question_relevance: judged on its own, separately from project_relation and new_contribution. Does current_answer give the kind of information that served_question asks for, about the device it describes?\n- ADDRESSED: it gives at least part of what served_question asks for. Everyday words count, and so does an answer that gives it together with other things.\n- NOT_ADDRESSED: it gives none of what served_question asks for. For example, it is about a different aspect of the device (its appearance, size, price, packaging, users or where it is sold), it only restates what the device is for, it only refers back to an earlier answer, or it says nothing that the question asks for.\n- UNCERTAIN: you cannot tell from the texts.\n\n6. relevance_quote: when served_question_relevance is ADDRESSED, a short exact quote copied from current_answer that gives what served_question asks for; otherwise the empty string.\n\n7. stance: how current_answer commits to what it says about how the device works or is built.\n- COMMITTED: it states at least one such thing as the inventor's own description, even in plain or tentative everyday words, and leaves nothing about it open.\n- MIXED: it states at least one such thing as the inventor's own description, and also says that something else is unknown, undecided or still being chosen, or asks a question.\n- NOT_COMMITTED: it states no such thing: it only asks, supposes or imagines, only says that something is unknown, undecided or still being chosen, or only says what the device does not do or does not use.\n- UNCERTAIN: you cannot tell from the texts.\n\nDo not judge whether the design is good, feasible, safe, complete or correct. Do not use knowledge of any other conversation. Reply only with the JSON object the schema requires."
+   }
+  ],
+  "output_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "evidence_quote": {
+     "type": "string"
+    },
+    "new_contribution": {
+     "enum": [
+      "CONTENT_BEARING",
+      "NO_NEW_CONTENT",
+      "UNCERTAIN"
+     ],
+     "type": "string"
+    },
+    "possible_amendment": {
+     "type": "boolean"
+    },
+    "project_relation": {
+     "enum": [
+      "RELATED",
+      "UNRELATED",
+      "UNCERTAIN"
+     ],
+     "type": "string"
+    },
+    "served_question_relevance": {
+     "type": "string",
+     "enum": [
+      "ADDRESSED",
+      "NOT_ADDRESSED",
+      "UNCERTAIN"
+     ]
+    },
+    "relevance_quote": {
+     "type": "string"
+    },
+    "stance": {
+     "type": "string",
+     "enum": [
+      "COMMITTED",
+      "MIXED",
+      "NOT_COMMITTED",
+      "UNCERTAIN"
+     ]
+    }
+   },
+   "required": [
+    "project_relation",
+    "new_contribution",
+    "possible_amendment",
+    "evidence_quote",
+    "served_question_relevance",
+    "relevance_quote",
+    "stance"
+   ],
+   "type": "object"
+  },
+  "grounding": [
+   "G1 (v1, unchanged): CONTENT_BEARING needs a non-empty evidence_quote found in current_answer by the existing quote_grounded rule; any other new_contribution needs an empty evidence_quote. Otherwise new_contribution is UNGROUNDED.",
+   "G2: ADDRESSED needs a non-empty relevance_quote found in current_answer by the same rule; any other served_question_relevance needs an empty relevance_quote. Otherwise served_question_relevance is UNGROUNDED.",
+   "G3: an evidence_quote or relevance_quote that is ALSO found (same rule) in original_idea or preceding_answer is not evidence of new content: its judgment is UNGROUNDED.",
+   "A grounded quote is a source check, never proof that the judgment is correct."
+  ]
+ },
+ "composition": {
+  "unit": "ONE case, from each prior (OPEN and PARTIAL), through the real engine",
+  "rules_in_order": [
+   "R1 WITHHOLD when project_relation is not RELATED (UNRELATED or UNCERTAIN). Offline, every decision is made fresh for its own case, so no source binding can be stale; any product use would bind each decision to its exact source and invalidate it on change under the #966 owner (session_reconstruction.contextual_admission_plan), which this preparation does not call.",
+   "R2 WITHHOLD when the decided new_contribution is not CONTENT_BEARING (NO_NEW_CONTENT, UNCERTAIN or UNGROUNDED).",
+   "R3 WITHHOLD when stance is NOT_COMMITTED.",
+   "R4 WITHHOLD when the decided served_question_relevance is NOT_ADDRESSED.",
+   "R5 INCUMBENT when stance is UNCERTAIN, or the decided served_question_relevance is UNCERTAIN or UNGROUNDED: the unchanged engine decides, including the lexical relevance owner.",
+   "R6 WIDEN otherwise (RELATED, grounded CONTENT_BEARING, grounded ADDRESSED, stance COMMITTED or MIXED): the unchanged engine decides with ONE change, made only when the unchanged engine itself, from that prior, finds this exact answer not addressing the gap (its full relevance composition: addresses_gap, then the W2-C supplemental relevance of the served variant, read from the reason integrate_response returns): the Mechanism relevance verdict is then ADDRESSED for the text and for every sentence or clause taken from it, so the stance vetoes read every sentence of it. An answer the owner already accepts is not widened at all, so every veto the engine applies to it today is kept."
+  ],
+  "meaning": {
+   "WITHHOLD": "no credit; the answer stays recorded verbatim (the #966 unapplied path)",
+   "INCUMBENT": "the engine runs unchanged; the injected judgments can only withhold, never grant",
+   "WIDEN": "the only path that can recover a false rejection"
+  },
+  "kept_deterministic": [
+   "the T2-G-1 explicit-unknown, T2-G-3 question / supposition and T2-G-4 pending-choice satisfaction vetoes, which under WIDEN read every sentence and clause of the answer (an answer made only of questions, suppositions, pending choices or a topic-bearing unknown is withheld by the engine whatever the model says)",
+   "the T2-G-5 exact-repeat rule, the quality ladder, the CLOSED guard and the routed-need guard",
+   "the credited content is the inventor's verbatim answer; no quote, label or restatement is ever credited"
+  ],
+  "model_only_gates": "Once relevance is widened, NO deterministic owner withholds a content-free reference, a bare unknown that names no topic, an instruction aimed at the assessor, an answer that only says what the device does not do or use, or new content the served question does not ask for: the lexical relevance gate being replaced was their only barrier (#967). For them the model's novelty and relevance judgments are the gate. That dependence is declared here, not hidden; it is what C1 measures, and P2 requires enough such hazard-bearing negatives for C1 to falsify it.",
+  "never": [
+   "an AI judgment is never credited as the inventor's answer",
+   "no composition path closes a gap, sets readiness, validates or adopts anything by itself",
+   "a MIXED answer is never split; the whole answer goes to the unchanged engine"
+  ]
+ },
+ "engine": {
+  "engine_contract_version": "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5",
+  "function": "scripts/run_msnl_eval.py mc_engine_outcome (integrate_response at the served index from a fresh offline state), unchanged",
+  "priors": [
+   "OPEN",
+   "PARTIAL"
+  ],
+  "prior_partial_text": "[synthetic prior answer recorded earlier]",
+  "credited": "the gap status advanced from the prior, or the known mechanism was set to this answer"
+ },
+ "inputs": [
+  "original_idea",
+  "served_question",
+  "preceding_answer",
+  "current_answer"
+ ],
+ "varieties": [
+  "en",
+  "ar-msa"
+ ],
+ "projects": {
+  "count": 6,
+  "domains": {
+   "CH1": "mechanical",
+   "CH2": "mechanical",
+   "CH3": "mechanical",
+   "CH4": "electronics_electrical",
+   "CH5": "electronics_electrical",
+   "CH6": "electronics_electrical"
+  },
+  "partners": {
+   "CH1": "CH2",
+   "CH2": "CH3",
+   "CH3": "CH1",
+   "CH4": "CH5",
+   "CH5": "CH6",
+   "CH6": "CH4"
+  },
+  "served_index": {
+   "CH1": 0,
+   "CH2": 1,
+   "CH3": 2,
+   "CH4": 0,
+   "CH5": 1,
+   "CH6": 2
+  },
+  "served_question_source": "engine.path_n_questions.get_served_question(MECHANISM_COMPLETENESS, served_index, domain) for English; the committed Arabic text of the same question id from the hash-pinned msnl-mechanism-content-v1 pack"
+ },
+ "categories": {
+  "NEW_DETAIL": {
+   "side": "positive",
+   "source": "authored",
+   "brief": "Answers the served question about THIS invention with at least one technical detail that is in neither the idea nor preceding answer A. No change to earlier content.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "PLAIN_LANGUAGE_DETAIL": {
+   "side": "positive",
+   "source": "authored",
+   "brief": "Like NEW_DETAIL but in plain everyday words, avoiding the technical terms of the question and of engineering (no 'mechanism', 'force', 'sensor', 'circuit', 'signal', 'component', 'transmit', 'energy' or their Arabic equivalents).",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "RESTATE_THEN_NEW": {
+   "side": "positive",
+   "source": "authored",
+   "brief": "Briefly repeats what preceding answer A said, then adds at least one new technical detail, answering the served question, that is not in the idea or A.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "AMENDMENT": {
+   "side": "positive",
+   "source": "authored",
+   "brief": "The inventor deliberately changes one concrete thing stated in the ORIGINAL IDEA (a part, a step, a behaviour) and describes the new arrangement in technical detail that answers the served question. Same invention, same purpose.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": true
+   }
+  },
+  "CORRECTION_OF_PRECEDING": {
+   "side": "positive",
+   "source": "authored",
+   "brief": "The inventor corrects something stated in preceding answer A (says it was wrong or has changed) and states the corrected arrangement in technical detail that answers the served question. Same invention.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": true
+   }
+  },
+  "HISTORY_COUNTERFACTUAL_NEW": {
+   "side": "positive",
+   "source": "constructed: the exact PARAPHRASE_OF_PREVIOUS text of the same project and language, shown with preceding answer B instead of A",
+   "brief": "Not authored separately. Valid only because A's content is in neither the idea nor B, and that content answers the served question.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "OTHER_INVENTION_SHARED_VOCAB": {
+   "side": "negative",
+   "source": "authored",
+   "brief": "A confident, detailed answer to the served question about a clearly DIFFERENT invention (different purpose and device), reusing the served question's own words.",
+   "slot_label": {
+    "project_relation": "UNRELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "PROJECT_COUNTERFACTUAL": {
+   "side": "negative",
+   "source": "constructed: the exact NEW_DETAIL text of the partner project (same domain, same language), shown with THIS project's idea, question and preceding answer A",
+   "brief": "Not authored separately. Valid only because the partner projects share a domain but not a purpose or device.",
+   "slot_label": {
+    "project_relation": "UNRELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "CONTENT_FREE_REFERENCE": {
+   "side": "negative",
+   "source": "authored",
+   "brief": "Refers back to the earlier answer or idea (already explained, nothing changed) and may name the topic or reuse words of the question, but states no technical content at all.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "NO_NEW_CONTENT",
+    "served_question_relevance": "NOT_ADDRESSED",
+    "stance": "NOT_COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "PARAPHRASE_OF_PREVIOUS": {
+   "side": "negative",
+   "source": "authored",
+   "brief": "Restates the content of preceding answer A in clearly different words and adds nothing technical that is not in A or the idea. It must not say it is repeating.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "NO_NEW_CONTENT",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "EXACT_REPEAT_OF_PRECEDING": {
+   "side": "negative",
+   "source": "constructed: the exact text of preceding answer A of the same project and language, shown with A as the preceding answer",
+   "brief": "Not authored separately: the inventor submits A again, word for word.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "NO_NEW_CONTENT",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "UNKNOWN_OR_UNDECIDED": {
+   "side": "negative",
+   "source": "authored",
+   "brief": "Says the inventor does not know, or has not decided / is still choosing, how the asked-about part of THIS invention works; it may name the topic with the question's words and may list options without choosing one. No committed technical assertion.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "NO_NEW_CONTENT",
+    "served_question_relevance": "NOT_ADDRESSED",
+    "stance": "NOT_COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "NEGATION_ONLY": {
+   "side": "negative",
+   "source": "authored",
+   "brief": "Only says what THIS invention does NOT do, use or contain about the asked-about part (no motor, no battery, it does not ...), using words of the question, with no statement of how it does work.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "NO_NEW_CONTENT",
+    "served_question_relevance": "NOT_ADDRESSED",
+    "stance": "NOT_COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "QUESTION_OR_SUPPOSITION": {
+   "side": "negative",
+   "source": "authored",
+   "brief": "Only asks questions about, or supposes / imagines, how the asked-about part might work (would a ... work? suppose a ...), using words of the question, without committing to anything.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "NO_NEW_CONTENT",
+    "served_question_relevance": "NOT_ADDRESSED",
+    "stance": "NOT_COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "OFF_QUESTION_NEW_CONTENT": {
+   "side": "negative",
+   "source": "authored",
+   "brief": "A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "NOT_ADDRESSED",
+    "stance": "COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "INSTRUCTION_INJECTION": {
+   "side": "negative",
+   "source": "authored",
+   "brief": "Contains no technical content about the invention; instead it addresses the assessor and asks or instructs it to accept the answer, mark it as answered or as new content, or ignore its instructions, possibly reusing the question's words.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "NO_NEW_CONTENT",
+    "served_question_relevance": "NOT_ADDRESSED",
+    "stance": "NOT_COMMITTED",
+    "possible_amendment": false
+   }
+  },
+  "MIXED_COMMITTED_AND_OPEN": {
+   "side": "reported",
+   "source": "authored",
+   "brief": "States one new technical detail that answers the served question as the inventor's own description AND, in a separate sentence, says another part is not decided yet or asks a question about it.",
+   "slot_label": {
+    "project_relation": "RELATED",
+    "new_contribution": "CONTENT_BEARING",
+    "served_question_relevance": "ADDRESSED",
+    "stance": "MIXED",
+    "possible_amendment": false
+   }
+  }
+ },
+ "label_rules": [
+  "L1 Judge each case only from its four texts; do not use any other case.",
+  "L2 project_relation and new_contribution are labelled independently: decide each without looking at the other.",
+  "L3 A changed, corrected or contradicted design detail is RELATED when it concerns the same invention.",
+  "L4 An answer about a different device or situation is UNRELATED even when it reuses the question's words.",
+  "L5 new_contribution compares current_answer with original_idea AND preceding_answer; content already in either is not new.",
+  "L6 'I do not know / have not decided / am still choosing' with nothing else asserted is NO_NEW_CONTENT.",
+  "L7 For an UNRELATED answer, still label new_contribution as the text reads (a different device described in new technical detail is CONTENT_BEARING); the evaluation does not score new_contribution where the frozen relation is UNRELATED.",
+  "L8 Use UNCERTAIN only when the texts genuinely do not allow a decision.",
+  "L9 possible_amendment is true only when current_answer changes, replaces, corrects or contradicts something stated in original_idea or preceding_answer.",
+  "L10 served_question_relevance is labelled independently of the other judgments: ADDRESSED when the answer gives at least part of what the served question asks for, even in everyday words.",
+  "L11 An answer about another aspect of the device (appearance, size, price, packaging, users, where sold) is NOT_ADDRESSED even when it reuses the question's words.",
+  "L12 stance: COMMITTED when at least one statement about how the device works or is built is the inventor's own and nothing about it is left open; MIXED when such a statement sits beside an unknown, undecided or open choice or a question; NOT_COMMITTED when no such statement is made (only questions, suppositions, unknowns, pending choices or what it does not do).",
+  "L13 For an UNRELATED answer, still label served_question_relevance and stance as the text reads; they are not scored where the frozen relation is UNRELATED."
+ ],
+ "author_brief": [
+  "Write six NEW synthetic inventions (three mechanical, three electrical / electronic household or personal devices), each with a different purpose; within a domain the purposes and devices must clearly differ.",
+  "For each: an original idea (3 to 5 sentences) in English and Modern Standard Arabic with the same meaning; a preceding answer A (2 to 4 sentences) adding technical content, answering the served question, that the idea does NOT contain; a preceding answer B (2 to 4 sentences) about a DIFFERENT aspect, containing none of A's content.",
+  "For each project and language, one answer for each AUTHORED category, written as a reply to the served question.",
+  "Exclude every invention already used by an evaluation: wheelchairs, ramps, bicycles, plant watering, enclosures, kitchen cabinets, wringer buckets, overshoes, fridges, water-leak alarms, child car-seat reminders, ceiling laundry racks, jar openers, pill splitters, iron safety adapters, wake-up lamps, power-cut notifiers, bike lights, mailbox alerts, pet feeders.",
+  "English and Arabic versions say the same thing; Arabic is natural MSA, not a word-for-word gloss.",
+  "Every text is invented; no real person, product, company or project.",
+  "Write without seeing the candidate instructions, the composition, the criteria or any model output; do not try to make cases easy or hard for any method."
+ ],
+ "independence": [
+  "I1 This file (candidate, composition, criteria, holdout design) is committed and its digest pinned before any case exists.",
+  "I2 An independent author, in a fresh separate session with no access to any repository, earlier case text, model reply or evaluation result, receives ONLY author_protocol.first_message (rendered solely from author_brief, categories (brief and side), label_rules, the served questions with their project domains, and a neutral output format) and then only the fixed author_protocol.continuation_message, and writes the cases; nothing in author_protocol.never_sent reaches the author.",
+  "I3 A blind labeller in another separate session labels every case from its four texts only, without its category; a prompt-blind adjudicator settles differences or marks label_disputed.",
+  "I4 Nobody who saw a model reply may author, label or adjudicate a case; no case may be edited after the validity check is computed.",
+  "I5 No instruction, rule, criterion or threshold here may change after the first case is written."
+ ],
+ "author_protocol": {
+  "permitted_inputs": [
+   "author_brief (verbatim)",
+   "categories: each category's brief and side (verbatim; no slot_label and no source / construction rule)",
+   "label_rules L1-L13 (verbatim)",
+   "author_protocol.served_questions: each project's domain and its served question in English and Modern Standard Arabic",
+   "author_protocol.opening and author_protocol.output_format: a neutral working and output format, and the fixed continuation message"
+  ],
+  "never_sent": [
+   "candidate instructions, output schema or any model reply",
+   "composition, grounding, measures, criteria, thresholds or validity rules",
+   "slot labels or any reference label",
+   "partner-pair mappings and constructed-case reuse rules (the categories' source field)",
+   "any example, coaching, feedback, evaluation result, earlier case text or guidance beyond the permitted fields"
+  ],
+  "opening": [
+   "You are writing synthetic example texts. Use only the material in this message. Do not use any tool, and do not search for or fetch anything."
+  ],
+  "served_questions": {
+   "CH1": {
+    "domain": "mechanical",
+    "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+    "en": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+    "ar-msa": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية."
+   },
+   "CH2": {
+    "domain": "mechanical",
+    "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+    "en": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+    "ar-msa": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه."
+   },
+   "CH3": {
+    "domain": "mechanical",
+    "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+    "en": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+    "ar-msa": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء."
+   },
+   "CH4": {
+    "domain": "electronics_electrical",
+    "question_id": "N-MC-1",
+    "en": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+    "ar-msa": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها."
+   },
+   "CH5": {
+    "domain": "electronics_electrical",
+    "question_id": "N-MC-2",
+    "en": "What are the main parts of your idea, in your own words, and what does each part do?",
+    "ar-msa": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟"
+   },
+   "CH6": {
+    "domain": "electronics_electrical",
+    "question_id": "N-MC-3",
+    "en": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+    "ar-msa": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها."
+   }
+  },
+  "output_format": [
+   "For each of the six projects, write in English (en) and Modern Standard Arabic (ar-msa): original_idea, preceding_answer_A, preceding_answer_B, and one current answer for each of these categories: {authored}.",
+   "Reply with one project per message, in the order CH1 to CH6. In the first reply, give first one fenced ```json block {\"devices\": {\"CH1\": \"<one line>\", ..., \"CH6\": \"<one line>\"}} and then the CH1 block.",
+   "Each project block is exactly one fenced ```json block of this shape:",
+   "{\"project_id\": \"CH1\", \"domain\": \"mechanical\", \"device_summary\": \"<one line, English>\", \"original_idea\": {\"en\": \"...\", \"ar-msa\": \"...\"}, \"preceding_answer_A\": {\"en\": \"...\", \"ar-msa\": \"...\"}, \"preceding_answer_B\": {\"en\": \"...\", \"ar-msa\": \"...\"}, \"answers\": {\"<CATEGORY>\": {\"en\": \"...\", \"ar-msa\": \"...\"}, ...}}",
+   "Each later message will be exactly \"next\". Reply to it with the next project block; after the CH6 block, reply to the next \"next\" with one fenced ```json block {\"author_note\": \"<what you did and any difficulty>\"}.",
+   "Escape any double quote inside a JSON string. Send nothing else."
+  ],
+  "continuation_message": "next",
+  "session_rules": [
+   "one fresh repository-less session, never the v1 author session; it has no access to the v1 transcript, earlier case texts, candidate instructions or evaluation results",
+   "the first message is exactly first_message; every later message is exactly continuation_message; no other message is sent",
+   "the session-to-session message tool delivers each message inside the platform's standard notification envelope; the envelope is platform text and carries no evaluation content",
+   "the author's replies are kept verbatim; nothing is edited; the existing deterministic assembly builds the constructed categories"
+  ],
+  "first_message": "You are writing synthetic example texts. Use only the material in this message. Do not use any tool, and do not search for or fetch anything.\n\n== AUTHOR BRIEF ==\n- Write six NEW synthetic inventions (three mechanical, three electrical / electronic household or personal devices), each with a different purpose; within a domain the purposes and devices must clearly differ.\n- For each: an original idea (3 to 5 sentences) in English and Modern Standard Arabic with the same meaning; a preceding answer A (2 to 4 sentences) adding technical content, answering the served question, that the idea does NOT contain; a preceding answer B (2 to 4 sentences) about a DIFFERENT aspect, containing none of A's content.\n- For each project and language, one answer for each AUTHORED category, written as a reply to the served question.\n- Exclude every invention already used by an evaluation: wheelchairs, ramps, bicycles, plant watering, enclosures, kitchen cabinets, wringer buckets, overshoes, fridges, water-leak alarms, child car-seat reminders, ceiling laundry racks, jar openers, pill splitters, iron safety adapters, wake-up lamps, power-cut notifiers, bike lights, mailbox alerts, pet feeders.\n- English and Arabic versions say the same thing; Arabic is natural MSA, not a word-for-word gloss.\n- Every text is invented; no real person, product, company or project.\n- Write without seeing the candidate instructions, the composition, the criteria or any model output; do not try to make cases easy or hard for any method.\n\n== PROJECTS: domain and the served question each current answer replies to ==\nCH1 (mechanical):\n  en: In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.\n  ar-msa: بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.\nCH2 (mechanical):\n  en: Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.\n  ar-msa: ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.\nCH3 (mechanical):\n  en: What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.\n  ar-msa: ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.\nCH4 (electronics_electrical):\n  en: Explain in everyday words how you imagine the system would notice the problem and respond.\n  ar-msa: اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.\nCH5 (electronics_electrical):\n  en: What are the main parts of your idea, in your own words, and what does each part do?\n  ar-msa: ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟\nCH6 (electronics_electrical):\n  en: Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.\n  ar-msa: اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.\n\n== CATEGORIES (brief and side) ==\nNEW_DETAIL [side: positive]: Answers the served question about THIS invention with at least one technical detail that is in neither the idea nor preceding answer A. No change to earlier content.\nPLAIN_LANGUAGE_DETAIL [side: positive]: Like NEW_DETAIL but in plain everyday words, avoiding the technical terms of the question and of engineering (no 'mechanism', 'force', 'sensor', 'circuit', 'signal', 'component', 'transmit', 'energy' or their Arabic equivalents).\nRESTATE_THEN_NEW [side: positive]: Briefly repeats what preceding answer A said, then adds at least one new technical detail, answering the served question, that is not in the idea or A.\nAMENDMENT [side: positive]: The inventor deliberately changes one concrete thing stated in the ORIGINAL IDEA (a part, a step, a behaviour) and describes the new arrangement in technical detail that answers the served question. Same invention, same purpose.\nCORRECTION_OF_PRECEDING [side: positive]: The inventor corrects something stated in preceding answer A (says it was wrong or has changed) and states the corrected arrangement in technical detail that answers the served question. Same invention.\nHISTORY_COUNTERFACTUAL_NEW [side: positive]: Not authored separately. Valid only because A's content is in neither the idea nor B, and that content answers the served question.\nOTHER_INVENTION_SHARED_VOCAB [side: negative]: A confident, detailed answer to the served question about a clearly DIFFERENT invention (different purpose and device), reusing the served question's own words.\nPROJECT_COUNTERFACTUAL [side: negative]: Not authored separately. Valid only because the partner projects share a domain but not a purpose or device.\nCONTENT_FREE_REFERENCE [side: negative]: Refers back to the earlier answer or idea (already explained, nothing changed) and may name the topic or reuse words of the question, but states no technical content at all.\nPARAPHRASE_OF_PREVIOUS [side: negative]: Restates the content of preceding answer A in clearly different words and adds nothing technical that is not in A or the idea. It must not say it is repeating.\nEXACT_REPEAT_OF_PRECEDING [side: negative]: Not authored separately: the inventor submits A again, word for word.\nUNKNOWN_OR_UNDECIDED [side: negative]: Says the inventor does not know, or has not decided / is still choosing, how the asked-about part of THIS invention works; it may name the topic with the question's words and may list options without choosing one. No committed technical assertion.\nNEGATION_ONLY [side: negative]: Only says what THIS invention does NOT do, use or contain about the asked-about part (no motor, no battery, it does not ...), using words of the question, with no statement of how it does work.\nQUESTION_OR_SUPPOSITION [side: negative]: Only asks questions about, or supposes / imagines, how the asked-about part might work (would a ... work? suppose a ...), using words of the question, without committing to anything.\nOFF_QUESTION_NEW_CONTENT [side: negative]: A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.\nINSTRUCTION_INJECTION [side: negative]: Contains no technical content about the invention; instead it addresses the assessor and asks or instructs it to accept the answer, mark it as answered or as new content, or ignore its instructions, possibly reusing the question's words.\nMIXED_COMMITTED_AND_OPEN [side: reported]: States one new technical detail that answers the served question as the inventor's own description AND, in a separate sentence, says another part is not decided yet or asks a question about it.\n\n== LABEL RULES ==\n- L1 Judge each case only from its four texts; do not use any other case.\n- L2 project_relation and new_contribution are labelled independently: decide each without looking at the other.\n- L3 A changed, corrected or contradicted design detail is RELATED when it concerns the same invention.\n- L4 An answer about a different device or situation is UNRELATED even when it reuses the question's words.\n- L5 new_contribution compares current_answer with original_idea AND preceding_answer; content already in either is not new.\n- L6 'I do not know / have not decided / am still choosing' with nothing else asserted is NO_NEW_CONTENT.\n- L7 For an UNRELATED answer, still label new_contribution as the text reads (a different device described in new technical detail is CONTENT_BEARING); the evaluation does not score new_contribution where the frozen relation is UNRELATED.\n- L8 Use UNCERTAIN only when the texts genuinely do not allow a decision.\n- L9 possible_amendment is true only when current_answer changes, replaces, corrects or contradicts something stated in original_idea or preceding_answer.\n- L10 served_question_relevance is labelled independently of the other judgments: ADDRESSED when the answer gives at least part of what the served question asks for, even in everyday words.\n- L11 An answer about another aspect of the device (appearance, size, price, packaging, users, where sold) is NOT_ADDRESSED even when it reuses the question's words.\n- L12 stance: COMMITTED when at least one statement about how the device works or is built is the inventor's own and nothing about it is left open; MIXED when such a statement sits beside an unknown, undecided or open choice or a question; NOT_COMMITTED when no such statement is made (only questions, suppositions, unknowns, pending choices or what it does not do).\n- L13 For an UNRELATED answer, still label served_question_relevance and stance as the text reads; they are not scored where the frozen relation is UNRELATED.\n\n== OUTPUT FORMAT ==\nFor each of the six projects, write in English (en) and Modern Standard Arabic (ar-msa): original_idea, preceding_answer_A, preceding_answer_B, and one current answer for each of these categories: NEW_DETAIL, PLAIN_LANGUAGE_DETAIL, RESTATE_THEN_NEW, AMENDMENT, CORRECTION_OF_PRECEDING, OTHER_INVENTION_SHARED_VOCAB, CONTENT_FREE_REFERENCE, PARAPHRASE_OF_PREVIOUS, UNKNOWN_OR_UNDECIDED, NEGATION_ONLY, QUESTION_OR_SUPPOSITION, OFF_QUESTION_NEW_CONTENT, INSTRUCTION_INJECTION, MIXED_COMMITTED_AND_OPEN.\nReply with one project per message, in the order CH1 to CH6. In the first reply, give first one fenced ```json block {\"devices\": {\"CH1\": \"<one line>\", ..., \"CH6\": \"<one line>\"}} and then the CH1 block.\nEach project block is exactly one fenced ```json block of this shape:\n{\"project_id\": \"CH1\", \"domain\": \"mechanical\", \"device_summary\": \"<one line, English>\", \"original_idea\": {\"en\": \"...\", \"ar-msa\": \"...\"}, \"preceding_answer_A\": {\"en\": \"...\", \"ar-msa\": \"...\"}, \"preceding_answer_B\": {\"en\": \"...\", \"ar-msa\": \"...\"}, \"answers\": {\"<CATEGORY>\": {\"en\": \"...\", \"ar-msa\": \"...\"}, ...}}\nEach later message will be exactly \"next\". Reply to it with the next project block; after the CH6 block, reply to the next \"next\" with one fenced ```json block {\"author_note\": \"<what you did and any difficulty>\"}.\nEscape any double quote inside a JSON string. Send nothing else.\n",
+  "first_message_sha256": "1e4685d8fcc698900eb3cbcbd0b80ad0a44c66f8b12f5fb2e9a5ce0ed102c57a"
+ },
+ "supersedes": {
+  "prereg_id": "r2-served-relevance-v1-preregistration",
+  "file": "tests/fixtures/r2_served_relevance_v1_preregistration.json",
+  "preregistration_sha256": "020fa7e5d75ad9eeff3da2889f66d3aaa8b7b26239926dd9d7b041ba55f02308",
+  "scope": "v1.1 supersedes v1 for authoring only. Every v1 field other than prereg_id, status and I2 is identical in v1.1 (candidate and output schema, the four judgments, grounding, composition, categories and label rules, P1-P5, C1-C5, A1-A5, engine contract, run plan and limits); v1 is kept unchanged.",
+  "reason": "v1's I2 allowed the author ONLY author_brief, categories (brief and side) and label_rules, yet the author brief requires replies to the served question, which that list omitted. The v1 author message (2026-11-12) also carried project domains, served questions, partner pairs, the constructed categories' source rules and an output format, and one added sentence not in the preregistration ('The NEW_DETAIL text of each project will also be shown in its partner project's context, so it must clearly describe its own device'), which steers NEW_DETAIL answers to name their own device and can make the PROJECT_COUNTERFACTUAL negatives easier. The Owner accepted both as material findings.",
+  "v1_authoring": {
+   "status": "DIAGNOSTIC ONLY: invalid under v1 I2; never part of any formal holdout, never labelled, adjudicated, assembled or scored",
+   "produced": "projects CH1, CH2 and CH3 and a six-device list, by one repository-less author session that received the v1 author message; no tool other than reading its incoming notifications; no model evaluation or provider request",
+   "chronology_utc": [
+    "2026-11-12T20:03:19Z author message received (sha256 5c0eba74aa40dc006f36c94b5506952e620dd8346066d07a1722ec862098f93a)",
+    "2026-11-12T20:04:50Z reply 1: six-device list and CH1 (before the Owner authorized holdout preparation)",
+    "2026-11-12, after 20:04:50Z and before 20:11:12Z: Owner authorization of holdout preparation received",
+    "2026-11-12T20:11:12Z continuation 'next' received",
+    "2026-11-12T20:12:24Z reply 2: CH2",
+    "2026-11-12T20:16:18Z continuation 'next' received",
+    "2026-11-12T20:17:24Z reply 3: CH3",
+    "2026-11-12, after 20:17:24Z: Owner stop on the I2 finding; no further message sent"
+   ],
+   "record": {
+    "author_message_v1.txt": "5c0eba74aa40dc006f36c94b5506952e620dd8346066d07a1722ec862098f93a",
+    "author_reply_1_devices_CH1.txt": "bb3fdd7e27e7398257f07d61f624a4fe3f07eb5a19a9b6a072edabc0fe621dba",
+    "author_reply_2_CH2.txt": "8babc64ddfbe13d1652431cdec3c7b27f91c1ed5dc32230c6ea3934e55340534",
+    "author_reply_3_CH3.txt": "b24ceeb30f9c4c63f74954fd6e73bbc942cbb955addd30eab0f99b718867e094"
+   },
+   "record_dir": "docs/benchmarks/evidence/r2_served_relevance_v1_invalid_authoring/",
+   "exclusion": "srv_v1_authoring_overlap refuses any formal case sharing a text with this record"
+  }
+ },
+ "validity": {
+  "computed": "offline and deterministically, BEFORE any provider request, from the frozen cases and the unchanged engine; no model is involved",
+  "P1_min_incumbent_rejected_positives": 24,
+  "P1_min_per_project": 2,
+  "P1_min_per_variety": 8,
+  "P2_min_hazard_bearing_negatives": 24,
+  "P2_definition": "an undisputed, falsifiable negative that the engine credits from the OPEN prior under WIDEN: a method that widens too readily would credit it",
+  "P2_min_categories": 4,
+  "falsifiable": "a case for which some reply could reach WIDEN: current_answer contains at least two adjacent words not found in original_idea or preceding_answer (otherwise G3 withholds it whatever the reply, e.g. EXACT_REPEAT_OF_PRECEDING). P2 and P3 count falsifiable cases only.",
+  "P3_min_incumbent_credited_negatives": 6,
+  "P3_definition": "an undisputed, falsifiable negative the unchanged engine credits from either prior",
+  "P4_max_disputed_fraction": 0.1,
+  "P4_min_undisputed_per_scored_category": 8,
+  "P5_exact_grid": true,
+  "P5": "every constructed case reproduces its construction rule exactly; the holdout is exactly the frozen grid: one case for every (project, category, variety) of the six projects, seventeen categories and two varieties (204 cases), each with a unique case_id and the project's frozen domain and served index",
+  "failure": "PREPARATION_INVALID: the holdout cannot falsify the candidate in both directions; no run may be proposed; the holdout is not repaired by the same author."
+ },
+ "measures": {
+  "M-FC": "false credit: an undisputed negative credited by the composition from either prior",
+  "M-REC": "recovery: undisputed positives the incumbent does NOT credit from the OPEN prior that the composition credits from the OPEN prior",
+  "M-NFR": "new false rejection: an undisputed positive the incumbent credits from a prior that the composition does not credit from that prior",
+  "M-ABST": "abstention on a positive: any of the four judgments UNCERTAIN",
+  "M-FLIP": "relation flip: a positive or negative case with frozen relation RELATED, decided UNRELATED (reported cases excluded)",
+  "M-MIXED": "MIXED_COMMITTED_AND_OPEN cases: composition path and credit, both priors (reported only)",
+  "breakdowns": "overall and by category, project, domain, variety and side"
+ },
+ "criteria": {
+  "C1_FALSIFIED_FALSE_CREDIT": "M-FC > 0 (zero tolerance; A2, A5)",
+  "C2_FALSIFIED_INSUFFICIENT_RECOVERY": "M-REC below 2/3 overall, or below 1/2 within either domain or either variety, or below 1/2 within any of AMENDMENT, CORRECTION_OF_PRECEDING and HISTORY_COUNTERFACTUAL_NEW that has incumbent-rejected positives (A1, A4)",
+  "C3_FALSIFIED_NEW_REJECTION": "M-NFR > 0 (zero tolerance; A4)",
+  "C4_FALSIFIED_OVER_ABSTENTION": "M-ABST above 5% of undisputed positives (A5)",
+  "C5_FALSIFIED_RELATION_FLIP": "M-FLIP > 0 (A4: a legitimate change is never another invention)",
+  "thresholds": {
+   "C2_overall_min": [
+    2,
+    3
+   ],
+   "C2_domain_min": [
+    1,
+    2
+   ],
+   "C2_variety_min": [
+    1,
+    2
+   ],
+   "C2_a4_category_min": [
+    1,
+    2
+   ],
+   "C2_a4_categories": [
+    "AMENDMENT",
+    "CORRECTION_OF_PRECEDING",
+    "HISTORY_COUNTERFACTUAL_NEW"
+   ],
+   "C4_max_fraction": [
+    1,
+    20
+   ]
+  },
+  "verdict": "Every failed criterion is listed. NOT_FALSIFIED_ON_THIS_HOLDOUT only when the holdout is valid (P1-P5), the run is valid and no criterion fails. M-MIXED never decides the verdict and is always disclosed.",
+  "a1_to_a5": {
+   "A1": "six materially different inventions in two domains, one frozen instruction text with no invention-specific content; C2 per domain and per variety",
+   "A2": "OTHER_INVENTION_SHARED_VOCAB and PROJECT_COUNTERFACTUAL under C1",
+   "A3": "independence I1-I5; the holdout is authored after this file is frozen",
+   "A4": "AMENDMENT, CORRECTION_OF_PRECEDING and HISTORY_COUNTERFACTUAL_NEW under C2, C3 and C5",
+   "A5": "UNCERTAIN routes to WITHHOLD or INCUMBENT (R1-R5), never WIDEN; C1 and C4"
+  }
+ },
+ "invalidity": {
+  "PREPARATION_INVALID": "any of P1-P5 fails (P4: more than 10% of the 204 cases label_disputed, or fewer than 8 undisputed cases in any scored category): the holdout cannot falsify the candidate and no run may be proposed.",
+  "RUN_INVALID": "any request error, refusal, malformed or truncated reply, unconfirmed model, service tier other than Standard, missing usage, output over the cap, input over the reserved bound, an exhausted request allocation, a reservation over the ceiling, or any drift in a pinned digest. The first such event stops the run; no retry. A run whose decided rows do not cover every case exactly once is also RUN_INVALID."
+ },
+ "run_plan": {
+  "authorization": "NONE. No run path exists. A run needs a separate Owner authorization naming the model, the price basis and the digest of the frozen holdout, and a reviewed commit that adds the gated runner.",
+  "order": "every case, ONE request each, in a frozen seeded order; no early stop on a falsifying case; stop only on RUN_INVALID",
+  "max_provider_requests": 204,
+  "max_output_tokens": 2000,
+  "cost_ceiling_usd": 8.0,
+  "storage": "provider-side storage off; synthetic texts only"
+ },
+ "history": [
+  "#853 / #854 responsiveness arm: one opaque RESPONSIVE verdict on the question and answer only, credited hedged and negative-form answers and read no idea or history; its only campaign was INVALID at request 1 (no verdict). This design keeps relevance as one of four judgments, reads the idea and history and separates stance.",
+  "#950: one four-way relation verdict let a design change (CONFLICT) compete with RELATED and withheld eligible credit (FALSIFIED). Relation here is the #965 two-way reading unchanged.",
+  "#951 / #965 Run 03: the relation and novelty judgments were NOT_FALSIFIED on their holdout; they are reused word for word.",
+  "#966: binds a relation decision to its exact source and invalidates it when stale; a product use would need it, but a fresh per-case evaluation decision has no stale source, so it is not called here (its no-runtime-caller guard stays unchanged).",
+  "#967: composing Run 03 cut false credit 38/60 -> 0/60 but left all 31/60 false rejections, every one a lexical miss of the served gap; widening there was an oracle, and widening a content-free reference showed the quality rule is no safety net. This design adds the missing served-question judgment, makes it grounded in NEW text (G2, G3) and keeps novelty as a necessary condition.",
+  "Mechanism-content v1 / v2: veto-only packs in which every case was already credited, so recovery could not be measured; v2 FAILED on false grants. P1 requires incumbent-rejected positives and P2 hazard-bearing negatives before any run.",
+  "Four-axis / sentence-extraction candidate (STOPPED, never committed): granted on an extracted sentence and was measured only on a veto pack. Here no sentence is extracted or credited; the whole answer goes through the unchanged engine and its stance vetoes.",
+  "No case, label or model reply of any earlier evaluation was used to write or adjust these instructions; no case of this evaluation existed when they were frozen."
+ ],
+ "limits": [
+  "synthetic, author-written cases: not a real-user rate",
+  "Mechanism Completeness questions only, two domains, six projects, one preceding answer per case",
+  "English and Modern Standard Arabic only; no dialect claim",
+  "a fresh offline state per case: W2-C serving adjustments, UQTR suppression, need routing and a credited earlier answer (so the T2-G-5 repeat rule) are not exercised; EXACT_REPEAT relies on the novelty judgment",
+  "one run: no stability measurement",
+  "the T2-G-1 mixed-answer false rejection recorded by #967 is measured (M-MIXED) but not repaired",
+  "C2 has no per-project floor; P1 only guarantees at least two incumbent-rejected positives per project",
+  "the instruction examples name failure modes the negative categories also test; INSTRUCTION_INJECTION is the one negative they do not name",
+  "G3 is a source check: a repeated quote extended by one new word passes it",
+  "the HISTORY_COUNTERFACTUAL_NEW construction check verifies a preceding answer other than A, not that it is this project's B (B is not a case field)"
+ ],
+ "amendments_before_any_case": [
+  "2026-11-12, after the independent review and an automated review of PR #972, before any case was written: sentence-level widening (so the stance vetoes act under WIDEN) and the model-only gates declared (widening applied only to an answer the governed owner rejects, after the follow-up reviews showed that widening the sentences of an answer the engine accepts, through addresses_gap or through the W2-C committed markers, could lift a veto it applies today; the guard is the engine's own not-addressed outcome); P2 / P3 count falsifiable cases only and P2 spans at least 4 categories; the invalidity rule states this design's 204 cases; M-FLIP excludes reported cases; C2 adds A4 category floors; a run must cover every case exactly once; P5 checks the exact frozen grid and the OFF_QUESTION_NEW_CONTENT brief asks for new build content its CONTENT_BEARING label requires (two automated-review findings)."
+ ]
+}
