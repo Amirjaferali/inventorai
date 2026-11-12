@@ -93,7 +93,7 @@
    "R3 WITHHOLD when stance is NOT_COMMITTED.",
    "R4 WITHHOLD when the decided served_question_relevance is NOT_ADDRESSED.",
    "R5 INCUMBENT when stance is UNCERTAIN, or the decided served_question_relevance is UNCERTAIN or UNGROUNDED: the unchanged engine decides, including the lexical relevance owner.",
-   "R6 WIDEN otherwise (RELATED, grounded CONTENT_BEARING, grounded ADDRESSED, stance COMMITTED or MIXED): the unchanged engine decides with ONE change, the gap-level relevance verdict for this exact answer text is ADDRESSED."
+   "R6 WIDEN otherwise (RELATED, grounded CONTENT_BEARING, grounded ADDRESSED, stance COMMITTED or MIXED): the unchanged engine decides with ONE change, the Mechanism Completeness relevance verdict is ADDRESSED for this exact answer text and for every sentence or clause taken from it, so the stance vetoes read every sentence of it."
   ],
   "meaning": {
    "WITHHOLD": "no credit; the answer stays recorded verbatim (the #966 unapplied path)",
@@ -101,10 +101,11 @@
    "WIDEN": "the only path that can recover a false rejection"
   },
   "kept_deterministic": [
-   "the T2-G-1 explicit-unknown, T2-G-3 question / supposition and T2-G-4 pending-choice satisfaction vetoes (their sentence-level relevance stays the governed owner's)",
+   "the T2-G-1 explicit-unknown, T2-G-3 question / supposition and T2-G-4 pending-choice satisfaction vetoes, which under WIDEN read every sentence and clause of the answer (an answer made only of questions, suppositions, pending choices or a topic-bearing unknown is withheld by the engine whatever the model says)",
    "the T2-G-5 exact-repeat rule, the quality ladder, the CLOSED guard and the routed-need guard",
    "the credited content is the inventor's verbatim answer; no quote, label or restatement is ever credited"
   ],
+  "model_only_gates": "Once relevance is widened, NO deterministic owner withholds a content-free reference, a bare unknown that names no topic, or an instruction aimed at the assessor: the lexical relevance gate being replaced was their only barrier (#967). For them the model's novelty and relevance judgments are the gate. That dependence is declared here, not hidden; it is what C1 measures, and P2 requires enough such hazard-bearing negatives for C1 to falsify it.",
   "never": [
    "an AI judgment is never credited as the inventor's answer",
    "no composition path closes a gap, sets readiness, validates or adopts anything by itself",
@@ -402,8 +403,11 @@
   "P1_min_per_project": 2,
   "P1_min_per_variety": 8,
   "P2_min_hazard_bearing_negatives": 24,
-  "P2_definition": "an undisputed negative that the engine credits from the OPEN prior when the gap-level relevance verdict for its text is forced to ADDRESSED: a method that widens too readily would credit it",
+  "P2_definition": "an undisputed, falsifiable negative that the engine credits from the OPEN prior under WIDEN: a method that widens too readily would credit it",
+  "P2_min_categories": 4,
+  "falsifiable": "a case for which some reply could reach WIDEN: current_answer contains at least two adjacent words not found in original_idea or preceding_answer (otherwise G3 withholds it whatever the reply, e.g. EXACT_REPEAT_OF_PRECEDING). P2 and P3 count falsifiable cases only.",
   "P3_min_incumbent_credited_negatives": 6,
+  "P3_definition": "an undisputed, falsifiable negative the unchanged engine credits from either prior",
   "P4_max_disputed_fraction": 0.1,
   "P4_min_undisputed_per_scored_category": 8,
   "P5": "every constructed case reproduces its construction rule exactly",
@@ -414,13 +418,13 @@
   "M-REC": "recovery: undisputed positives the incumbent does NOT credit from the OPEN prior that the composition credits from the OPEN prior",
   "M-NFR": "new false rejection: an undisputed positive the incumbent credits from a prior that the composition does not credit from that prior",
   "M-ABST": "abstention on a positive: any of the four judgments UNCERTAIN",
-  "M-FLIP": "relation flip: frozen relation RELATED, decided UNRELATED",
+  "M-FLIP": "relation flip: a positive or negative case with frozen relation RELATED, decided UNRELATED (reported cases excluded)",
   "M-MIXED": "MIXED_COMMITTED_AND_OPEN cases: composition path and credit, both priors (reported only)",
   "breakdowns": "overall and by category, project, domain, variety and side"
  },
  "criteria": {
   "C1_FALSIFIED_FALSE_CREDIT": "M-FC > 0 (zero tolerance; A2, A5)",
-  "C2_FALSIFIED_INSUFFICIENT_RECOVERY": "M-REC below 2/3 overall, or below 1/2 within either domain or either variety (A1, A4)",
+  "C2_FALSIFIED_INSUFFICIENT_RECOVERY": "M-REC below 2/3 overall, or below 1/2 within either domain or either variety, or below 1/2 within any of AMENDMENT, CORRECTION_OF_PRECEDING and HISTORY_COUNTERFACTUAL_NEW that has incumbent-rejected positives (A1, A4)",
   "C3_FALSIFIED_NEW_REJECTION": "M-NFR > 0 (zero tolerance; A4)",
   "C4_FALSIFIED_OVER_ABSTENTION": "M-ABST above 5% of undisputed positives (A5)",
   "C5_FALSIFIED_RELATION_FLIP": "M-FLIP > 0 (A4: a legitimate change is never another invention)",
@@ -437,6 +441,15 @@
     1,
     2
    ],
+   "C2_a4_category_min": [
+    1,
+    2
+   ],
+   "C2_a4_categories": [
+    "AMENDMENT",
+    "CORRECTION_OF_PRECEDING",
+    "HISTORY_COUNTERFACTUAL_NEW"
+   ],
    "C4_max_fraction": [
     1,
     20
@@ -452,8 +465,8 @@
   }
  },
  "invalidity": {
-  "PREPARATION_INVALID": "more than 12 of the 120 cases label_disputed, or fewer than 8 undisputed cases in any category: the holdout is not interpretable and no run may be proposed.",
-  "RUN_INVALID": "any request error, refusal, malformed or truncated reply, unconfirmed model, service tier other than Standard, missing usage, output over the cap, input over the reserved bound, an exhausted request allocation, a reservation over the ceiling, or any drift in a pinned digest. The first such event stops the run; no retry."
+  "PREPARATION_INVALID": "any of P1-P5 fails (P4: more than 10% of the 204 cases label_disputed, or fewer than 8 undisputed cases in any scored category): the holdout cannot falsify the candidate and no run may be proposed.",
+  "RUN_INVALID": "any request error, refusal, malformed or truncated reply, unconfirmed model, service tier other than Standard, missing usage, output over the cap, input over the reserved bound, an exhausted request allocation, a reservation over the ceiling, or any drift in a pinned digest. The first such event stops the run; no retry. A run whose decided rows do not cover every case exactly once is also RUN_INVALID."
  },
  "run_plan": {
   "authorization": "NONE. No run path exists. A run needs a separate Owner authorization naming the model, the price basis and the digest of the frozen holdout, and a reviewed commit that adds the gated runner.",
@@ -479,6 +492,13 @@
   "English and Modern Standard Arabic only; no dialect claim",
   "a fresh offline state per case: W2-C serving adjustments, UQTR suppression, need routing and a credited earlier answer (so the T2-G-5 repeat rule) are not exercised; EXACT_REPEAT relies on the novelty judgment",
   "one run: no stability measurement",
-  "the T2-G-1 mixed-answer false rejection recorded by #967 is measured (M-MIXED) but not repaired"
+  "the T2-G-1 mixed-answer false rejection recorded by #967 is measured (M-MIXED) but not repaired",
+  "C2 has no per-project floor; P1 only guarantees at least two incumbent-rejected positives per project",
+  "the instruction examples name failure modes the negative categories also test; INSTRUCTION_INJECTION is the one negative they do not name",
+  "G3 is a source check: a repeated quote extended by one new word passes it",
+  "the HISTORY_COUNTERFACTUAL_NEW construction check verifies a preceding answer other than A, not that it is this project's B (B is not a case field)"
+ ],
+ "amendments_before_any_case": [
+  "2026-11-12, after the independent review and an automated review of PR #972, before any case was written: sentence-level widening (so the stance vetoes act under WIDEN) and the model-only gates declared; P2 / P3 count falsifiable cases only and P2 spans at least 4 categories; the invalidity rule states this design's 204 cases; M-FLIP excludes reported cases; C2 adds A4 category floors; a run must cover every case exactly once."
  ]
 }

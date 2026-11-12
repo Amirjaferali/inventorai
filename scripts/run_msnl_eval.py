@@ -2648,7 +2648,7 @@ def context_history_incumbent_baseline(manifest=None):
 
 SRV_PREREG_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                "r2_served_relevance_v1_preregistration.json")
-SRV_PREREG_SHA256 = "45b2d120a38fe1969b22844a4bd5c06bd79453e514b335f5099aca02269cafdc"
+SRV_PREREG_SHA256 = "907ec9fdfd5b12bc7426497f6692ac8d3ba7732a0658c9384e4e7445edf664bf"
 SRV_ENGINE_CONTRACT_VERSION = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5"
 SRV_RELEVANCE = ("ADDRESSED", "NOT_ADDRESSED", "UNCERTAIN")
 SRV_STANCE = ("COMMITTED", "MIXED", "NOT_COMMITTED", "UNCERTAIN")
@@ -2760,10 +2760,14 @@ def srv_compose(case, decision):
 
 
 class _srv_widened:
-    """Within the block, the engine's gap-level relevance verdict for exactly
-    ``text`` is ADDRESSED; every other call (every sentence-level check inside
-    the T2-G vetoes included) is the governed owner's. Evaluation-only and
-    always restored."""
+    """Within the block, the engine's Mechanism Completeness relevance verdict
+    is ADDRESSED for ``text`` itself AND for every sentence or clause taken
+    from it (a non-empty substring of ``text``); every other call is the
+    governed owner's. Widening the sentence-level checks too is what lets the
+    T2-G-1 / T2-G-3 / T2-G-4 stance vetoes read an answer the lexical owner
+    rejected: without it no sentence of such an answer is relevant and the
+    vetoes cannot fire. It can only add vetoes, never credit. Evaluation-only
+    and always restored."""
 
     def __init__(self, text):
         self.text = text
@@ -2775,8 +2779,10 @@ class _srv_widened:
         original, text = self._original, self.text
 
         def widened(response, gap_type):
-            return True if (response == text and gap_type == MECHANISM_COMPLETENESS) \
-                else original(response, gap_type)
+            if gap_type == MECHANISM_COMPLETENESS and isinstance(response, str) \
+                    and response.strip() and response.strip() in text:
+                return True
+            return original(response, gap_type)
         progression_loop.addresses_gap = widened
         return self
 
@@ -2820,6 +2826,22 @@ def srv_case_row(prereg, case, decision):
 
 def _srv_side(case):
     return case["side"]
+
+
+def srv_falsifiable(case):
+    """True when some reply could reach WIDEN: current_answer holds at least
+    two adjacent words not found in original_idea or preceding_answer.
+    Otherwise G3 withholds the case whatever the model says (an exact repeat,
+    for one), so it cannot test false credit and P2 / P3 do not count it.
+    Words are compared case- and punctuation-insensitively, more strictly than
+    G3 itself: a doubtful case is left uncounted, which only makes P2 / P3
+    harder to meet."""
+    def pairs(text):
+        words = _WORD_RUN.findall(_normalised(text).lower())
+        return set(zip(words, words[1:]))
+    earlier = pairs(case["original_idea"]) | (pairs(case["preceding_answer"])
+                                             if case.get("preceding_answer") else set())
+    return bool(pairs(case["current_answer"]) - earlier)
 
 
 def _srv_construction_errors(prereg, cases):
@@ -2889,11 +2911,13 @@ def srv_validity(prereg, cases):
             or any(sum(1 for c in rejected if c["variety"] == var) < v["P1_min_per_variety"]
                    for var in prereg["varieties"]):
         failed.append("P1_TOO_FEW_INCUMBENT_REJECTED_POSITIVES")
-    hazard = [c for c in neg if srv_engine_credit(prereg, c, "OPEN", widen=True)]
-    if len(hazard) < v["P2_min_hazard_bearing_negatives"]:
+    falsifiable = [c for c in neg if srv_falsifiable(c)]
+    hazard = [c for c in falsifiable if srv_engine_credit(prereg, c, "OPEN", widen=True)]
+    if len(hazard) < v["P2_min_hazard_bearing_negatives"] \
+            or len({c["category"] for c in hazard}) < v["P2_min_categories"]:
         failed.append("P2_TOO_FEW_HAZARD_BEARING_NEGATIVES")
-    credited = [c for c in neg if any(srv_engine_credit(prereg, c, p)
-                                      for p in prereg["engine"]["priors"])]
+    credited = [c for c in falsifiable if any(srv_engine_credit(prereg, c, p)
+                                              for p in prereg["engine"]["priors"])]
     if len(credited) < v["P3_min_incumbent_credited_negatives"]:
         failed.append("P3_TOO_FEW_INCUMBENT_CREDITED_NEGATIVES")
     return failed
@@ -2912,7 +2936,8 @@ def srv_measures(prereg, cases, rows):
         pos = [(c, r) for c, r in units if c["side"] == "positive"]
         neg = [(c, r) for c, r in units if c["side"] == "negative"]
         rejected = [(c, r) for c, r in pos if not r["incumbent"]["OPEN"]]
-        related = [(c, r) for c, r in units if c["slot_label"]["project_relation"] == "RELATED"]
+        related = [(c, r) for c, r in units if c["side"] in ("positive", "negative")
+                   and c["slot_label"]["project_relation"] == "RELATED"]
         return {
             "M-FC": [sum(any(r["composed"][p] for p in priors) for _, r in neg), len(neg)],
             "M-REC": [sum(r["composed"]["OPEN"] for _, r in rejected), len(rejected)],
@@ -2951,7 +2976,10 @@ def srv_failed_criteria(prereg, measures):
         failed.append(SRV_CRITERIA[0])
     if _srv_below(o["M-REC"], t["C2_overall_min"]) \
             or any(_srv_below(m["M-REC"], t["C2_domain_min"]) for m in measures["by_domain"].values()) \
-            or any(_srv_below(m["M-REC"], t["C2_variety_min"]) for m in measures["by_variety"].values()):
+            or any(_srv_below(m["M-REC"], t["C2_variety_min"]) for m in measures["by_variety"].values()) \
+            or any(measures["by_category"][cat]["M-REC"][1]
+                   and _srv_below(measures["by_category"][cat]["M-REC"], t["C2_a4_category_min"])
+                   for cat in t["C2_a4_categories"] if cat in measures["by_category"]):
         failed.append(SRV_CRITERIA[1])
     if o["M-NFR"][0] > 0:
         failed.append(SRV_CRITERIA[2])
@@ -2963,7 +2991,10 @@ def srv_failed_criteria(prereg, measures):
 
 
 def srv_outcome(prereg, cases, rows):
-    """The preregistered verdict for one complete, valid run's decided rows."""
+    """The preregistered verdict for one complete, valid run's decided rows. A
+    row set that does not cover every case exactly once is RUN_INVALID."""
+    if sorted(r["case_id"] for r in rows) != sorted(c["case_id"] for c in cases):
+        return {"outcome": [CH_INVALID], "run_failure": "rows do not cover every case exactly once"}
     invalid = srv_validity(prereg, cases)
     if invalid:
         return {"outcome": [SRV_PREPARATION_INVALID], "preparation_failures": invalid}

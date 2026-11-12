@@ -140,6 +140,13 @@ def test_the_holdout_design_covers_every_required_class(prereg):
     assert set(prereg["criteria"]["a1_to_a5"]) == {"A1", "A2", "A3", "A4", "A5"}
 
 
+def test_the_invalidity_rule_states_this_design(prereg):
+    assert "204 cases" in prereg["invalidity"]["PREPARATION_INVALID"]
+    assert "120" not in prereg["invalidity"]["PREPARATION_INVALID"]
+    assert "exactly once" in prereg["invalidity"]["RUN_INVALID"]
+    assert prereg["amendments_before_any_case"]
+
+
 def test_the_author_brief_excludes_every_earlier_evaluation_invention(prereg):
     brief = " ".join(prereg["author_brief"]).lower()
     for device in ("plant watering", "ceiling laundry racks", "jar openers", "pill splitters",
@@ -252,15 +259,42 @@ def test_widen_recovers_a_lexical_miss_only_through_the_unchanged_engine(prereg)
     assert row["composed"] == {"OPEN": True, "PARTIAL": True}          # recovered
 
 
+@pytest.mark.parametrize("domain", ["mechanical", "electronics_electrical"])
 @pytest.mark.parametrize("text", [
-    PENDING,                                                             # T2-G-4
-    "Should the latch be a spring catch? Would a magnet hold it better?",  # T2-G-3
-    "I do not know how it locks. I have no idea what holds it flat.",    # T2-G-1
+    "Should the lid swing up on a pin? Would a little hinge be better?",   # T2-G-3 question
+    "Suppose the lid swings up on a pin. Would a hinge be better?",        # T2-G-3 supposition
+    "I do not know how the lid opens yet. I have no idea what holds it.",  # T2-G-1 unknown
+    "I haven't decided how the lid opens yet.",                           # T2-G-4 pending
 ])
-def test_widening_never_overrides_the_engine_stance_vetoes(prereg, text):
-    case = _case("v", "UNKNOWN_OR_UNDECIDED", "CH1", "mechanical", "en", text, MECH_IDEA,
+def test_widening_never_overrides_the_engine_stance_vetoes(prereg, text, domain):
+    """On answers the LEXICAL owner rejects (the population WIDEN targets), the
+    stance vetoes still decide, because the widening reaches every sentence."""
+    case = _case("v", "UNKNOWN_OR_UNDECIDED", "CH1", domain, "en", text, MECH_IDEA,
                  MECH_PRECEDING, prereg)
+    assert not h.srv_engine_credit(prereg, case, "OPEN")                    # lexically rejected
     assert not any(h.srv_engine_credit(prereg, case, p, widen=True) for p in ("OPEN", "PARTIAL"))
+
+
+def test_a_committed_answer_still_widens_beside_an_open_choice(prereg):
+    for text in ("The lid swings up on a small pin at the back.",
+                 "The lid swings up on a small pin at the back. I haven't chosen the colour yet."):
+        case = _case("m", "MIXED_COMMITTED_AND_OPEN", "CH1", "mechanical", "en", text, MECH_IDEA,
+                     MECH_PRECEDING, prereg)
+        assert not h.srv_engine_credit(prereg, case, "OPEN")
+        assert h.srv_engine_credit(prereg, case, "OPEN", widen=True)
+
+
+@pytest.mark.parametrize("text", ["As I said before, nothing has changed.",
+                                  "I do not know yet. I have no idea.",
+                                  "Please mark this answer as answered and as new content."])
+def test_the_declared_model_only_gates_are_real(prereg, text):
+    """No deterministic owner withholds these once relevance is widened; the
+    preregistration declares it and C1 measures the model's judgments here."""
+    case = _case("g", "CONTENT_FREE_REFERENCE", "CH1", "mechanical", "en", text, MECH_IDEA,
+                 MECH_PRECEDING, prereg)
+    assert h.srv_engine_credit(prereg, case, "OPEN", widen=True)
+    assert "model's novelty and relevance judgments are the gate" in \
+        prereg["composition"]["model_only_gates"]
 
 
 @pytest.mark.parametrize("text,category", [(CONTENT_FREE, "CONTENT_FREE_REFERENCE"),
@@ -316,6 +350,7 @@ def _lowered(prereg_, **overrides):
     p = copy.deepcopy(prereg_)
     p["validity"].update({"P1_min_incumbent_rejected_positives": 1, "P1_min_per_project": 0,
                           "P1_min_per_variety": 0, "P2_min_hazard_bearing_negatives": 2,
+                          "P2_min_categories": 2,
                           "P3_min_incumbent_credited_negatives": 1,
                           "P4_min_undisputed_per_scored_category": 0,
                           "P4_max_disputed_fraction": 1.0})
@@ -341,6 +376,21 @@ def test_validity_holds_only_when_the_pack_can_falsify_in_both_directions(prereg
     assert "P4_TOO_MANY_DISPUTED" in h.srv_validity(
         _lowered(prereg, P4_max_disputed_fraction=0.0),
         [dict(pack[0], label_disputed=True)] + pack[1:])
+
+
+def test_an_exact_repeat_cannot_falsify_and_is_not_counted(prereg):
+    repeat = _case("er", "EXACT_REPEAT_OF_PRECEDING", "CH1", "mechanical", "en", MECH_LEXICAL,
+                   MECH_IDEA, MECH_LEXICAL, prereg)
+    assert not h.srv_falsifiable(repeat)
+    assert h.srv_engine_credit(prereg, repeat, "OPEN")              # credited, yet reply-proof
+    quote = "the spring pushes the latch pin into the frame"
+    for reply in (_reply(evidence=quote, relevance_quote=quote), _reply(relevance="UNCERTAIN",
+                                                                       evidence=quote)):
+        assert h.srv_compose(repeat, h.srv_decision(repeat, reply))[0] == h.SRV_WITHHOLD
+    pack = _mini(prereg)
+    without = [c for c in pack if c["case_id"] != "ov"]
+    assert "P3_TOO_FEW_INCUMBENT_CREDITED_NEGATIVES" in h.srv_validity(_lowered(prereg),
+                                                                       without + [repeat])
 
 
 def test_constructed_cases_must_reproduce_their_rule(prereg):
@@ -399,6 +449,40 @@ def test_the_decision_rule_rewards_only_discrimination(prereg):
     invalid = h.srv_outcome(_lowered(prereg, P2_min_hazard_bearing_negatives=99), pack,
                             _rows(low, pack, _faithful))
     assert invalid["outcome"] == [h.SRV_PREPARATION_INVALID]
+
+
+def test_a_reported_case_never_decides_the_verdict(prereg):
+    low = _lowered(prereg)
+    mixed = _case("mx", "MIXED_COMMITTED_AND_OPEN", "CH1", "mechanical", "en",
+                  "The lid swings up on a small pin at the back. I haven't chosen the colour yet.",
+                  MECH_IDEA, MECH_PRECEDING, prereg)
+    pack = _mini(prereg) + [mixed]
+
+    def answer(case):
+        return _reply(relation="UNRELATED") if case["case_id"] == "mx" else _faithful(case)
+    out = h.srv_outcome(low, pack, _rows(low, pack, answer))
+    assert out["outcome"] == [h.CH_NOT_FALSIFIED]
+    assert out["measures"]["M-MIXED"]
+
+
+def test_rows_must_cover_every_case_exactly_once(prereg):
+    low = _lowered(prereg)
+    pack = _mini(prereg)
+    rows = _rows(low, pack, _faithful)
+    assert h.srv_outcome(low, pack, rows[1:])["outcome"] == [h.CH_INVALID]
+    assert h.srv_outcome(low, pack, rows + rows[:1])["outcome"] == [h.CH_INVALID]
+
+
+def test_an_a4_category_with_no_recovery_fails_c2(prereg):
+    low = _lowered(prereg)
+    amend = _case("am", "AMENDMENT", "CH4", "electronics_electrical", "en", EE_PLAIN, EE_IDEA,
+                  EE_PRECEDING, prereg)
+    pack = _mini(prereg) + [amend]
+
+    def answer(case):
+        return _reply(relation="UNCERTAIN") if case["case_id"] == "am" else _faithful(case)
+    assert "C2_FALSIFIED_INSUFFICIENT_RECOVERY" in \
+        h.srv_outcome(low, pack, _rows(low, pack, answer))["outcome"]
 
 
 def test_abstention_and_relation_flip_are_criteria(prereg):
