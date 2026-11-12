@@ -103,6 +103,85 @@ def test_p07_unreadable_answer_texts_raise_and_are_never_read_as_empty(texts):
         fit.derive_current_fit(SEED, texts)
 
 
+
+@pytest.mark.parametrize("text", [
+    "I want to raise the monitor between 10 and 15 cm above my desk; dimensions 60 x 20 cm",
+    "I want to raise the monitor either 10 cm or 15 cm above my desk; dimensions 60 x 20 cm",
+    "I want to raise the monitor 10-15 cm above my desk; dimensions 60 x 20 cm",
+    "I want to raise the monitor 10 cm; or 15 cm above my desk; dimensions 60 x 20 cm",
+    "I want to raise the monitor up to 15 cm above my desk; dimensions 60 x 20 cm",
+    "I want to raise the monitor at least 15 cm above my desk; dimensions 60 x 20 cm",
+    "أريد رفع الشاشة بين ١٠ و١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+    "أريد رفع الشاشة إما ١٠ سم أو ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+    "أريد رفع الشاشة حتى ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+])
+def test_p08_ranges_and_alternatives_never_choose_one_lift(text):
+    assert fit.derive_provisional_fit(text) is None
+    assert fit.derive_current_fit(SEED, [text]) is None
+    assert fit.derive_current_fit(SEED, [ANSWER, text]) is None
+    assert fit.derive_current_fit(IDEA_WITH_FIT, [text]) is None
+
+
+def test_p09_one_decimal_lift_remains_a_sourced_exact_offer():
+    exact = "I want to raise the monitor 15.5 cm above my desk; dimensions 60 x 20 cm"
+    result = fit.derive_current_fit(SEED, [exact])
+    assert result.surface_lift == "15.5"
+    assert result.source_excerpt == exact
+    assert result.source_type == fit.SOURCE_ANSWER
+    assert fit.derive_current_fit(SEED, [ANSWER]).surface_lift == "15"
+
+
+def test_w08_a_current_answer_corrected_to_alternatives_withholds_the_offer():
+    c, sid = _mech("cap13cur-w08@example.com")
+    assert _answer(c, sid, ANSWER).status_code in (200, 302)
+    record = [r for r in _ledger(sid) if r.content == ANSWER][-1]
+    changed = "I want to raise the monitor either 10 cm or 15 cm above my desk; dimensions 60 x 20 cm"
+    assert _correct(c, sid, record.record_id, changed).status_code in (200, 302)
+    assert any(r.content == changed for r in _ledger(sid))
+    assert "data-engineering-fit-link" not in _page(c, sid)
+    assert c.get(FIT_PAGE % sid).status_code != 200
+    corrected = [r for r in _ledger(sid) if r.content == changed][-1]
+    assert _correct(c, sid, corrected.record_id, ANSWER_OTHER).status_code in (200, 302)
+    page = c.get(FIT_PAGE % sid)
+    assert page.status_code == 200
+    html = page.get_data(as_text=True)
+    assert ANSWER_OTHER in html and 'data-fit-source="answer"' in html
+    assert "12 cm" in html
+
+
+
+
+@pytest.mark.parametrize("text", [
+    "Either raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "Up to 15 cm, raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "Between 10 cm and 15 cm, raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "إما أرفع الشاشة ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+    "حتى ١٥ سم، أرفع الشاشة ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+    "أرفع الشاشة ١٥ سم فوق مكتبي، أو ١٠ سم؛ أبعاد: ٦٠ × ٢٠ سم",
+])
+def test_p10_preverb_limits_and_arabic_comma_alternatives_do_not_select_lift(text):
+    assert fit.derive_provisional_fit(text) is None
+    assert fit.derive_current_fit(SEED, [text]) is None
+    assert fit.derive_current_fit(SEED, [ANSWER, text]) is None
+
+
+@pytest.mark.parametrize("text", [
+    "10 cm or raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "10 to 15 cm, raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "١٠ سم أو أرفع الشاشة ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+    "١٠ إلى ١٥ سم، أرفع الشاشة ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+])
+def test_p12_preverb_numeric_alternatives_never_select_height(text):
+    assert fit.derive_provisional_fit(text) is None
+    assert fit.derive_current_fit(SEED, [text]) is None
+    assert fit.derive_current_fit(SEED, [ANSWER, text]) is None
+
+
+def test_p11_an_arabic_comma_with_an_extra_number_fails_closed():
+    # A comma is not proof of an independent clause: no silent height choice.
+    text = "أرفع الشاشة ١٥ سم فوق مكتبي، وربما ١٠ سم؛ أبعاد: ٦٠ × ٢٠ سم"
+    assert fit.derive_current_fit(SEED, [text]) is None
+
 # ==========================================================================
 # 2. the real product path
 # ==========================================================================

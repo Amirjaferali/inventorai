@@ -58,6 +58,14 @@ _NEGATION_WORD = re.compile(
     re.IGNORECASE,
 )
 _SENTENCE_BREAK = re.compile(r"[\n.;؛!?؟]")
+# An ambiguous lift must not become a single-valued offer. Masked object
+# dimensions are excluded from this check, and decimal dots are not boundaries.
+_RISE_AMOUNT = re.compile(r"(?<![0-9.])[0-9]+(?:\.[0-9]+)?(?![0-9])")
+_RISE_END = re.compile(r"[\n!?؟]|\.(?![0-9])")
+_RISE_LIMIT = re.compile(
+    r"\b(?:between|either|up\s+to|at\s+(?:least|most)|no\s+(?:more|less)\s+than)\b|"
+    r"(?:بين|إما|اما|حتى|لغاية|على\s+الأقل|بحد\s+أقصى)", re.IGNORECASE)
+_AMBIGUOUS_RISE = object()
 _ARABIC_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
 
 
@@ -112,7 +120,7 @@ def derive_provisional_fit(original_idea):
     a display-trimmed excerpt. Recognition does not admit CAP-13 calculations.
     """
     located = _locate(original_idea, SOURCE_IDEA)
-    return located[0] if located is not None else None
+    return located[0] if located is not None and located is not _AMBIGUOUS_RISE else None
 
 
 def derive_current_fit(original_idea, answer_texts):
@@ -134,10 +142,14 @@ def derive_current_fit(original_idea, answer_texts):
         raise ValueError("unreadable answer texts")
     located = []
     from_idea = _locate(original_idea, SOURCE_IDEA)
+    if from_idea is _AMBIGUOUS_RISE:
+        return None
     if from_idea is not None:
         located.append(from_idea)
     for text in answer_texts:
         found = _locate(text, SOURCE_ANSWER)
+        if found is _AMBIGUOUS_RISE:
+            return None  # Never fall back to a possibly superseded exact lift.
         if found is not None:
             located.append(found)
     if not located:
@@ -148,9 +160,8 @@ def derive_current_fit(original_idea, answer_texts):
 
 
 def _locate(original_idea, source_type):
-    """``(candidate, comparison key)`` for ONE statement, or None. The grammar
-    and every refusal below are the IDEA-TO-ENGINEERING-CONFIG-01 rules,
-    unchanged; only the source label differs."""
+    """One exact candidate and key, None, or the internal ambiguous-lift marker.
+    Never turn an explicitly ranged/alternative lift into one selected height."""
     if not isinstance(original_idea, str) or not 0 < len(original_idea) <= _MAX_IDEA_CHARS:
         return None
     if _EXCLUSION.search(original_idea) or _NEGATED.search(original_idea):
@@ -185,6 +196,21 @@ def _locate(original_idea, source_type):
     sentence_start = breaks[-1] if breaks else 0
     if _NEGATION_WORD.search(unmasked, sentence_start, rise.end()):
         return None
+    # Keep semicolons in the statement: "raise 10 cm; or 15 cm" remains
+    # ambiguous. The object dimensions have already been masked out.
+    statement_end = _RISE_END.search(unmasked, rise.start())
+    lift_statement = unmasked[rise.start():statement_end.start() if statement_end else len(unmasked)]
+    # A numeric alternative may precede the verb without a named bound:
+    # "10 cm or raise 15 cm". Masked object dimensions are already blank.
+    # Refuse an additional number anywhere in the containing statement,
+    # rather than silently selecting the number following the verb.
+    # Do not split at Arabic commas: "15 سم، أو 10 سم" is also ambiguous.
+    preceding = unmasked[sentence_start:rise.start()]
+    if (len(_RISE_AMOUNT.findall(preceding)) != 0
+            or len(_RISE_AMOUNT.findall(lift_statement)) != 1
+            or _RISE_LIMIT.search(preceding)
+            or _RISE_LIMIT.search(lift_statement)):
+        return _AMBIGUOUS_RISE
     # Only a single explicit rise and dimension pair can become a candidate.
     # This rule cannot silently choose between conflicting requirements.
     length, depth, lift = (_positive_number(size.group("a")),
