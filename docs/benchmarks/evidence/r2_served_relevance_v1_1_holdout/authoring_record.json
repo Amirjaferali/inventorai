@@ -1,0 +1,127 @@
+{
+ "preregistration": "r2-served-relevance-v1.1-preregistration",
+ "preregistration_sha256": "954ea5dc3fcdba173ddc11c0fda7347314725d6ec0cdaa38eeac73de13c74dbf",
+ "author_session": "one fresh repository-less Claude Code session, created 2026-11-12T21:35:12Z; never the v1 author session; no tool used except reading its incoming notifications",
+ "first_message_sha256_expected": "1e4685d8fcc698900eb3cbcbd0b80ad0a44c66f8b12f5fb2e9a5ce0ed102c57a",
+ "messages_sent": "the frozen first_message once and the fixed continuation 'next' six times; nothing else",
+ "chronology_utc": [
+  {
+   "utc": "2026-11-12T21:35:12.250966Z",
+   "event": "message received",
+   "sha256": "1e4685d8fcc698900eb3cbcbd0b80ad0a44c66f8b12f5fb2e9a5ce0ed102c57a",
+   "content": "frozen first_message"
+  },
+  {
+   "utc": "2026-11-12T21:36:39.303728Z",
+   "event": "author reply",
+   "blocks": [
+    "devices",
+    "CH1"
+   ],
+   "num_turns": 1,
+   "sha256": "0b53033bc115fa81723a477622a627032a6d8239fea8cec1e0615c3a4590c5c8"
+  },
+  {
+   "utc": "2026-11-12T21:45:36.430147Z",
+   "event": "message received",
+   "sha256": "5ad38312f51a3149b39c1ff718d247ec2658f52cdc2ca774ede0ddae08934f94",
+   "content": "continuation: platform envelope around the exact body 'next'"
+  },
+  {
+   "utc": "2026-11-12T21:46:48.777016Z",
+   "event": "author reply",
+   "blocks": [
+    "CH2"
+   ],
+   "num_turns": 2,
+   "sha256": "8ec806eb3fca8db0a3f826a64fef32ca32925a90d7813c9b97742cf019296021"
+  },
+  {
+   "utc": "2026-11-12T21:49:03.131490Z",
+   "event": "message received",
+   "sha256": "e49fa0f8ca7bbe3944afbc1c7dafa85be8f0b856a8bb82cc6ed0e3cf52abb6f9",
+   "content": "continuation: platform envelope around the exact body 'next'"
+  },
+  {
+   "utc": "2026-11-12T21:50:04.939215Z",
+   "event": "author reply",
+   "blocks": [
+    "CH3"
+   ],
+   "num_turns": 2,
+   "sha256": "81e7ec6bca522a036998404b80d6af798a6767214c67d831c95beaec68aeda5b"
+  },
+  {
+   "utc": "2026-11-12T21:54:05.347063Z",
+   "event": "message received",
+   "sha256": "e81a25c07cf355aa3f3453520265343b96bf946e4f9ee552d9c097d4dec012f9",
+   "content": "continuation: platform envelope around the exact body 'next'"
+  },
+  {
+   "utc": "2026-11-12T21:55:04.033334Z",
+   "event": "author reply",
+   "blocks": [
+    "CH4"
+   ],
+   "num_turns": 2,
+   "sha256": "f1bf2044b3bc4cb846c86730a5afb4eedc5dfbfaa16a1799e398e978f6e701ae"
+  },
+  {
+   "utc": "2026-11-12T21:57:45.641537Z",
+   "event": "message received",
+   "sha256": "a84ee6cd86220ad9efb4f2a20185899de29626a35ef79440c3a16b987feed750",
+   "content": "continuation: platform envelope around the exact body 'next'"
+  },
+  {
+   "utc": "2026-11-12T21:58:49.194712Z",
+   "event": "author reply",
+   "blocks": [
+    "CH5"
+   ],
+   "num_turns": 2,
+   "sha256": "f0111be42e5a5b0b1a299206878dc51cef86a2db2c37f56818bd1b74b2c8b9b9"
+  },
+  {
+   "utc": "2026-11-12T22:00:45.290007Z",
+   "event": "message received",
+   "sha256": "bbc9398a473c8d247e796a1bbe45510094298dc6c42f714501d3376da8394032",
+   "content": "continuation: platform envelope around the exact body 'next'"
+  },
+  {
+   "utc": "2026-11-12T22:01:51.561427Z",
+   "event": "author reply",
+   "blocks": [
+    "CH6"
+   ],
+   "num_turns": 2,
+   "sha256": "036770d0a607f5dcf0c9f7ee4a64398d93d2c4fe88dc4739105ff776e405451c"
+  },
+  {
+   "utc": "2026-11-12T22:03:59.895258Z",
+   "event": "message received",
+   "sha256": "aa4b69e1e5da2eb4610bc568396b59552ad58e61901e1aa95c0ce79dad8670b1",
+   "content": "continuation: platform envelope around the exact body 'next'"
+  },
+  {
+   "utc": "2026-11-12T22:04:11.075628Z",
+   "event": "author reply",
+   "blocks": [
+    "author_note"
+   ],
+   "num_turns": 2,
+   "sha256": "beca78aef2dc5c90149fabd6c28c2088113304dddd60e4a1a06860cddb5071ab"
+  }
+ ],
+ "files": {
+  "author_reply_1.txt": "0b53033bc115fa81723a477622a627032a6d8239fea8cec1e0615c3a4590c5c8",
+  "author_reply_2.txt": "8ec806eb3fca8db0a3f826a64fef32ca32925a90d7813c9b97742cf019296021",
+  "author_reply_3.txt": "81e7ec6bca522a036998404b80d6af798a6767214c67d831c95beaec68aeda5b",
+  "author_reply_4.txt": "f1bf2044b3bc4cb846c86730a5afb4eedc5dfbfaa16a1799e398e978f6e701ae",
+  "author_reply_5.txt": "f0111be42e5a5b0b1a299206878dc51cef86a2db2c37f56818bd1b74b2c8b9b9",
+  "author_reply_6.txt": "036770d0a607f5dcf0c9f7ee4a64398d93d2c4fe88dc4739105ff776e405451c",
+  "author_reply_7.txt": "beca78aef2dc5c90149fabd6c28c2088113304dddd60e4a1a06860cddb5071ab",
+  "authored.json": "57d0c8a55b0a2b0b7d4b3b96965b8ee48c4188ae63130eec2949df0878ca0ef7",
+  "first_message_received.txt": "1e4685d8fcc698900eb3cbcbd0b80ad0a44c66f8b12f5fb2e9a5ce0ed102c57a"
+ },
+ "frozen_before": "any labelling, adjudication, validity computation or model request"
+}
