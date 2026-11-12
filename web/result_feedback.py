@@ -137,6 +137,14 @@ _WARN_UNDECIDED_CHOICE = (
     "description as its own sentence."
 )
 
+_WARN_REPEATED_ANSWER = (
+    "Your answer has been saved with your project. It is word for word the "
+    "same as an earlier answer that was already counted for this point, so it "
+    "adds no new information and this point has not moved forward. To move "
+    "forward, describe in your own words something your earlier answer did "
+    "not cover."
+)
+
 _GENERIC_WARN = (
     "This point cannot move forward yet. Review the result details for the specific reason."
 )
@@ -197,6 +205,9 @@ def get_result_feedback(last_result, statement_beside_unknown=False):
         # T2-G-4: checked BEFORE "not addressed" for the same reason.
         if "recorded as an undecided choice" in reason:
             return _WARN_UNDECIDED_CHOICE
+        # T2-G-5: checked BEFORE "not addressed" for the same reason.
+        if "recorded as a repeat" in reason:
+            return _WARN_REPEATED_ANSWER
         if "not addressed" in reason:
             return _WARN_NOT_ADDRESSED
         if "asserted only" in reason:

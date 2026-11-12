@@ -839,8 +839,8 @@ def test_rtl_lang_escaping_and_hostile_content_are_handled(client):
     # T2-G: this project is recorded under the new version, so the disclosure
     # shown is the one accurate for it; the legacy assertion is preserved below
     # against a project recorded under the earlier version.
-    assert _copy("UI_T2G4_QUESTION_SET", "ar") in _html.unescape(raw_ar)
-    assert _copy("UI_T2G4_QUESTION_SET") not in _html.unescape(raw_ar)
+    assert _copy("UI_T2G5_QUESTION_SET", "ar") in _html.unescape(raw_ar)
+    assert _copy("UI_T2G5_QUESTION_SET") not in _html.unescape(raw_ar)
     t2g1_sid = _t2g1_start(c, appmod, domain="electronics_electrical",
                            seed=ELEC_SEED)
     t2g1_ar = _raw(c, t2g1_sid, lang="ar")

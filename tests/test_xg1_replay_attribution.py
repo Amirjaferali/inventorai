@@ -23,6 +23,7 @@ from engine.session_reconstruction import (
     ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_T2G3,
     ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_T2G4,
+    ENGINE_CONTRACT_VERSION_T2G5,
     GAP_BOUND_REPLAY_VERSIONS,
     RECONSTRUCTION_VERSION, ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS, UNAPPLIED_ANSWERS_ATTR,
@@ -128,10 +129,13 @@ def _corrected(c, appmod, version, answers, prefix, replacement):
 def test_exactly_one_sixth_version_is_added_for_new_projects():
     assert XG1 == "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1"
     # T2-G-4 follows XG1, carries its gap-bound replay and is now stamped.
+    # T2-G-5 follows T2-G-4, carries the same gap-bound replay and is stamped.
     T2G4 = ENGINE_CONTRACT_VERSION_T2G4
-    assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == PRIOR_VERSIONS + (XG1, T2G4)
-    assert sr.CURRENT_ENGINE_CONTRACT_VERSION == T2G4
-    assert GAP_BOUND_REPLAY_VERSIONS == (XG1, T2G4)
+    T2G5 = ENGINE_CONTRACT_VERSION_T2G5
+    assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == PRIOR_VERSIONS + (XG1, T2G4,
+                                                                   T2G5)
+    assert sr.CURRENT_ENGINE_CONTRACT_VERSION == T2G5
+    assert GAP_BOUND_REPLAY_VERSIONS == (XG1, T2G4, T2G5)
 
 
 def test_the_new_version_inherits_t2g3_and_nr1_unchanged():
@@ -143,7 +147,7 @@ def test_the_new_version_inherits_t2g3_and_nr1_unchanged():
         assert t2g_rule_level(state, MC) == level
     assert ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS == (
         ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3, XG1,
-        ENGINE_CONTRACT_VERSION_T2G4)
+        ENGINE_CONTRACT_VERSION_T2G4, ENGINE_CONTRACT_VERSION_T2G5)
     assert nr.is_routing_aware(XG1)
     import web.app as appmod
     for version in (ENGINE_CONTRACT_VERSION_T2G3, XG1):
@@ -157,8 +161,8 @@ def test_a_real_start_records_the_new_version(client):
     r = c.post("/start", data={"idea": SEED, "domain_confirm": EE})
     sid = r.headers["Location"].rsplit("/", 1)[-1]
     assert appmod._get_store().load_reconstruction_inputs(sid)[
-        "engine_contract_version"] == ENGINE_CONTRACT_VERSION_T2G4
-    assert _live(appmod, sid).engine_contract_version == ENGINE_CONTRACT_VERSION_T2G4
+        "engine_contract_version"] == ENGINE_CONTRACT_VERSION_T2G5
+    assert _live(appmod, sid).engine_contract_version == ENGINE_CONTRACT_VERSION_T2G5
 
 
 # ==========================================================================

@@ -400,6 +400,7 @@ from engine.session_reconstruction import (
     ENGINE_CONTRACT_VERSION_T2G3,
     ENGINE_CONTRACT_VERSION_XG1,
     ENGINE_CONTRACT_VERSION_T2G4,
+    ENGINE_CONTRACT_VERSION_T2G5,
     UNAPPLIED_ANSWERS_ATTR as _UNAPPLIED_ANSWERS_ATTR,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_PATH as _RECON_SUPPORTED_PATH,
@@ -6877,6 +6878,9 @@ def _questioning_disclosure_key(state):
     # Safe Question Reduction Slice 1: the routing-aware version asks under the
     # T2-G-2 rules unchanged.
     # The cross-gap replay repair asks under the T2-G-3 rules unchanged.
+    # T2-G-5 adds the exact-repeat rule, so it has its own description.
+    if version == ENGINE_CONTRACT_VERSION_T2G5:
+        return "UI_T2G5_QUESTION_SET"
     # T2-G-4 adds the undecided-choice rule, so it has its own description.
     if version == ENGINE_CONTRACT_VERSION_T2G4:
         return "UI_T2G4_QUESTION_SET"

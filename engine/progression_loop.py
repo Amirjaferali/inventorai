@@ -17,6 +17,7 @@ NOT responsible for:
 """
 
 import re
+import unicodedata
 import warnings
 from engine.domain_rules import (
     get_substance_signals, get_substance_signal_plural_aliases, is_known_domain,
@@ -1176,6 +1177,20 @@ def integrate_response(
     eligible = relevant and not unknown_only and not non_assertive_only
     if undecided_only:
         eligible = False
+    # T2-G-5 — the same satisfaction-eligibility seam, under the T2-G-5 engine
+    # contract only: an otherwise eligible answer whose identity (NFC and
+    # whitespace only; `answer_identity_key` below) equals
+    # an earlier answer that already MOVED this gap's status in this state's
+    # history supplies nothing new. Decided here, BEFORE any known element,
+    # gap status or maturity is touched, so the repeat never replaces the
+    # recorded mechanism or problem. The record it reads is derived by this
+    # function alone (see `record_status_moving_answer` below), identically
+    # live and in replay; the ledger is never read.
+    repeated = False
+    if eligible:
+        repeated = repeats_status_moving_answer(state, gap_type, response)
+    if repeated:
+        eligible = False
     evidence = Evidence(
         content=response,
         quality=quality,
@@ -1281,6 +1296,32 @@ def integrate_response(
     if gap.status == CLOSED:
         return "PASS", f"{gap_type} already closed — no change"
 
+    # T2-G-5: the answer repeats, word for word, an answer that already moved
+    # this gap. Saved verbatim by the caller; the gap, the known elements and
+    # maturity are left exactly as they were. The question counter has already
+    # moved in `run_iteration`, exactly as for every other WARN here.
+    if repeated:
+        return "WARN", (f"{gap_type} recorded as a repeat — this answer is "
+                        f"word for word an earlier answer that was already "
+                        f"counted for this point, so it adds no new "
+                        f"information")
+
+    # T2-G-5: an answer QUALIFIES (is remembered as having moved this gap)
+    # exactly when the transition below changes `gap.status` (OPEN -> PARTIAL,
+    # OPEN -> CLOSED or PARTIAL -> CLOSED). Reaching a branch that leaves the
+    # status unchanged (e.g. ASSERTED or a routed-need hold on a PARTIAL gap)
+    # does not qualify. A no-op below the T2-G-5 contract.
+    status_before = gap.status
+    outcome = _transition_gap_status(state, gap, gap_type, quality)
+    if gap.status != status_before:
+        record_status_moving_answer(state, gap_type, response)
+    return outcome
+
+
+def _transition_gap_status(state, gap, gap_type, quality):
+    """The status transition of ``integrate_response`` for an eligible answer
+    on a gap that is not CLOSED (behaviour-preserving extraction: the branches,
+    their order, their mutations and their returned values are unchanged)."""
     # Safe Question Reduction Slice 1 — CLOSURE GUARD. While a routed need of
     # this gap is outstanding, NO Owner answer can close it (DEMONSTRATED and
     # the REASONED follow-up alike): the strongest Owner answer leaves it
@@ -1309,6 +1350,65 @@ def integrate_response(
     else:  # ASSERTED
         gap.status = PARTIAL
         return "WARN", f"{gap_type} asserted only — reasoning required"
+
+
+# --------------------------------------------------------------------------
+# T2-G-5 — exact repeat of an answer that already moved the gap
+# --------------------------------------------------------------------------
+# The rule LEVEL is read from `engine/answer_stance.py` (`t2g_rule_level`); the
+# identity and its derived record live here, beside `integrate_response`, their
+# only caller, so the answer-stance reading stays free of any normalisation.
+#
+# The runtime attribute on IdeaState holding, per gap, the identity keys of the
+# answers that moved that gap's status (see `record_status_moving_answer` below).
+# Derived only: it is written by `integrate_response` at the moment an answer
+# changes the gap's status, which happens identically live and in replay (the
+# replay calls the same function for the same ACTIVE, applicable answers in
+# durable order, while `IdeaState.assertions` is still empty), so it is never
+# read from or written to the ledger, the store or any persisted record. A
+# superseded answer is not replayed after a correction, a rejected or
+# unapplied answer never reaches the status change, and keys are per gap.
+STATUS_MOVING_ANSWERS_ATTR = "t2g_status_moving_answer_keys"
+
+
+def answer_identity_key(text):
+    """The conservative identity of an answer for the T2-G-5 rule.
+
+    Unicode NFC, then every run of whitespace (as Python's ``str.split`` reads
+    it) becomes one space and the ends are trimmed. Nothing else changes: case,
+    digits, units, identifiers, symbols, punctuation, diacritics and tatweel
+    are kept, so "5 mW" and "5 MW" differ. No similarity or paraphrase
+    reading."""
+    return " ".join(unicodedata.normalize("NFC", text or "").split())
+
+
+def repeats_status_moving_answer(state, gap_type, response):
+    """True only under rule level 5 (the project's own T2-G-5 version, the
+    named gap and domains), when ``response`` has the same identity key as an
+    earlier answer that moved ``gap_type``'s status in this state's history.
+    Any other version, gap or domain reads False, which keeps today's
+    behaviour."""
+    from engine import answer_stance
+    if answer_stance.t2g_rule_level(state, gap_type=gap_type) < 5:
+        return False
+    keys = (getattr(state, STATUS_MOVING_ANSWERS_ATTR, None) or {}).get(gap_type, ())
+    return answer_identity_key(response) in keys
+
+
+def record_status_moving_answer(state, gap_type, response):
+    """Under rule level 5 only, remember that ``response`` moved
+    ``gap_type``'s status. A no-op at every other version, gap or domain, so
+    no earlier state gains the attribute. The mapping is replaced, never
+    mutated in place."""
+    from engine import answer_stance
+    if answer_stance.t2g_rule_level(state, gap_type=gap_type) < 5:
+        return
+    current = dict(getattr(state, STATUS_MOVING_ANSWERS_ATTR, None) or {})
+    key = answer_identity_key(response)
+    keys = current.get(gap_type, ())
+    if key not in keys:
+        current[gap_type] = keys + (key,)
+    setattr(state, STATUS_MOVING_ANSWERS_ATTR, current)
 
 
 def accept_gap_risk(state: IdeaState, gap_type: str) -> None:

@@ -78,7 +78,10 @@ def test_the_supported_versions_are_exactly_these():
     # The cross-gap replay repair adds the SIXTH; every earlier one is kept.
     from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_XG1
     assert ENGINE_CONTRACT_VERSION_XG1 == "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1"
-    # T2-G-4 adds the SEVENTH.
+    # T2-G-4 adds the SEVENTH and T2-G-5 the EIGHTH.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G5
+    assert ENGINE_CONTRACT_VERSION_T2G5 == \
+        "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5"
     from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G4
     assert ENGINE_CONTRACT_VERSION_T2G4 == \
         "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4"
@@ -86,7 +89,7 @@ def test_the_supported_versions_are_exactly_these():
         RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1,
         ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1,
         ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1,
-        ENGINE_CONTRACT_VERSION_T2G4)
+        ENGINE_CONTRACT_VERSION_T2G4, ENGINE_CONTRACT_VERSION_T2G5)
 
 
 @pytest.mark.parametrize("version", [None, RECONSTRUCTION_VERSION, "", "anything",

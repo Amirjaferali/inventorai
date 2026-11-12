@@ -5173,6 +5173,40 @@ UI_STRINGS = {
                "جديدة، وهو لا يفهم كتابتك بشكل عام، ولا يُتحقَّق من صحة فكرتك "
                "هندسيًا."),
     },
+    "UI_T2G5_QUESTION_SET": {
+        "en": ("These questions come from a fixed, reviewed set. This version "
+               "chooses which one to show from what your project already "
+               "records, using fixed rules — including recognising some ways "
+               "of saying you do not know something yet, and some short "
+               "explanations or ones written in the same sentence as an "
+               "uncertainty. A description of how your idea works that is "
+               "written only as a question, that starts with \"suppose\" or "
+               "\"imagine\", or that is read as saying only that you have not "
+               "decided or chosen yet how it works, is saved but not counted as "
+               "an explanation (that reading can be wrong when one sentence "
+               "holds both a choice still to make and an explanation). "
+               "An answer about how it works that is word for word the same as "
+               "an earlier answer already counted for that point is saved but "
+               "does not move it forward again. "
+               "That recognition covers only certain phrasings, so it will miss "
+               "others. No new questions are generated, it does not understand "
+               "your writing in general, and whether your idea is "
+               "engineering-correct is not checked."),
+        "ar": ("تأتي هذه الأسئلة من مجموعة ثابتة ومراجَعة. ويختار هذا الإصدار "
+               "أيها يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — "
+               "بما في ذلك تمييز بعض صيغ قولك إنك لا تعرف شيئًا بعد، وبعض "
+               "الشروح القصيرة أو المكتوبة في الجملة نفسها مع عبارة عدم "
+               "المعرفة. وإذا وصفت كيف تعمل فكرتك بصيغة سؤال فقط، أو بدأت "
+               "الوصف بكلمة «لنفترض»، أو قُرئت إجابتك على أنها تقول فقط إنك لم "
+               "تقرر أو لم تختر بعد كيف تعمل، فإنه يُحفظ لكنه لا يُحتسب شرحًا "
+               "(وقد تخطئ هذه القراءة إذا جمعت جملة واحدة بين اختيار لم يُحسم "
+               "وشرح). وإذا كانت إجابتك عن طريقة العمل مطابقة حرفيًا لإجابة "
+               "سابقة احتُسبت بالفعل لهذه النقطة، فإنها تُحفظ لكنها لا تُقدّمها "
+               "مرة أخرى. ولا يشمل هذا "
+               "التمييز إلا صيغًا معيّنة، لذلك ستفوته صيغ أخرى. ولا تُنشأ أسئلة "
+               "جديدة، وهو لا يفهم كتابتك بشكل عام، ولا يُتحقَّق من صحة فكرتك "
+               "هندسيًا."),
+    },
     # --- T2-D: optional contextual feedback on the displayed question -------
     # Copy describes SAVING TO THIS PROJECT and nothing more. It never promises
     # that a team receives or reviews it, never claims anonymity, never implies
@@ -13187,6 +13221,8 @@ _DEEP_AR = {
     "Your answer has been saved with your project. It asks about or supposes how the mechanism might work but does not state how it works, so this point has not moved forward. If you know how it works, describe it as a statement; if you do not know yet, you can say so.": "تم حفظ إجابتك مع مشروعك. وهي تسأل عن كيفية عمل الآلية أو تفترضها، لكنها لا تذكر كيف تعمل، لذلك لم تتقدّم هذه النقطة. إذا كنت تعرف كيف تعمل، فصِفها كعبارة تقريرية؛ وإن كنت لا تعرف بعد، يمكنك قول ذلك.",
     # T2-G-4: the undecided-choice disclosure.
     "Your answer has been saved with your project. The parts of it about how this works were read as saying that has not been decided or chosen yet, so this point has not moved forward. This reading follows fixed wording rules and can be wrong: if you have described how it works, write that description as its own sentence.": "تم حفظ إجابتك مع مشروعك. وقد قُرئت أجزاؤها المتعلقة بطريقة العمل على أنها تذكر أن ذلك لم يُحسم أو لم يُختر بعد، لذلك لم تتقدّم هذه النقطة. وتتبع هذه القراءة قواعد صياغة ثابتة وقد تكون خاطئة: إذا كنت قد وصفت كيف يعمل، فاكتب هذا الوصف في جملة مستقلة.",
+    # T2-G-5: the exact-repeat disclosure.
+    "Your answer has been saved with your project. It is word for word the same as an earlier answer that was already counted for this point, so it adds no new information and this point has not moved forward. To move forward, describe in your own words something your earlier answer did not cover.": "تم حفظ إجابتك مع مشروعك. وهي مطابقة حرفيًا لإجابة سابقة احتُسبت بالفعل لهذه النقطة، لذلك لا تضيف معلومات جديدة ولم تتقدّم هذه النقطة. للمضي قدمًا، صِف بكلماتك الخاصة شيئًا لم تتناوله إجابتك السابقة.",
     "This point cannot move forward yet. Review the result details for the specific reason.": "لا يمكن لهذه النقطة المضي قدمًا بعد. راجِع تفاصيل النتيجة لمعرفة السبب المحدّد.",
 
     # --- 4.9 gap_labels.py GAP_LABELS (heading / guidance / stage_note) ---

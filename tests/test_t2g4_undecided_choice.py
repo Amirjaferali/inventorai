@@ -24,6 +24,7 @@ from engine.session_reconstruction import (
     CURRENT_ENGINE_CONTRACT_VERSION, ENGINE_CONTRACT_VERSION_NR1,
     ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
     ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_T2G4,
+    ENGINE_CONTRACT_VERSION_T2G5,
     ENGINE_CONTRACT_VERSION_XG1, GAP_BOUND_REPLAY_VERSIONS,
     RECONSTRUCTION_VERSION, ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS, reconstruct_readonly_state)
@@ -33,6 +34,7 @@ from tests.test_t2g_versioned_journey import (  # noqa: F401 — fixture reuse
     _correct, _active_answers)
 
 T2G4 = ENGINE_CONTRACT_VERSION_T2G4
+T2G5 = ENGINE_CONTRACT_VERSION_T2G5
 PRIOR_VERSIONS = (RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1,
                   ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1,
                   ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1)
@@ -133,11 +135,13 @@ class _State:
 # ==========================================================================
 def test_exactly_one_seventh_version_is_added_and_stamped():
     assert T2G4 == "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4"
-    assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == PRIOR_VERSIONS + (T2G4,)
-    assert CURRENT_ENGINE_CONTRACT_VERSION == T2G4
+    # T2-G-5 follows T2-G-4, carries every level-4 rule and is now stamped.
+    assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == PRIOR_VERSIONS + (T2G4, T2G5)
+    assert CURRENT_ENGINE_CONTRACT_VERSION == T2G5
     # it carries XG1's gap-bound replay and the NR1 routing unchanged
-    assert GAP_BOUND_REPLAY_VERSIONS == (ENGINE_CONTRACT_VERSION_XG1, T2G4)
-    assert ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS[-1] == T2G4
+    assert GAP_BOUND_REPLAY_VERSIONS == (ENGINE_CONTRACT_VERSION_XG1, T2G4,
+                                         T2G5)
+    assert ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS[-2:] == (T2G4, T2G5)
     assert nr.is_routing_aware(T2G4)
 
 
@@ -145,7 +149,7 @@ def test_rule_level_four_only_for_the_new_version_and_scope():
     levels = {RECONSTRUCTION_VERSION: 0, ENGINE_CONTRACT_VERSION_T2G1: 1,
               ENGINE_CONTRACT_VERSION_T2G2: 2, ENGINE_CONTRACT_VERSION_NR1: 2,
               ENGINE_CONTRACT_VERSION_T2G3: 3, ENGINE_CONTRACT_VERSION_XG1: 3,
-              T2G4: 4}
+              T2G4: 4, T2G5: 5}
     for version, level in levels.items():
         assert st.t2g_rule_level(_State(version), MC) == level
     assert st.t2g_rule_level(_State(T2G4), PF) == 0
@@ -159,7 +163,9 @@ def test_rule_level_four_only_for_the_new_version_and_scope():
 def test_the_disclosure_follows_the_projects_own_version(client):
     c, appmod, _db = client
     _login(c, appmod)
-    new = _bike(c, appmod)
+    # T2-G-5 projects carry their own description; the T2-G-4 one stays
+    # exactly the description of a project recorded under T2-G-4.
+    new = _bike(c, appmod, version=T2G4)
     prior = _bike(c, appmod, version=ENGINE_CONTRACT_VERSION_XG1)
     t4_en = ui_text.text("UI_T2G4_QUESTION_SET", "en")
     t4_ar = ui_text.text("UI_T2G4_QUESTION_SET", "ar")
@@ -263,7 +269,7 @@ def test_the_exact_q10_answer_is_saved_verbatim_and_earns_nothing(client, domain
     c, appmod, db = client
     _login(c, appmod)
     sid = _bike(c, appmod, domain)
-    assert _stamp(db, sid) == T2G4
+    assert _stamp(db, sid) == CURRENT_ENGINE_CONTRACT_VERSION   # level >= 4
     assert _answer(c, sid, Q10).status_code == 302
     status, mechanism = _mc(appmod, sid)
     assert status == "OPEN" and mechanism is None
@@ -329,7 +335,8 @@ def test_live_cold_and_resumed_agree(client, answer):
     appmod.SESSION_STORE.clear()
     session = reconstruct_readonly_state(appmod._get_store(), sid)
     assert session.review.level == 1
-    assert session.state.engine_contract_version == T2G4
+    assert session.state.engine_contract_version == \
+        CURRENT_ENGINE_CONTRACT_VERSION
     assert (session.state.known_mechanism is None) == \
         (live["known_mechanism"] is None)
     assert appmod._resolve_question_context(session.state, None).identity == \

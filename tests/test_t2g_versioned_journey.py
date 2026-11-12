@@ -214,10 +214,10 @@ def test_a_real_current_start_records_the_newest_version(client):
     sid = _start(c)
     # T2-G-4: the newest version, which carries the XG1 replay repair, the
     # T2-G-3 rules and the NR1 routing unchanged.
-    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G4
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G4
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G4
-    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_T2G4
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G5
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G5
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G5
+    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_T2G5
 
 
 def test_the_version_is_selected_before_the_seed_is_interpreted(client):

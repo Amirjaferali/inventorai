@@ -225,7 +225,13 @@ _FROZEN_ENGINE_SHA256 = {
     # how ...") gets its own WARN and moves no gap. No classifier, tie,
     # substance, scoring, quality, maturity-gate or gap-type change
     # (pre-T2-G-4 = 0d88f083...d2f0).
-    "engine/progression_loop.py": "576388a2ae7fa1441978993626ff54937ca38ba52241d166ad53ce6f9eefe01b",
+    # T2-G-5 re-freeze (disclosed; Owner-authorized versioned trust repair):
+    # under the T2-G-5 engine-contract version ONLY, a Mechanism Completeness
+    # answer that is word for word an earlier answer which already moved the
+    # gap gets its own WARN and moves nothing. No classifier, tie, substance,
+    # scoring, quality, maturity-gate or gap-type change (pre-T2-G-5 =
+    # 576388a2...e01b).
+    "engine/progression_loop.py": "701bdfb464093db8d1a4f0660e310767cae792ac0f20fa890f73139ecd0bc291",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
 # P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after
