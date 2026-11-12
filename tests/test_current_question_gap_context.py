@@ -19,7 +19,7 @@ import web.app as appmod
 from web.ui_text import text
 from web.gap_labels import GAP_DISPLAY_NAMES, GAP_DISPLAY_NAMES_AR
 from tests.test_safe_question_routing_pf_q2 import (  # noqa: F401  (fixture)
-    client, MECH, PF_STRONG, BA_1, BA_2, _start, _answer, _live,
+    client, MECH, MECH_2, PF_STRONG, BA_1, BA_2, _start, _answer, _live,
 )
 from tests.test_safe_question_routing_pf_q2_weak_recovery import _to_stuck, _token, WEAK
 
@@ -113,7 +113,7 @@ def test_02_label_follows_the_resolved_identity_not_the_question_text(client, mo
 
 def test_03_marker_sits_on_the_exact_matching_item_and_other_gaps_stay_unmarked(client):
     sid = _start(client)
-    for value in (MECH, MECH, WEAK):
+    for value in (MECH, MECH_2, WEAK):
         _answer(client, sid, value)
     state = _live(sid)
     unresolved = [g.gap_type for g in state.gaps if g.status in ("OPEN", "PARTIAL")]
@@ -252,7 +252,7 @@ def test_10_integrated_guidance_primary_shows_nothing(client):
 
 def test_11_experiment_planning_primary_shows_nothing(client):
     sid = _start(client)
-    for value in (MECH, MECH, PF_STRONG, BA_1, BA_2):
+    for value in (MECH, MECH_2, PF_STRONG, BA_1, BA_2):
         _answer(client, sid, value)
     page = _raw(client, sid)
     assert "data-epg-action" in _primary(page)

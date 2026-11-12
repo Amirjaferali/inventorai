@@ -16,7 +16,7 @@ import web.app as webapp
 from web.ui_text import text
 from engine.path_n_questions import routing_policies
 from tests.test_draft_l2_local_continuity import server, page, _browser  # noqa: F401
-from tests.test_safe_question_routing_pf_q2 import MECH
+from tests.test_safe_question_routing_pf_q2 import MECH, MECH_2
 from tests.test_safe_question_routing_pf_q2_weak_recovery_browser import (
     _start_mechanical, _answer,
 )
@@ -65,7 +65,7 @@ def test_gap_action_pack_journey(server, page, lang):
     _no_raw_ids(block)
 
     # the mechanism is described: Physical Feasibility opens with its route
-    for value in (MECH, MECH):
+    for value in (MECH, MECH_2):
         _answer(page, value)
     policy = _pf_policy(sid)
     block = page.locator("details#gap-action-packs")
