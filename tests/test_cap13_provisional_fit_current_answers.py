@@ -165,6 +165,18 @@ def test_p10_preverb_limits_and_arabic_comma_alternatives_do_not_select_lift(tex
     assert fit.derive_current_fit(SEED, [ANSWER, text]) is None
 
 
+@pytest.mark.parametrize("text", [
+    "10 cm or raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "10 to 15 cm, raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "١٠ سم أو أرفع الشاشة ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+    "١٠ إلى ١٥ سم، أرفع الشاشة ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+])
+def test_p12_preverb_numeric_alternatives_never_select_height(text):
+    assert fit.derive_provisional_fit(text) is None
+    assert fit.derive_current_fit(SEED, [text]) is None
+    assert fit.derive_current_fit(SEED, [ANSWER, text]) is None
+
+
 def test_p11_an_arabic_comma_with_an_extra_number_fails_closed():
     # A comma is not proof of an independent clause: no silent height choice.
     text = "أرفع الشاشة ١٥ سم فوق مكتبي، وربما ١٠ سم؛ أبعاد: ٦٠ × ٢٠ سم"
