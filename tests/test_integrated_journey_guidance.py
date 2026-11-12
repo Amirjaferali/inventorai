@@ -43,7 +43,7 @@ from tests.test_stage28_control_loop_optional_part_slice1 import client  # noqa:
 from tests.test_28t5_nonfocused_required_part_questions import _ids, _part, _save as _save_part
 from tests.test_stage15_subsystem_interface_declaration import _declare
 from tests.test_stage15_interface_preparation import _save as _save_prep, COND, ACCEPT, EVID
-from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, PF_STRONG, BA_1, BA_2, _start
+from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, MECH_2 as MECH_ANSWER_2, PF_STRONG, BA_1, BA_2, _start
 from tests.test_component_inventory_declare_list import _declare as _declare_component
 from tests.test_component_interface_participation import _form as _icp_form, _post as _icp_post
 from web import ui_text
@@ -90,7 +90,7 @@ def _finished_focus(c, lang=None):
     """An integrated invention, Mechanical focus, whose focus questioning has no
     question left: the point where the Compass used to fall back to the handoff."""
     sid = _created(_compose(c, TIE_IDEA, focus=MECH, lang=lang))
-    for value in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, PF_STRONG, BA_1, BA_2):
         _answer(c, sid, value)
     assert 'href="#response"' not in _primary(_raw(c, sid))
     return sid
@@ -192,7 +192,7 @@ def test_05_a_waiting_question_stays_the_primary_action(client):
 
 def test_06_single_domain_projects_never_see_the_guidance(client):
     sid = _start(client)
-    for value in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, PF_STRONG, BA_1, BA_2):
         _answer(client, sid, value)
     page = _raw(client, sid)
     _after_ijg(page, sid)                    # AMENDED: no integrated step; the planning step

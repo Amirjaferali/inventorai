@@ -89,8 +89,10 @@ def _journey(client, idea=ELEC_IDEA, domain="electronics_electrical"):
     """Real journey to maturity 1 with an open MECHANISM gap, then memory loss.
     Returns (sid, live_maturity, live_question)."""
     sid = _start(client, idea, domain)
-    _answer(client, sid, ANSWER_1)          # WARN: problem not yet established
-    _answer(client, sid, ANSWER_1)          # PASS: problem established -> LEVEL 1
+    _answer(client, sid, ANSWER_1)          # LEVEL 1; mechanism partly addressed
+    # T2-G-5: a word-for-word repeat no longer closes the mechanism gap on a
+    # newly created project, so the journey uses a genuine follow-up.
+    _answer(client, sid, ANSWER_2)          # mechanism closed; next question served
     live = SESSION_STORE[sid]["state"]
     live_maturity = live.maturity_level
     live_question = (SESSION_STORE[sid].get("last_result") or {}).get("question")

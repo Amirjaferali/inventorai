@@ -13,7 +13,7 @@ from playwright.sync_api import expect
 from web.ui_text import text
 from tests.test_draft_l2_local_continuity import server, page, _browser  # noqa: F401
 from tests.test_cap13_therm01_integrated_part_browser import _no_overflow, _start_integrated
-from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, PF_STRONG, BA_1, BA_2
+from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, MECH_2 as MECH_ANSWER_2, PF_STRONG, BA_1, BA_2
 
 
 def _compass_action(page, server, sid, kind):
@@ -29,7 +29,7 @@ def test_the_compass_leads_from_parts_to_the_clearance_check(server, page, lang)
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     sid = _start_integrated(page, server, lang, "mechanical")
-    for value in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, PF_STRONG, BA_1, BA_2):
         page.goto(f"{server}/session/{sid}")
         page.fill("#response", value)
         page.locator("#answer-form button[type=submit]").click()

@@ -12,7 +12,7 @@ import web.app as webapp
 from web.ui_text import text
 from engine.idea_state import PHYSICAL_FEASIBILITY, ACCEPTED_RISK
 from tests.test_draft_l2_local_continuity import server, page, _browser  # noqa: F401
-from tests.test_safe_question_routing_pf_q2 import SEED, MECH, PF_STRONG, BA_1, BA_2
+from tests.test_safe_question_routing_pf_q2 import SEED, MECH, MECH_2, PF_STRONG, BA_1, BA_2
 
 WEAK = "I am not sure yet."
 
@@ -48,7 +48,7 @@ def test_weak_pf_no_question_state_is_safe_and_recoverable(server, page, lang):
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     sid = _start_mechanical(page, server, lang)
-    for value in (MECH, MECH, WEAK, BA_1, BA_2):
+    for value in (MECH, MECH_2, WEAK, BA_1, BA_2):
         _answer(page, value)
     # no null question, no answer form — the recovery renders instead
     assert page.locator("p.question").count() == 0

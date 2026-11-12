@@ -21,7 +21,7 @@ import pytest
 import web.app as appmod
 from engine.deliverable_assembler import assemble_deliverable, current_experiment_ids
 from tests.test_safe_question_routing_pf_q2 import (  # noqa: F401  (fixture)
-    BA_1, BA_2, MECH, PF_STRONG, _answer, _live, _start, client)
+    BA_1, BA_2, MECH, MECH_2, PF_STRONG, _answer, _live, _start, client)
 from tests.test_stage19_durable_success_criteria import PREFIX
 from web import ui_text
 
@@ -45,7 +45,7 @@ def _finished(c, lang="en"):
     """A single-domain Mechanical journey whose questions are exhausted; its Section-11 plan proposes
     experiments and nothing is planned yet."""
     sid = _start(c, lang=lang)
-    for value in (MECH, MECH, PF_STRONG, BA_1, BA_2):
+    for value in (MECH, MECH_2, PF_STRONG, BA_1, BA_2):
         _answer(c, sid, value)
     return sid
 
@@ -133,7 +133,7 @@ def test_05_an_earlier_primary_action_wins_and_never_evaluates_the_step(client, 
     page = _raw(client, sid)
     assert 'href="#response"' in _primary(page) and "data-epg" not in page
     assert calls == []                                               # lazy: never reached
-    for value in (MECH, MECH, PF_STRONG, BA_1, BA_2):
+    for value in (MECH, MECH_2, PF_STRONG, BA_1, BA_2):
         _answer(client, sid, value)
     assert _is_planning_step(_raw(client, sid), sid)
     assert calls                                                      # evaluated at the end of the chain

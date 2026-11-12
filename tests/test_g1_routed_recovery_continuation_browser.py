@@ -12,7 +12,7 @@ from playwright.sync_api import expect
 
 from tests.test_draft_l2_local_continuity import server, page, _browser  # noqa: F401
 from tests.test_cap13_therm01_integrated_part_browser import _no_overflow, _start_integrated
-from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, BA_1, BA_2
+from tests.test_safe_question_routing_pf_q2 import MECH as MECH_ANSWER, MECH_2 as MECH_ANSWER_2, BA_1, BA_2
 from tests.test_safe_question_routing_pf_q2_weak_recovery import WEAK
 from web.ui_text import text
 
@@ -23,7 +23,7 @@ def test_routed_recovery_shows_one_secondary_integrated_step(server, page, lang)
     page.on("pageerror", lambda error: errors.append(str(error)))
     _start_integrated(page, server, lang, "mechanical")
     sid = page.url.rsplit("/session/", 1)[1].split("?")[0].split("#")[0]
-    for value in (MECH_ANSWER, MECH_ANSWER, WEAK, BA_1, BA_2):
+    for value in (MECH_ANSWER, MECH_ANSWER_2, WEAK, BA_1, BA_2):
         page.goto(f"{server}/session/{sid}")
         page.fill("#response", value)
         page.locator("#answer-form button[type=submit]").click()
