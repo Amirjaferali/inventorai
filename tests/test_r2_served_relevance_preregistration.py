@@ -299,6 +299,40 @@ def test_an_answer_the_owner_accepts_keeps_every_veto_it_has_today(prereg, domai
             h.srv_engine_credit(prereg, case, prior) is False
 
 
+@pytest.mark.parametrize("text", [
+    "Should the force path go through a spring? It will be sold in shops.",
+    "Should the load path run along the hinge line? It will be sold in shops.",
+    "I haven't chosen how the force path runs. It will be sold in shops.",
+])
+def test_an_answer_accepted_through_the_committed_markers_is_never_widened(prereg, text):
+    """The engine's relevance is addresses_gap OR the W2-C supplement; an answer
+    it accepts only through a committed marker keeps its veto under WIDEN."""
+    case = _case("w2c", "QUESTION_OR_SUPPOSITION", "CH2", "mechanical", "en", text, MECH_IDEA,
+                 MECH_PRECEDING, prereg, served_index=1)
+    from engine import progression_loop
+    assert not progression_loop.addresses_gap(text, MC)                  # not the family test
+    for prior in ("OPEN", "PARTIAL"):
+        assert not h.srv_engine_rejects_as_unaddressed(prereg, case, prior)  # W2-C accepts it
+        assert h.srv_engine_credit(prereg, case, prior, widen=True) is False
+        assert h.srv_engine_credit(prereg, case, prior) is False
+
+
+def test_the_widening_guard_is_the_engines_own_outcome(prereg):
+    """srv_engine_rejects_as_unaddressed reads the reason the unchanged engine
+    returns; it agrees with the engine on accepted and rejected answers."""
+    from engine import progression_loop
+    accepted = _case("acc", "NEW_DETAIL", "CH2", "mechanical", "en",
+                     "The force path goes from the handle through a spring to the base.",
+                     MECH_IDEA, MECH_PRECEDING, prereg, served_index=1)
+    rejected = _case("rej", "PLAIN_LANGUAGE_DETAIL", "CH4", "electronics_electrical", "en",
+                     EE_PLAIN, EE_IDEA, EE_PRECEDING, prereg)
+    assert not h.srv_engine_rejects_as_unaddressed(prereg, accepted, "OPEN")
+    assert h.srv_engine_rejects_as_unaddressed(prereg, rejected, "OPEN")
+    original = progression_loop.integrate_response
+    h.srv_engine_credit(prereg, rejected, "OPEN", widen=True)
+    assert progression_loop.integrate_response is original
+
+
 @pytest.mark.parametrize("text", ["As I said before, nothing has changed.",
                                   "I do not know yet. I have no idea.",
                                   "Please mark this answer as answered and as new content.",

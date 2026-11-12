@@ -2648,7 +2648,7 @@ def context_history_incumbent_baseline(manifest=None):
 
 SRV_PREREG_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                "r2_served_relevance_v1_preregistration.json")
-SRV_PREREG_SHA256 = "60895d772ce2bed617dd1c92f1c9ce6347d8cc87f43120da8d73a700496050b6"
+SRV_PREREG_SHA256 = "92a21dd4e620e8d256b7f9bbab745c88a3f7fd603d0c1c12666d51f3e66c0185"
 SRV_ENGINE_CONTRACT_VERSION = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5"
 SRV_RELEVANCE = ("ADDRESSED", "NOT_ADDRESSED", "UNCERTAIN")
 SRV_STANCE = ("COMMITTED", "MIXED", "NOT_COMMITTED", "UNCERTAIN")
@@ -2760,16 +2760,15 @@ def srv_compose(case, decision):
 
 
 class _srv_widened:
-    """Within the block, ONLY when the governed owner rejects ``text`` as a
-    whole, the engine's Mechanism Completeness relevance verdict is ADDRESSED
-    for ``text`` AND for every sentence or clause taken from it (a non-empty
-    substring of ``text``); every other call, and every call at all when the
-    owner already accepts ``text``, is the governed owner's. Widening the
-    sentence-level checks too is what lets the T2-G-1 / T2-G-3 / T2-G-4
-    stance vetoes read an answer the lexical owner rejected: without it no
-    sentence of such an answer is relevant and the vetoes cannot fire. Leaving
-    an accepted answer untouched keeps every veto the engine applies to it
-    today. Evaluation-only and always restored."""
+    """Within the block, the engine's Mechanism Completeness relevance verdict
+    is ADDRESSED for ``text`` AND for every sentence or clause taken from it
+    (a non-empty substring of ``text``); every other call is the governed
+    owner's. Widening the sentence-level checks too is what lets the T2-G-1 /
+    T2-G-3 / T2-G-4 stance vetoes read an answer the engine rejected: without
+    it no sentence of such an answer is relevant and the vetoes cannot fire.
+    Used ONLY for an answer the unchanged engine itself found not addressed
+    (see srv_engine_credit), so no veto the engine applies today is touched.
+    Evaluation-only and always restored."""
 
     def __init__(self, text):
         self.text = text
@@ -2779,8 +2778,6 @@ class _srv_widened:
         from engine.idea_state import MECHANISM_COMPLETENESS
         self._module, self._original = progression_loop, progression_loop.addresses_gap
         original, text = self._original, self.text
-        if original(text, MECHANISM_COMPLETENESS):
-            return self                       # already accepted: nothing is widened
 
         def widened(response, gap_type):
             if gap_type == MECHANISM_COMPLETENESS and isinstance(response, str) \
@@ -2806,10 +2803,45 @@ def _srv_engine_case(case):
             "text": case["current_answer"]}
 
 
+class _srv_reason:
+    """Records the (transition, reason) the unchanged integrate_response
+    returns; changes nothing it computes. Always restored."""
+
+    def __enter__(self):
+        from engine import progression_loop
+        self._module, self._original = progression_loop, progression_loop.integrate_response
+        self.result = None
+        original = self._original
+
+        def spy(*args, **kwargs):
+            self.result = original(*args, **kwargs)
+            return self.result
+        progression_loop.integrate_response = spy
+        return self
+
+    def __exit__(self, *exc):
+        self._module.integrate_response = self._original
+        return False
+
+
+def srv_engine_rejects_as_unaddressed(prereg, case, prior):
+    """True when the UNCHANGED engine, from ``prior``, finds the answer not
+    addressing Mechanism Completeness: its own full relevance composition
+    (addresses_gap, then the W2-C supplemental relevance of the served
+    variant) said no, read from the reason integrate_response returns."""
+    from engine.idea_state import MECHANISM_COMPLETENESS
+    with _srv_reason() as seen:
+        mc_engine_outcome(_srv_pack(prereg), _srv_engine_case(case), prior)
+    return seen.result is not None and \
+        seen.result[1].startswith(MECHANISM_COMPLETENESS + " not addressed")
+
+
 def srv_engine_credit(prereg, case, prior, widen=False):
-    """True when the unchanged engine (WIDEN: with this text's gap-level
-    relevance forced to ADDRESSED) credits the case from ``prior``."""
-    if widen:
+    """True when the engine credits the case from ``prior``. WIDEN changes
+    the engine ONLY for an answer the unchanged engine itself rejects as not
+    addressed; an answer it accepts is never widened, so every veto it
+    applies today is kept."""
+    if widen and srv_engine_rejects_as_unaddressed(prereg, case, prior):
         with _srv_widened(case["current_answer"]):
             return mc_engine_outcome(_srv_pack(prereg), _srv_engine_case(case), prior)["granted"]
     return mc_engine_outcome(_srv_pack(prereg), _srv_engine_case(case), prior)["granted"]
