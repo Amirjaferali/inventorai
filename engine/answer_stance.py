@@ -1277,4 +1277,3 @@ def undecided_without_mechanism(state, gap_type, response, is_relevant_sentence)
         return pending_seen
     except Exception:
         return False
-
