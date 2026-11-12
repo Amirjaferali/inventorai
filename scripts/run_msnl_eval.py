@@ -2633,6 +2633,438 @@ def context_history_incumbent_baseline(manifest=None):
             "rows": rows}
 
 
+
+# ─── R2 positive served-question relevance (prepared; NO run path) ────────────
+# Owner authorization "R2 POSITIVE SEMANTIC RELEVANCE — ONE BOUNDED OFFLINE
+# PREPARATION" (2026-11-12). ONE frozen candidate extends the not-falsified
+# context-history candidate (#951 / #965 Run 03) with the judgment #967 found
+# missing: whether the answer gives what the SERVED question asks for, grounded
+# in NEW text of the answer, beside a separate stance judgment. Nothing here is
+# a provider path, a product path or a grant: the composition decides only
+# which unchanged-engine path an evaluation case takes, and its single change
+# (WIDEN) is the gap-level relevance verdict for that exact text. The
+# preregistration (candidate, composition, criteria, holdout design) is frozen
+# before any case exists; the holdout is authored later, independently.
+
+SRV_PREREG_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                               "r2_served_relevance_v1_preregistration.json")
+SRV_PREREG_SHA256 = "020fa7e5d75ad9eeff3da2889f66d3aaa8b7b26239926dd9d7b041ba55f02308"
+SRV_ENGINE_CONTRACT_VERSION = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-t2g4-t2g5"
+SRV_RELEVANCE = ("ADDRESSED", "NOT_ADDRESSED", "UNCERTAIN")
+SRV_STANCE = ("COMMITTED", "MIXED", "NOT_COMMITTED", "UNCERTAIN")
+SRV_FIELDS = CH_FIELDS + ("served_question_relevance", "relevance_quote", "stance")
+SRV_UNGROUNDED = "UNGROUNDED"
+SRV_WITHHOLD, SRV_INCUMBENT, SRV_WIDEN = "WITHHOLD", "INCUMBENT", "WIDEN"
+SRV_POSITIVE_LABEL = {"project_relation": "RELATED", "new_contribution": "CONTENT_BEARING",
+                      "served_question_relevance": "ADDRESSED", "stance": "COMMITTED"}
+SRV_CRITERIA = ("C1_FALSIFIED_FALSE_CREDIT", "C2_FALSIFIED_INSUFFICIENT_RECOVERY",
+                "C3_FALSIFIED_NEW_REJECTION", "C4_FALSIFIED_OVER_ABSTENTION",
+                "C5_FALSIFIED_RELATION_FLIP")
+SRV_PREPARATION_INVALID = "PREPARATION_INVALID"
+
+
+def srv_preregistration():
+    """The hash-pinned preregistration; refuses (PackError) any drift, and any
+    candidate that is not exactly the context-history instructions with the
+    recorded segment replacements."""
+    prereg = _load(SRV_PREREG_PATH, SRV_PREREG_SHA256)
+    base = _load(CONTEXT_HISTORY_PREREG_PATH, CONTEXT_HISTORY_PREREG_SHA256)
+    cand = prereg["candidate"]
+    if prereg["base"]["context_history_preregistration_sha256"] != CONTEXT_HISTORY_PREREG_SHA256:
+        raise PackError("the preregistration names another context-history base")
+    rebuilt = base["candidate"]["instructions"]
+    for delta in cand["instruction_delta"]:
+        if rebuilt.count(delta["replaced_segment_old"]) != 1:
+            raise PackError("a replaced segment is not unique in the base instructions")
+        rebuilt = rebuilt.replace(delta["replaced_segment_old"], delta["replaced_segment_new"])
+    if rebuilt != cand["instructions"]:
+        raise PackError("the candidate is not the base instructions with the recorded deltas")
+    if hashlib.sha256(cand["instructions"].encode("utf-8")).hexdigest() != cand["instructions_sha256"]:
+        raise PackError("the frozen instructions do not match their pinned digest")
+    if prereg["engine"]["engine_contract_version"] != SRV_ENGINE_CONTRACT_VERSION:
+        raise PackError("the preregistration names another engine contract")
+    return prereg
+
+
+def srv_payload(prereg, case, model):
+    """The exact provider body: frozen instructions, the strict schema and as
+    input ONLY the four case texts (no id, category or label). Preparation
+    only: nothing here sends it."""
+    body = json.dumps({f: case[f] for f in CH_INPUT_FIELDS}, ensure_ascii=False, sort_keys=True)
+    return {"model": model, "instructions": prereg["candidate"]["instructions"], "input": body,
+            "store": False, "max_output_tokens": prereg["run_plan"]["max_output_tokens"],
+            "text": {"format": {"type": "json_schema", "name": "r2_served_relevance",
+                                "strict": True, "schema": prereg["candidate"]["output_schema"]}}}
+
+
+def srv_reply_error(reply):
+    """None when ``reply`` is exactly the seven frozen fields with frozen values."""
+    if not isinstance(reply, dict) or set(reply) != set(SRV_FIELDS):
+        return toa.ERR_MALFORMED
+    if ch_reply_error({k: reply[k] for k in CH_FIELDS}) is not None \
+            or reply["served_question_relevance"] not in SRV_RELEVANCE \
+            or reply["stance"] not in SRV_STANCE \
+            or not isinstance(reply["relevance_quote"], str):
+        return toa.ERR_MALFORMED
+    return None
+
+
+def _srv_grounded_new(quote, case):
+    """G1 / G2 with G3: found in current_answer, and NOT also found in
+    original_idea or preceding_answer (a quote of earlier text is no evidence
+    of new content)."""
+    if not quote.strip() or not quote_grounded(quote, case["current_answer"]):
+        return False
+    earlier = [case["original_idea"]] + ([case["preceding_answer"]]
+                                         if case.get("preceding_answer") else [])
+    return not any(quote_grounded(quote, text) for text in earlier)
+
+
+def srv_decision(case, reply):
+    """The four judgments as decided under G1-G3. Raises PackError on a reply
+    srv_reply_error refuses (a malformed reply is a RUN_INVALID event, never a
+    decision)."""
+    if srv_reply_error(reply) is not None:
+        raise PackError("malformed reply")
+    contribution, relevance = reply["new_contribution"], reply["served_question_relevance"]
+    if contribution == "CONTENT_BEARING":
+        c_ok = _srv_grounded_new(reply["evidence_quote"], case)
+    else:
+        c_ok = reply["evidence_quote"] == ""
+    if relevance == "ADDRESSED":
+        r_ok = _srv_grounded_new(reply["relevance_quote"], case)
+    else:
+        r_ok = reply["relevance_quote"] == ""
+    return {"project_relation": reply["project_relation"],
+            "new_contribution": contribution if c_ok else SRV_UNGROUNDED,
+            "served_question_relevance": relevance if r_ok else SRV_UNGROUNDED,
+            "stance": reply["stance"], "possible_amendment": reply["possible_amendment"],
+            "reply": {k: reply[k] for k in ("new_contribution", "served_question_relevance")}}
+
+
+def srv_compose(case, decision):
+    """(path, reason) under the frozen rules R1-R6; no judgment implies
+    another. Offline, every decision is fresh for its own case, so the #966
+    source binding a product use would need is not called (R1)."""
+    if decision["project_relation"] != "RELATED":
+        return SRV_WITHHOLD, "R1:" + decision["project_relation"]
+    if decision["new_contribution"] != "CONTENT_BEARING":
+        return SRV_WITHHOLD, "R2:" + decision["new_contribution"]
+    if decision["stance"] == "NOT_COMMITTED":
+        return SRV_WITHHOLD, "R3:NOT_COMMITTED"
+    if decision["served_question_relevance"] == "NOT_ADDRESSED":
+        return SRV_WITHHOLD, "R4:NOT_ADDRESSED"
+    if decision["stance"] == "UNCERTAIN" or decision["served_question_relevance"] != "ADDRESSED":
+        return SRV_INCUMBENT, "R5:" + decision["stance"] + "/" + decision["served_question_relevance"]
+    return SRV_WIDEN, "R6:ADDRESSED"
+
+
+class _srv_widened:
+    """Within the block, the engine's Mechanism Completeness relevance verdict
+    is ADDRESSED for ``text`` AND for every sentence or clause taken from it
+    (a non-empty substring of ``text``); every other call is the governed
+    owner's. Widening the sentence-level checks too is what lets the T2-G-1 /
+    T2-G-3 / T2-G-4 stance vetoes read an answer the engine rejected: without
+    it no sentence of such an answer is relevant and the vetoes cannot fire.
+    Used ONLY for an answer the unchanged engine itself found not addressed
+    (see srv_engine_credit), so no veto the engine applies today is touched.
+    Evaluation-only and always restored."""
+
+    def __init__(self, text):
+        self.text = text
+
+    def __enter__(self):
+        from engine import progression_loop
+        from engine.idea_state import MECHANISM_COMPLETENESS
+        self._module, self._original = progression_loop, progression_loop.addresses_gap
+        original, text = self._original, self.text
+
+        def widened(response, gap_type):
+            if gap_type == MECHANISM_COMPLETENESS and isinstance(response, str) \
+                    and response.strip() and response.strip() in text:
+                return True
+            return original(response, gap_type)
+        progression_loop.addresses_gap = widened
+        return self
+
+    def __exit__(self, *exc):
+        self._module.addresses_gap = self._original
+        return False
+
+
+def _srv_pack(prereg):
+    return {"replay": {"engine_contract_version": prereg["engine"]["engine_contract_version"],
+                       "prior_partial_text": prereg["engine"]["prior_partial_text"]}}
+
+
+def _srv_engine_case(case):
+    return {"domain": case["domain"], "served_index": case["served_index"],
+            "question_id": case["question_id"], "served_question": case["served_question"],
+            "text": case["current_answer"]}
+
+
+class _srv_reason:
+    """Records the (transition, reason) the unchanged integrate_response
+    returns; changes nothing it computes. Always restored."""
+
+    def __enter__(self):
+        from engine import progression_loop
+        self._module, self._original = progression_loop, progression_loop.integrate_response
+        self.result = None
+        original = self._original
+
+        def spy(*args, **kwargs):
+            self.result = original(*args, **kwargs)
+            return self.result
+        progression_loop.integrate_response = spy
+        return self
+
+    def __exit__(self, *exc):
+        self._module.integrate_response = self._original
+        return False
+
+
+def srv_engine_rejects_as_unaddressed(prereg, case, prior):
+    """True when the UNCHANGED engine, from ``prior``, finds the answer not
+    addressing Mechanism Completeness: its own full relevance composition
+    (addresses_gap, then the W2-C supplemental relevance of the served
+    variant) said no, read from the reason integrate_response returns."""
+    from engine.idea_state import MECHANISM_COMPLETENESS
+    with _srv_reason() as seen:
+        mc_engine_outcome(_srv_pack(prereg), _srv_engine_case(case), prior)
+    return seen.result is not None and \
+        seen.result[1].startswith(MECHANISM_COMPLETENESS + " not addressed")
+
+
+def srv_engine_credit(prereg, case, prior, widen=False):
+    """True when the engine credits the case from ``prior``. WIDEN changes
+    the engine ONLY for an answer the unchanged engine itself rejects as not
+    addressed; an answer it accepts is never widened, so every veto it
+    applies today is kept."""
+    if widen and srv_engine_rejects_as_unaddressed(prereg, case, prior):
+        with _srv_widened(case["current_answer"]):
+            return mc_engine_outcome(_srv_pack(prereg), _srv_engine_case(case), prior)["granted"]
+    return mc_engine_outcome(_srv_pack(prereg), _srv_engine_case(case), prior)["granted"]
+
+
+def srv_case_row(prereg, case, decision):
+    """One scored case: its path, and the incumbent and composed credit from
+    each prior."""
+    path, reason = srv_compose(case, decision)
+    priors = prereg["engine"]["priors"]
+    incumbent = {p: srv_engine_credit(prereg, case, p) for p in priors}
+    composed = {p: (False if path == SRV_WITHHOLD else
+                    incumbent[p] if path == SRV_INCUMBENT else
+                    srv_engine_credit(prereg, case, p, widen=True)) for p in priors}
+    return {"case_id": case["case_id"], "path": path, "reason": reason, "decision": decision,
+            "incumbent": incumbent, "composed": composed}
+
+
+def _srv_side(case):
+    return case["side"]
+
+
+def srv_falsifiable(case):
+    """True when some reply could reach WIDEN: current_answer holds at least
+    two adjacent words not found in original_idea or preceding_answer.
+    Otherwise G3 withholds the case whatever the model says (an exact repeat,
+    for one), so it cannot test false credit and P2 / P3 do not count it.
+    Words are compared case- and punctuation-insensitively, more strictly than
+    G3 itself: a doubtful case is left uncounted, which only makes P2 / P3
+    harder to meet."""
+    def pairs(text):
+        words = _WORD_RUN.findall(_normalised(text).lower())
+        return set(zip(words, words[1:]))
+    earlier = pairs(case["original_idea"]) | (pairs(case["preceding_answer"])
+                                             if case.get("preceding_answer") else set())
+    return bool(pairs(case["current_answer"]) - earlier)
+
+
+def _srv_construction_errors(prereg, cases):
+    """Case ids of constructed cases that do not reproduce their rule exactly:
+    HISTORY_COUNTERFACTUAL_NEW is the PARAPHRASE_OF_PREVIOUS text shown with a
+    different preceding answer (B); PROJECT_COUNTERFACTUAL is the partner
+    project's NEW_DETAIL text shown with this project's idea, question and A;
+    EXACT_REPEAT_OF_PRECEDING is this project's A, shown with A."""
+    def one(project, variety, category):
+        hits = [c for c in cases if (c["project_id"], c["variety"], c["category"])
+                == (project, variety, category)]
+        return hits[0] if len(hits) == 1 else None
+    partners = prereg["projects"]["partners"]
+    bad = []
+    for c in cases:
+        key = (c["project_id"], c["variety"])
+        new = one(*key, "NEW_DETAIL")
+        if c["category"] == "HISTORY_COUNTERFACTUAL_NEW":
+            src = one(*key, "PARAPHRASE_OF_PREVIOUS")
+            ok = src is not None and new is not None \
+                and c["current_answer"] == src["current_answer"] \
+                and c["preceding_answer"] not in (None, new["preceding_answer"])
+        elif c["category"] == "PROJECT_COUNTERFACTUAL":
+            src = one(partners.get(c["project_id"]), c["variety"], "NEW_DETAIL")
+            ok = src is not None and new is not None \
+                and c["current_answer"] == src["current_answer"] \
+                and (c["original_idea"], c["served_question"], c["preceding_answer"]) == \
+                (new["original_idea"], new["served_question"], new["preceding_answer"])
+        elif c["category"] == "EXACT_REPEAT_OF_PRECEDING":
+            ok = new is not None and c["preceding_answer"] == new["preceding_answer"] \
+                and c["current_answer"] == c["preceding_answer"]
+        else:
+            continue
+        if not ok:
+            bad.append(c["case_id"])
+    return bad
+
+
+def srv_grid_errors(prereg, cases):
+    """P5 grid: the holdout is exactly one case for every frozen (project,
+    category, variety), each with a unique case_id and its project's frozen
+    domain and served index. Returns the failures (empty = the exact grid)."""
+    projects = prereg["projects"]
+    expected = {(p, cat, var) for p in projects["domains"] for cat in prereg["categories"]
+                for var in prereg["varieties"]}
+    failed = []
+    ids = [c.get("case_id") for c in cases]
+    if len(set(ids)) != len(ids):
+        failed.append("P5_GRID_DUPLICATE_CASE_ID")
+    seen = collections.Counter((c.get("project_id"), c.get("category"), c.get("variety"))
+                               for c in cases)
+    failed += ["P5_GRID_MISSING:%s/%s/%s" % key for key in sorted(expected - set(seen))]
+    failed += ["P5_GRID_UNEXPECTED:%s/%s/%s" % key for key in sorted(set(seen) - expected)]
+    failed += ["P5_GRID_REPEATED:%s/%s/%s" % key for key, n in sorted(seen.items()) if n > 1]
+    for c in cases:
+        p = c.get("project_id")
+        if p in projects["domains"] and (c.get("domain") != projects["domains"][p]
+                                         or c.get("served_index") != projects["served_index"][p]):
+            failed.append("P5_GRID_PROJECT_METADATA:" + str(c.get("case_id")))
+    return failed
+
+
+def srv_validity(prereg, cases):
+    """P1-P5, computed offline from the frozen cases and the unchanged engine
+    before any provider request. Returns the list of failed preconditions
+    (empty = the holdout can falsify the candidate in both directions)."""
+    v = prereg["validity"]
+    cats = prereg["categories"]
+    failed = []
+    disputed = [c for c in cases if c.get("label_disputed")]
+    if len(disputed) > v["P4_max_disputed_fraction"] * len(cases):
+        failed.append("P4_TOO_MANY_DISPUTED")
+    scored_cats = [k for k, c in cats.items() if c["side"] in ("positive", "negative")]
+    for cat in scored_cats:
+        if sum(1 for c in cases if c["category"] == cat and not c.get("label_disputed")) \
+                < v["P4_min_undisputed_per_scored_category"]:
+            failed.append("P4_THIN_CATEGORY:" + cat)
+    for c in cases:
+        expected = cats.get(c["category"])
+        if expected is None or c["side"] != expected["side"] or \
+                c["slot_label"] != expected["slot_label"] and not c.get("label_disputed"):
+            failed.append("P5_CASE_SHAPE:" + c["case_id"])
+    if v.get("P5_exact_grid", True):
+        failed += srv_grid_errors(prereg, cases)
+    failed += ["P5_CONSTRUCTION:" + cid for cid in _srv_construction_errors(prereg, cases)]
+    live = [c for c in cases if not c.get("label_disputed")]
+    pos = [c for c in live if c["side"] == "positive"]
+    neg = [c for c in live if c["side"] == "negative"]
+    rejected = [c for c in pos if not srv_engine_credit(prereg, c, "OPEN")]
+    if len(rejected) < v["P1_min_incumbent_rejected_positives"] \
+            or any(sum(1 for c in rejected if c["project_id"] == p) < v["P1_min_per_project"]
+                   for p in sorted({c["project_id"] for c in cases})) \
+            or any(sum(1 for c in rejected if c["variety"] == var) < v["P1_min_per_variety"]
+                   for var in prereg["varieties"]):
+        failed.append("P1_TOO_FEW_INCUMBENT_REJECTED_POSITIVES")
+    falsifiable = [c for c in neg if srv_falsifiable(c)]
+    hazard = [c for c in falsifiable if srv_engine_credit(prereg, c, "OPEN", widen=True)]
+    if len(hazard) < v["P2_min_hazard_bearing_negatives"] \
+            or len({c["category"] for c in hazard}) < v["P2_min_categories"]:
+        failed.append("P2_TOO_FEW_HAZARD_BEARING_NEGATIVES")
+    credited = [c for c in falsifiable if any(srv_engine_credit(prereg, c, p)
+                                              for p in prereg["engine"]["priors"])]
+    if len(credited) < v["P3_min_incumbent_credited_negatives"]:
+        failed.append("P3_TOO_FEW_INCUMBENT_CREDITED_NEGATIVES")
+    return failed
+
+
+def srv_measures(prereg, cases, rows):
+    """M-FC, M-REC, M-NFR, M-ABST, M-FLIP ([count, units]) over undisputed
+    cases, overall and by category, project, domain and variety; M-MIXED as a
+    path / credit tally. Every measure reads the composed engine outcome."""
+    index = {c["case_id"]: c for c in cases}
+    priors = prereg["engine"]["priors"]
+    scored = [(index[r["case_id"]], r) for r in rows if not index[r["case_id"]].get("label_disputed")]
+
+    def tally(units):
+        units = list(units)
+        pos = [(c, r) for c, r in units if c["side"] == "positive"]
+        neg = [(c, r) for c, r in units if c["side"] == "negative"]
+        rejected = [(c, r) for c, r in pos if not r["incumbent"]["OPEN"]]
+        related = [(c, r) for c, r in units if c["side"] in ("positive", "negative")
+                   and c["slot_label"]["project_relation"] == "RELATED"]
+        return {
+            "M-FC": [sum(any(r["composed"][p] for p in priors) for _, r in neg), len(neg)],
+            "M-REC": [sum(r["composed"]["OPEN"] for _, r in rejected), len(rejected)],
+            "M-NFR": [sum(any(r["incumbent"][p] and not r["composed"][p] for p in priors)
+                          for _, r in pos), len(pos)],
+            "M-ABST": [sum("UNCERTAIN" in (r["decision"]["project_relation"],
+                                           r["decision"]["reply"]["new_contribution"],
+                                           r["decision"]["reply"]["served_question_relevance"],
+                                           r["decision"]["stance"]) for _, r in pos), len(pos)],
+            "M-FLIP": [sum(r["decision"]["project_relation"] == "UNRELATED" for _, r in related),
+                       len(related)],
+        }
+
+    def by(key):
+        return {v: tally(u for u in scored if u[0][key] == v)
+                for v in sorted({c[key] for c, _ in scored})}
+    mixed = collections.Counter(
+        (r["path"], tuple(r["composed"][p] for p in priors))
+        for c, r in scored if c["side"] == "reported")
+    return {"overall": tally(scored), "by_category": by("category"), "by_project": by("project_id"),
+            "by_domain": by("domain"), "by_variety": by("variety"),
+            "M-MIXED": {"%s %s" % (path, list(credit)): n for (path, credit), n in sorted(mixed.items())}}
+
+
+def _srv_below(count_units, fraction):
+    count, units = count_units
+    return units == 0 or Fraction(count, units) < Fraction(*fraction)
+
+
+def srv_failed_criteria(prereg, measures):
+    """Every preregistered criterion the measures fail, in order."""
+    t = prereg["criteria"]["thresholds"]
+    o = measures["overall"]
+    failed = []
+    if o["M-FC"][0] > 0:
+        failed.append(SRV_CRITERIA[0])
+    if _srv_below(o["M-REC"], t["C2_overall_min"]) \
+            or any(_srv_below(m["M-REC"], t["C2_domain_min"]) for m in measures["by_domain"].values()) \
+            or any(_srv_below(m["M-REC"], t["C2_variety_min"]) for m in measures["by_variety"].values()) \
+            or any(measures["by_category"][cat]["M-REC"][1]
+                   and _srv_below(measures["by_category"][cat]["M-REC"], t["C2_a4_category_min"])
+                   for cat in t["C2_a4_categories"] if cat in measures["by_category"]):
+        failed.append(SRV_CRITERIA[1])
+    if o["M-NFR"][0] > 0:
+        failed.append(SRV_CRITERIA[2])
+    if o["M-ABST"][1] and Fraction(o["M-ABST"][0], o["M-ABST"][1]) > Fraction(*t["C4_max_fraction"]):
+        failed.append(SRV_CRITERIA[3])
+    if o["M-FLIP"][0] > 0:
+        failed.append(SRV_CRITERIA[4])
+    return failed
+
+
+def srv_outcome(prereg, cases, rows):
+    """The preregistered verdict for one complete, valid run's decided rows. A
+    row set that does not cover every case exactly once is RUN_INVALID."""
+    if sorted(r["case_id"] for r in rows) != sorted(c["case_id"] for c in cases):
+        return {"outcome": [CH_INVALID], "run_failure": "rows do not cover every case exactly once"}
+    invalid = srv_validity(prereg, cases)
+    if invalid:
+        return {"outcome": [SRV_PREPARATION_INVALID], "preparation_failures": invalid}
+    measures = srv_measures(prereg, cases, rows)
+    failed = srv_failed_criteria(prereg, measures)
+    return {"outcome": failed or [CH_NOT_FALSIFIED], "measures": measures}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
