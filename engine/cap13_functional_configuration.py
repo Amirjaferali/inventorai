@@ -200,12 +200,15 @@ def _locate(original_idea, source_type):
     # ambiguous. The object dimensions have already been masked out.
     statement_end = _RISE_END.search(unmasked, rise.start())
     lift_statement = unmasked[rise.start():statement_end.start() if statement_end else len(unmasked)]
-    # A bound/alternative may precede the verb: "Either raise 15 cm". Check
-    # the containing sentence, while counting rise amounts only from the
-    # matched rise onward. Do not split on Arabic commas: "15 سم، أو 10 سم"
-    # must remain ambiguous rather than silently selecting the first amount.
-    if (len(_RISE_AMOUNT.findall(lift_statement)) != 1
-            or _RISE_LIMIT.search(unmasked[sentence_start:rise.start()])
+    # A numeric alternative may precede the verb without a named bound:
+    # "10 cm or raise 15 cm". Masked object dimensions are already blank.
+    # Refuse an additional number anywhere in the containing statement,
+    # rather than silently selecting the number following the verb.
+    # Do not split at Arabic commas: "15 سم، أو 10 سم" is also ambiguous.
+    preceding = unmasked[sentence_start:rise.start()]
+    if (len(_RISE_AMOUNT.findall(preceding)) != 0
+            or len(_RISE_AMOUNT.findall(lift_statement)) != 1
+            or _RISE_LIMIT.search(preceding)
             or _RISE_LIMIT.search(lift_statement)):
         return _AMBIGUOUS_RISE
     # Only a single explicit rise and dimension pair can become a candidate.
