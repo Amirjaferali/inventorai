@@ -149,6 +149,27 @@ def test_w08_a_current_answer_corrected_to_alternatives_withholds_the_offer():
     assert "12 cm" in html
 
 
+
+
+@pytest.mark.parametrize("text", [
+    "Either raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "Up to 15 cm, raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "Between 10 cm and 15 cm, raise the monitor 15 cm above my desk; dimensions 60 x 20 cm",
+    "إما أرفع الشاشة ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+    "حتى ١٥ سم، أرفع الشاشة ١٥ سم فوق مكتبي؛ أبعاد: ٦٠ × ٢٠ سم",
+    "أرفع الشاشة ١٥ سم فوق مكتبي، أو ١٠ سم؛ أبعاد: ٦٠ × ٢٠ سم",
+])
+def test_p10_preverb_limits_and_arabic_comma_alternatives_do_not_select_lift(text):
+    assert fit.derive_provisional_fit(text) is None
+    assert fit.derive_current_fit(SEED, [text]) is None
+    assert fit.derive_current_fit(SEED, [ANSWER, text]) is None
+
+
+def test_p11_an_arabic_comma_with_an_extra_number_fails_closed():
+    # A comma is not proof of an independent clause: no silent height choice.
+    text = "أرفع الشاشة ١٥ سم فوق مكتبي، وربما ١٠ سم؛ أبعاد: ٦٠ × ٢٠ سم"
+    assert fit.derive_current_fit(SEED, [text]) is None
+
 # ==========================================================================
 # 2. the real product path
 # ==========================================================================
