@@ -2727,7 +2727,8 @@ def srv_preregistration():
     if set(prereg) != set(v1) | set(SRV_V1_1_ADDED):
         raise PackError("v1.1 adds or drops a field other than the author protocol")
     for key in v1:
-        if key not in SRV_V1_1_CHANGED and prereg[key] != v1[key]:
+        if key not in SRV_V1_1_CHANGED and \
+                json.dumps(prereg[key], sort_keys=True) != json.dumps(v1[key], sort_keys=True):
             raise PackError("v1.1 changes the v1 field " + key)
     if [i for i, (a, b) in enumerate(zip(prereg["independence"], v1["independence"])) if a != b] \
             != [1] or len(prereg["independence"]) != len(v1["independence"]):

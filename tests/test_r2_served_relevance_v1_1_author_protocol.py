@@ -175,6 +175,9 @@ def _load_tampered(monkeypatch, tmp_path, mutate):
      "changes the v1 field criteria"),
     (lambda d: d["validity"].__setitem__("P2_min_categories", 3), "changes the v1 field validity"),
     (lambda d: d["candidate"].__setitem__("instructions", "x"), "changes the v1 field candidate"),
+    (lambda d: d["validity"].__setitem__("P4_max_disputed_fraction", 0.1000001),
+     "changes the v1 field validity"),
+    (lambda d: d["validity"].__setitem__("P5_exact_grid", 1), "changes the v1 field validity"),
     (lambda d: d["independence"].__setitem__(2, "I3 changed"), "I2 only"),
     (lambda d: d.__setitem__("extra", 1), "adds or drops"),
     (lambda d: d["author_protocol"].__setitem__(
