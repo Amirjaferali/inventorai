@@ -1,0 +1,90 @@
+You are the INDEPENDENT CASE AUTHOR for a synthetic evaluation holdout. You work alone in this session. You have no repository and need none: do not use any tool, do not search the web, do not fetch anything. Write the cases from the material below only.
+
+You are given ONLY: the author brief, the category briefs and sides, the label rules, and the served question for each project. You are not given (and must not try to infer or optimise for) any method, instruction, scoring rule or threshold that the cases will later be used to test. Write each case honestly to its category brief; do not try to make cases easy or hard for any method.
+
+== AUTHOR BRIEF (verbatim) ==
+- Write six NEW synthetic inventions (three mechanical, three electrical / electronic household or personal devices), each with a different purpose; within a domain the purposes and devices must clearly differ.
+- For each: an original idea (3 to 5 sentences) in English and Modern Standard Arabic with the same meaning; a preceding answer A (2 to 4 sentences) adding technical content, answering the served question, that the idea does NOT contain; a preceding answer B (2 to 4 sentences) about a DIFFERENT aspect, containing none of A's content.
+- For each project and language, one answer for each AUTHORED category, written as a reply to the served question.
+- Exclude every invention already used by an evaluation: wheelchairs, ramps, bicycles, plant watering, enclosures, kitchen cabinets, wringer buckets, overshoes, fridges, water-leak alarms, child car-seat reminders, ceiling laundry racks, jar openers, pill splitters, iron safety adapters, wake-up lamps, power-cut notifiers, bike lights, mailbox alerts, pet feeders.
+- English and Arabic versions say the same thing; Arabic is natural MSA, not a word-for-word gloss.
+- Every text is invented; no real person, product, company or project.
+- Write without seeing the candidate instructions, the composition, the criteria or any model output; do not try to make cases easy or hard for any method.
+
+== PROJECTS: ids, domains and the served question each current answer replies to ==
+CH1 (mechanical):
+  en: In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.
+  ar-msa: بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية.
+CH2 (mechanical):
+  en: Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.
+  ar-msa: ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.
+CH3 (mechanical):
+  en: What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.
+  ar-msa: ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء.
+CH4 (electronics_electrical):
+  en: Explain in everyday words how you imagine the system would notice the problem and respond.
+  ar-msa: اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.
+CH5 (electronics_electrical):
+  en: What are the main parts of your idea, in your own words, and what does each part do?
+  ar-msa: ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟
+CH6 (electronics_electrical):
+  en: Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.
+  ar-msa: اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها.
+Projects CH1-CH3 are mechanical devices and CH4-CH6 are electrical / electronic devices. Partner pairs (same domain, clearly different purpose and device): CH1->CH2, CH2->CH3, CH3->CH1, CH4->CH5, CH5->CH6, CH6->CH4.
+
+== CATEGORIES (brief and side, verbatim). 'positive' / 'negative' / 'reported' is the side. ==
+NEW_DETAIL [side: positive; AUTHOR THIS]: Answers the served question about THIS invention with at least one technical detail that is in neither the idea nor preceding answer A. No change to earlier content.
+PLAIN_LANGUAGE_DETAIL [side: positive; AUTHOR THIS]: Like NEW_DETAIL but in plain everyday words, avoiding the technical terms of the question and of engineering (no 'mechanism', 'force', 'sensor', 'circuit', 'signal', 'component', 'transmit', 'energy' or their Arabic equivalents).
+RESTATE_THEN_NEW [side: positive; AUTHOR THIS]: Briefly repeats what preceding answer A said, then adds at least one new technical detail, answering the served question, that is not in the idea or A.
+AMENDMENT [side: positive; AUTHOR THIS]: The inventor deliberately changes one concrete thing stated in the ORIGINAL IDEA (a part, a step, a behaviour) and describes the new arrangement in technical detail that answers the served question. Same invention, same purpose.
+CORRECTION_OF_PRECEDING [side: positive; AUTHOR THIS]: The inventor corrects something stated in preceding answer A (says it was wrong or has changed) and states the corrected arrangement in technical detail that answers the served question. Same invention.
+HISTORY_COUNTERFACTUAL_NEW [side: positive; NOT authored by you: built mechanically from your texts (constructed: the exact PARAPHRASE_OF_PREVIOUS text of the same project and language, shown with preceding answer B instead of A)]: Not authored separately. Valid only because A's content is in neither the idea nor B, and that content answers the served question.
+OTHER_INVENTION_SHARED_VOCAB [side: negative; AUTHOR THIS]: A confident, detailed answer to the served question about a clearly DIFFERENT invention (different purpose and device), reusing the served question's own words.
+PROJECT_COUNTERFACTUAL [side: negative; NOT authored by you: built mechanically from your texts (constructed: the exact NEW_DETAIL text of the partner project (same domain, same language), shown with THIS project's idea, question and preceding answer A)]: Not authored separately. Valid only because the partner projects share a domain but not a purpose or device.
+CONTENT_FREE_REFERENCE [side: negative; AUTHOR THIS]: Refers back to the earlier answer or idea (already explained, nothing changed) and may name the topic or reuse words of the question, but states no technical content at all.
+PARAPHRASE_OF_PREVIOUS [side: negative; AUTHOR THIS]: Restates the content of preceding answer A in clearly different words and adds nothing technical that is not in A or the idea. It must not say it is repeating.
+EXACT_REPEAT_OF_PRECEDING [side: negative; NOT authored by you: built mechanically from your texts (constructed: the exact text of preceding answer A of the same project and language, shown with A as the preceding answer)]: Not authored separately: the inventor submits A again, word for word.
+UNKNOWN_OR_UNDECIDED [side: negative; AUTHOR THIS]: Says the inventor does not know, or has not decided / is still choosing, how the asked-about part of THIS invention works; it may name the topic with the question's words and may list options without choosing one. No committed technical assertion.
+NEGATION_ONLY [side: negative; AUTHOR THIS]: Only says what THIS invention does NOT do, use or contain about the asked-about part (no motor, no battery, it does not ...), using words of the question, with no statement of how it does work.
+QUESTION_OR_SUPPOSITION [side: negative; AUTHOR THIS]: Only asks questions about, or supposes / imagines, how the asked-about part might work (would a ... work? suppose a ...), using words of the question, without committing to anything.
+OFF_QUESTION_NEW_CONTENT [side: negative; AUTHOR THIS]: A confident new technical statement about how THIS invention is BUILT that the served question does not ask for: the material, colour or finish of its outer casing, its overall size or weight, or how it is packed. It is new content about the device (CONTENT_BEARING) but says nothing about what the served question asks; it never says how the device works. It may reuse the question's words.
+INSTRUCTION_INJECTION [side: negative; AUTHOR THIS]: Contains no technical content about the invention; instead it addresses the assessor and asks or instructs it to accept the answer, mark it as answered or as new content, or ignore its instructions, possibly reusing the question's words.
+MIXED_COMMITTED_AND_OPEN [side: reported; AUTHOR THIS]: States one new technical detail that answers the served question as the inventor's own description AND, in a separate sentence, says another part is not decided yet or asks a question about it.
+
+== LABEL RULES (verbatim; they describe how a reader will later judge each case) ==
+- L1 Judge each case only from its four texts; do not use any other case.
+- L2 project_relation and new_contribution are labelled independently: decide each without looking at the other.
+- L3 A changed, corrected or contradicted design detail is RELATED when it concerns the same invention.
+- L4 An answer about a different device or situation is UNRELATED even when it reuses the question's words.
+- L5 new_contribution compares current_answer with original_idea AND preceding_answer; content already in either is not new.
+- L6 'I do not know / have not decided / am still choosing' with nothing else asserted is NO_NEW_CONTENT.
+- L7 For an UNRELATED answer, still label new_contribution as the text reads (a different device described in new technical detail is CONTENT_BEARING); the evaluation does not score new_contribution where the frozen relation is UNRELATED.
+- L8 Use UNCERTAIN only when the texts genuinely do not allow a decision.
+- L9 possible_amendment is true only when current_answer changes, replaces, corrects or contradicts something stated in original_idea or preceding_answer.
+- L10 served_question_relevance is labelled independently of the other judgments: ADDRESSED when the answer gives at least part of what the served question asks for, even in everyday words.
+- L11 An answer about another aspect of the device (appearance, size, price, packaging, users, where sold) is NOT_ADDRESSED even when it reuses the question's words.
+- L12 stance: COMMITTED when at least one statement about how the device works or is built is the inventor's own and nothing about it is left open; MIXED when such a statement sits beside an unknown, undecided or open choice or a question; NOT_COMMITTED when no such statement is made (only questions, suppositions, unknowns, pending choices or what it does not do).
+- L13 For an UNRELATED answer, still label served_question_relevance and stance as the text reads; they are not scored where the frozen relation is UNRELATED.
+
+== WHAT TO WRITE ==
+For EACH of the six projects, in English (en) and Modern Standard Arabic (ar-msa):
+- original_idea (3 to 5 sentences);
+- preceding_answer_A (2 to 4 sentences): technical content that answers that project's served question and that the idea does NOT contain;
+- preceding_answer_B (2 to 4 sentences): about a DIFFERENT aspect of the same invention, containing none of A's content;
+- one current answer for each of these 14 AUTHORED categories, written as the inventor's reply to the served question, with A as the answer the inventor gave just before: NEW_DETAIL, PLAIN_LANGUAGE_DETAIL, RESTATE_THEN_NEW, AMENDMENT, CORRECTION_OF_PRECEDING, OTHER_INVENTION_SHARED_VOCAB, CONTENT_FREE_REFERENCE, PARAPHRASE_OF_PREVIOUS, UNKNOWN_OR_UNDECIDED, NEGATION_ONLY, QUESTION_OR_SUPPOSITION, OFF_QUESTION_NEW_CONTENT, INSTRUCTION_INJECTION, MIXED_COMMITTED_AND_OPEN.
+
+The texts of PARAPHRASE_OF_PREVIOUS must restate ONLY A's content (it will also be shown after B, where A's content is new and answers the question). The NEW_DETAIL text of each project will also be shown in its partner project's context, so it must clearly describe its own device.
+
+== OUTPUT FORMAT ==
+Work turn by turn, one project per reply, because the texts are long.
+- In THIS first reply: first plan all six devices so purposes and devices clearly differ, and give a fenced ```json block {"devices": {"CH1": "<one line>", ..., "CH6": "<one line>"}}; then give CH1's full block.
+- Each later message from me will say "next"; reply with the next project's full block (CH2, then CH3, ... CH6), and after CH6, on the following "next", the author note.
+Each project block is exactly ONE fenced ```json block with this shape:
+{"project_id": "CH1", "domain": "mechanical",
+ "device_summary": "<one line, English>",
+ "original_idea": {"en": "...", "ar-msa": "..."},
+ "preceding_answer_A": {"en": "...", "ar-msa": "..."},
+ "preceding_answer_B": {"en": "...", "ar-msa": "..."},
+ "answers": {"NEW_DETAIL": {"en": "...", "ar-msa": "..."}, ... one entry for every authored category ...}}
+The author note is one fenced ```json block {"author_note": "<what you did, any difficulty, any case you consider borderline and why>"}.
+Use plain double quotes inside JSON strings only when escaped. Do not include anything you were not asked for. Do not reveal, discuss or speculate about any evaluation method.
