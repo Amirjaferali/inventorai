@@ -370,12 +370,12 @@ def _replies(report):
 
 
 def assessment_message(report, authorized_manifest_sha256, journal_lines):
-    """The frozen blind-assessor message for this exact report, its keymap and
+    """The frozen blind-assessor message(s) for this exact report, its keymap and
     the report digest that the completed assessment must carry."""
     _check_report(report, authorized_manifest_sha256, journal_lines)
     cases, ref = ev.load_pack()
-    message, keymap = ev.render_output_assessor(cases, ref, _replies(report))
-    return {"message": message, "keymap": keymap, "report_sha256": _digest(report)}
+    messages, keymap = ev.render_output_assessor(cases, ref, _replies(report))
+    return {"messages": messages, "keymap": keymap, "report_sha256": _digest(report)}
 
 
 def aggregate(report, assessment, authorized_manifest_sha256, journal_lines):

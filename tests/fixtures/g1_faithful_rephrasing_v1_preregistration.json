@@ -169,8 +169,19 @@
   "reader_seed": 20261113,
   "adjudicator_seed": 20261114,
   "output_assessor_seed": 20261115,
-  "rule": "Items are JSON objects in a JSON array, shuffled with random.Random(seed) over the pack order, keyed K01.. (reader, adjudicator) or R01.. (output assessor); the {ITEMS} placeholder is replaced by the array. The X / Y assignment of the adjudicator uses random.Random(adjudicator_seed) after the shuffle, one draw per key."
+  "rule": "Items are JSON objects in a JSON array, shuffled with random.Random(seed) over the pack order, keyed K01.. (reader, adjudicator) or R01.. (output assessor); the {ITEMS} placeholder is replaced by the array. The X / Y assignment of the adjudicator uses random.Random(adjudicator_seed) after the shuffle, one draw per key.",
+  "transport_batching": "If a rendered message exceeds 60,000 UTF-8 bytes (below the 64 KiB message bound), its items are delivered in consecutive batches in key order, each batch rendered as a complete message with the same template, all batches to the same session in order. Keys, shuffle and X / Y assignment are those of the whole rendering; batching changes delivery only, never content."
  },
+ "amendments": [
+  {
+   "id": "A1",
+   "date": "2026-11-13",
+   "stage": "after the author and reader replies were received and before the adjudicator was engaged",
+   "change": "rendering.transport_batching added",
+   "reason": "the rendered adjudicator message (72,129 bytes) exceeds the 64 KiB message bound of the session transport",
+   "unchanged": "prompt, schema, every message template, the author and reader messages already sent, independence rules, preparation validity, deterministic validation, case rule and decision rule"
+  }
+ ],
  "preparation_validity": {
   "P1": "Every case has an adjudicated record that is determinable; a non-determinable case is excluded from qualification and reported.",
   "P2": "A case whose adjudicated variety differs from its declared variety is excluded from qualification and reported; it never moves to another subset.",

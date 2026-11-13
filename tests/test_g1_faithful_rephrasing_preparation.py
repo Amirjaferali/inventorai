@@ -29,7 +29,7 @@ def test_prompt_and_preregistration_are_pinned():
     assert ev.schema_sha256() == ev.SCHEMA_SHA256 == (
         "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702")
     assert _sha_file(ev.PREREG_PATH) == ev.PREREG_SHA256 == (
-        "013c94d48946f4c9d24e711c23b119b62f8605ea332c812ecf1c1d69f4761be1")
+        "2b91ab46357d6e18540e02fb20f399575da119c7844ee73c62831ecfe74b6069")
     prereg = ev.load_prereg()
     assert prereg["prompt"]["prompt_id"] == fp.PROMPT_ID
     assert sum(s["planned"] for s in prereg["subsets"].values()) == 40
@@ -206,8 +206,9 @@ CASES = [{"case_id": "en-%02d" % i, "variety": "en", "category": "PLAIN",
 
 
 def test_reader_message_carries_only_idea_texts_and_is_deterministic():
-    msg, keymap = ev.render_reader(CASES)
-    assert ev.render_reader(CASES) == (msg, keymap)
+    msgs, keymap = ev.render_reader(CASES)
+    assert ev.render_reader(CASES) == (msgs, keymap) and len(msgs) == 1
+    msg = msgs[0]
     assert sorted(keymap.values()) == [c["case_id"] for c in CASES]
     for word in ("PLAIN", "en-01", "category", "variety\": \"en"):
         assert word not in msg.split("== TEXTS ==")[1]
@@ -217,7 +218,26 @@ def test_reader_message_carries_only_idea_texts_and_is_deterministic():
 def test_adjudicator_message_randomises_sides():
     pts = {c["case_id"]: [{"kind": "FUNCTION", "statement": "a stool",
                            "source_span": "folding step stool"}] for c in CASES}
-    msg, keymap, sides = ev.render_adjudicator(CASES, pts, pts)
-    assert ev.render_adjudicator(CASES, pts, pts) == (msg, keymap, sides)
+    msgs, keymap, sides = ev.render_adjudicator(CASES, pts, pts)
+    assert ev.render_adjudicator(CASES, pts, pts) == (msgs, keymap, sides)
     assert all(set(s.values()) == {"author", "reader"} for s in sides.values())
-    assert "author" not in msg.split("== ITEMS ==")[1]
+    assert all("author" not in m.split("== ITEMS ==")[1] for m in msgs)
+
+
+def test_transport_batching_splits_in_key_order_with_the_same_template():
+    """Amendment A1: a rendering over the bound is delivered as consecutive
+    complete renderings of the SAME template; content and keys never change."""
+    big = [{"case_id": "en-%02d" % i, "variety": "en", "category": "PLAIN",
+            "idea_text": ("I want a sturdy folding step stool number %d. " % i) * 40}
+           for i in range(1, 41)]
+    msgs, keymap = ev.render_reader(big)
+    template = ev.load_prereg()["messages"]["reader_template"]
+    assert len(msgs) > 1 and all(len(m.encode()) <= ev.TRANSPORT_BATCH_BYTES for m in msgs)
+    head = template.split("{ITEMS}")[0]
+    keys = []
+    for m in msgs:
+        assert m.startswith(head)
+        keys += [x["key"] for x in json.loads(m[len(head):])]
+    assert keys == sorted(keymap) and len(keys) == 40
+    amendment = ev.load_prereg()["amendments"][0]
+    assert amendment["id"] == "A1" and "before the adjudicator was engaged" in amendment["stage"]

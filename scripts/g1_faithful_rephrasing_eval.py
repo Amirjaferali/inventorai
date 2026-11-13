@@ -37,7 +37,7 @@ from scripts.run_msnl_eval import PackError, _load, quote_grounded  # noqa: E402
 
 FIXTURES = os.path.join(_ROOT, "tests", "fixtures")
 PREREG_PATH = os.path.join(FIXTURES, "g1_faithful_rephrasing_v1_preregistration.json")
-PREREG_SHA256 = "013c94d48946f4c9d24e711c23b119b62f8605ea332c812ecf1c1d69f4761be1"
+PREREG_SHA256 = "2b91ab46357d6e18540e02fb20f399575da119c7844ee73c62831ecfe74b6069"
 INSTRUCTIONS_SHA256 = "3cf6bee00b8f6be54418f892ec9c5a941422d2df375011f98adee7fdaf8723d6"
 SCHEMA_SHA256 = "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702"
 
@@ -129,15 +129,38 @@ def _shuffled(cases, seed):
     return [cases[i] for i in order]
 
 
-def _fill(template, items):
+TRANSPORT_BATCH_BYTES = 60000
+
+
+def _render(template, items):
     if template.count("{ITEMS}") != 1:
         raise PackError("template must hold exactly one {ITEMS} placeholder")
     return template.replace("{ITEMS}", json.dumps(items, ensure_ascii=False, indent=0))
 
 
+def _fill(template, items):
+    """The rendered message(s): ONE message when it fits the transport bound,
+    otherwise consecutive batches of items in key order, each a complete
+    rendering of the same template (pre-registration amendment A1)."""
+    whole = _render(template, items)
+    if len(whole.encode("utf-8")) <= TRANSPORT_BATCH_BYTES:
+        return [whole]
+    batches, current = [], []
+    for item in items:
+        if current and len(_render(template, current + [item]).encode("utf-8")) \
+                > TRANSPORT_BATCH_BYTES:
+            batches.append(current)
+            current = []
+        current.append(item)
+        if len(_render(template, current).encode("utf-8")) > TRANSPORT_BATCH_BYTES:
+            raise PackError("one item exceeds the transport bound")
+    batches.append(current)
+    return [_render(template, b) for b in batches]
+
+
 def render_reader(cases, prereg=None):
-    """The independent reader's message: idea texts only, shuffled under
-    opaque keys. Returns (message, keymap key -> case_id)."""
+    """The independent reader's message(s): idea texts only, shuffled under
+    opaque keys. Returns (messages, keymap key -> case_id)."""
     prereg = prereg or load_prereg()
     items, keymap = [], {}
     for n, c in enumerate(_shuffled(cases, prereg["rendering"]["reader_seed"]), 1):
@@ -148,9 +171,9 @@ def render_reader(cases, prereg=None):
 
 
 def render_adjudicator(cases, author_points, reader_points, prereg=None):
-    """The adjudicator's message: per key the idea text, the stated category and
-    variety, and the two point sets under randomised X / Y labels. Returns
-    (message, keymap key -> case_id, sides key -> {"X": "author"|"reader", ...})."""
+    """The adjudicator's message(s): per key the idea text, the stated category
+    and variety, and the two point sets under randomised X / Y labels. Returns
+    (messages, keymap key -> case_id, sides key -> {"X": "author"|"reader", ...})."""
     prereg = prereg or load_prereg()
     seed = prereg["rendering"]["adjudicator_seed"]
     shuffled = _shuffled(cases, seed)
@@ -174,7 +197,7 @@ def render_output_assessor(cases, reference, replies, prereg=None):
     """The blind assessor's message for a future run: per assessed case the idea
     text, the adjudicated reference and the reading only. Cases whose reply did
     not pass deterministic validation are NOT FAITHFUL already and are not sent.
-    Returns (message, keymap key -> case_id)."""
+    Returns (messages, keymap key -> case_id)."""
     prereg = prereg or load_prereg()
     items, keymap = [], {}
     eligible = [c for c in cases if validate_reply(replies.get(c["case_id"]), c)[0] == VALID]
