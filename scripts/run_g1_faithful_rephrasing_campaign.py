@@ -228,8 +228,9 @@ def classify(adapter, case):
 def _is_offline_fake(adapter):
     """True when ANY layer of the adapter's transport declares itself an
     offline test fake, however many RecordingTransport wrappers surround it.
-    (The reused single-layer check, ``_offline_fake``, stays the gate that
-    decides whether the run boundary applies.)"""
+    A chain too deep to resolve is refused (PackError), never guessed either
+    way: guessing "fake" would skip the run boundary and send unauthorized
+    requests, and guessing "real" would mislabel a fake."""
     transport = getattr(adapter, "_transport", None)
     for _depth in range(16):
         if getattr(transport, "OFFLINE_FAKE", False) is True:
@@ -237,7 +238,7 @@ def _is_offline_fake(adapter):
         if not isinstance(transport, RecordingTransport):
             return False
         transport = transport.inner
-    return True                              # an implausibly deep wrapper: never provider
+    raise PackError("transport chain too deep to resolve: refused before any request")
 
 
 def campaign(adapter, cases, manifest, journal=None, authorized_manifest_sha256=None):

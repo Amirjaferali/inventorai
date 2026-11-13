@@ -471,3 +471,21 @@ def test_a_validated_reply_without_an_assessment_record_is_refused(pack):
     with pytest.raises(rc.PackError, match="no assessment record"):
         ev.decide(cases, ref, replies, partial, partial_keymap,
                   ev.preparation_checks(cases, ref, corpus=[]))
+
+
+@pytest.mark.parametrize("declares_fake", [False, True])
+def test_an_unresolvable_transport_chain_is_refused_before_any_request(pack, declares_fake):
+    """Codex review of 6c178058: a chain deeper than the inspection limit must
+    fail closed, never be guessed to be a fake (which would skip the run
+    boundary and send unauthorized requests)."""
+    inner = (_Fake if declares_fake else _NotFake)(_responses(pack))
+    transport = inner
+    for _ in range(16):
+        transport = rc.RecordingTransport(transport)
+    adapter = rc.OpenAIMsnlAdapter(allow_network=True, transport=transport)
+    with pytest.raises(rc.PackError, match="too deep"):
+        rc.campaign(adapter, pack[0], rc.run_manifest(REVISION, adapter._model), io.StringIO())
+    with pytest.raises(rc.PackError, match="too deep"):
+        rc._run_cases(adapter, pack[0], rc.run_manifest(REVISION, adapter._model),
+                      io.StringIO(), None)
+    assert inner.calls == []
