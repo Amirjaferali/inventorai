@@ -31,7 +31,9 @@ import os
 import secrets
 
 import web.app as appmod
-from scripts.run_g1_precreation_semantic_eval import SUGGEST_INTEGRATED, V_VALID, validate
+from web import ui_text
+from scripts.run_g1_precreation_semantic_eval import (CLARIFY_FIRST, SUGGEST_INTEGRATED, V_VALID,
+                                                       validate)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIXTURE = os.path.join(ROOT, "tests", "fixtures", "g1_ai_intent_readback_proof_v1.json")
@@ -172,6 +174,17 @@ def resolve(token, rb, idea_text, action, exclude_index=None, remark=""):
     if build(rb.idea_text, rb.reply, {"case_id": rb.source[0], "evidence_ref": rb.source[1]},
              rb.excluded, rb.remark) != rb:
         return None
+    new = None
+    if action == "correct":
+        if not isinstance(exclude_index, int) or isinstance(exclude_index, bool) \
+                or exclude_index in rb.excluded:
+            return None
+        new = build(rb.idea_text, rb.reply,
+                    {"case_id": rb.source[0], "evidence_ref": rb.source[1]},
+                    tuple(sorted(set(rb.excluded) | {exclude_index})),
+                    remark if remark else rb.remark)
+        if new is None:                     # an invalid correction keeps the token
+            return None
     _PENDING.pop(nonce, None)                                   # one use
     if action == "confirm":
         return {"action": "confirm", "scope": CONFIRMATION_SCOPE, "reading_origin": rb.origin,
@@ -179,12 +192,6 @@ def resolve(token, rb, idea_text, action, exclude_index=None, remark=""):
                 "recorded": False, "creates_project": False}
     if action == "reject":
         return {"action": "reject", "shown": False, "recorded": False}
-    new = build(rb.idea_text, rb.reply,
-                {"case_id": rb.source[0], "evidence_ref": rb.source[1]},
-                tuple(sorted(set(rb.excluded) | {exclude_index}))
-                if isinstance(exclude_index, int) else (None,), remark)
-    if new is None:
-        return None
     return {"action": "correct", "readback": new, "token": issue(new),
             "remark_origin": INVENTOR_ORIGIN, "recorded": False}
 
@@ -201,6 +208,7 @@ TEXT = {
         "for": "What your invention is for",
         "parts": "Parts of your invention that you mentioned",
         "quote": "your words",
+        "ai_quote": "the AI's quote of your words",
         "kind_mechanical": "a mechanical part",
         "kind_electronics_electrical": "an electrical or electronic part",
         "kind_NO_GOVERNED_MAPPING": "a part InventorAI cannot place",
@@ -209,9 +217,8 @@ TEXT = {
         "open": "Not decided yet",
         "open_note": "This stays open. You do not need to decide it to start, and InventorAI will not decide it for you.",
         "pointer": ("Your description mentions a mechanical part and an electrical or electronic part. If they work "
-                    "together in your invention, the start page option \"My invention includes mechanical and "
-                    "electrical/electronic parts that work together\" is the one that fits. InventorAI does not "
-                    "tick it for you, and you name each part in your own words."),
+                    "together in your invention, the start page option \"{option}\" is the one that fits. "
+                    "InventorAI does not tick it for you, and you name each part in your own words."),
         "no_pointer": "This reading does not point to the mechanical-and-electrical option.",
         "obstacle": ("Note: the mechanical-and-electrical option can only be chosen when a project is created; "
                      "adding it later needs a new project."),
@@ -229,6 +236,7 @@ TEXT = {
         "for": "الغرض من اختراعك",
         "parts": "أجزاء اختراعك التي ذكرتها",
         "quote": "كلماتك",
+        "ai_quote": "اقتباس الذكاء الاصطناعي من كلماتك",
         "kind_mechanical": "جزء ميكانيكي",
         "kind_electronics_electrical": "جزء كهربائي أو إلكتروني",
         "kind_NO_GOVERNED_MAPPING": "جزء لا يستطيع InventorAI تصنيفه",
@@ -237,7 +245,7 @@ TEXT = {
         "open": "لم يُقرَّر بعد",
         "open_note": "يبقى هذا مفتوحاً. لا تحتاج إلى أن تقرّره لتبدأ، ولن يقرّره InventorAI نيابة عنك.",
         "pointer": ("يذكر وصفك جزءاً ميكانيكياً وجزءاً كهربائياً أو إلكترونياً. فإذا كانا يعملان معاً في اختراعك، "
-                    "فخيار صفحة البدء «يتضمن اختراعي أجزاء ميكانيكية وكهربائية/إلكترونية تعمل معاً» هو المناسب. "
+                    "فخيار صفحة البدء «{option}» هو المناسب. "
                     "لا يختاره InventorAI عنك، وأنت تسمّي كل جزء بكلماتك."),
         "no_pointer": "لا تشير هذه القراءة إلى خيار الأجزاء الميكانيكية والكهربائية.",
         "obstacle": ("ملاحظة: لا يمكن اختيار خيار الأجزاء الميكانيكية والكهربائية إلا عند إنشاء المشروع؛ "
@@ -249,6 +257,12 @@ TEXT = {
         "not_part": "ليس جزءاً من اختراعي",
     },
 }
+
+
+def _quote_label(t, rb, quote):
+    """'your words' only when the quote is literally in the inventor's text;
+    a quote the validator accepted after normalisation is labelled as the AI's."""
+    return t["quote"] if quote in rb.idea_text else t["ai_quote"]
 
 
 def render(rb, lang="en"):
@@ -264,7 +278,7 @@ def render(rb, lang="en"):
         out.append('<h3>%s</h3><ul>' % e(t["for"]))
         for text, quote in rb.functions:
             out.append('<li data-ai-text><bdi>%s</bdi> <small>(%s: «<bdi>%s</bdi>»)</small></li>'
-                       % (e(text), e(t["quote"]), e(quote)))
+                       % (e(text), e(_quote_label(t, rb, quote)), e(quote)))
         out.append('</ul>')
     shown = [(i, p) for i, p in enumerate(rb.parts) if not p.excluded_by_inventor]
     if shown:
@@ -272,7 +286,7 @@ def render(rb, lang="en"):
         for i, p in shown:
             out.append('<li data-part="%d" data-kind="%s"><bdi data-ai-text>%s</bdi> — %s '
                        '<small>(%s: «<bdi>%s</bdi>»)</small> <button type="button" disabled>%s</button></li>'
-                       % (i, e(p.kind), e(p.text), e(t["kind_" + p.kind]), e(t["quote"]), e(p.quote),
+                       % (i, e(p.kind), e(p.text), e(t["kind_" + p.kind]), e(_quote_label(t, rb, p.quote)), e(p.quote),
                           e(t["not_part"])))
         out.append('</ul>')
     for i, p in enumerate(rb.parts):
@@ -284,10 +298,11 @@ def render(rb, lang="en"):
         out.append('<p data-open><strong>%s:</strong> <bdi data-ai-text>%s</bdi> %s</p>'
                    % (e(t["open"]), e(u), e(t["open_note"])))
     if rb.points_to_integrated:
-        out.append('<p data-pointer="integrated">%s</p>' % e(t["pointer"]))
+        option = ui_text.text("UI_S15_OFFER_LABEL", lang).rstrip(".")
+        out.append('<p data-pointer="integrated">%s</p>' % e(t["pointer"].replace("{option}", option)))
     else:
         out.append('<p data-pointer="none">%s</p>' % e(t["no_pointer"]))
-        if rb.unknowns:
+        if rb.effective == CLARIFY_FIRST:
             out.append('<p data-obstacle>%s</p>' % e(t["obstacle"]))
     out.append('<p data-boundary>%s</p>' % e(t["boundary"]))
     out.append('<p><button type="button" disabled>%s</button> <button type="button" disabled>%s</button></p>'

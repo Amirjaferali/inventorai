@@ -110,7 +110,7 @@ def test_a_clear_invention_starts_directly_with_no_extra_confirmation(client):
     assert rb is not None and not rb.points_to_integrated
     page = rp.render(rb)
     assert 'data-pointer="none"' in page and "you can also start directly" in page
-    assert "data-obstacle" in page        # H23 leaves the spring strength open
+    assert "data-obstacle" not in page    # nothing about the integrated option is open here
 
 
 # ==========================================================================
@@ -180,7 +180,8 @@ def test_the_inventor_correction_changes_the_meaning_and_the_next_action(client)
     page = rp.render(fixed)
     assert 'data-excluded="1"' in page and 'data-pointer="none"' in page
     assert '<li data-part="1"' not in page and "The phone is mine" in page
-    # the action that remains is the ordinary, unchanged mechanical start
+    # the recommended action returns to the ordinary, unchanged mechanical start;
+    # the integrated option stays offered on that page exactly as before
     confirm = _visible(_post(c, {"idea": idea}).get_data(as_text=True))
     assert "appears to belong to the Mechanical domain" in confirm
     sid = _created(_post(c, {"idea": idea, "domain_confirm": MECH}))
@@ -285,13 +286,12 @@ def test_an_invalid_correction_is_refused():
 # ==========================================================================
 # attribution and the absence of any engineering or progression effect
 # ==========================================================================
-def test_ai_words_never_reach_the_engine_or_the_store(client, monkeypatch):
+def test_readback_operations_touch_no_store_or_session(client):
+    """No AI wording can reach integrate_response: the seam has no write path
+    and never imports it (test_the_seam_has_no_provider_route_or_production_caller).
+    Here: building, rendering and resolving every readback writes nothing."""
     c, _app, db = client
     _login(c, _app)
-    calls = []
-    from engine import progression_loop
-    monkeypatch.setattr(progression_loop, "integrate_response",
-                        lambda *a, **k: calls.append(a))
     before, store = _tables(db), dict(appmod.SESSION_STORE)
     for case in ("H01", "H08", "H13", "H14", "H23"):
         idea, reply, source = rp.preserved(case)
@@ -301,7 +301,7 @@ def test_ai_words_never_reach_the_engine_or_the_store(client, monkeypatch):
         assert res["recorded"] is False and res["creates_project"] is False
         assert res["reading_origin"] == (rp.READING_ORIGIN, rp.READING_STATUS)
         assert res["idea_origin"] == rp.INVENTOR_ORIGIN and res["idea_text"] == idea
-    assert calls == [] and _tables(db) == before and dict(appmod.SESSION_STORE) == store
+    assert _tables(db) == before and dict(appmod.SESSION_STORE) == store
 
 
 def test_inventor_and_ai_words_are_always_labelled_apart():
@@ -328,3 +328,44 @@ def test_the_arabic_presentation():
     assert 'lang="en" dir="ltr"' in en
     for key in rp.TEXT["en"]:
         assert key in rp.TEXT["ar"] and rp.TEXT["ar"][key] != rp.TEXT["en"][key]
+
+
+# ==========================================================================
+# review corrections
+# ==========================================================================
+def test_an_invalid_correction_keeps_the_token():
+    idea, reply, source = rp.preserved("H01")
+    rb = rp.build(idea, reply, source)
+    token = rp.issue(rb)
+    assert rp.resolve(token, rb, idea, "correct", exclude_index=7) is None
+    assert rp.resolve(token, rb, idea, "correct", exclude_index=0, remark="x" * 301) is None
+    assert rp.resolve(token, rb, idea, "confirm") is not None
+
+
+def test_a_later_correction_keeps_the_earlier_remark():
+    idea, _reply, _src = rp.preserved("H08")
+    wrong, source = rp.constructed("H08_incorrect")
+    rb = rp.build(idea, wrong["reply"], source)
+    first = rp.resolve(rp.issue(rb), rb, idea, "correct", exclude_index=1, remark="The phone is mine.")
+    second = rp.resolve(first["token"], first["readback"], idea, "correct", exclude_index=0)
+    assert second["readback"].remark == "The phone is mine."
+    assert second["readback"].excluded == (0, 1)
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_the_pointer_quotes_the_real_start_page_option(lang):
+    from web import ui_text
+    idea, reply, source = rp.preserved("H01")
+    page = rp.render(rp.build(idea, reply, source), lang)
+    label = ui_text.text("UI_S15_OFFER_LABEL", lang).rstrip(".")
+    assert __import__("html").escape(label) in page
+
+
+def test_only_a_literal_quote_is_called_your_words():
+    idea, reply, source = rp.preserved("H01")
+    changed = json.loads(json.dumps(reply))
+    changed["stated_parts"][0]["source_quote"] = changed["stated_parts"][0]["source_quote"].replace(" ", "  ", 1)
+    rb = rp.build(idea, changed, source)
+    assert rb is not None                         # the validator accepts it after normalisation
+    page = rp.render(rb)
+    assert "the AI&#x27;s quote of your words" in page and "(your words:" in page
