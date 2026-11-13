@@ -27,6 +27,7 @@ import re
 
 import pytest
 
+from engine import deliverable_assembler
 from engine.derived_readiness import derive_readiness
 from engine.idea_state import (
     ACCEPTED_RISK, BOUNDARY_AMBIGUITY, CLOSED, MECHANISM_COMPLETENESS, OPEN, PARTIAL,
@@ -219,10 +220,17 @@ def test_b05_never_reads_inventor_text_or_signals():
     assert _BLOCK_RE.search(plain).group(0) == _BLOCK_RE.search(mcu).group(0)
 
 
+_FIXED_REPORT_TIME = "2026-01-01T00:00:00Z"
+
+
 def test_b06_the_report_differs_from_the_base_rendering_by_exactly_this_block(monkeypatch):
     for pairs in (((MECHANISM_COMPLETENESS, OPEN),),
                   ((MECHANISM_COMPLETENESS, PARTIAL), (PHYSICAL_FEASIBILITY, OPEN)),
                   ((MECHANISM_COMPLETENESS, CLOSED), (PHYSICAL_FEASIBILITY, OPEN))):
+        # Both renderings of a pair share ONE report time, so the comparison is
+        # not broken by the generation timestamp crossing a second. Set at the
+        # top of every pair because monkeypatch.undo() below removes it.
+        monkeypatch.setattr(deliverable_assembler, "_now_iso", lambda: _FIXED_REPORT_TIME)
         with_row = _mask_csrf(_html(*pairs))
         table = dict(cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS)
         table[(DOMAIN, MECHANISM_COMPLETENESS)] = tuple(
