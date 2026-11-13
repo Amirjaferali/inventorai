@@ -1,0 +1,504 @@
+{
+ "evidence": "AUTHORIZED_PROVIDER_RUN",
+ "manifest_sha256": "2ed2d2138764a3629012624267c3628be80f29a3d881cb9f18ccccc42b1dfd62",
+ "report_sha256": "4b1d9fd2ad061f5b0f7c0e1f1c4794b7bc6a9d015f124aaf3100eba7194b1534",
+ "reported_not_gating": {
+  "ar_egyptian": {
+   "author_reader_point_agreement_mean": 0.904,
+   "confirmed_categories": [
+    "CONDITION",
+    "CONSTRAINT_PREFERENCE",
+    "MIXED_LANGUAGE",
+    "NEGATION",
+    "UNCERTAINTY",
+    "UNKNOWN"
+   ],
+   "excluded": {}
+  },
+  "ar_gulf_kuwaiti": {
+   "author_reader_point_agreement_mean": 0.955,
+   "confirmed_categories": [
+    "CONDITION",
+    "CONSTRAINT_PREFERENCE",
+    "MIXED_LANGUAGE",
+    "NEGATION",
+    "UNCERTAINTY",
+    "UNKNOWN"
+   ],
+   "excluded": {}
+  },
+  "ar_msa": {
+   "author_reader_point_agreement_mean": 0.991,
+   "confirmed_categories": [
+    "CONDITION",
+    "CONSTRAINT_PREFERENCE",
+    "EMBEDDED_INSTRUCTION",
+    "EXTERNAL_ITEM",
+    "MIXED_LANGUAGE",
+    "NEGATION",
+    "NOT_AN_INVENTION",
+    "PLAIN",
+    "UNCERTAINTY",
+    "UNKNOWN"
+   ],
+   "excluded": {}
+  },
+  "en": {
+   "author_reader_point_agreement_mean": 0.964,
+   "confirmed_categories": [
+    "CONDITION",
+    "CONSTRAINT_PREFERENCE",
+    "EMBEDDED_INSTRUCTION",
+    "EXTERNAL_ITEM",
+    "NEGATION",
+    "NOT_AN_INVENTION",
+    "PLAIN",
+    "RAMBLING",
+    "UNCERTAINTY",
+    "UNKNOWN"
+   ],
+   "excluded": {}
+  }
+ },
+ "scope": "A qualified subset says only that this frozen prompt, with the model configuration of the authorized run, restated these synthetic texts faithfully. It says nothing about any untested language variety, real inventor text, another model or prompt, production use, engineering correctness, R2 or progression.",
+ "spend": {
+  "ceiling_usd": 10.0,
+  "conservative_bound_usd": 1.505088,
+  "measured_cost_complete": true,
+  "measured_cost_usd": 0.250848,
+  "requests_sent": 40
+ },
+ "subsets": {
+  "ar_egyptian": {
+   "cases": 6,
+   "faithful": 6,
+   "hard_failure_cases": [],
+   "required": 6,
+   "rows": [
+    {
+     "case_id": "ar_egyptian-01",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_egyptian-02",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "The rephrasing mostly repeats the Egyptian dialect word for word."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_egyptian-03",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "The rephrasing mostly repeats the Egyptian dialect word for word."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_egyptian-04",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "The reading mixes dialect and Modern Standard Arabic."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_egyptian-05",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "The rephrasing mixes Modern Standard Arabic with Egyptian dialect (لسه مش متأكد, من غير ما حد يتعب نفسه)."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_egyptian-06",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "The reading mixes Modern Standard Arabic with Egyptian dialect (يتلسع)."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    }
+   ],
+   "verdict": "QUALIFIED_SYNTHETIC_SUBSET"
+  },
+  "ar_gulf_kuwaiti": {
+   "cases": 6,
+   "faithful": 5,
+   "hard_failure_cases": [
+    "ar_gulf_kuwaiti-03"
+   ],
+   "required": 6,
+   "rows": [
+    {
+     "case_id": "ar_gulf_kuwaiti-01",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "The rephrasing mixes Modern Standard Arabic with Gulf dialect (يوم تبي تمشي, شنو اللي بيشغّله)."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_gulf_kuwaiti-02",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "The reading moves the Gulf dialect into Modern Standard Arabic but keeps some dialect words (يطلع, العيال)."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_gulf_kuwaiti-03",
+     "hard_failures": [
+      "unsupported statements [1]"
+     ],
+     "meaning_errors": [
+      "unsupported statements [1]"
+     ],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "NOT_FAITHFUL"
+    },
+    {
+     "case_id": "ar_gulf_kuwaiti-04",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_gulf_kuwaiti-05",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "The rephrasing says 'تدفئ ظهرك' (warms your back), which is a small explicit wording of the implied target."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_gulf_kuwaiti-06",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    }
+   ],
+   "verdict": "NOT_QUALIFIED"
+  },
+  "ar_msa": {
+   "cases": 12,
+   "faithful": 12,
+   "hard_failure_cases": [],
+   "required": 11,
+   "rows": [
+    {
+     "case_id": "ar_msa-01",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-02",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "Statement 4 labels the weekly wiping as PREFERENCE, though the text states it as a behaviour. The meaning is kept.",
+      "The rephrasing leaves out 'a motor or something else', but statement 5 keeps it."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-03",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-04",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "Statement 3 is labelled PREFERENCE, but in the text the comparison to clay jars is a behaviour. The meaning is unchanged."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-05",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "Statement 3 is labelled PREFERENCE, but it is an exclusion. The wording itself keeps the meaning."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-06",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-07",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-08",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "'تطرح احتمال' is a slightly stiff way to say 'maybe'."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-09",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-10",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-11",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "ar_msa-12",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "Statement 3 says 'إشعار notification', which repeats the same word in Arabic and English."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    }
+   ],
+   "verdict": "QUALIFIED_SYNTHETIC_SUBSET"
+  },
+  "en": {
+   "cases": 16,
+   "faithful": 16,
+   "hard_failure_cases": [],
+   "required": 15,
+   "rows": [
+    {
+     "case_id": "en-01",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-02",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-03",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [
+      "Statement 2 ('You want a little thing') is labelled PREFERENCE and carries almost no content."
+     ],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-04",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-05",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-06",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-07",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-08",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-09",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-10",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-11",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-12",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-13",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-14",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-15",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    },
+    {
+     "case_id": "en-16",
+     "hard_failures": [],
+     "meaning_errors": [],
+     "style_issues": [],
+     "validation": "VALID",
+     "validation_reasons": [],
+     "verdict": "FAITHFUL"
+    }
+   ],
+   "verdict": "QUALIFIED_SYNTHETIC_SUBSET"
+  }
+ }
+}
