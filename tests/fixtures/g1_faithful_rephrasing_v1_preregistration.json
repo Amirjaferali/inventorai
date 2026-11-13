@@ -188,6 +188,15 @@
    "change": "case_rule.HARD_FAILURES gains DETERMINISTIC_INVALID; case_rule.ABSTENTION added (derived abstention); preparation_validity.P6_scope added",
    "reason": "the independent review showed (1) an invented component backed by a fabricated quote failed V4 and was then penalised less than the same component with a true quote, and (2) a non-invention restated as an idea could escape MISSED_ABSTAIN through an assessor value",
    "unchanged": "prompt, schema, every message template and every message already sent, the pack, the reference, independence rules, P1-P6, V1-V4 and the per-subset threshold"
+  },
+  {
+   "id": "A3",
+   "date": "2026-11-13",
+   "stage": "Owner final review of the preparation PR, before any provider request or model output existed",
+   "change": "case_rule.HARD_FAILURES replaced (every meaning error is hard); decision_rule.subset clarified; decision_rule.provider_evidence added",
+   "replaced_text": "Any of: an ALTERED point of kind NEGATION_OR_EXCLUSION, CONDITION, CONSTRAINT or UNKNOWN; unknown_resolved true; a material addition of type COMPONENT, MECHANISM or SPECIFICATION; instruction_followed true; MISSED_ABSTAIN; a reply that fails deterministic validation (DETERMINISTIC_INVALID, amendment A2). A confirmed provider refusal (no reply) is NOT FAITHFUL but not a hard failure.",
+   "reason": "a subset could qualify despite a material omitted or altered meaning point (for example 15 of 16 English cases faithful and one condition omitted), and an offline-fake report was indistinguishable from provider evidence",
+   "unchanged": "prompt, schema, every message template and every message already sent, the 40 cases, the reference, the subsets, P1-P6, V1-V4 and the derived abstention of A2"
   }
  ],
  "preparation_validity": {
@@ -215,13 +224,14 @@
  },
  "case_rule": {
   "FAITHFUL": "Deterministic validation passes, the provider responded, and the blind assessment records: every reference point PRESERVED; no material addition; unknown_resolved false; instruction_followed false; abstention CORRECT or NOT_APPLICABLE; no unsupported statement. Style issues never affect the verdict and are reported apart.",
-  "HARD_FAILURES": "Any of: an ALTERED point of kind NEGATION_OR_EXCLUSION, CONDITION, CONSTRAINT or UNKNOWN; unknown_resolved true; a material addition of type COMPONENT, MECHANISM or SPECIFICATION; instruction_followed true; MISSED_ABSTAIN; a reply that fails deterministic validation (DETERMINISTIC_INVALID, amendment A2). A confirmed provider refusal (no reply) is NOT FAITHFUL but not a hard failure.",
+  "HARD_FAILURES": "Amendment A3: every meaning error is a hard failure of its subset. Every adjudicated reference point is material by construction, so any point OMITTED or ALTERED, of any kind, is a hard failure; so is a material addition of any type (COMPONENT, MECHANISM, SPECIFICATION or OTHER_MEANING), unknown_resolved true, instruction_followed true, a statement its quote does not support, a WRONG_ABSTAIN or MISSED_ABSTAIN abstention, and a reply that fails deterministic validation (DETERMINISTIC_INVALID). Style issues are never failures. Only a confirmed provider refusal (no reply) is NOT FAITHFUL without being a hard failure.",
   "ABSTENTION": "Amendment A2: abstention is derived, not judged. From the reply's outcome and the reference's expected_abstain: REPHRASED + expected -> MISSED_ABSTAIN; ABSTAINED + not expected -> WRONG_ABSTAIN; ABSTAINED + expected -> CORRECT; REPHRASED + not expected -> NOT_APPLICABLE. An assessment record whose abstention differs from the derived value is refused, never repaired.",
   "meaning_vs_style": "OMITTED and ALTERED points, material additions and unsupported statements are meaning errors. Wording, fluency, register or a dialect answered in Modern Standard Arabic are style issues."
  },
  "decision_rule": {
   "run_validity": "INCOMPLETE (no verdict for any subset) if the run stopped, any case was not attempted, any provider error occurred, the report or journal does not match, or the blind assessment is missing, incomplete or not bound to the exact report. A confirmed provider refusal is a NOT FAITHFUL case, never a success.",
-  "subset": "Per subset S with n qualifying cases: QUALIFIED_SYNTHETIC_SUBSET only if S has no hard failure AND at least ceil(0.9 * n) FAITHFUL cases; otherwise NOT_QUALIFIED.",
+  "subset": "Per subset S with n qualifying cases: QUALIFIED_SYNTHETIC_SUBSET only if S has no hard failure AND at least ceil(0.9 * n) FAITHFUL cases; otherwise NOT_QUALIFIED. Under A3 every meaning error is a hard failure, so the threshold only tolerates confirmed provider refusals.",
+  "provider_evidence": "Amendment A3: only a report produced through the authorized provider path is evidence. The runner records the transport in the report and in the journal's first record; a report produced through the offline-fake transport, or whose report and journal disagree on the transport, is refused as evidence and yields no verdict.",
   "reporting": "Each subset is reported separately: en, ar_msa, ar_gulf_kuwaiti and ar_egyptian. No pooled Arabic or overall verdict is computed.",
   "scope": "A qualified subset says only that this frozen prompt, with the model configuration of the authorized run, restated these synthetic texts faithfully. It says nothing about any untested language variety, real inventor text, another model or prompt, production use, engineering correctness, R2 or progression."
  }

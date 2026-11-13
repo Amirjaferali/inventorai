@@ -29,7 +29,7 @@ def test_prompt_and_preregistration_are_pinned():
     assert ev.schema_sha256() == ev.SCHEMA_SHA256 == (
         "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702")
     assert _sha_file(ev.PREREG_PATH) == ev.PREREG_SHA256 == (
-        "71341257df131f2d8b6e2d22e2269f4a143bfea982f55159469f88a6a16ed9d1")
+        "7a3aa8042b53884da3c2acc5c93393c912052ec78fba72281530595137a7f274")
     prereg = ev.load_prereg()
     assert prereg["prompt"]["prompt_id"] == fp.PROMPT_ID
     assert sum(s["planned"] for s in prereg["subsets"].values()) == 40
@@ -137,7 +137,8 @@ def test_traceability_is_not_semantic_correctness():
     assert ev.validate_reply(wrong, EN) == (ev.VALID, [])
     rec = _record({"P1": "PRESERVED", "P2": "ALTERED"}, unsupported_statements=[1])
     verdict, hard, _errors, _style = ev.case_verdict(EN, REF, ev.VALID, rec, _reply())
-    assert verdict == ev.NOT_FAITHFUL and hard == ["ALTERED NEGATION_OR_EXCLUSION P2"]
+    assert verdict == ev.NOT_FAITHFUL
+    assert hard == ["ALTERED NEGATION_OR_EXCLUSION P2", "unsupported statements [1]"]
 
 
 # ── Case and subset rules ───────────────────────────────────────────────────
@@ -156,16 +157,40 @@ def _record(points, **kw):
     return rec
 
 
-def test_style_never_fails_a_case_but_meaning_errors_do():
-    ok = _record({"P1": "PRESERVED", "P2": "PRESERVED"}, style_issues=["stiff wording"])
-    assert ev.case_verdict(EN, REF, ev.VALID, ok, _reply())[0] == ev.FAITHFUL
-    omitted = _record({"P1": "PRESERVED", "P2": "OMITTED"})
-    v, hard, errors, _ = ev.case_verdict(EN, REF, ev.VALID, omitted, _reply())
-    assert v == ev.NOT_FAITHFUL and not hard and errors
+def test_style_never_fails_a_case_but_every_meaning_error_is_hard():
+    """Amendment A3: style is never a failure; every meaning error is hard."""
+    ok = _record({"P1": "PRESERVED", "P2": "PRESERVED"},
+                 style_issues=["stiff wording", "answered a dialect in MSA"])
+    verdict, hard, errors, style = ev.case_verdict(EN, REF, ev.VALID, ok, _reply())
+    assert (verdict, hard, errors) == (ev.FAITHFUL, [], []) and len(style) == 2
+    for state in ("OMITTED", "ALTERED"):
+        for pid, kind in (("P1", "FUNCTION"), ("P2", "NEGATION_OR_EXCLUSION")):
+            rec = _record(dict({"P1": "PRESERVED", "P2": "PRESERVED"}, **{pid: state}))
+            v, hard, _e, _s = ev.case_verdict(EN, REF, ev.VALID, rec, _reply())
+            assert v == ev.NOT_FAITHFUL and hard == ["%s %s %s" % (state, kind, pid)]
     other = _record({"P1": "PRESERVED", "P2": "PRESERVED"},
                     material_additions=[{"type": "OTHER_MEANING", "text": "for kids"}])
     v, hard, _e, _s = ev.case_verdict(EN, REF, ev.VALID, other, _reply())
-    assert v == ev.NOT_FAITHFUL and not hard
+    assert v == ev.NOT_FAITHFUL and hard == ["addition OTHER_MEANING"]
+
+
+@pytest.mark.parametrize("kind", ["FUNCTION", "BEHAVIOR", "CONDITION", "NEGATION_OR_EXCLUSION",
+                                  "CONSTRAINT", "PREFERENCE", "UNKNOWN", "UNCERTAINTY",
+                                  "CONTEXT_NOT_PART"])
+def test_an_omitted_or_altered_point_of_any_kind_is_hard(kind):
+    reference = {"points": [{"id": "P1", "kind": kind, "statement": "s",
+                             "source_span": "shoe rack that folds flat"}],
+                 "must_not_add": [], "expected_abstain": False}
+    for state in ("OMITTED", "ALTERED"):
+        v, hard, _e, _s = ev.case_verdict(EN, reference, ev.VALID,
+                                          _record({"P1": state}), _reply())
+        assert v == ev.NOT_FAITHFUL and hard == ["%s %s P1" % (state, kind)]
+
+
+def test_a_validated_reply_is_required_to_judge_an_assessment():
+    rec = _record({"P1": "PRESERVED", "P2": "PRESERVED"})
+    with pytest.raises(PackError, match="validated reply is required"):
+        ev.case_verdict(EN, REF, ev.VALID, rec)
 
 
 @pytest.mark.parametrize("kw,expected", [
@@ -271,9 +296,11 @@ def test_transport_batching_splits_in_key_order_with_the_same_template():
         assert m.startswith(head)
         keys += [x["key"] for x in json.loads(m[len(head):])]
     assert keys == sorted(keymap) and len(keys) == 40
-    first, second = ev.load_prereg()["amendments"]
+    first, second, third = ev.load_prereg()["amendments"]
     assert first["id"] == "A1" and "before the adjudicator was engaged" in first["stage"]
     assert second["id"] == "A2" and "before any provider request or model output" in second["stage"]
+    assert third["id"] == "A3" and "before any provider request or model output" in third["stage"]
+    assert "Any of: an ALTERED point" in third["replaced_text"]
 
 
 # ── The pinned pack and its independent authoring ──────────────────────────

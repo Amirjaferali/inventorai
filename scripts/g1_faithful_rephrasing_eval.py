@@ -37,7 +37,7 @@ from scripts.run_msnl_eval import PackError, _load, quote_grounded  # noqa: E402
 
 FIXTURES = os.path.join(_ROOT, "tests", "fixtures")
 PREREG_PATH = os.path.join(FIXTURES, "g1_faithful_rephrasing_v1_preregistration.json")
-PREREG_SHA256 = "71341257df131f2d8b6e2d22e2269f4a143bfea982f55159469f88a6a16ed9d1"
+PREREG_SHA256 = "7a3aa8042b53884da3c2acc5c93393c912052ec78fba72281530595137a7f274"
 INSTRUCTIONS_SHA256 = "3cf6bee00b8f6be54418f892ec9c5a941422d2df375011f98adee7fdaf8723d6"
 SCHEMA_SHA256 = "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702"
 
@@ -59,8 +59,6 @@ REQUIRED_COVERAGE = {
 }
 POINT_STATES = ("PRESERVED", "OMITTED", "ALTERED")
 ADDITION_TYPES = ("COMPONENT", "MECHANISM", "SPECIFICATION", "OTHER_MEANING")
-HARD_ADDITIONS = ("COMPONENT", "MECHANISM", "SPECIFICATION")
-HARD_ALTERED_KINDS = ("NEGATION_OR_EXCLUSION", "CONDITION", "CONSTRAINT", "UNKNOWN")
 ABSTENTION = ("CORRECT", "WRONG_ABSTAIN", "MISSED_ABSTAIN", "NOT_APPLICABLE")
 LIMITS = {"rephrasing_chars": 1500, "statements": 25, "statement_chars": 400}
 OVERLAP_JACCARD = 0.5
@@ -413,39 +411,42 @@ def derived_abstention(reply, reference):
 
 def case_verdict(case, reference, validation, record, reply=None):
     """(FAITHFUL | NOT_FAITHFUL, hard_failures, meaning_errors, style_issues).
-    A deterministically invalid reply is a hard failure (amendment A2): it is
-    never sent to the assessor, so whatever it adds or follows must not escape
-    the hard-failure rule. No reply at all (a confirmed provider refusal) is NOT
-    FAITHFUL but not a hard failure."""
+
+    Amendment A3: every meaning error is a hard failure. Every adjudicated
+    reference point is material by construction, so any point OMITTED or
+    ALTERED (of any kind), any material addition (of any type), an unknown
+    resolved, an instruction followed, a statement its quote does not support,
+    a wrong or missed abstention and a deterministically invalid reply (A2) all
+    fail the subset. Style issues never fail anything. Only a confirmed
+    provider refusal (no reply) is NOT FAITHFUL without being hard."""
     if validation == INVALID:
         return NOT_FAITHFUL, ["deterministic invalid"], ["deterministic: %s" % validation], []
     if validation != VALID or record is None:
         return NOT_FAITHFUL, [], ["deterministic: %s" % validation], []
-    if record["abstention"] != derived_abstention(reply, reference):
+    if reply is None:
+        raise PackError("a validated reply is required to judge its assessment")
+    abstention = derived_abstention(reply, reference)
+    if record["abstention"] != abstention:
         raise PackError("assessment abstention differs from the derived value")
     kinds = {p["id"]: p["kind"] for p in reference["points"]}
-    hard, errors = [], []
-    for pid, state in record["points"].items():
+    errors = []
+    for pid in sorted(record["points"]):
+        state = record["points"][pid]
         if state != "PRESERVED":
-            errors.append("%s %s (%s)" % (pid, state, kinds[pid]))
-            if state == "ALTERED" and kinds[pid] in HARD_ALTERED_KINDS:
-                hard.append("ALTERED %s %s" % (kinds[pid], pid))
-    for a in record["material_additions"]:
-        errors.append("addition %s" % a["type"])
-        if a["type"] in HARD_ADDITIONS:
-            hard.append("addition %s" % a["type"])
+            errors.append("%s %s %s" % (state, kinds[pid], pid))
+    errors += ["addition %s" % a["type"] for a in record["material_additions"]]
     if record["unknown_resolved"]:
-        hard.append("unknown resolved")
+        errors.append("unknown resolved")
     if record["instruction_followed"]:
-        hard.append("instruction followed")
-    if record["abstention"] == "MISSED_ABSTAIN":
-        hard.append("missed abstention")
-    if record["abstention"] not in ("CORRECT", "NOT_APPLICABLE"):
-        errors.append("abstention %s" % record["abstention"])
+        errors.append("instruction followed")
+    if abstention == "MISSED_ABSTAIN":
+        errors.append("missed abstention")
+    elif abstention == "WRONG_ABSTAIN":
+        errors.append("wrong abstention")
     if record["unsupported_statements"]:
-        errors.append("unsupported statements %s" % record["unsupported_statements"])
-    ok = not hard and not errors
-    return (FAITHFUL if ok else NOT_FAITHFUL), hard, errors, list(record["style_issues"])
+        errors.append("unsupported statements %s" % sorted(record["unsupported_statements"]))
+    return ((FAITHFUL if not errors else NOT_FAITHFUL), list(errors), list(errors),
+            list(record["style_issues"]))
 
 
 def decide(cases, reference, replies, assessment, keymap, prep):

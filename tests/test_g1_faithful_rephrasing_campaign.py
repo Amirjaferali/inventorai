@@ -66,7 +66,7 @@ def _run(pack, responses):
 
 
 def _assessment(report, lines, digest, mutate=None):
-    msg = rc.assessment_message(report, digest, lines)
+    msg = rc.assessment_message(report, digest, lines, allow_offline_fake=True)
     _cases, ref = ev.load_pack()
     records = {}
     for key, cid in msg["keymap"].items():
@@ -223,7 +223,7 @@ def test_a_fully_preserved_assessment_qualifies_every_subset_separately(pack):
     msg, assessment = _assessment(report, lines, digest)
     for cid in msg["keymap"].values():
         assert all(cid not in m for m in msg["messages"])
-    out = rc.aggregate(report, assessment, digest, lines)
+    out = rc.aggregate(report, assessment, digest, lines, allow_offline_fake=True)
     assert set(out["subsets"]) == set(ev.SUBSETS)
     assert all(s["verdict"] == ev.QUALIFIED for s in out["subsets"].values())
     assert "untested language variety" in out["scope"]
@@ -239,7 +239,7 @@ def test_one_hard_failure_fails_only_its_own_subset(pack):
         if cid == target:
             rec["material_additions"] = [{"type": "COMPONENT", "text": "a motor"}]
     _msg, assessment = _assessment(report, lines, report["manifest_sha256"], mutate)
-    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines)
+    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines, allow_offline_fake=True)
     assert out["subsets"]["ar_egyptian"]["verdict"] == ev.NOT_QUALIFIED
     assert out["subsets"]["ar_egyptian"]["hard_failure_cases"] == [target]
     assert all(out["subsets"][s]["verdict"] == ev.QUALIFIED
@@ -250,14 +250,14 @@ def test_provider_error_or_refusal(pack):
     responses = _responses(pack)
     responses[3] = (500, b"{}")
     report, _fake, lines = _run(pack, responses)
-    out = rc.aggregate(report, None, report["manifest_sha256"], lines)
+    out = rc.aggregate(report, None, report["manifest_sha256"], lines, allow_offline_fake=True)
     assert out["verdict"] == ev.INCOMPLETE
     responses = _responses(pack)
     responses[0] = _body(None, refusal=True)
     report, _fake, lines = _run(pack, responses)
     assert report["rows"][0]["provider_status"] == rc.P_REFUSAL and report["stopped_on"] is None
     _msg, assessment = _assessment(report, lines, report["manifest_sha256"])
-    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines)
+    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines, allow_offline_fake=True)
     first = pack[0][0]
     row = next(r for r in out["subsets"][first["variety"]]["rows"]
                if r["case_id"] == first["case_id"])
@@ -269,16 +269,16 @@ def test_assessment_must_be_bound_and_complete(pack):
     digest = report["manifest_sha256"]
     _msg, assessment = _assessment(report, lines, digest)
     with pytest.raises(rc.PackError):
-        rc.aggregate(report, dict(assessment, report_sha256="0" * 64), digest, lines)
+        rc.aggregate(report, dict(assessment, report_sha256="0" * 64), digest, lines, allow_offline_fake=True)
     partial = dict(assessment, records=dict(list(assessment["records"].items())[1:]))
     with pytest.raises(rc.PackError):
-        rc.aggregate(report, partial, digest, lines)
+        rc.aggregate(report, partial, digest, lines, allow_offline_fake=True)
     with pytest.raises(rc.PackError):
-        rc.aggregate(report, assessment, "f" * 64, lines)
+        rc.aggregate(report, assessment, "f" * 64, lines, allow_offline_fake=True)
     tampered = json.loads(json.dumps(report))
     tampered["rows"][0]["reply"] = {"outcome": "ABSTAINED"}
     with pytest.raises(rc.PackError):
-        rc.aggregate(tampered, assessment, digest, lines)
+        rc.aggregate(tampered, assessment, digest, lines, allow_offline_fake=True)
 
 
 def test_a_restated_non_idea_or_invalid_reply_fails_its_subset(pack):
@@ -305,7 +305,7 @@ def test_a_restated_non_idea_or_invalid_reply_fails_its_subset(pack):
         if cid == cases[non_idea]["case_id"]:
             rec["abstention"] = "MISSED_ABSTAIN"
     _msg, assessment = _assessment(report, lines, report["manifest_sha256"], mutate)
-    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines)
+    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines, allow_offline_fake=True)
     assert out["subsets"]["ar_msa"]["verdict"] == ev.NOT_QUALIFIED
     assert out["subsets"]["ar_msa"]["hard_failure_cases"] == [cases[non_idea]["case_id"]]
     assert out["subsets"]["en"]["verdict"] == ev.NOT_QUALIFIED
@@ -314,4 +314,115 @@ def test_a_restated_non_idea_or_invalid_reply_fails_its_subset(pack):
     # An assessor value that disagrees with the derived abstention is refused.
     _msg, wrong = _assessment(report, lines, report["manifest_sha256"])
     with pytest.raises(rc.PackError, match="abstention"):
-        rc.aggregate(report, wrong, report["manifest_sha256"], lines)
+        rc.aggregate(report, wrong, report["manifest_sha256"], lines, allow_offline_fake=True)
+
+
+# ── Amendment A3: material omissions and provider evidence ──────────────────
+def test_fifteen_of_sixteen_english_plus_one_omitted_condition_never_qualifies(pack):
+    """15 of 16 English cases faithful and one adjudicated CONDITION point
+    omitted: 15 >= ceil(0.9 * 16), but the omission is a hard failure."""
+    cases, ref = pack
+    report, _fake, lines = _run(pack, _responses(pack))
+    target = next(c["case_id"] for c in cases if c["variety"] == "en"
+                  and any(p["kind"] == "CONDITION" for p in ref[c["case_id"]]["points"]))
+    pid = next(p["id"] for p in ref[target]["points"] if p["kind"] == "CONDITION")
+
+    def mutate(cid, rec):
+        if cid == target:
+            rec["points"][pid] = "OMITTED"
+    _msg, assessment = _assessment(report, lines, report["manifest_sha256"], mutate)
+    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines,
+                       allow_offline_fake=True)
+    en = out["subsets"]["en"]
+    assert (en["cases"], en["faithful"], en["required"]) == (16, 15, 15)
+    assert en["verdict"] == ev.NOT_QUALIFIED and en["hard_failure_cases"] == [target]
+    row = next(r for r in en["rows"] if r["case_id"] == target)
+    assert row["hard_failures"] == ["OMITTED CONDITION %s" % pid]
+    assert all(out["subsets"][s]["verdict"] == ev.QUALIFIED
+               for s in ("ar_msa", "ar_gulf_kuwaiti", "ar_egyptian"))
+
+
+def test_a_confirmed_refusal_is_the_only_tolerated_non_faithful_case(pack):
+    cases, ref = pack
+    responses = _responses(pack)
+    first_en = next(i for i, c in enumerate(cases) if c["variety"] == "en")
+    responses[first_en] = _body(None, refusal=True)
+    report, _fake, lines = _run(pack, responses)
+    _msg, assessment = _assessment(report, lines, report["manifest_sha256"])
+    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines,
+                       allow_offline_fake=True)
+    en = out["subsets"]["en"]
+    assert (en["faithful"], en["required"], en["hard_failure_cases"]) == (15, 15, [])
+    assert en["verdict"] == ev.QUALIFIED
+
+
+def test_an_offline_fake_report_is_never_provider_evidence(pack, monkeypatch, evidence, capsys):
+    report, _fake, lines = _run(pack, _responses(pack))
+    digest = report["manifest_sha256"]
+    assert report["transport"] == rc.TRANSPORT_FAKE
+    assert json.loads(lines[0]) == {"event": "run_started", "transport": rc.TRANSPORT_FAKE,
+                                    "manifest_sha256": digest,
+                                    "authorized_manifest_sha256": None}
+    _msg, assessment = _assessment(report, lines, digest)
+    for call in (lambda: rc.assessment_message(report, digest, lines),
+                 lambda: rc.aggregate(report, assessment, digest, lines)):
+        with pytest.raises(rc.PackError, match="not provider evidence"):
+            call()
+    # The command line has no way to admit it.
+    evidence.mkdir()
+    (evidence / "r.json").write_text(json.dumps(report))
+    (evidence / "j.jsonl").write_text("\n".join(lines) + "\n")
+    (evidence / "a.json").write_text(json.dumps(assessment))
+    assert rc.main(["--aggregate", str(evidence / "a.json"), "--report", str(evidence / "r.json"),
+                    "--journal", str(evidence / "j.jsonl"), "--authorized-manifest",
+                    digest]) == 2
+    assert "not provider evidence" in capsys.readouterr().out
+    # Allowed only for the test suite, and then labelled as not evidence.
+    out = rc.aggregate(report, assessment, digest, lines, allow_offline_fake=True)
+    assert out["evidence"] == rc.TRANSPORT_FAKE
+
+
+@pytest.mark.parametrize("forgery", ["report_says_provider", "journal_says_provider",
+                                     "both_say_provider_without_authorization",
+                                     "second_start", "unknown_transport"])
+def test_relabelling_a_fake_report_is_refused(pack, forgery):
+    report, _fake, lines = _run(pack, _responses(pack))
+    digest = report["manifest_sha256"]
+    report = json.loads(json.dumps(report))
+    start = json.loads(lines[0])
+    if forgery in ("report_says_provider", "both_say_provider_without_authorization"):
+        report["transport"] = rc.TRANSPORT_PROVIDER
+    if forgery in ("journal_says_provider", "both_say_provider_without_authorization"):
+        start["transport"] = rc.TRANSPORT_PROVIDER
+    if forgery == "second_start":
+        lines = lines + [lines[0]]
+    if forgery == "unknown_transport":
+        report["transport"] = start["transport"] = "SOMETHING_ELSE"
+    lines = [json.dumps(start, sort_keys=True)] + lines[1:]
+    with pytest.raises(rc.PackError):
+        rc.aggregate(report, None, digest, lines)
+
+
+def test_a_normal_authorized_run_is_accepted_as_provider_evidence(pack, evidence, monkeypatch):
+    """A transport that does not declare itself a fake must pass every boundary
+    under the Owner-named digest; its report is then provider evidence."""
+    monkeypatch.setattr(rc, "current_revision", lambda: REVISION)
+    adapter = _adapter(_NotFake(_responses(pack)))
+    manifest = rc.run_manifest(REVISION, adapter._model)
+    digest = rc._digest(manifest)
+    report = rc.campaign(adapter, pack[0], manifest, None, digest)
+    lines = Path(rc.JOURNAL_PATH).read_text().splitlines()
+    assert report["transport"] == rc.TRANSPORT_PROVIDER
+    assert report["authorized_manifest_sha256"] == digest
+    assert json.loads(lines[0])["transport"] == rc.TRANSPORT_PROVIDER
+    msg = rc.assessment_message(report, digest, lines)
+    _ignored, assessment = _assessment(report, lines, digest)
+    assert assessment["report_sha256"] == msg["report_sha256"]
+    out = rc.aggregate(report, assessment, digest, lines)
+    assert out["evidence"] == rc.TRANSPORT_PROVIDER
+    assert all(s["verdict"] == ev.QUALIFIED for s in out["subsets"].values())
+    with pytest.raises(rc.PackError, match="not the authorized run"):
+        rc.aggregate(report, assessment, "e" * 64, lines)
+    altered = dict(report, authorized_manifest_sha256="e" * 64)
+    with pytest.raises(rc.PackError):
+        rc.aggregate(altered, assessment, digest, lines)

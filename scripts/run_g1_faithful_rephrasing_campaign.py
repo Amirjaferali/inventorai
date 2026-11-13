@@ -98,6 +98,11 @@ _STOPS = (P_ERROR, P_AMBIGUOUS)
 _PROVIDER_STATUSES = (P_RESPONDED, P_REFUSAL, P_ERROR, P_AMBIGUOUS, P_NOT_ATTEMPTED)
 _ROW_KEYS = {"case_id", "provider_status", "error_kind", "reply"}
 _SHA256 = re.compile(r"[0-9a-f]{64}")
+# Amendment A3: the transport that produced a report is recorded in the report
+# and in the journal's first record. Only the authorized provider path is
+# evidence; an offline-fake report never is.
+TRANSPORT_PROVIDER = "AUTHORIZED_PROVIDER_RUN"
+TRANSPORT_FAKE = "OFFLINE_FAKE_NOT_PROVIDER_EVIDENCE"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -224,7 +229,7 @@ def campaign(adapter, cases, manifest, journal=None, authorized_manifest_sha256=
     if manifest != run_manifest(manifest.get("code_revision"), adapter._model):
         raise PackError("manifest does not describe this run")
     if _offline_fake(adapter):
-        return _run_cases(adapter, cases, manifest, journal)
+        return _run_cases(adapter, cases, manifest, journal, TRANSPORT_FAKE, None)
     check_campaign_boundary(cases, manifest, authorized_manifest_sha256, journal)
     os.makedirs(EVIDENCE_DIR, exist_ok=True)
     try:
@@ -233,15 +238,19 @@ def campaign(adapter, cases, manifest, journal=None, authorized_manifest_sha256=
         raise PackError("run evidence already exists: one run only, and an interrupted run "
                         "is incomplete, never rerun")
     with claimed:
-        return _run_cases(adapter, cases, manifest, claimed)
+        return _run_cases(adapter, cases, manifest, claimed, TRANSPORT_PROVIDER,
+                          authorized_manifest_sha256)
 
 
-def _run_cases(adapter, cases, manifest, journal):
+def _run_cases(adapter, cases, manifest, journal, transport, authorized_manifest_sha256):
     price_in, price_out = PRICING["input_usd_per_1m"], PRICING["output_usd_per_1m"]
     res_in, res_out = RESERVATION["input_usd_per_1m"], RESERVATION["output_usd_per_1m"]
     ledger = {"requests": 0, "sent": 0, "committed": 0.0, "measured": 0.0,
               "measured_complete": True}
     seen, started, rows, stopped = set(), _utc_now(), [], None
+    _journal(journal, {"event": "run_started", "transport": transport,
+                       "manifest_sha256": _digest(manifest),
+                       "authorized_manifest_sha256": authorized_manifest_sha256})
     for case in cases:
         if case["case_id"] in seen:
             raise PackError("duplicate case: one request per case")
@@ -301,6 +310,7 @@ def _run_cases(adapter, cases, manifest, journal):
         if row["provider_status"] in _STOPS:
             stopped = row["provider_status"]
     return {"manifest": manifest, "manifest_sha256": _digest(manifest),
+            "transport": transport, "authorized_manifest_sha256": authorized_manifest_sha256,
             "started_at": started, "finished_at": _utc_now(),
             "requests": ledger["requests"], "stopped_on": stopped,
             "spend": {"requests_sent": ledger["sent"],
@@ -314,9 +324,14 @@ def _run_cases(adapter, cases, manifest, journal):
 # ─────────────────────────────────────────────────────────────────────────────
 # After the run: report binding, blind-assessment message and the verdict
 # ─────────────────────────────────────────────────────────────────────────────
-def _check_report(report, authorized_manifest_sha256, journal_lines):
+def _check_report(report, authorized_manifest_sha256, journal_lines, allow_offline_fake=False):
     """The report must be the authorized run, well formed, with every attempted
-    row equal to its fsynced journal record. Refused, never crashed."""
+    row equal to its fsynced journal record. Refused, never crashed.
+
+    Amendment A3: the report and the journal's first record must name the same
+    transport. An offline-fake report is refused as evidence; only the test
+    suite may pass ``allow_offline_fake`` to exercise the decision rule, and the
+    command line never does."""
     manifest = report.get("manifest") if isinstance(report, dict) else None
     if not isinstance(manifest, dict) or report.get("manifest_sha256") != _digest(manifest):
         raise PackError("report manifest does not match its digest")
@@ -362,6 +377,22 @@ def _check_report(report, authorized_manifest_sha256, journal_lines):
     reserved = [x for x in records if x.get("event") == "reserved"]
     if journalled != attempted or len(reserved) != len(attempted):
         raise PackError("report rows do not match the run journal")
+    starts = [x for x in records if x.get("event") == "run_started"]
+    transport = report.get("transport")
+    if (len(starts) != 1 or not records or records[0] is not starts[0]
+            or starts[0] != {"event": "run_started", "transport": transport,
+                             "manifest_sha256": report["manifest_sha256"],
+                             "authorized_manifest_sha256":
+                                 report.get("authorized_manifest_sha256")}):
+        raise PackError("report transport does not match the run journal")
+    if transport == TRANSPORT_FAKE:
+        if not allow_offline_fake:
+            raise PackError("an offline-fake report is not provider evidence")
+    elif transport == TRANSPORT_PROVIDER:
+        if report.get("authorized_manifest_sha256") != authorized_manifest_sha256:
+            raise PackError("report was not produced under this authorization")
+    else:
+        raise PackError("report transport is unknown")
 
 
 def _replies(report):
@@ -369,23 +400,28 @@ def _replies(report):
             for r in report["rows"]}
 
 
-def assessment_message(report, authorized_manifest_sha256, journal_lines):
+def assessment_message(report, authorized_manifest_sha256, journal_lines,
+                       allow_offline_fake=False):
     """The frozen blind-assessor message(s) for this exact report, its keymap and
     the report digest that the completed assessment must carry."""
-    _check_report(report, authorized_manifest_sha256, journal_lines)
+    _check_report(report, authorized_manifest_sha256, journal_lines, allow_offline_fake)
     cases, ref = ev.load_pack()
     messages, keymap = ev.render_output_assessor(cases, ref, _replies(report))
     return {"messages": messages, "keymap": keymap, "report_sha256": _digest(report)}
 
 
-def aggregate(report, assessment, authorized_manifest_sha256, journal_lines):
+def aggregate(report, assessment, authorized_manifest_sha256, journal_lines,
+              allow_offline_fake=False):
     """INCOMPLETE for any provider stop or case not attempted; otherwise the
     frozen per-subset decision rule over a blind assessment bound to this exact
-    report: {"report_sha256": ..., "records": {"R01": {...}, ...}}."""
-    _check_report(report, authorized_manifest_sha256, journal_lines)
+    report: {"report_sha256": ..., "records": {"R01": {...}, ...}}. Every result
+    names its evidence status; an offline-fake result is never provider
+    evidence."""
+    _check_report(report, authorized_manifest_sha256, journal_lines, allow_offline_fake)
+    evidence = {"evidence": report["transport"]}
     if any(r["provider_status"] in _STOPS + (P_NOT_ATTEMPTED,) for r in report["rows"]):
-        return {"verdict": ev.INCOMPLETE, "stopped_on": report.get("stopped_on"),
-                "manifest_sha256": report["manifest_sha256"]}
+        return dict(evidence, verdict=ev.INCOMPLETE, stopped_on=report.get("stopped_on"),
+                    manifest_sha256=report["manifest_sha256"])
     if not isinstance(assessment, dict) or assessment.get("report_sha256") != _digest(report):
         raise PackError("assessment is not bound to this report")
     cases, ref = ev.load_pack()
@@ -395,7 +431,7 @@ def aggregate(report, assessment, authorized_manifest_sha256, journal_lines):
                          # P6 was established at preparation and before the run (A2)
                          ev.preparation_checks(cases, ref, corpus=[]))
     return dict(decision, manifest_sha256=report["manifest_sha256"],
-                report_sha256=_digest(report), spend=report.get("spend"))
+                report_sha256=_digest(report), spend=report.get("spend"), **evidence)
 
 
 def plan():
