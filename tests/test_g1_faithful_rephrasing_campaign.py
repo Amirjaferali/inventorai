@@ -88,7 +88,8 @@ def test_limits_and_distinct_identity():
     assert rc.AUTHORIZED_RUN_MANIFEST_SHA256 is None
     assert rc.EVIDENCE_DIR not in (c01.EVIDENCE_DIR, c02.EVIDENCE_DIR)
     assert rc.MODEL == toa.MODEL == c01.PRICING["model"]
-    assert not Path(rc.EVIDENCE_DIR).exists()
+    assert Path(rc.JOURNAL_PATH).is_file()
+    assert Path(rc.REPORT_PATH).is_file()
 
 
 def test_manifest_binds_prompt_pack_and_preregistration(pack):
