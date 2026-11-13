@@ -37,7 +37,7 @@ from scripts.run_msnl_eval import PackError, _load, quote_grounded  # noqa: E402
 
 FIXTURES = os.path.join(_ROOT, "tests", "fixtures")
 PREREG_PATH = os.path.join(FIXTURES, "g1_faithful_rephrasing_v1_preregistration.json")
-PREREG_SHA256 = "7a3aa8042b53884da3c2acc5c93393c912052ec78fba72281530595137a7f274"
+PREREG_SHA256 = "10fa7113f60e499ae6035d66cfdb51d1541a7674b9d22aaefdfd7780a5e390aa"
 INSTRUCTIONS_SHA256 = "3cf6bee00b8f6be54418f892ec9c5a941422d2df375011f98adee7fdaf8723d6"
 SCHEMA_SHA256 = "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702"
 
@@ -421,8 +421,10 @@ def case_verdict(case, reference, validation, record, reply=None):
     provider refusal (no reply) is NOT FAITHFUL without being hard."""
     if validation == INVALID:
         return NOT_FAITHFUL, ["deterministic invalid"], ["deterministic: %s" % validation], []
-    if validation != VALID or record is None:
+    if validation != VALID:
         return NOT_FAITHFUL, [], ["deterministic: %s" % validation], []
+    if record is None:
+        raise PackError("a validated reply has no assessment record")
     if reply is None:
         raise PackError("a validated reply is required to judge its assessment")
     abstention = derived_abstention(reply, reference)

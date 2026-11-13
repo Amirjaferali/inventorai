@@ -426,3 +426,48 @@ def test_a_normal_authorized_run_is_accepted_as_provider_evidence(pack, evidence
     altered = dict(report, authorized_manifest_sha256="e" * 64)
     with pytest.raises(rc.PackError):
         rc.aggregate(altered, assessment, digest, lines)
+
+
+def test_the_label_is_derived_from_the_transport_never_supplied(pack, evidence):
+    """Review finding on A3: calling the request loop directly with the Owner's
+    digest cannot turn an offline fake into provider evidence."""
+    manifest = rc.run_manifest(REVISION, rc.MODEL)
+    digest = rc._digest(manifest)
+    journal = io.StringIO()
+    report = rc._run_cases(_adapter(_Fake(_responses(pack))), pack[0], manifest, journal, digest)
+    lines = journal.getvalue().splitlines()
+    assert report["transport"] == rc.TRANSPORT_FAKE
+    assert report["authorized_manifest_sha256"] is None
+    with pytest.raises(rc.PackError, match="not provider evidence"):
+        rc.aggregate(report, None, digest, lines)
+    # A non-fake transport outside the run's own claimed journal is refused.
+    real = _NotFake(_responses(pack))
+    for bad_digest, bad_journal in ((digest, io.StringIO()), (None, io.StringIO()),
+                                    ("e" * 64, io.StringIO())):
+        with pytest.raises(rc.PackError):
+            rc._run_cases(_adapter(real), pack[0], manifest, bad_journal, bad_digest)
+    assert real.calls == []
+
+
+def test_a_fake_inside_nested_wrappers_is_still_a_fake(pack):
+    fake = _Fake(_responses(pack))
+    adapter = rc.OpenAIMsnlAdapter(allow_network=True,
+                                   transport=rc.RecordingTransport(rc.RecordingTransport(fake)))
+    assert rc._is_offline_fake(adapter)
+    report = rc.campaign(adapter, pack[0], rc.run_manifest(REVISION, adapter._model),
+                         io.StringIO())
+    assert report["transport"] == rc.TRANSPORT_FAKE and len(fake.calls) == 40
+
+
+def test_a_validated_reply_without_an_assessment_record_is_refused(pack):
+    report, _fake, lines = _run(pack, _responses(pack))
+    cases, ref = pack
+    _msg, assessment = _assessment(report, lines, report["manifest_sha256"])
+    replies = rc._replies(report)
+    _messages, keymap = ev.render_output_assessor(cases, ref, replies)
+    dropped = sorted(keymap)[0]
+    partial_keymap = {k: v for k, v in keymap.items() if k != dropped}
+    partial = {k: v for k, v in assessment["records"].items() if k != dropped}
+    with pytest.raises(rc.PackError, match="no assessment record"):
+        ev.decide(cases, ref, replies, partial, partial_keymap,
+                  ev.preparation_checks(cases, ref, corpus=[]))

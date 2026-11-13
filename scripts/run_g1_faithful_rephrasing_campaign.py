@@ -225,11 +225,26 @@ def classify(adapter, case):
     return result(P_RESPONDED, None, reply)
 
 
+def _is_offline_fake(adapter):
+    """True when ANY layer of the adapter's transport declares itself an
+    offline test fake, however many RecordingTransport wrappers surround it.
+    (The reused single-layer check, ``_offline_fake``, stays the gate that
+    decides whether the run boundary applies.)"""
+    transport = getattr(adapter, "_transport", None)
+    for _depth in range(16):
+        if getattr(transport, "OFFLINE_FAKE", False) is True:
+            return True
+        if not isinstance(transport, RecordingTransport):
+            return False
+        transport = transport.inner
+    return True                              # an implausibly deep wrapper: never provider
+
+
 def campaign(adapter, cases, manifest, journal=None, authorized_manifest_sha256=None):
     if manifest != run_manifest(manifest.get("code_revision"), adapter._model):
         raise PackError("manifest does not describe this run")
-    if _offline_fake(adapter):
-        return _run_cases(adapter, cases, manifest, journal, TRANSPORT_FAKE, None)
+    if _offline_fake(adapter) or _is_offline_fake(adapter):
+        return _run_cases(adapter, cases, manifest, journal, None)
     check_campaign_boundary(cases, manifest, authorized_manifest_sha256, journal)
     os.makedirs(EVIDENCE_DIR, exist_ok=True)
     try:
@@ -238,11 +253,23 @@ def campaign(adapter, cases, manifest, journal=None, authorized_manifest_sha256=
         raise PackError("run evidence already exists: one run only, and an interrupted run "
                         "is incomplete, never rerun")
     with claimed:
-        return _run_cases(adapter, cases, manifest, claimed, TRANSPORT_PROVIDER,
-                          authorized_manifest_sha256)
+        return _run_cases(adapter, cases, manifest, claimed, authorized_manifest_sha256)
 
 
-def _run_cases(adapter, cases, manifest, journal, transport, authorized_manifest_sha256):
+def _run_cases(adapter, cases, manifest, journal, authorized_manifest_sha256):
+    """The request loop. The transport label is DERIVED here, never supplied
+    by a caller (A3): an offline fake at any wrapper depth is always
+    OFFLINE_FAKE; anything else is labelled a provider run only under the
+    Owner-named digest of this manifest and with the run's own exclusively
+    claimed journal, which ``campaign`` creates after the full boundary."""
+    if _is_offline_fake(adapter):
+        transport, authorized_manifest_sha256 = TRANSPORT_FAKE, None
+    else:
+        if not campaign_authorized(manifest, authorized_manifest_sha256):
+            raise PackError("a provider run needs the Owner-named digest of this manifest")
+        if os.path.abspath(getattr(journal, "name", "") or "") != os.path.abspath(JOURNAL_PATH):
+            raise PackError("a provider run writes only the journal claimed by the run itself")
+        transport = TRANSPORT_PROVIDER
     price_in, price_out = PRICING["input_usd_per_1m"], PRICING["output_usd_per_1m"]
     res_in, res_out = RESERVATION["input_usd_per_1m"], RESERVATION["output_usd_per_1m"]
     ledger = {"requests": 0, "sent": 0, "committed": 0.0, "measured": 0.0,

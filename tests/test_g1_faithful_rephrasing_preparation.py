@@ -29,7 +29,7 @@ def test_prompt_and_preregistration_are_pinned():
     assert ev.schema_sha256() == ev.SCHEMA_SHA256 == (
         "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702")
     assert _sha_file(ev.PREREG_PATH) == ev.PREREG_SHA256 == (
-        "7a3aa8042b53884da3c2acc5c93393c912052ec78fba72281530595137a7f274")
+        "10fa7113f60e499ae6035d66cfdb51d1541a7674b9d22aaefdfd7780a5e390aa")
     prereg = ev.load_prereg()
     assert prereg["prompt"]["prompt_id"] == fp.PROMPT_ID
     assert sum(s["planned"] for s in prereg["subsets"].values()) == 40
