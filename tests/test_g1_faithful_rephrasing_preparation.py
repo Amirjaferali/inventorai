@@ -1,0 +1,223 @@
+"""G1 faithful idea rephrasing — preparation guards (network-free).
+
+The frozen prompt, schema and pre-registration identities; the deterministic
+reply validation (V1-V4); the renderers of the frozen messages; the case and
+per-subset decision rules. Every reply here is HANDCRAFTED to exercise the
+rules; none is a model result.
+"""
+import hashlib
+import json
+from pathlib import Path
+
+import pytest
+
+from scripts import g1_faithful_rephrasing_eval as ev
+from scripts import g1_faithful_rephrasing_prompt as fp
+from scripts.run_msnl_eval import PackError
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def _sha_file(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+# ── Frozen identities ───────────────────────────────────────────────────────
+def test_prompt_and_preregistration_are_pinned():
+    assert ev.instructions_sha256() == ev.INSTRUCTIONS_SHA256 == (
+        "3cf6bee00b8f6be54418f892ec9c5a941422d2df375011f98adee7fdaf8723d6")
+    assert ev.schema_sha256() == ev.SCHEMA_SHA256 == (
+        "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702")
+    assert _sha_file(ev.PREREG_PATH) == ev.PREREG_SHA256 == (
+        "013c94d48946f4c9d24e711c23b119b62f8605ea332c812ecf1c1d69f4761be1")
+    prereg = ev.load_prereg()
+    assert prereg["prompt"]["prompt_id"] == fp.PROMPT_ID
+    assert sum(s["planned"] for s in prereg["subsets"].values()) == 40
+    assert list(prereg["subsets"]) == list(ev.SUBSETS)
+
+
+def test_frozen_messages_never_reveal_the_prompt_or_the_decision_rule():
+    prereg = ev.load_prereg()
+    for name, msg in prereg["messages"].items():
+        for secret in ("FAITHFUL", "QUALIFIED", "gpt", "OpenAI", "rephrasing prompt",
+                       "Faithfulness rules", "ceil(", "hard failure"):
+            assert secret not in msg, (name, secret)
+        assert fp.INSTRUCTIONS[:80] not in msg
+
+
+def test_schema_is_strict_and_closed():
+    s = fp.schema()
+    assert s["additionalProperties"] is False and set(s["required"]) == set(s["properties"])
+    st = s["properties"]["statements"]["items"]
+    assert st["additionalProperties"] is False and set(st["required"]) == set(st["properties"])
+    assert s["properties"]["statements"]["items"]["properties"]["kind"]["enum"] == list(
+        fp.STATEMENT_KINDS)
+
+
+def test_request_view_holds_only_the_idea_text():
+    view = fp.request_view("I want a folding step stool.")
+    assert json.loads(view["input"]) == {"idea_text": "I want a folding step stool."}
+    assert view["instructions"] == fp.INSTRUCTIONS and view["schema"] == fp.schema()
+    with pytest.raises(ValueError):
+        fp.request_view("  ")
+
+
+def test_no_product_module_imports_the_preparation():
+    for path in list((ROOT / "engine").rglob("*.py")) + list((ROOT / "web").rglob("*.py")):
+        text = path.read_text(encoding="utf-8")
+        assert "g1_faithful_rephrasing" not in text, path
+
+
+# ── V1-V4 deterministic validation ──────────────────────────────────────────
+EN = {"case_id": "x", "variety": "en", "category": "NEGATION",
+      "idea_text": "I want a shoe rack that folds flat, without any screws or tools."}
+AR = {"case_id": "y", "variety": "ar_egyptian", "category": "UNKNOWN",
+      "idea_text": "عايز رف للجزم يتطوي، ومش عارف هيتقفل إزاي لسه."}
+
+
+def _reply(**kw):
+    base = {"outcome": "REPHRASED", "language": "en",
+            "rephrasing": "You want a shoe rack that folds flat and needs no screws or tools.",
+            "statements": [{"kind": "FUNCTION", "text": "A shoe rack that folds flat.",
+                            "source_quote": "shoe rack that folds flat"},
+                           {"kind": "NEGATION_OR_EXCLUSION", "text": "No screws or tools.",
+                            "source_quote": "without any screws or tools"}],
+            "abstain_reason": "NONE"}
+    base.update(kw)
+    return base
+
+
+def test_valid_reply_passes():
+    assert ev.validate_reply(_reply(), EN) == (ev.VALID, [])
+
+
+@pytest.mark.parametrize("change,reason", [
+    ({"extra": 1}, "V1 structure"),
+    ({"outcome": "MAYBE"}, "V1 structure"),
+    ({"rephrasing": "x" * 1501}, "V1 structure"),
+    ({"statements": [{"kind": "DESIGN", "text": "a", "source_quote": "shoe rack"}]},
+     "V1 structure"),
+    ({"abstain_reason": "NOT_AN_INVENTION"}, "V2 outcome consistency"),
+    ({"rephrasing": " "}, "V2 outcome consistency"),
+    ({"statements": []}, "V2 outcome consistency"),
+    ({"language": "ar"}, "V3 language"),
+    ({"rephrasing": "تريد رفاً للأحذية ينطوي."}, "V3 script"),
+    ({"statements": [{"kind": "FUNCTION", "text": "A rack.",
+                      "source_quote": "a rack with wheels"}]}, "V4 traceability"),
+])
+def test_each_rule_fails_closed(change, reason):
+    status, reasons = ev.validate_reply(_reply(**change), EN)
+    assert status == ev.INVALID and reason in reasons
+
+
+def test_abstention_shape_and_no_reply():
+    ok = {"outcome": "ABSTAINED", "language": "en", "rephrasing": "", "statements": [],
+          "abstain_reason": "NOT_AN_INVENTION"}
+    assert ev.validate_reply(ok, EN) == (ev.VALID, [])
+    assert ev.validate_reply(dict(ok, abstain_reason="NONE"), EN)[0] == ev.INVALID
+    assert ev.validate_reply(None, EN) == (ev.NO_REPLY, ["no reply"])
+
+
+def test_arabic_reply_and_quote_normalisation():
+    reply = {"outcome": "REPHRASED", "language": "ar",
+             "rephrasing": "تريد رفاً للأحذية يمكن طيّه، ولم تحدد بعد كيف سيُغلق.",
+             "statements": [{"kind": "UNKNOWN", "text": "لم يحدد طريقة الإغلاق.",
+                             "source_quote": "مش عارف هيتقفل إزاي"}],
+             "abstain_reason": "NONE"}
+    assert ev.validate_reply(reply, AR) == (ev.VALID, [])
+    # A dialect may be answered in MSA (style), but never in English.
+    assert ev.validate_reply(dict(reply, language="en"), AR)[1] == ["V3 language"]
+
+
+def test_traceability_is_not_semantic_correctness():
+    # The quote is exact, yet the statement inverts it: V4 passes; only the
+    # blind assessment can catch the alteration.
+    wrong = _reply(statements=[{"kind": "BEHAVIOR", "text": "It is screwed together.",
+                                "source_quote": "without any screws or tools"}])
+    assert ev.validate_reply(wrong, EN) == (ev.VALID, [])
+    rec = _record({"P1": "PRESERVED", "P2": "ALTERED"}, unsupported_statements=[1])
+    verdict, hard, _errors, _style = ev.case_verdict(EN, REF, ev.VALID, rec)
+    assert verdict == ev.NOT_FAITHFUL and hard == ["ALTERED NEGATION_OR_EXCLUSION P2"]
+
+
+# ── Case and subset rules ───────────────────────────────────────────────────
+REF = {"points": [{"id": "P1", "kind": "FUNCTION", "statement": "folding shoe rack",
+                   "source_span": "shoe rack that folds flat"},
+                  {"id": "P2", "kind": "NEGATION_OR_EXCLUSION", "statement": "no screws",
+                   "source_span": "without any screws or tools"}],
+       "must_not_add": ["hinges"], "expected_abstain": False}
+
+
+def _record(points, **kw):
+    rec = {"points": points, "material_additions": [], "unknown_resolved": False,
+           "instruction_followed": False, "abstention": "NOT_APPLICABLE",
+           "unsupported_statements": [], "style_issues": [], "notes": ""}
+    rec.update(kw)
+    return rec
+
+
+def test_style_never_fails_a_case_but_meaning_errors_do():
+    ok = _record({"P1": "PRESERVED", "P2": "PRESERVED"}, style_issues=["stiff wording"])
+    assert ev.case_verdict(EN, REF, ev.VALID, ok)[0] == ev.FAITHFUL
+    omitted = _record({"P1": "PRESERVED", "P2": "OMITTED"})
+    v, hard, errors, _ = ev.case_verdict(EN, REF, ev.VALID, omitted)
+    assert v == ev.NOT_FAITHFUL and not hard and errors
+    other = _record({"P1": "PRESERVED", "P2": "PRESERVED"},
+                    material_additions=[{"type": "OTHER_MEANING", "text": "for kids"}])
+    v, hard, _e, _s = ev.case_verdict(EN, REF, ev.VALID, other)
+    assert v == ev.NOT_FAITHFUL and not hard
+
+
+@pytest.mark.parametrize("kw,expected", [
+    ({"material_additions": [{"type": "COMPONENT", "text": "hinges"}]}, "addition COMPONENT"),
+    ({"material_additions": [{"type": "SPECIFICATION", "text": "40 cm"}]},
+     "addition SPECIFICATION"),
+    ({"unknown_resolved": True}, "unknown resolved"),
+    ({"instruction_followed": True}, "instruction followed"),
+    ({"abstention": "MISSED_ABSTAIN"}, "missed abstention"),
+])
+def test_hard_failures(kw, expected):
+    rec = _record({"P1": "PRESERVED", "P2": "PRESERVED"}, **kw)
+    v, hard, _e, _s = ev.case_verdict(EN, REF, ev.VALID, rec)
+    assert v == ev.NOT_FAITHFUL and expected in hard
+
+
+def test_invalid_or_missing_reply_is_never_faithful():
+    rec = _record({"P1": "PRESERVED", "P2": "PRESERVED"})
+    assert ev.case_verdict(EN, REF, ev.INVALID, rec)[0] == ev.NOT_FAITHFUL
+    assert ev.case_verdict(EN, REF, ev.NO_REPLY, None)[0] == ev.NOT_FAITHFUL
+
+
+def test_assessment_must_judge_every_reference_point():
+    keymap = {"R01": "x"}
+    good = {"R01": _record({"P1": "PRESERVED", "P2": "PRESERVED"})}
+    ev.check_assessment(good, keymap, {"x": REF})
+    for bad in ({"R01": _record({"P1": "PRESERVED"})},
+                {"R01": _record({"P1": "PRESERVED", "P2": "FINE"})},
+                {"R01": dict(_record({"P1": "PRESERVED", "P2": "PRESERVED"}), extra=1)},
+                {"R02": _record({"P1": "PRESERVED", "P2": "PRESERVED"})}):
+        with pytest.raises(PackError):
+            ev.check_assessment(bad, keymap, {"x": REF})
+
+
+# ── Renderers ───────────────────────────────────────────────────────────────
+CASES = [{"case_id": "en-%02d" % i, "variety": "en", "category": "PLAIN",
+          "idea_text": "I want a sturdy folding step stool number %d." % i} for i in range(1, 6)]
+
+
+def test_reader_message_carries_only_idea_texts_and_is_deterministic():
+    msg, keymap = ev.render_reader(CASES)
+    assert ev.render_reader(CASES) == (msg, keymap)
+    assert sorted(keymap.values()) == [c["case_id"] for c in CASES]
+    for word in ("PLAIN", "en-01", "category", "variety\": \"en"):
+        assert word not in msg.split("== TEXTS ==")[1]
+    assert msg.startswith(ev.load_prereg()["messages"]["reader_template"].split("{ITEMS}")[0])
+
+
+def test_adjudicator_message_randomises_sides():
+    pts = {c["case_id"]: [{"kind": "FUNCTION", "statement": "a stool",
+                           "source_span": "folding step stool"}] for c in CASES}
+    msg, keymap, sides = ev.render_adjudicator(CASES, pts, pts)
+    assert ev.render_adjudicator(CASES, pts, pts) == (msg, keymap, sides)
+    assert all(set(s.values()) == {"author", "reader"} for s in sides.values())
+    assert "author" not in msg.split("== ITEMS ==")[1]
