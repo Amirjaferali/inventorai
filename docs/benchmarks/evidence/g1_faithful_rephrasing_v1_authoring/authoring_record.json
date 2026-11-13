@@ -2,6 +2,32 @@
  "amendment_A1_commit": "a107b7b330e07f67a011ea0404b441e6a08aa00d",
  "note": "Verbatim messages as received by each independent session and each complete reply, recovered from the session transcripts. All sessions were separate, repository-less language-model sessions; no human took part. The adjudicator's second message is shown as delivered, inside the cross-session transport envelope.",
  "prompt_freeze_commit": "5624f3c86b1af908882207ec81c9a53a44d8e0c9",
+ "session_parameters": {
+  "adjudicator": {
+   "follow_up": "batch 2 sent with send_message, priority later",
+   "tags": [
+    "g1-faithful-rephrasing-v1",
+    "independent-adjudicator"
+   ],
+   "title": "Independent adjudication of synthetic readings (repo-less)"
+  },
+  "all": "created with create_session from this Lead session: prompt only; no source_url (no repository checkout), no append_system_prompt, no extra_allowed_tools, default model claude-opus-5-5; the platform tagged each session config:no-git-repo",
+  "author": {
+   "tags": [
+    "g1-faithful-rephrasing-v1",
+    "independent-author"
+   ],
+   "title": "Synthetic text authoring (independent, repo-less)"
+  },
+  "limits": "the record cannot show the platform system prompt each session ran with; every reply reports zero permission denials and one turn, the adjudicator's second turn being the read of the delivered batch",
+  "reader": {
+   "tags": [
+    "g1-faithful-rephrasing-v1",
+    "independent-reader"
+   ],
+   "title": "Independent reading of synthetic texts (repo-less)"
+  }
+ },
  "sessions": {
   "adjudicator": "session_01UZzqpidkmTEPtmAPvvhm51",
   "author": "session_01UZzqpfLzsuW63QsTTQN2f9",

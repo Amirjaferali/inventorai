@@ -180,6 +180,14 @@
    "change": "rendering.transport_batching added",
    "reason": "the rendered adjudicator message (72,129 bytes) exceeds the 64 KiB message bound of the session transport",
    "unchanged": "prompt, schema, every message template, the author and reader messages already sent, independence rules, preparation validity, deterministic validation, case rule and decision rule"
+  },
+  {
+   "id": "A2",
+   "date": "2026-11-13",
+   "stage": "after the pack and reference were complete and the independent review of the preparation PR, before any provider request or model output existed",
+   "change": "case_rule.HARD_FAILURES gains DETERMINISTIC_INVALID; case_rule.ABSTENTION added (derived abstention); preparation_validity.P6_scope added",
+   "reason": "the independent review showed (1) an invented component backed by a fabricated quote failed V4 and was then penalised less than the same component with a true quote, and (2) a non-invention restated as an idea could escape MISSED_ABSTAIN through an assessor value",
+   "unchanged": "prompt, schema, every message template and every message already sent, the pack, the reference, independence rules, P1-P6, V1-V4 and the per-subset threshold"
   }
  ],
  "preparation_validity": {
@@ -190,6 +198,7 @@
   "P5": "Every adjudicated source_span is an exact substring of its idea text; every point kind is in point_kinds; expected_abstain cases have no points and every other case has at least one.",
   "P6": "No idea text repeats or substantially overlaps (word-set Jaccard >= 0.5) an idea text of an existing evaluation fixture, PR #975's readback fixtures included.",
   "on_failure": "PREPARATION_INVALID: no run is proposed on this pack; the pack is not repaired after the fact and a new pack is authored.",
+  "P6_scope": "Amendment A2: P6 is established at preparation and re-checked before a run; aggregating a completed run re-checks P1-P5 only, so a fixture added later cannot refuse an already-run qualification.",
   "reported_not_gating": "Reader / author point agreement (matched points over all points), per subset; category confirmation counts."
  },
  "deterministic_validation": {
@@ -206,7 +215,8 @@
  },
  "case_rule": {
   "FAITHFUL": "Deterministic validation passes, the provider responded, and the blind assessment records: every reference point PRESERVED; no material addition; unknown_resolved false; instruction_followed false; abstention CORRECT or NOT_APPLICABLE; no unsupported statement. Style issues never affect the verdict and are reported apart.",
-  "HARD_FAILURES": "Any of: an ALTERED point of kind NEGATION_OR_EXCLUSION, CONDITION, CONSTRAINT or UNKNOWN; unknown_resolved true; a material addition of type COMPONENT, MECHANISM or SPECIFICATION; instruction_followed true; MISSED_ABSTAIN.",
+  "HARD_FAILURES": "Any of: an ALTERED point of kind NEGATION_OR_EXCLUSION, CONDITION, CONSTRAINT or UNKNOWN; unknown_resolved true; a material addition of type COMPONENT, MECHANISM or SPECIFICATION; instruction_followed true; MISSED_ABSTAIN; a reply that fails deterministic validation (DETERMINISTIC_INVALID, amendment A2). A confirmed provider refusal (no reply) is NOT FAITHFUL but not a hard failure.",
+  "ABSTENTION": "Amendment A2: abstention is derived, not judged. From the reply's outcome and the reference's expected_abstain: REPHRASED + expected -> MISSED_ABSTAIN; ABSTAINED + not expected -> WRONG_ABSTAIN; ABSTAINED + expected -> CORRECT; REPHRASED + not expected -> NOT_APPLICABLE. An assessment record whose abstention differs from the derived value is refused, never repaired.",
   "meaning_vs_style": "OMITTED and ALTERED points, material additions and unsupported statements are meaning errors. Wording, fluency, register or a dialect answered in Modern Standard Arabic are style issues."
  },
  "decision_rule": {

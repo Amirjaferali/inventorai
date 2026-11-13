@@ -37,7 +37,7 @@ from scripts.run_msnl_eval import PackError, _load, quote_grounded  # noqa: E402
 
 FIXTURES = os.path.join(_ROOT, "tests", "fixtures")
 PREREG_PATH = os.path.join(FIXTURES, "g1_faithful_rephrasing_v1_preregistration.json")
-PREREG_SHA256 = "2b91ab46357d6e18540e02fb20f399575da119c7844ee73c62831ecfe74b6069"
+PREREG_SHA256 = "71341257df131f2d8b6e2d22e2269f4a143bfea982f55159469f88a6a16ed9d1"
 INSTRUCTIONS_SHA256 = "3cf6bee00b8f6be54418f892ec9c5a941422d2df375011f98adee7fdaf8723d6"
 SCHEMA_SHA256 = "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702"
 
@@ -401,10 +401,28 @@ def check_assessment(assessment, keymap, reference):
             raise PackError("assessment record %s is malformed" % key)
 
 
-def case_verdict(case, reference, validation, record):
-    """(FAITHFUL | NOT_FAITHFUL, hard_failures, meaning_errors, style_issues)."""
+def derived_abstention(reply, reference):
+    """Amendment A2: abstention follows from facts the evaluator already holds
+    (the reply's outcome and the reference's expected_abstain), never from an
+    assessor's choice."""
+    abstained = reply["outcome"] == "ABSTAINED"
+    if reference["expected_abstain"]:
+        return "CORRECT" if abstained else "MISSED_ABSTAIN"
+    return "WRONG_ABSTAIN" if abstained else "NOT_APPLICABLE"
+
+
+def case_verdict(case, reference, validation, record, reply=None):
+    """(FAITHFUL | NOT_FAITHFUL, hard_failures, meaning_errors, style_issues).
+    A deterministically invalid reply is a hard failure (amendment A2): it is
+    never sent to the assessor, so whatever it adds or follows must not escape
+    the hard-failure rule. No reply at all (a confirmed provider refusal) is NOT
+    FAITHFUL but not a hard failure."""
+    if validation == INVALID:
+        return NOT_FAITHFUL, ["deterministic invalid"], ["deterministic: %s" % validation], []
     if validation != VALID or record is None:
         return NOT_FAITHFUL, [], ["deterministic: %s" % validation], []
+    if record["abstention"] != derived_abstention(reply, reference):
+        raise PackError("assessment abstention differs from the derived value")
     kinds = {p["id"]: p["kind"] for p in reference["points"]}
     hard, errors = [], []
     for pid, state in record["points"].items():
@@ -445,7 +463,7 @@ def decide(cases, reference, replies, assessment, keymap, prep):
             case = next(c for c in cases if c["case_id"] == cid)
             status, reasons = validate_reply(replies.get(cid), case)
             verdict, hard, errors, style = case_verdict(case, reference[cid], status,
-                                                        by_case.get(cid))
+                                                        by_case.get(cid), replies.get(cid))
             rows.append({"case_id": cid, "validation": status, "validation_reasons": reasons,
                          "verdict": verdict, "hard_failures": hard, "meaning_errors": errors,
                          "style_issues": style})
@@ -457,7 +475,15 @@ def decide(cases, reference, replies, assessment, keymap, prep):
                   "hard_failure_cases": hard_any,
                   "verdict": QUALIFIED if (not hard_any and faithful >= need) else NOT_QUALIFIED,
                   "rows": rows}
-    return {"subsets": out,
+    agreement = point_agreement(reference)
+    reported = {s: {"excluded": {cid: why for cid, why in prep["P1_P2_excluded"].items()
+                                 if next(c for c in cases if c["case_id"] == cid)["variety"] == s},
+                    "confirmed_categories": prep["P4_confirmed_categories"][s],
+                    "author_reader_point_agreement_mean": round(
+                        sum(agreement[c] for c in prep["kept"][s] if agreement[c] is not None)
+                        / max(1, sum(1 for c in prep["kept"][s] if agreement[c] is not None)), 3)}
+                for s in SUBSETS}
+    return {"subsets": out, "reported_not_gating": reported,
             "scope": load_prereg()["decision_rule"]["scope"]}
 
 

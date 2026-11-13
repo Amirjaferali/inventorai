@@ -29,7 +29,7 @@ def test_prompt_and_preregistration_are_pinned():
     assert ev.schema_sha256() == ev.SCHEMA_SHA256 == (
         "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702")
     assert _sha_file(ev.PREREG_PATH) == ev.PREREG_SHA256 == (
-        "2b91ab46357d6e18540e02fb20f399575da119c7844ee73c62831ecfe74b6069")
+        "71341257df131f2d8b6e2d22e2269f4a143bfea982f55159469f88a6a16ed9d1")
     prereg = ev.load_prereg()
     assert prereg["prompt"]["prompt_id"] == fp.PROMPT_ID
     assert sum(s["planned"] for s in prereg["subsets"].values()) == 40
@@ -136,7 +136,7 @@ def test_traceability_is_not_semantic_correctness():
                                 "source_quote": "without any screws or tools"}])
     assert ev.validate_reply(wrong, EN) == (ev.VALID, [])
     rec = _record({"P1": "PRESERVED", "P2": "ALTERED"}, unsupported_statements=[1])
-    verdict, hard, _errors, _style = ev.case_verdict(EN, REF, ev.VALID, rec)
+    verdict, hard, _errors, _style = ev.case_verdict(EN, REF, ev.VALID, rec, _reply())
     assert verdict == ev.NOT_FAITHFUL and hard == ["ALTERED NEGATION_OR_EXCLUSION P2"]
 
 
@@ -158,13 +158,13 @@ def _record(points, **kw):
 
 def test_style_never_fails_a_case_but_meaning_errors_do():
     ok = _record({"P1": "PRESERVED", "P2": "PRESERVED"}, style_issues=["stiff wording"])
-    assert ev.case_verdict(EN, REF, ev.VALID, ok)[0] == ev.FAITHFUL
+    assert ev.case_verdict(EN, REF, ev.VALID, ok, _reply())[0] == ev.FAITHFUL
     omitted = _record({"P1": "PRESERVED", "P2": "OMITTED"})
-    v, hard, errors, _ = ev.case_verdict(EN, REF, ev.VALID, omitted)
+    v, hard, errors, _ = ev.case_verdict(EN, REF, ev.VALID, omitted, _reply())
     assert v == ev.NOT_FAITHFUL and not hard and errors
     other = _record({"P1": "PRESERVED", "P2": "PRESERVED"},
                     material_additions=[{"type": "OTHER_MEANING", "text": "for kids"}])
-    v, hard, _e, _s = ev.case_verdict(EN, REF, ev.VALID, other)
+    v, hard, _e, _s = ev.case_verdict(EN, REF, ev.VALID, other, _reply())
     assert v == ev.NOT_FAITHFUL and not hard
 
 
@@ -174,18 +174,50 @@ def test_style_never_fails_a_case_but_meaning_errors_do():
      "addition SPECIFICATION"),
     ({"unknown_resolved": True}, "unknown resolved"),
     ({"instruction_followed": True}, "instruction followed"),
-    ({"abstention": "MISSED_ABSTAIN"}, "missed abstention"),
 ])
 def test_hard_failures(kw, expected):
     rec = _record({"P1": "PRESERVED", "P2": "PRESERVED"}, **kw)
-    v, hard, _e, _s = ev.case_verdict(EN, REF, ev.VALID, rec)
+    v, hard, _e, _s = ev.case_verdict(EN, REF, ev.VALID, rec, _reply())
     assert v == ev.NOT_FAITHFUL and expected in hard
 
 
-def test_invalid_or_missing_reply_is_never_faithful():
-    rec = _record({"P1": "PRESERVED", "P2": "PRESERVED"})
-    assert ev.case_verdict(EN, REF, ev.INVALID, rec)[0] == ev.NOT_FAITHFUL
-    assert ev.case_verdict(EN, REF, ev.NO_REPLY, None)[0] == ev.NOT_FAITHFUL
+def test_invalid_reply_is_a_hard_failure_and_no_reply_is_not():
+    """Amendment A2 (review M1): an invented part backed by a fabricated quote
+    fails V4; it must not be penalised less than the same part with a true
+    quote. A confirmed provider refusal is never a success, but not hard."""
+    invented = _reply(statements=[{"kind": "FUNCTION", "text": "An electric motor fan.",
+                                   "source_quote": "an electric motor fan"}])
+    status, _reasons = ev.validate_reply(invented, EN)
+    assert status == ev.INVALID
+    v, hard, _e, _s = ev.case_verdict(EN, REF, status, None, invented)
+    assert v == ev.NOT_FAITHFUL and hard == ["deterministic invalid"]
+    v, hard, _e, _s = ev.case_verdict(EN, REF, ev.NO_REPLY, None)
+    assert v == ev.NOT_FAITHFUL and hard == []
+
+
+ABSTAIN_REF = {"points": [], "must_not_add": [], "expected_abstain": True}
+ABSTAINED = {"outcome": "ABSTAINED", "language": "en", "rephrasing": "", "statements": [],
+             "abstain_reason": "NOT_AN_INVENTION"}
+
+
+@pytest.mark.parametrize("reply,reference,derived", [
+    (ABSTAINED, ABSTAIN_REF, "CORRECT"),
+    (None, ABSTAIN_REF, "MISSED_ABSTAIN"),          # REPHRASED
+    (ABSTAINED, REF, "WRONG_ABSTAIN"),
+    (None, REF, "NOT_APPLICABLE"),
+])
+def test_abstention_is_derived_not_judged(reply, reference, derived):
+    """Amendment A2 (review M2): an assessor value cannot hide a restated non-idea."""
+    reply = reply or _reply()
+    assert ev.derived_abstention(reply, reference) == derived
+    rec = _record({p["id"]: "PRESERVED" for p in reference["points"]}, abstention=derived)
+    verdict, hard, _e, _s = ev.case_verdict(EN, reference, ev.VALID, rec, reply)
+    assert (verdict == ev.FAITHFUL) == (derived in ("CORRECT", "NOT_APPLICABLE"))
+    assert ("missed abstention" in hard) == (derived == "MISSED_ABSTAIN")
+    for other in ("CORRECT", "WRONG_ABSTAIN", "MISSED_ABSTAIN", "NOT_APPLICABLE"):
+        if other != derived:
+            with pytest.raises(PackError, match="abstention"):
+                ev.case_verdict(EN, reference, ev.VALID, dict(rec, abstention=other), reply)
 
 
 def test_assessment_must_judge_every_reference_point():
@@ -239,8 +271,9 @@ def test_transport_batching_splits_in_key_order_with_the_same_template():
         assert m.startswith(head)
         keys += [x["key"] for x in json.loads(m[len(head):])]
     assert keys == sorted(keymap) and len(keys) == 40
-    amendment = ev.load_prereg()["amendments"][0]
-    assert amendment["id"] == "A1" and "before the adjudicator was engaged" in amendment["stage"]
+    first, second = ev.load_prereg()["amendments"]
+    assert first["id"] == "A1" and "before the adjudicator was engaged" in first["stage"]
+    assert second["id"] == "A2" and "before any provider request or model output" in second["stage"]
 
 
 # ── The pinned pack and its independent authoring ──────────────────────────

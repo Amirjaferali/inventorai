@@ -392,7 +392,8 @@ def aggregate(report, assessment, authorized_manifest_sha256, journal_lines):
     replies = _replies(report)
     _msg, keymap = ev.render_output_assessor(cases, ref, replies)
     decision = ev.decide(cases, ref, replies, assessment.get("records"), keymap,
-                         ev.preparation_checks(cases, ref))
+                         # P6 was established at preparation and before the run (A2)
+                         ev.preparation_checks(cases, ref, corpus=[]))
     return dict(decision, manifest_sha256=report["manifest_sha256"],
                 report_sha256=_digest(report), spend=report.get("spend"))
 

@@ -74,7 +74,7 @@ def _assessment(report, lines, digest, mutate=None):
                         "material_additions": [], "unknown_resolved": False,
                         "instruction_followed": False,
                         "abstention": "CORRECT" if ref[cid]["expected_abstain"] else
-                        "NOT_APPLICABLE",
+                        "NOT_APPLICABLE",                     # derived (A2) for the oracle
                         "unsupported_statements": [], "style_issues": [], "notes": ""}
         if mutate:
             mutate(cid, records[key])
@@ -179,7 +179,12 @@ def test_boundary_refuses_each_breach(breach, pack, evidence, monkeypatch):
     elif breach == "prep_invalid":
         monkeypatch.setattr(ev, "preparation_checks",
                             lambda *a, **k: {"verdict": ev.PREPARATION_INVALID})
-    with pytest.raises(rc.PackError):
+    expected = {"wrong_digest": "not authorized", "price_unverified": "price basis",
+                "other_revision": "this checkout", "evidence_in_tree": "already exists",
+                "evidence_in_history": "already exists", "caller_journal": "created by the run",
+                "wrong_model": "price basis for this model", "extra_case": "pinned pack",
+                "prep_invalid": "PREPARATION_INVALID"}[breach]
+    with pytest.raises(rc.PackError, match=expected):
         rc.check_campaign_boundary(cases, manifest, digest, journal)
 
 
@@ -274,3 +279,39 @@ def test_assessment_must_be_bound_and_complete(pack):
     tampered["rows"][0]["reply"] = {"outcome": "ABSTAINED"}
     with pytest.raises(rc.PackError):
         rc.aggregate(tampered, assessment, digest, lines)
+
+
+def test_a_restated_non_idea_or_invalid_reply_fails_its_subset(pack):
+    """Amendment A2 at run level: a restated non-invention (MISSED_ABSTAIN) and a
+    deterministically invalid reply each fail their own subset, whatever the
+    assessor writes."""
+    cases, ref = pack
+    responses = _responses(pack)
+    non_idea = next(i for i, c in enumerate(cases)
+                    if c["variety"] == "ar_msa" and ref[c["case_id"]]["expected_abstain"])
+    invalid = next(i for i, c in enumerate(cases) if c["variety"] == "en")
+    restated = {"outcome": "REPHRASED", "language": "ar",
+                "rephrasing": cases[non_idea]["idea_text"],
+                "statements": [{"kind": "FUNCTION", "text": cases[non_idea]["idea_text"][:60],
+                                "source_quote": cases[non_idea]["idea_text"][:60]}],
+                "abstain_reason": "NONE"}
+    fabricated = dict(_oracle(cases[invalid], ref[cases[invalid]["case_id"]]),
+                      statements=[{"kind": "FUNCTION", "text": "An electric motor.",
+                                   "source_quote": "an electric motor inside"}])
+    responses[non_idea], responses[invalid] = _body(restated), _body(fabricated)
+    report, _fake, lines = _run(pack, responses)
+
+    def mutate(cid, rec):
+        if cid == cases[non_idea]["case_id"]:
+            rec["abstention"] = "MISSED_ABSTAIN"
+    _msg, assessment = _assessment(report, lines, report["manifest_sha256"], mutate)
+    out = rc.aggregate(report, assessment, report["manifest_sha256"], lines)
+    assert out["subsets"]["ar_msa"]["verdict"] == ev.NOT_QUALIFIED
+    assert out["subsets"]["ar_msa"]["hard_failure_cases"] == [cases[non_idea]["case_id"]]
+    assert out["subsets"]["en"]["verdict"] == ev.NOT_QUALIFIED
+    assert out["subsets"]["en"]["hard_failure_cases"] == [cases[invalid]["case_id"]]
+    assert set(out["reported_not_gating"]) == set(ev.SUBSETS)
+    # An assessor value that disagrees with the derived abstention is refused.
+    _msg, wrong = _assessment(report, lines, report["manifest_sha256"])
+    with pytest.raises(rc.PackError, match="abstention"):
+        rc.aggregate(report, wrong, report["manifest_sha256"], lines)
