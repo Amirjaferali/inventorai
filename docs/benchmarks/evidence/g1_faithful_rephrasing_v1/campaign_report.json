@@ -1,0 +1,2305 @@
+{
+ "authorized_manifest_sha256": "2ed2d2138764a3629012624267c3628be80f29a3d881cb9f18ccccc42b1dfd62",
+ "finished_at": "2026-11-13T13:57:20Z",
+ "manifest": {
+  "budget": {
+   "ceiling_usd": 10.0,
+   "price_verification": {
+    "input_usd_per_1m": 2.0,
+    "output_usd_per_1m": 10.0,
+    "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+    "verified_on": "2026-11-04"
+   },
+   "pricing": {
+    "basis": "OpenAI official GPT-6 Sol model page, checked 2026-11-04; Standard text-token prices per million, under the model's short-context tier (this frozen pack is well below the long-context threshold). Other tiers/regions/account routing may differ; the 6x reservation remains a conservative ceiling, not proof of account billing.",
+    "input_usd_per_1m": 2.0,
+    "model": "gpt-6-sol",
+    "output_usd_per_1m": 10.0,
+    "tier": "Standard"
+   },
+   "reservation": {
+    "input_usd_per_1m": 12.0,
+    "multiplier": 6,
+    "output_usd_per_1m": 60.0,
+    "overhead_input_tokens": 1000,
+    "rule": "Proof B's rule, reused: before each request reserve (UTF-8 bytes of the whole request body + 1000) input tokens and max_output_tokens output tokens at the reservation rates; send only if the committed bound plus that reservation is within the ceiling; afterwards the bound grows by the validated usage at the reservation rates, or by the whole reservation when usage is missing or the attempt failed."
+   }
+  },
+  "campaign_id": "g1-faithful-rephrasing-qualification-01",
+  "cases_sha256": "47f7738c25900c395e941093ad415585dfa961bec15d6be4bb50ff72212f9ab6",
+  "code_revision": "5b732c257eb1594e1e919a5856f68bc7a2368b1f",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "evaluator": "scripts/g1_faithful_rephrasing_eval.py decide",
+  "evidence": {
+   "journal": "docs/benchmarks/evidence/g1_faithful_rephrasing_v1/campaign_journal.jsonl",
+   "report": "docs/benchmarks/evidence/g1_faithful_rephrasing_v1/campaign_report.json"
+  },
+  "instructions_sha256": "3cf6bee00b8f6be54418f892ec9c5a941422d2df375011f98adee7fdaf8723d6",
+  "max_output_tokens": 2000,
+  "max_provider_requests": 40,
+  "model": "gpt-6-sol",
+  "one_run_policy": "Exactly one run: the journal is claimed by exclusive create; existing evidence in the tree or in any commit refuses a new run; an interrupted run is incomplete and is never rerun.",
+  "pack_id": "inventorai-g1-faithful-rephrasing-v1",
+  "payloads_sha256": "863c5f3d2ea99e06e32a9c48161f76011536c29d1ade11aafbea74542d7a241d",
+  "preregistration_sha256": "10fa7113f60e499ae6035d66cfdb51d1541a7674b9d22aaefdfd7780a5e390aa",
+  "prompt_id": "g1-faithful-rephrasing-candidate-v1",
+  "reference_sha256": "b6db3685cdc65dd6ca76ec7ab57afc2b8456f3c79a20d276265d6381f3d37f17",
+  "retries": 0,
+  "schema_sha256": "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c9509702",
+  "stop_rule": "Stop at the first provider ERROR (transport, HTTP status, malformed or incomplete reply, output over the cap, unconfirmed model) or an ambiguous refusal, and at the request or currency limit; every later case is NOT_ATTEMPTED and the run is INCOMPLETE. A confirmed provider refusal does not stop the run and is a NOT FAITHFUL case, never a success.",
+  "store": false,
+  "tools": "none"
+ },
+ "manifest_sha256": "2ed2d2138764a3629012624267c3628be80f29a3d881cb9f18ccccc42b1dfd62",
+ "requests": 40,
+ "rows": [
+  {
+   "attempt": {
+    "attempt": 1,
+    "bound_usd": 0.030036,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4851,
+    "measured_cost_usd": 0.005006,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184296,
+    "response_id": "resp_0a4af3b1c6d44990016af7168a21d087d182049440e6d9d29e",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 928,
+     "output_tokens": 315,
+     "reasoning_tokens": 82,
+     "total_tokens": 1243
+    }
+   },
+   "case_id": "en-01",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a boot dryer that you slide wet boots onto after walking in snow. It blows warm air down into the toes so the boots are dry by morning, and it should switch itself off after two hours.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "a boot dryer that you slide wet boots onto after walking in snow",
+      "text": "You want a boot dryer for wet boots after walking in snow."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "you slide wet boots onto",
+      "text": "You slide the wet boots onto the dryer."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "It blows warm air right down into the toes",
+      "text": "It blows warm air right down into the toes."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "they are dry by morning",
+      "text": "The boots are dry by morning."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "It should switch itself off after two hours",
+      "text": "It should switch itself off after two hours."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 2,
+    "bound_usd": 0.029316,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3979,
+    "measured_cost_usd": 0.004886,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184692,
+    "response_id": "resp_061f5937c32c8558016af7168dfd9887d19770fdb98482a2ea",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 938,
+     "output_tokens": 301,
+     "reasoning_tokens": 61,
+     "total_tokens": 1239
+    }
+   },
+   "case_id": "en-02",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a cutting board with a scale built into it, so you can weigh vegetables while chopping them. When you put food on the board, its weight appears on a little screen in the corner. Pressing one button resets the reading to zero.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "a cutting board with a scale built into it, so you can weigh vegetables while you chop them",
+      "text": "The cutting board has a scale built into it so you can weigh vegetables while chopping them."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "When you put food on it, the weight shows",
+      "text": "The weight shows when you put food on the board."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "the weight shows on a little screen in the corner",
+      "text": "The weight shows on a little screen in the corner."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "You press one button to reset it to zero",
+      "text": "Pressing one button resets it to zero."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 3,
+    "bound_usd": 0.049032,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 6493,
+    "measured_cost_usd": 0.008172,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.18528,
+    "response_id": "resp_00c01e53f1d97688016af71691f0ac87d1a2d9955551e43352",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 946,
+     "output_tokens": 628,
+     "reasoning_tokens": 344,
+     "total_tokens": 1574
+    }
+   },
+   "case_id": "en-03",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a little thing that crawls along inside the gutter on your roof and pushes leaves out the end, because cleaning the gutters is scary. It would sit up there until you need it. You don’t know what would make it move, whether a motor or something else.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "Cleaning the gutters on my roof is scary",
+      "text": "Cleaning the gutters on your roof is scary."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "I want a little thing",
+      "text": "You want a little thing."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "crawls along inside the gutter",
+      "text": "It crawls along inside the gutter."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "pushes the leaves out the end",
+      "text": "It pushes the leaves out the end."
+     },
+     {
+      "kind": "UNKNOWN",
+      "source_quote": "I honestly don't know what would make it move, whether it's a motor or something else",
+      "text": "You don’t know what would make it move, whether a motor or something else."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "It would just sit up there until you need it",
+      "text": "It would sit up there until you need it."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 4,
+    "bound_usd": 0.030876,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3581,
+    "measured_cost_usd": 0.005146,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184824,
+    "response_id": "resp_0b73872acf61794c016af71698780c87d19a6c229f5c5a8983",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 933,
+     "output_tokens": 328,
+     "reasoning_tokens": 106,
+     "total_tokens": 1261
+    }
+   },
+   "case_id": "en-04",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want gloves for people who work outside in winter that warn them when their fingers are getting dangerously cold. Maybe the warning would be a buzz on the wrist or something, but you don’t know how the gloves would tell that their fingers are cold.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "gloves for people who work outside in winter that warn you when your fingers are getting dangerously cold",
+      "text": "The gloves would warn people who work outside in winter when their fingers are getting dangerously cold."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "Maybe a buzz on the wrist or something.",
+      "text": "Maybe the warning would be a buzz on the wrist or something."
+     },
+     {
+      "kind": "UNKNOWN",
+      "source_quote": "I have no idea how the glove would actually know your fingers are cold though.",
+      "text": "You do not know how the glove would tell that someone’s fingers are cold."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 5,
+    "bound_usd": 0.035604,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3984,
+    "measured_cost_usd": 0.005934,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184764,
+    "response_id": "resp_08b610432a71e179016af7169c0dc087d1ba68c7aef694804d",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 937,
+     "output_tokens": 406,
+     "reasoning_tokens": 154,
+     "total_tokens": 1343
+    }
+   },
+   "case_id": "en-05",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a pasta cutter that you roll over rolled-out dough to cut several strips at once, all the same width. You push it by hand, with no electricity or batteries, and you don’t want any parts that need to be taken apart for cleaning.",
+    "statements": [
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "you roll over the rolled-out dough",
+      "text": "You roll the cutter over rolled-out dough."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "it cuts several strips at once, all the same width",
+      "text": "It cuts several strips at once, all the same width."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "No electricity, no batteries",
+      "text": "It uses no electricity or batteries."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "just your hand pushing it",
+      "text": "You push it by hand."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "I don't want any parts that need to be taken apart to clean",
+      "text": "You don’t want any parts that need to be taken apart to clean."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 6,
+    "bound_usd": 0.041136,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5091,
+    "measured_cost_usd": 0.006856,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184236,
+    "response_id": "resp_0d0d8dfa3bb80271016af716a00c0487d1b99d22fa3b1a39d1",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 923,
+     "output_tokens": 501,
+     "reasoning_tokens": 265,
+     "total_tokens": 1424
+    }
+   },
+   "case_id": "en-06",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want something to keep pairs of socks together in the washing machine so they come out still matched—something like a small ring that you thread both socks through. It would not be magnetic or made of plastic.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "keep pairs of socks together in the washing machine so they come out still matched",
+      "text": "Keep pairs of socks together in the washing machine so they come out still matched."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "Like a small ring",
+      "text": "You describe it as something like a small ring."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "you thread both socks through",
+      "text": "You thread both socks through it."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "Not magnetic and not made of plastic.",
+      "text": "It would not be magnetic."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "not made of plastic",
+      "text": "It would not be made of plastic."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 7,
+    "bound_usd": 0.042792,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4850,
+    "measured_cost_usd": 0.007132,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.1848,
+    "response_id": "resp_0d9ede9ae28bde38016af716a527b887d1838a86bf80c8e0ab",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 941,
+     "output_tokens": 525,
+     "reasoning_tokens": 241,
+     "total_tokens": 1466
+    }
+   },
+   "case_id": "en-07",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a hallway mat that plays a soft chime in your bedroom when someone steps on it, but only between midnight and six in the morning. It should stay quiet the rest of the day. You thought of it because your dad gets up and wanders at night.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "My dad gets up at night and wanders",
+      "text": "Your dad gets up and wanders at night."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "a mat for the hallway",
+      "text": "You have in mind a mat for the hallway."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "plays a soft chime in my bedroom",
+      "text": "The mat plays a soft chime in your bedroom."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "when someone steps on it",
+      "text": "It plays the chime when someone steps on it."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "only between midnight and six in the morning",
+      "text": "It plays the chime only between midnight and six in the morning."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "the rest of the day it should stay quiet",
+      "text": "It should stay quiet the rest of the day."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 8,
+    "bound_usd": 0.030912,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4288,
+    "measured_cost_usd": 0.005152,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.18456,
+    "response_id": "resp_0eeed97752c08d4a016af716aa080c87d186bd6f1f8baf51e9",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 931,
+     "output_tokens": 329,
+     "reasoning_tokens": 76,
+     "total_tokens": 1260
+    }
+   },
+   "case_id": "en-08",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a shower head that stops the water when no one is standing under it, such as when you step out to shampoo your hair. When you step back in, the water comes back at the same temperature.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "A shower head that stops the water by itself",
+      "text": "The shower head stops the water by itself."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "unless someone is actually standing under it",
+      "text": "It stops the water unless someone is actually standing under it."
+     },
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "like when you step out to shampoo your hair",
+      "text": "Stepping out to shampoo your hair is an example of when the water would stop."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "As soon as you step back in, the water comes back",
+      "text": "As soon as you step back in, the water comes back."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "the water comes back at the same temperature",
+      "text": "The water comes back at the same temperature."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 9,
+    "bound_usd": 0.036864,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4333,
+    "measured_cost_usd": 0.006144,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185268,
+    "response_id": "resp_033ed61c0372816b016af716ae409087d1b7fbbbda83fad3fc",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 952,
+     "output_tokens": 424,
+     "reasoning_tokens": 172,
+     "total_tokens": 1376
+    }
+   },
+   "case_id": "en-09",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You need a folding step stool for the kitchen that must hold at least 120 kilos because your husband is a big guy. It has to fold flat enough to fit between the fridge and the wall. You would prefer light blue, but the color is not a big deal.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "a folding step stool for the kitchen",
+      "text": "You need a folding step stool for the kitchen."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "can hold at least 120 kilos, that part is a must",
+      "text": "It must hold at least 120 kilos."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "It has to fold flat enough to fit between the fridge and the wall.",
+      "text": "It has to fold flat enough to fit between the fridge and the wall."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "It would be nice if it came in a light blue, but that's not a big deal.",
+      "text": "You would like it to come in light blue, but that is not a big deal."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 10,
+    "bound_usd": 0.031848,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4071,
+    "measured_cost_usd": 0.005308,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184548,
+    "response_id": "resp_02a23b5b255780e2016af716b2a50c87d1b2195a3bb13971b3",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 929,
+     "output_tokens": 345,
+     "reasoning_tokens": 129,
+     "total_tokens": 1274
+    }
+   },
+   "case_id": "en-10",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a handle that clips onto several plastic grocery bags at once so they don’t cut into your fingers. It absolutely must fold small enough to fit in a coat pocket. You’d prefer metal over plastic if possible.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "A handle you clip onto several plastic grocery bags at once",
+      "text": "The handle clips onto several plastic grocery bags at once."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "so they don't cut into your fingers",
+      "text": "It keeps the bags from cutting into your fingers."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "It absolutely must fold small enough to live in a coat pocket",
+      "text": "It absolutely must fold small enough to fit in a coat pocket."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "I'd rather it was metal than plastic if possible",
+      "text": "You would prefer metal over plastic if possible."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 11,
+    "bound_usd": 0.035364,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3933,
+    "measured_cost_usd": 0.005894,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.1851,
+    "response_id": "resp_093b8458fa7dbb59016af716b6aa3c87d1805f311507987fd7",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 947,
+     "output_tokens": 400,
+     "reasoning_tokens": 121,
+     "total_tokens": 1347
+    }
+   },
+   "case_id": "en-11",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a squeegee on a long pole to clean upstairs windows from the ground. It would spray soapy water out of the top and have a bottle on the pole for the soap. You think a small battery pump might push the water up, but a hand pump might work too.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "A squeegee on a long pole for cleaning upstairs windows from the ground",
+      "text": "The squeegee on a long pole is for cleaning upstairs windows from the ground."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "also sprays soapy water out of the top",
+      "text": "It also sprays soapy water out of the top."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "There'd be a bottle on the pole for the soap",
+      "text": "There would be a bottle on the pole for the soap."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "I think maybe a small battery pump would push the water up",
+      "text": "You think a small battery pump might push the water up."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "a hand pump might work too",
+      "text": "A hand pump might work too."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 12,
+    "bound_usd": 0.048,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5539,
+    "measured_cost_usd": 0.008,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184968,
+    "response_id": "resp_00761c93254d633c016af716ba96fc87d193056ba0e0690cd5",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 945,
+     "output_tokens": 611,
+     "reasoning_tokens": 358,
+     "total_tokens": 1556
+    }
+   },
+   "case_id": "en-12",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a little wheeled base that your old sewing machine straps onto, so you can roll it from the shelf to the table and back. The base should lock its wheels so it doesn’t slide while you sew.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "I have an old sewing machine that weighs a ton and I can never move it off the shelf.",
+      "text": "You already have an old, heavy sewing machine that you have trouble moving off the shelf."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "I want a little wheeled base that it straps onto",
+      "text": "You want a little wheeled base that the sewing machine straps onto."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "so I can roll it out to the table and back",
+      "text": "You want to roll the sewing machine out to the table and back."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "The base should lock its wheels so it doesn't slide while I sew.",
+      "text": "The base should lock its wheels so it doesn’t slide while you sew."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 13,
+    "bound_usd": 0.034596,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3821,
+    "measured_cost_usd": 0.005766,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185316,
+    "response_id": "resp_08d4ac142a2ef2c8016af716c01f6c87d1843fe3829d075e55",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 943,
+     "output_tokens": 388,
+     "reasoning_tokens": 183,
+     "total_tokens": 1331
+    }
+   },
+   "case_id": "en-13",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a rolling pin with rings that slide onto both ends so the dough always comes out the same thickness. You want different rings for thin and thick dough, and the rings should be easy to swap without tools.",
+    "statements": [
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "rings you slide onto both ends",
+      "text": "The rings slide onto both ends of the rolling pin."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "the dough always comes out the same thickness",
+      "text": "The dough always comes out the same thickness."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "Different rings for thin and thick",
+      "text": "Different rings are for thin and thick dough."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "The rings should be easy to swap without tools.",
+      "text": "The rings should be easy to swap without tools."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 14,
+    "bound_usd": 0.015252,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 1625,
+    "measured_cost_usd": 0.002542,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.183612,
+    "response_id": "resp_02b6d38fded73655016af716c3f7c487d19ceab91fa76a9e02",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 916,
+     "output_tokens": 71,
+     "reasoning_tokens": 20,
+     "total_tokens": 987
+    }
+   },
+   "case_id": "en-14",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NOT_AN_INVENTION",
+    "language": "en",
+    "outcome": "ABSTAINED",
+    "rephrasing": "",
+    "statements": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 15,
+    "bound_usd": 0.037824,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4418,
+    "measured_cost_usd": 0.006304,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.188892,
+    "response_id": "resp_0c18fa468febb525016af716c5adc887d1a33168afc3e88e65",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1017,
+     "output_tokens": 427,
+     "reasoning_tokens": 121,
+     "total_tokens": 1444
+    }
+   },
+   "case_id": "en-15",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You want a little bowl that sits on the floor and holds your yarn ball, which currently rolls under the sofa and gets tangled. The bowl would spin as you pull the yarn so it never knots. It should be heavy at the bottom so it does not tip over if the cat bumps it.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "the yarn ball always rolls under the sofa and gets all tangled",
+      "text": "Your yarn ball rolls under the sofa and gets tangled."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "a little bowl that sits on the floor and holds the yarn ball",
+      "text": "The little bowl sits on the floor and holds the yarn ball."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "it spins as you pull the yarn",
+      "text": "The bowl spins as you pull the yarn."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "it spins as you pull the yarn so it never knots",
+      "text": "The yarn never knots as the bowl spins while you pull it."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "It should be heavy at the bottom",
+      "text": "The bowl should be heavy at the bottom."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "so it doesn't tip over if the cat bumps it",
+      "text": "If the cat bumps the bowl, it should not tip over."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 16,
+    "bound_usd": 0.0459,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5583,
+    "measured_cost_usd": 0.00765,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.188004,
+    "response_id": "resp_0d97e173f7224a23016af716ca12dc87d1ad563af629cb73b3",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 1000,
+     "output_tokens": 565,
+     "reasoning_tokens": 277,
+     "total_tokens": 1565
+    }
+   },
+   "case_id": "en-16",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "en",
+    "outcome": "REPHRASED",
+    "rephrasing": "You’re thinking of a little clip that goes on the fishing line near the rod. When a fish bites and pulls the line, it sends a buzz to a band worn on your wrist. It wouldn’t make any noise, because noise scares the fish. The idea came from missing a fish when nobody noticed the rod moving.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "a little clip that goes on the fishing line near the rod",
+      "text": "You’re thinking of a little clip that goes on the fishing line near the rod."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "When a fish bites and pulls the line, it sends a buzz to a band you wear on your wrist.",
+      "text": "When a fish bites and pulls the line, the clip sends a buzz to a band worn on your wrist."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "It wouldn't make any noise, because noise scares the fish.",
+      "text": "It wouldn’t make any noise, because noise scares the fish."
+     },
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "Last summer we lost a really big one because nobody noticed the rod moving.",
+      "text": "The idea came from missing a fish when nobody noticed the rod moving."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 17,
+    "bound_usd": 0.028908,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3560,
+    "measured_cost_usd": 0.004818,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185388,
+    "response_id": "resp_054ae513b2b7fe13016af716cf951887d18bd098faa2329a85",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 939,
+     "output_tokens": 294,
+     "reasoning_tokens": 63,
+     "total_tokens": 1233
+    }
+   },
+   "case_id": "ar_msa-01",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد سجادة صلاة تعدّ الركعات تلقائياً حتى لا ينسى كبار السن كم صلّوا. عندما يسجد المصلي، تضيف السجادة ركعة إلى العدد، ويظهر الرقم على شاشة صغيرة في طرفها.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "سجادة صلاة تعدّ الركعات تلقائياً حتى لا ينسى كبار السن كم صلّوا",
+      "text": "السجادة تعدّ الركعات تلقائياً حتى لا ينسى كبار السن كم صلّوا."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "عندما يسجد المصلي تضيف السجادة ركعة إلى العدد",
+      "text": "عندما يسجد المصلي، تضيف السجادة ركعة إلى العدد."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "ويظهر الرقم على شاشة صغيرة في طرفها",
+      "text": "يظهر الرقم على شاشة صغيرة في طرف السجادة."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 18,
+    "bound_usd": 0.046716,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5458,
+    "measured_cost_usd": 0.007786,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.186204,
+    "response_id": "resp_091765b8b6ccc119016af716d3282087d19ce3dd476355285d",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 953,
+     "output_tokens": 588,
+     "reasoning_tokens": 245,
+     "total_tokens": 1541
+    }
+   },
+   "case_id": "ar_msa-02",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد فرشاة تمشي وحدها على الألواح الشمسية فوق سطح بيتك وتمسحها كل أسبوع، حيث يتراكم عليها الغبار. لا تعرف بعد ما الذي سيحرّك الفرشاة، ولم تقرر هل ستستخدم الماء أم لا.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "الغبار يتراكم على الألواح الشمسية فوق سطح بيتي",
+      "text": "يتراكم الغبار على الألواح الشمسية فوق سطح بيتك."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "وأريد فرشاة تمشي على الألواح وحدها وتمسحها",
+      "text": "تريد فرشاة تمسح الألواح."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "فرشاة تمشي على الألواح وحدها",
+      "text": "تريد أن تمشي الفرشاة على الألواح وحدها."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "وتمسحها كل أسبوع",
+      "text": "تريد أن تمسح الفرشاة الألواح كل أسبوع."
+     },
+     {
+      "kind": "UNKNOWN",
+      "source_quote": "لا أعرف حتى الآن ما الذي سيحرّك الفرشاة، هل محرك أم شيء آخر",
+      "text": "لا تعرف بعد ما الذي سيحرّك الفرشاة، هل محرك أم شيء آخر."
+     },
+     {
+      "kind": "UNKNOWN",
+      "source_quote": "ولم أقرر هل تستخدم الماء أم لا",
+      "text": "لم تقرر هل ستستخدم الفرشاة الماء أم لا."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 19,
+    "bound_usd": 0.037956,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4784,
+    "measured_cost_usd": 0.006326,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185004,
+    "response_id": "resp_02b0f353a67ef488016af716d89f5c87d19ae55c2c444086ba",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 933,
+     "output_tokens": 446,
+     "reasoning_tokens": 189,
+     "total_tokens": 1379
+    }
+   },
+   "case_id": "ar_msa-03",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد قفازاً للمطبخ يغيّر لونه عندما يكون الشيء الذي تمسكه ساخناً أكثر من اللازم، حتى لا يحترق أحد. لم تفكر بعد في كيفية معرفة القفاز درجة الحرارة.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "قفاز للمطبخ",
+      "text": "القفاز مخصص للمطبخ."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "يغيّر لونه",
+      "text": "يغيّر القفاز لونه."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "يغيّر لونه عندما يكون الشيء الذي تمسكه ساخناً أكثر من اللازم",
+      "text": "يتغير لونه عندما يكون الشيء الذي تمسكه ساخناً أكثر من اللازم."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "حتى لا يحترق أحد",
+      "text": "الغاية هي ألا يحترق أحد."
+     },
+     {
+      "kind": "UNKNOWN",
+      "source_quote": "لم أفكر بعد في كيف سيعرف القفاز درجة الحرارة",
+      "text": "لم تفكر بعد في كيفية معرفة القفاز درجة الحرارة."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 20,
+    "bound_usd": 0.033252,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3963,
+    "measured_cost_usd": 0.005542,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184956,
+    "response_id": "resp_0acf1c74eb5239ea016af716dd6bb887d19a4de6b45b02ed0e",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 931,
+     "output_tokens": 368,
+     "reasoning_tokens": 129,
+     "total_tokens": 1299
+    }
+   },
+   "case_id": "ar_msa-04",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد جرة لتبريد ماء الشرب من دون كهرباء ومن دون ثلج، تشبه الجرار الفخارية القديمة لكنها تبرد الماء أكثر منها. ولا تريد أن يتسرب منها الماء على الأرض.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "أريد جرة لتبريد ماء الشرب",
+      "text": "تريد جرة لتبريد ماء الشرب."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "تعمل من دون كهرباء ومن دون ثلج",
+      "text": "تريد أن تعمل الجرة من دون كهرباء ومن دون ثلج."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "مثل الجرار الفخارية القديمة لكن أبرد",
+      "text": "تريدها مثل الجرار الفخارية القديمة، لكن أبرد منها."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "ولا أريد أن يتسرب منها الماء على الأرض",
+      "text": "لا تريد أن يتسرب منها الماء على الأرض."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 21,
+    "bound_usd": 0.034596,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4029,
+    "measured_cost_usd": 0.005766,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185052,
+    "response_id": "resp_0603b8bde8a2774e016af716e15ee487d1bfcc775eddec1727",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 933,
+     "output_tokens": 390,
+     "reasoning_tokens": 177,
+     "total_tokens": 1323
+    }
+   },
+   "case_id": "ar_msa-05",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد كرسي استحمام تجلس عليه والدتك الكبيرة في السن تحت الدش. يجب ألا يحتوي على أي جزء معدني لأنه يصدأ، ولا تريد فيه براغي تحتاج إلى شدّ كل فترة.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "كرسي استحمام لوالدتي الكبيرة في السن تجلس عليه تحت الدش",
+      "text": "كرسي استحمام تجلس عليه والدتك الكبيرة في السن تحت الدش."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "يجب ألا يحتوي على أي جزء معدني لأنه يصدأ",
+      "text": "يجب ألا يحتوي على أي جزء معدني لأنه يصدأ."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "ولا أريد فيه براغي تحتاج إلى شدّ كل فترة",
+      "text": "لا تريد فيه براغي تحتاج إلى شدّ كل فترة."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 22,
+    "bound_usd": 0.037236,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4723,
+    "measured_cost_usd": 0.006206,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185064,
+    "response_id": "resp_01a3faf3a1bb838a016af716e563c487d1862e4c455cea3e63",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 933,
+     "output_tokens": 434,
+     "reasoning_tokens": 206,
+     "total_tokens": 1367
+    }
+   },
+   "case_id": "ar_msa-06",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد مروحة سقف تعمل تلقائيًا فقط إذا تجاوزت حرارة الغرفة ثلاثين درجة، وتتوقف عندما تنخفض الحرارة. لكن إذا كان أحد قد شغّلها يدويًا، فلا تطفئ نفسها.",
+    "statements": [
+     {
+      "kind": "CONDITION",
+      "source_quote": "مروحة سقف تشتغل وحدها فقط إذا تجاوزت حرارة الغرفة ثلاثين درجة",
+      "text": "تعمل مروحة السقف تلقائيًا فقط إذا تجاوزت حرارة الغرفة ثلاثين درجة."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "وتتوقف عندما تنخفض الحرارة",
+      "text": "تتوقف المروحة عندما تنخفض الحرارة."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "لكن إذا كان أحد قد شغّلها يدوياً فلا تطفئ نفسها",
+      "text": "إذا كان أحد قد شغّل المروحة يدويًا، فلا تطفئ نفسها."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 23,
+    "bound_usd": 0.037968,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4383,
+    "measured_cost_usd": 0.006328,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.186636,
+    "response_id": "resp_0b3fabf8b5c2e24d016af716ea382c87d1b63fdb1436423c42",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 959,
+     "output_tokens": 441,
+     "reasoning_tokens": 105,
+     "total_tokens": 1400
+    }
+   },
+   "case_id": "ar_msa-07",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد حقيبة سفر تتحول إلى مقعد عند الانتظار الطويل في المطار. يجب أن تتحمل وزن شخص يصل إلى مئة كيلوغرام، وأن تبقى ضمن مقاس حقيبة اليد المسموح به في الطائرة. تفضّل أن تكون خفيفة، وسيكون جميلاً لو كان لها مسند صغير للظهر.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "حقيبة سفر تتحول إلى مقعد",
+      "text": "تريد حقيبة سفر تتحول إلى مقعد."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "عند الانتظار الطويل في المطار",
+      "text": "يكون تحولها إلى مقعد عند الانتظار الطويل في المطار."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "يجب أن تتحمل وزن شخص حتى مئة كيلوغرام",
+      "text": "يجب أن تتحمل وزن شخص حتى مئة كيلوغرام."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "يجب أن تبقى ضمن مقاس حقيبة اليد المسموح به في الطائرة",
+      "text": "يجب أن تبقى ضمن مقاس حقيبة اليد المسموح به في الطائرة."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "أفضّل أن تكون خفيفة",
+      "text": "تفضّل أن تكون خفيفة."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "سيكون جميلاً لو كان لها مسند صغير للظهر",
+      "text": "سيكون جميلاً لو كان لها مسند صغير للظهر."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 24,
+    "bound_usd": 0.03972,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4889,
+    "measured_cost_usd": 0.00662,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185964,
+    "response_id": "resp_0f56242e16b4f489016af716ee8d1887d189c6b2f76d072d30",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 950,
+     "output_tokens": 472,
+     "reasoning_tokens": 145,
+     "total_tokens": 1422
+    }
+   },
+   "case_id": "ar_msa-08",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد مصفاة شاي توضع في الكوب، فتنزل أوراق الشاي في الماء ثم ترتفع المصفاة وحدها بعد الوقت الذي تختاره، حتى لا يصبح الشاي مرّاً. تطرح احتمال أن تعمل بزنبرك مثل المؤقت القديم، وتظن أن ثلاث دقائق تكفي كأقصى وقت.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "حتى لا يصبح الشاي مرّاً",
+      "text": "تريد مصفاة شاي تمنع أن يصبح الشاي مرّاً."
+     },
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "تضعها في الكوب",
+      "text": "الكوب هو ما توضع فيه المصفاة."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "فتنزل الأوراق في الماء",
+      "text": "تنزل أوراق الشاي في الماء."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "ثم ترتفع وحدها بعد الوقت الذي تختاره",
+      "text": "ترتفع المصفاة وحدها بعد الوقت الذي تختاره."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "ربما تعمل بزنبرك مثل المؤقت القديم",
+      "text": "تطرح احتمال أن تعمل بزنبرك مثل المؤقت القديم."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "وأظن أن ثلاث دقائق تكفي كأقصى وقت",
+      "text": "تظن أن ثلاث دقائق تكفي كأقصى وقت."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 25,
+    "bound_usd": 0.041076,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4737,
+    "measured_cost_usd": 0.006846,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.186048,
+    "response_id": "resp_047bc88bf54952a3016af716f36c7087d1acccdf2863b2cda9",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 953,
+     "output_tokens": 494,
+     "reasoning_tokens": 172,
+     "total_tokens": 1447
+    }
+   },
+   "case_id": "ar_msa-09",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد غطاءً مبطناً يُلبَس على دلّة القهوة النحاسية التي لديك، ليساعد في الحفاظ على حرارة القهوة التي تبرد فيها بسرعة في المجلس. وتريده بفتحة للمقبض وأخرى للفوهة، حتى تتمكن من الصبّ دون نزع الغطاء.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "عندي دلّة قهوة نحاسية أحبها كثيراً لكن القهوة تبرد فيها بسرعة في المجلس",
+      "text": "لديك دلّة قهوة نحاسية تحبها، وتبرد فيها القهوة بسرعة في المجلس."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "أريد غطاءً مبطناً يُلبَس على الدلة نفسها",
+      "text": "تريد غطاءً مبطناً يُلبَس على الدلة نفسها."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "ويحافظ على حرارتها",
+      "text": "تريد أن يحافظ الغطاء على حرارتها."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "مع فتحة للمقبض وأخرى للفوهة",
+      "text": "تريد في الغطاء فتحة للمقبض وأخرى للفوهة."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "حتى أصبّ دون أن أنزعه",
+      "text": "تريد أن تتمكن من الصبّ دون نزع الغطاء."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 26,
+    "bound_usd": 0.041832,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4503,
+    "measured_cost_usd": 0.006972,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.187632,
+    "response_id": "resp_0c57e380647cd6e5016af716f8200087d19601cfb9be506a1e",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 976,
+     "output_tokens": 502,
+     "reasoning_tokens": 202,
+     "total_tokens": 1478
+    }
+   },
+   "case_id": "ar_msa-10",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد مكنسة عريضة للتعامل مع الرمل الذي يتجمع على شرفتك بعد عواصف الشتاء. لها صندوق صغير خلف الفرشاة يجمع الرمل مباشرة بدل أن تستعمل المجرفة. وتُفضّل أن يكون الصندوق سهل التفريغ بضغطة واحدة.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "في الشتاء تمتلئ شرفتي بالرمل بعد كل عاصفة",
+      "text": "تمتلئ شرفتك بالرمل بعد كل عاصفة في الشتاء."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "مكنسة عريضة لها صندوق صغير خلف الفرشاة",
+      "text": "المكنسة عريضة، ولها صندوق صغير خلف الفرشاة."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "يجمع الرمل مباشرة",
+      "text": "يجمع الصندوق الرمل مباشرة."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "بدل أن أستعمل المجرفة",
+      "text": "تريد جمع الرمل بالمكنسة بدل أن تستعمل المجرفة."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "ويُستحسن أن يكون الصندوق سهل التفريغ بضغطة واحدة",
+      "text": "تُفضّل أن يكون الصندوق سهل التفريغ بضغطة واحدة."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 27,
+    "bound_usd": 0.014928,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 1649,
+    "measured_cost_usd": 0.002488,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.1842,
+    "response_id": "resp_0315762dc3d5ae81016af716fca51487d1aff1d0fc10f14ce6",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 914,
+     "output_tokens": 66,
+     "reasoning_tokens": 15,
+     "total_tokens": 980
+    }
+   },
+   "case_id": "ar_msa-11",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NOT_AN_INVENTION",
+    "language": "ar",
+    "outcome": "ABSTAINED",
+    "rephrasing": "",
+    "statements": []
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 28,
+    "bound_usd": 0.041544,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5038,
+    "measured_cost_usd": 0.006924,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185676,
+    "response_id": "resp_064b4501349043e6016af716fe4a7c87d18d4c098941afa90c",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 942,
+     "output_tokens": 504,
+     "reasoning_tokens": 222,
+     "total_tokens": 1446
+    }
+   },
+   "case_id": "ar_msa-12",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد وضع sensor في خزان الماء فوق السطح لقياس مستواه، وإرسال notification إلى app على الهاتف عندما يصل مستوى الماء إلى الربع، دون أي أسلاك تنزل من السطح. سبب الفكرة أن الخزان يفرغ أحياناً دون أن تنتبهوا.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "خزان الماء فوق السطح يفرغ أحياناً دون أن ننتبه",
+      "text": "خزان الماء فوق السطح يفرغ أحياناً دون أن تنتبهوا."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "أضع فيه sensor يقيس مستوى الماء",
+      "text": "تريد وضع sensor في الخزان لقياس مستوى الماء."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "ويرسل notification إلى app على الهاتف",
+      "text": "يرسل sensor إشعار notification إلى app على الهاتف."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "عندما يصل إلى الربع",
+      "text": "يُرسل notification عندما يصل مستوى الماء إلى الربع."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "ولا أريد أي أسلاك تنزل من السطح",
+      "text": "لا تريد أي أسلاك تنزل من السطح."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 29,
+    "bound_usd": 0.044952,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5871,
+    "measured_cost_usd": 0.007492,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185784,
+    "response_id": "resp_0011cfe50734dfa0016af71703597c87d1a2bc01074cb2ccac",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 941,
+     "output_tokens": 561,
+     "reasoning_tokens": 286,
+     "total_tokens": 1502
+    }
+   },
+   "case_id": "ar_gulf_kuwaiti-01",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد شيئًا مثل مظلة على الجامة لأن السيارة تصير حارة جدًا في الصيف. ينفتح بروحه أول ما توقف السيارة، ويتسكر يوم تبي تمشي. وما تدري شنو اللي بيشغّله، بطارية السيارة ولا شي ثاني.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "الصيف عندنا السيارة تصير فرن",
+      "text": "السيارة تصير حارة جدًا عندكم في الصيف."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "أبي شي مثل مظلة تنفتح بروحها على الجامة",
+      "text": "تريد شيئًا مثل مظلة على الجامة."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "تنفتح بروحها على الجامة أول ما أوقف السيارة",
+      "text": "ينفتح بروحه أول ما توقف السيارة."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "وتتسكر يوم أبي أمشي",
+      "text": "يتسكر يوم تبي تمشي."
+     },
+     {
+      "kind": "UNKNOWN",
+      "source_quote": "ما أدري شنو اللي بيشغلها، بطارية السيارة ولا شي ثاني",
+      "text": "ما تدري شنو اللي بيشغّله، بطارية السيارة ولا شي ثاني."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 30,
+    "bound_usd": 0.042408,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5167,
+    "measured_cost_usd": 0.007068,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184392,
+    "response_id": "resp_0055142b1e7bfbd0016af717094b9487d1af8709b7fc6870d9",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 929,
+     "output_tokens": 521,
+     "reasoning_tokens": 282,
+     "total_tokens": 1450
+    }
+   },
+   "case_id": "ar_gulf_kuwaiti-02",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد مبخرة للبيت بدون فحم، لأن الفحم يوسّخ ويثير خوفك على العيال. ولا تريدها أن تطلع دخانًا كثيرًا يخنق الصالة؛ قليل من الدخان يكفي.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "أبي مبخرة للبيت",
+      "text": "تريد مبخرة للبيت."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "بدون فحم، لأن الفحم يوسخ ويخوف على العيال",
+      "text": "تريدها بدون فحم، لأن الفحم يوسّخ ويثير خوفك على العيال."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "ولا أبيها تطلع دخان وايد يخنق الصالة",
+      "text": "لا تريدها أن تطلع دخانًا كثيرًا يخنق الصالة."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "شوي بس يكفي",
+      "text": "يكفيك قليل من الدخان."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 31,
+    "bound_usd": 0.039468,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4506,
+    "measured_cost_usd": 0.006578,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185196,
+    "response_id": "resp_037894eaba84b45a016af7170e5d5c87d19a9792e486f23c8a",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 944,
+     "output_tokens": 469,
+     "reasoning_tokens": 212,
+     "total_tokens": 1413
+    }
+   },
+   "case_id": "ar_gulf_kuwaiti-03",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد قاعدة تضع عليها بطل الغاز مال المطبخ لتزنه، وتصفّر إذا قرّب يخلص، لكن لا تصفّر بالليل حتى لا توقظ اليهال.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "بطل الغاز مال المطبخ دايماً يخلص علينا واحنا نطبخ.",
+      "text": "بطل الغاز مال المطبخ يخلص عليكم أحيانًا وأنتم تطبخون."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "بقاعدة نحط عليها البطل توزنه",
+      "text": "القاعدة التي فكرت بها توزن البطل عند وضعه عليها."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "وإذا قرّب يخلص تصفر",
+      "text": "إذا قرّب البطل يخلص، تصفّر القاعدة."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "بس ما تصفر بالليل عشان لا تقعّد اليهال.",
+      "text": "لا تصفّر بالليل حتى لا توقظ اليهال."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 32,
+    "bound_usd": 0.037452,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4535,
+    "measured_cost_usd": 0.006242,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185292,
+    "response_id": "resp_0d6cd200a0c8633f016af71712e30087d183d216fe0a6a891a",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 941,
+     "output_tokens": 436,
+     "reasoning_tokens": 172,
+     "total_tokens": 1377
+    }
+   },
+   "case_id": "ar_gulf_kuwaiti-04",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد ترمس قهوة للكشتة يحافظ على حرارة القهوة ثماني ساعات على الأقل، وهذا شرط. ويجب أن يكون له مصب لا ينقط. وتفضّل أن يكون لونه ذهبيًا لأنه يبدو جميلًا في البر، لكن اللون الذهبي ليس ضروريًا.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "ترمس قهوة للكشتة",
+      "text": "تريد ترمس قهوة للكشتة."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "لازم يحافظ على حرارة القهوة ثمان ساعات على الأقل، هذا شرط",
+      "text": "يجب أن يحافظ على حرارة القهوة ثماني ساعات على الأقل."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "ولازم يكون له مصب ما ينقط",
+      "text": "يجب أن يكون له مصب لا ينقط."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "ويا ليت لو لونه ذهبي يطلع حلو بالبر، بس مو ضروري",
+      "text": "تفضّل اللون الذهبي لأنه يبدو جميلًا في البر، لكنه ليس ضروريًا."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 33,
+    "bound_usd": 0.039216,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4549,
+    "measured_cost_usd": 0.006536,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185124,
+    "response_id": "resp_00f5102fd3f91f45016af71717676087d19bacf5a32d646c24",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 943,
+     "output_tokens": 465,
+     "reasoning_tokens": 177,
+     "total_tokens": 1408
+    }
+   },
+   "case_id": "ar_gulf_kuwaiti-05",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد مخدة للظهر تضعها على الكرسي، تدفئ ظهرك وتوفر مساجًا خفيفًا لأنك تجلس ساعات في الدوام. وربما تعمل ببطارية قابلة للشحن، وتظن أن عشرين دقيقة من المساج تكفي ثم تتوقف.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "مخدة للظهر تحطها على الكرسي",
+      "text": "تريد مخدة للظهر تضعها على الكرسي."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "وتدفي وتسوي مساج خفيف",
+      "text": "تريدها أن تدفئ وتوفر مساجًا خفيفًا."
+     },
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "لأني أقعد بالدوام ساعات",
+      "text": "تجلس ساعات في الدوام."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "يمكن تشتغل ببطارية تنشحن",
+      "text": "ربما تعمل ببطارية قابلة للشحن."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "وأظن عشرين دقيقة مساج تكفي وبعدين توقف",
+      "text": "تظن أن عشرين دقيقة من المساج تكفي، ثم تتوقف."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 34,
+    "bound_usd": 0.044604,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5259,
+    "measured_cost_usd": 0.007434,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185832,
+    "response_id": "resp_0508055435400d4d016af7171bff4887d1a470b148a7d08b05",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 952,
+     "output_tokens": 553,
+     "reasoning_tokens": 249,
+     "total_tokens": 1505
+    }
+   },
+   "case_id": "ar_gulf_kuwaiti-06",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد صندوقًا تضع فيه النعال التي تتكوم عند باب الديوانية ورائحتها غير طيبة. يصدر داخل الصندوق ضوء UV لتعقيم النعال، وفيه timer يطفئ الضوء تلقائيًا بعد ربع ساعة. ويجب ألا يعمل الضوء إذا كان الغطاء مفتوحًا.",
+    "statements": [
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "عند باب الديوانية النعال تتكوم وريحتها مو حلوة.",
+      "text": "النعال تتكوم عند باب الديوانية ورائحتها غير طيبة."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "صندوق تحط فيه النعال",
+      "text": "تريد صندوقًا تضع فيه النعال."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "ويطلع فيه ضوء UV يعقمها",
+      "text": "يصدر داخل الصندوق ضوء UV لتعقيم النعال."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "وفيه timer يطفي الضوء بروحه بعد ربع ساعة.",
+      "text": "فيه timer يطفئ الضوء تلقائيًا بعد ربع ساعة."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "ولازم الضوء ما يشتغل إذا الغطا مفتوح.",
+      "text": "يجب ألا يعمل الضوء إذا كان الغطاء مفتوحًا."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 35,
+    "bound_usd": 0.041796,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4685,
+    "measured_cost_usd": 0.006966,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185184,
+    "response_id": "resp_09ecf102af9cb455016af717214d1487d1bcdb1bbb8e6ec15b",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 943,
+     "output_tokens": 508,
+     "reasoning_tokens": 273,
+     "total_tokens": 1451
+    }
+   },
+   "case_id": "ar_egyptian-01",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريدين شيئًا يقشر التوم كله مرة واحدة: تضعين الفصوص فيه، ثم تُخرجين القشر لوحده والتوم لوحده. ولا تعرفين بعد كيف سيعمل، بالكهربا أم بالهز باليد.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "حاجة تقشر التوم كله مرة واحدة",
+      "text": "تريدين شيئًا يقشر التوم كله مرة واحدة."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "تحطي الفصوص فيها وتطلعي القشر لوحده والتوم لوحده",
+      "text": "تضعين الفصوص فيه، ثم تُخرجين القشر لوحده والتوم لوحده."
+     },
+     {
+      "kind": "UNKNOWN",
+      "source_quote": "مش عارفة هتشتغل بإيه، بالكهربا ولا بالهز باليد",
+      "text": "لا تعرفين بعد هل سيعمل بالكهربا أم بالهز باليد."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 36,
+    "bound_usd": 0.050064,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 6452,
+    "measured_cost_usd": 0.008344,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.1848,
+    "response_id": "resp_0bf3f2e24b9a0528016af71725f3d887d194823b4183048ab3",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 937,
+     "output_tokens": 647,
+     "reasoning_tokens": 362,
+     "total_tokens": 1584
+    }
+   },
+   "case_id": "ar_egyptian-02",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد ترابيزة سفرة صغيرة تتطبق وتتعلق ورا الباب بعد الأكل لأن الشقة ضيقة، من غير مفصلات حديد خالص، ولا تريد أن تخربش رجليها البلاط.",
+    "statements": [
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "ترابيزة سفرة صغيرة",
+      "text": "الترابيزة صغيرة ومخصصة للسفرة."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "تتطبق وتتعلق ورا الباب",
+      "text": "الترابيزة تتطبق وتتعلق ورا الباب."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "تتطبق وتتعلق ورا الباب لما نخلص أكل",
+      "text": "تتطبق وتتعلق ورا الباب لما تخلصوا أكل."
+     },
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "الشقة ضيقة",
+      "text": "الشقة ضيقة."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "من غير مفصلات حديد خالص",
+      "text": "من غير مفصلات حديد خالص."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "مش عايز رجليها تخربش البلاط",
+      "text": "لا تريد أن تخربش رجليها البلاط."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 37,
+    "bound_usd": 0.041208,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4920,
+    "measured_cost_usd": 0.006868,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185004,
+    "response_id": "resp_0ae7b58a75322a09016af7172c834087d1b413d22a64069928",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 944,
+     "output_tokens": 498,
+     "reasoning_tokens": 231,
+     "total_tokens": 1442
+    }
+   },
+   "case_id": "ar_egyptian-03",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد شفاطًا للمطبخ يشتغل لوحده فقط لما يحس إن فيه دخان أو ريحة شياط، ويفضل شغال لحد ما الجو ينضف. ولو حد داس على الزرار، يقفل علطول حتى لو فيه دخان.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "شفاط للمطبخ",
+      "text": "تريد شفاطًا للمطبخ."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "يشتغل لوحده بس لما يحس إن فيه دخان أو ريحة شياط",
+      "text": "يشتغل لوحده فقط لما يحس إن فيه دخان أو ريحة شياط."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "ويفضل شغال لحد ما الجو ينضف",
+      "text": "يفضل شغال لحد ما الجو ينضف."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "ولو حد داس على الزرار يقفل علطول حتى لو فيه دخان",
+      "text": "لو حد داس على الزرار، يقفل علطول حتى لو فيه دخان."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 38,
+    "bound_usd": 0.041904,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5525,
+    "measured_cost_usd": 0.006984,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.185448,
+    "response_id": "resp_0f3d673cc2105515016af717315cb487d19075bf70ecd72e5d",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 947,
+     "output_tokens": 509,
+     "reasoning_tokens": 189,
+     "total_tokens": 1456
+    }
+   },
+   "case_id": "ar_egyptian-04",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد عربية شنط للسوق بعجل، ولازم تقدر تطلع السلم لأن مفيش أسانسير عندكم، وتشيل عشرين كيلو على الأقل. وتفضّل أن يكون لونها غامقًا حتى لا تظهر متسخة، وأحسن لو تتطبق.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "عربية شنط للسوق",
+      "text": "العربية مخصصة لشنط السوق."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "عربية شنط للسوق بعجل",
+      "text": "تريد العربية بعجل."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "لازم تعرف تطلع السلم",
+      "text": "لازم تقدر تطلع السلم."
+     },
+     {
+      "kind": "CONTEXT_NOT_PART",
+      "source_quote": "مفيش أسانسير عندنا",
+      "text": "مفيش أسانسير عندكم."
+     },
+     {
+      "kind": "CONSTRAINT",
+      "source_quote": "لازم تشيل عشرين كيلو على الأقل",
+      "text": "لازم تشيل عشرين كيلو على الأقل."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "ويا ريت تكون لونها غامق عشان متبانش وسخة",
+      "text": "تفضّل لونها غامقًا حتى لا تظهر متسخة."
+     },
+     {
+      "kind": "PREFERENCE",
+      "source_quote": "وأحسن لو تتطبق",
+      "text": "تفضّل أن تكون قابلة للتطبيق."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 39,
+    "bound_usd": 0.040236,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5322,
+    "measured_cost_usd": 0.006706,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184836,
+    "response_id": "resp_047fe05f4f83b2d1016af71736db7c87d197c595c8fe65fefc",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 933,
+     "output_tokens": 484,
+     "reasoning_tokens": 236,
+     "total_tokens": 1417
+    }
+   },
+   "case_id": "ar_egyptian-05",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد ناموسية تتفرد وحدها حول السرير بالليل وتتلم الصبح من غير ما حد يتعب نفسه. ربما يكون ذلك بموتور صغير أو بحبل وبكرة، لكنك لسه مش متأكد.",
+    "statements": [
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "ناموسية تتفرد حوالين السرير لوحدها بالليل",
+      "text": "الناموسية تتفرد وحدها حول السرير بالليل."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "وتتلم الصبح",
+      "text": "تتلم الناموسية الصبح."
+     },
+     {
+      "kind": "NEGATION_OR_EXCLUSION",
+      "source_quote": "من غير ما حد يتعب نفسه",
+      "text": "يحدث ذلك من غير ما حد يتعب نفسه."
+     },
+     {
+      "kind": "UNCERTAINTY",
+      "source_quote": "يمكن بموتور صغير، أو يمكن بحبل وبكرة، لسه مش متأكد",
+      "text": "ربما يكون ذلك بموتور صغير أو بحبل وبكرة؛ لم تحسم الأمر بعد."
+     }
+    ]
+   }
+  },
+  {
+   "attempt": {
+    "attempt": 40,
+    "bound_usd": 0.030696,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4002,
+    "measured_cost_usd": 0.005116,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.184812,
+    "response_id": "resp_01de153bd77d37e9016af7173c29e087d1989239877b9d9d15",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 933,
+     "output_tokens": 325,
+     "reasoning_tokens": 89,
+     "total_tokens": 1258
+    }
+   },
+   "case_id": "ar_egyptian-06",
+   "error_kind": null,
+   "provider_status": "RESPONDED",
+   "reply": {
+    "abstain_reason": "NONE",
+    "language": "ar",
+    "outcome": "REPHRASED",
+    "rephrasing": "تريد مجًا للشاي يبقيه ساخنًا طوال وجودك على المكتب، ويُشحن بـ USB من اللابتوب. ويتغير لونه إلى الأحمر إذا كانت الـ temperature عالية جدًا، حتى لا يتلسع أحد.",
+    "statements": [
+     {
+      "kind": "FUNCTION",
+      "source_quote": "مج للشاي يفضل سخن طول ما أنا على المكتب",
+      "text": "تريد مجًا يُبقي الشاي ساخنًا طوال وجودك على المكتب."
+     },
+     {
+      "kind": "BEHAVIOR",
+      "source_quote": "يتشحن بـ USB من اللابتوب",
+      "text": "يُشحن المج بـ USB من اللابتوب."
+     },
+     {
+      "kind": "CONDITION",
+      "source_quote": "ويتغير لونه للأحمر لو الـ temperature عالية أوي",
+      "text": "يتغير لون المج إلى الأحمر إذا كانت الـ temperature عالية جدًا."
+     },
+     {
+      "kind": "FUNCTION",
+      "source_quote": "عشان محدش يتلسع",
+      "text": "الغرض من تغير اللون هو ألا يتلسع أحد."
+     }
+    ]
+   }
+  }
+ ],
+ "spend": {
+  "ceiling_usd": 10.0,
+  "conservative_bound_usd": 1.505088,
+  "measured_cost_complete": true,
+  "measured_cost_usd": 0.250848,
+  "requests_sent": 40
+ },
+ "started_at": "2026-11-13T13:54:16Z",
+ "stopped_on": null,
+ "transport": "AUTHORIZED_PROVIDER_RUN"
+}
