@@ -1,0 +1,103 @@
+{
+ "proof_id": "g1-ai-intent-readback-consumer-proof-01",
+ "status": "SYNTHETIC DIAGNOSTIC PROOF. No provider call and no real invention data. The H-cases are exposed #928 campaign-02 fixtures, not a fresh or independent holdout; nothing here qualifies a model, a prompt or a product capability.",
+ "preserved_source": {
+  "report": "docs/benchmarks/evidence/g1_precreation_semantic_heldout_v2/campaign_02_report.json",
+  "report_sha256": "0f0e42a0d8c9f1bfdabafe49335025a675722e44192631d932a0b6db79baf145",
+  "inputs": "tests/fixtures/g1_precreation_semantic_heldout_v2_inputs.json",
+  "inputs_sha256": "db4b88f007d26bc02e0da49bfa06e3ae481c41ab749de0d13db4ae594dda059d",
+  "cases_used": [
+   "H01",
+   "H08",
+   "H13",
+   "H14",
+   "H23"
+  ],
+  "note": "Each reading is the preserved gpt-6-sol reply of campaign 02 for that case, read from the report at use; it is exposed diagnostic evidence."
+ },
+ "constructed": {
+  "H08_incorrect": {
+   "origin": "CONSTRUCTED_INCORRECT: written for this proof to be wrong on purpose; NOT a provider output",
+   "case_id": "H08",
+   "error": "treats the inventor's phone (an external device the clamp holds) as an electrical / electronic part of the invention, so it wrongly points towards the mechanical-and-electrical declaration",
+   "reply": {
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "text": "Hold a phone on a treadmill handrail for watching videos while running.",
+      "source_quote": "holds my phone onto a treadmill handrail"
+     }
+    ],
+    "stated_parts": [
+     {
+      "text": "A clamp",
+      "source_quote": "A clamp that holds",
+      "candidate_concept": "mechanical"
+     },
+     {
+      "text": "The phone, which plays the videos",
+      "source_quote": "my phone",
+      "candidate_concept": "electronics_electrical"
+     }
+    ],
+    "negated_or_excluded": [],
+    "unknowns": [],
+    "clarification_questions": [],
+    "ai_suggestions": [],
+    "composition_suggestion": "SUGGEST_INTEGRATED"
+   }
+  },
+  "AR01": {
+   "origin": "CONSTRUCTED: an Arabic presentation sample written for this proof; NOT a provider output and no Arabic model qualification",
+   "idea_text": "أريد صندوق عدّة بعجلات أثبّت في غطائه مروحة بطارية جاهزة اشتريتها، لتبرّد عِدَدي الكهربائية أثناء شحنها. ولم أقرّر بعد هل تعمل المروحة دائماً أم بزرّ.",
+   "reply": {
+    "outcome": "RESPONDED",
+    "stated_function": [
+     {
+      "text": "تبريد العِدَد الكهربائية أثناء شحنها.",
+      "source_quote": "لتبرّد عِدَدي الكهربائية أثناء شحنها"
+     }
+    ],
+    "stated_parts": [
+     {
+      "text": "صندوق عدّة بعجلات وغطاؤه",
+      "source_quote": "صندوق عدّة بعجلات",
+      "candidate_concept": "mechanical"
+     },
+     {
+      "text": "مروحة بطارية جاهزة مثبّتة في الغطاء",
+      "source_quote": "مروحة بطارية جاهزة",
+      "candidate_concept": "electronics_electrical"
+     }
+    ],
+    "negated_or_excluded": [],
+    "unknowns": [
+     "لم يُقرَّر بعد هل تعمل المروحة دائماً أم بزرّ."
+    ],
+    "clarification_questions": [],
+    "ai_suggestions": [],
+    "composition_suggestion": "SUGGEST_INTEGRATED"
+   }
+  }
+ },
+ "inventor_inputs": {
+  "H01_parts_baseline_mistake": {
+   "note": "a plausible nontechnical slip: naming the device the invention serves as its electrical part",
+   "mech_part_name": "Rolling toolbox",
+   "mech_part_function": "Holds my tools and carries the fan in its lid.",
+   "elec_part_name": "Power tools",
+   "elec_part_function": "They charge inside the box."
+  },
+  "H01_parts_after_readback": {
+   "note": "the inventor's own words, typed by the inventor; nothing is prefilled",
+   "mech_part_name": "Rolling toolbox lid",
+   "mech_part_function": "Holds the fan above the tools.",
+   "elec_part_name": "Store-bought battery fan",
+   "elec_part_function": "Blows air to cool the tools while they charge."
+  },
+  "H08_correction": {
+   "excluded_part_index": 1,
+   "remark": "The phone is mine. I am only inventing the clamp."
+  }
+ }
+}
