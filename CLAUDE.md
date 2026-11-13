@@ -1631,7 +1631,7 @@ information, not execution authority.
   - CANDIDATES: none is authorized and none carries standing priority. The (g1) sequence
     continues from step 2 with one Owner-authorized increment at a time.
 
-  **Current (g1) execution checkpoint (newest execution pointer; 2026-11-13 design-continuity update, not authority).**
+  **Current (g1) execution checkpoint (newest execution pointer; 2026-11-13 design-continuity update; continuity only, not authority).**
   Read this checkpoint first, in Claude, Codex or any other agent: it answers, by pointer, the five
   recovery questions below, so a successor does not rebuild the plan from chat or dated records.
   The dated Lean §9.5 entries and the history bullets below stay as evidence behind it and are not
