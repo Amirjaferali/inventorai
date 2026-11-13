@@ -2232,6 +2232,7 @@ body{overflow-wrap:anywhere}
         <p style="font-size:12px;color:#1e5631;margin:0 0 4px 0" data-cel-current>{{ t('UI_CEL_STATUS_CURRENT') }}</p>
         {% if ca.result.status == 'available' %}
         <p style="font-size:13px;margin:0 0 4px 0" data-cel-result="{{ ca.result.outcome }}"><strong>{{ t('UI_CEL_RESULT_LABEL') }}</strong> {{ t('UI_CEL_RESULT_' ~ ca.result.outcome) }}</p>
+        {% if ca.result.tested_clearance %}<p style="font-size:13px;margin:0 0 4px 0" data-cel-tested="{{ ca.result.outcome }}"><strong>{{ t('UI_CEL_TESTED_LABEL') }}</strong> <bdi dir="ltr" data-cel-tested-value>{{ ca.result.tested_clearance }}</bdi> {{ t('UI_CEL_TESTED_UNIT') }} — {{ t('UI_CEL_TESTED_' ~ ca.result.outcome) }}</p>{% endif %}
         {% else %}
         <p style="font-size:12px;color:#555;margin:0 0 4px 0" data-cel-result-unavailable>{{ t('UI_CEL_RESULT_UNAVAILABLE') }}</p>
         {% endif %}

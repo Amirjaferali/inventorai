@@ -9906,6 +9906,24 @@ UI_STRINGS = {
         "en": "Saved result of that check, with the values you declared there (its own nominal result, not a check of your constraint):",
         "ar": "النتيجة المحفوظة لذلك الفحص، بالقيم التي صرّحت بها هناك (نتيجته الاسمية هو، وليست فحصًا لقيدك):",
     },
+    # G1-2-LINKED-CHECK-TESTED-CLEARANCE-01: the per-side clearance the linked
+    # check was tested with, beside its own result.
+    "UI_CEL_TESTED_LABEL": {
+        "en": "Clearance tested in this check:",
+        "ar": "الحدّ المختبَر في هذا الفحص:",
+    },
+    "UI_CEL_TESTED_UNIT": {
+        "en": "mm on each side",
+        "ar": "مم على كل جانب",
+    },
+    "UI_CEL_TESTED_MET": {
+        "en": "met",
+        "ar": "متحقق",
+    },
+    "UI_CEL_TESTED_NOT_MET": {
+        "en": "not met",
+        "ar": "غير متحقق",
+    },
     "UI_CEL_RESULT_MET": {
         "en": "the required planar clearance is met.",
         "ar": "الخلوص المستوي المطلوب متحقق.",
@@ -12435,8 +12453,20 @@ UI_STRINGS = {
         "en": "Axis",
         "ar": "المحور"},
     "UI_PCC_MARGIN": {
-        "en": "Margin",
-        "ar": "الهامش"},
+        "en": "Margin above the tested clearance (each side)",
+        "ar": "الهامش فوق الحدّ المختبَر (على كل جانب)"},
+    "UI_PCC_SIDE_GAP": {
+        "en": "Nominal clearance on each side",
+        "ar": "الخلوص الاسمي على كل جانب"},
+    "UI_PCC_SIDE_OVERLAP": {
+        "en": "none: the board extends beyond the region on each side by",
+        "ar": "لا يوجد: تتجاوز اللوحة المنطقة على كل جانب بمقدار"},
+    "UI_PCC_TESTED_CLEARANCE": {
+        "en": "Clearance tested (the required clearance you entered):",
+        "ar": "الحدّ المختبَر (الخلوص المطلوب الذي أدخلته):"},
+    "UI_PCC_EACH_SIDE": {
+        "en": "on each side",
+        "ar": "على كل جانب"},
     "UI_PCC_AXIS_MET": {
         "en": "met",
         "ar": "متحقق"},
@@ -12444,8 +12474,8 @@ UI_STRINGS = {
         "en": "not met: short by",
         "ar": "غير متحقق: ينقص بمقدار"},
     "UI_PCC_MARGIN_EXPLAINED": {
-        "en": "Margin = (region − board) / 2 − required clearance, per axis. A margin of zero meets the declared condition.",
-        "ar": "الهامش = (المنطقة − اللوحة) / 2 − الخلوص المطلوب، لكل محور. والهامش الذي يساوي صفرًا يحقق الشرط المصرَّح به."},
+        "en": "Nominal clearance on each side = (region − board) / 2. Margin = that clearance − the tested clearance, on each side of the axis. A margin of zero meets the declared condition.",
+        "ar": "الخلوص الاسمي على كل جانب = (المنطقة − اللوحة) / 2. والهامش = ذلك الخلوص − الحدّ المختبَر، على كل جانب من المحور. والهامش الذي يساوي صفرًا يحقق الشرط المصرَّح به."},
     "UI_PCC_NOT_MET_NOTE": {
         "en": "A not-met result applies to this declared placement only. It does not show that no other placement, orientation or enclosure could work, and InventorAI does not suggest a replacement component or a different clearance.",
         "ar": "تنطبق نتيجة «غير متحقق» على طريقة الوضع المصرَّح بها هذه فقط. وهي لا تُثبت أنه لا يمكن لأي وضع أو اتجاه أو حاوية أخرى أن تنجح، ولا يقترح InventorAI مكوّنًا بديلًا أو خلوصًا مختلفًا."},
