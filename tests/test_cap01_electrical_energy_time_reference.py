@@ -30,6 +30,7 @@ import re
 import pytest
 
 import web.app as appmod
+from engine import deliverable_assembler
 from engine import deterministic_calculation as dc
 from engine.deliverable_assembler import assemble_deliverable
 from engine.derived_readiness import derive_readiness
@@ -235,7 +236,13 @@ def test_t02_ineligible_states_render_no_group(status):
     assert "cap01-fundamentals" not in _html((PHYSICAL_FEASIBILITY, status))
 
 
-def test_t03_other_gaps_domains_and_text_grant_no_access():
+_FIXED_REPORT_TIME = "2026-01-01T00:00:00Z"
+
+
+def test_t03_other_gaps_domains_and_text_grant_no_access(monkeypatch):
+    # Both full renderings compared below share ONE report time, so the
+    # comparison is not broken by the generation timestamp crossing a second.
+    monkeypatch.setattr(deliverable_assembler, "_now_iso", lambda: _FIXED_REPORT_TIME)
     groups = _groups((MECHANISM_COMPLETENESS, OPEN), (BOUNDARY_AMBIGUITY, PARTIAL))
     assert groups and all(ET_GROUP not in [g["group_id"] for g in v] for v in groups.values())
     mech = _groups((PHYSICAL_FEASIBILITY, OPEN), domain="mechanical")[PHYSICAL_FEASIBILITY]
