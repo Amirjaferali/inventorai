@@ -13058,6 +13058,28 @@ UI_STRINGS = {
     "UI_PCC_CAD_GUIDE_8": {
         "en": "Notice: geometry.dxf was written with ezdxf (MIT Licence, copyright Manfred Moitzi).",
         "ar": "تنويه: كُتب geometry.dxf باستخدام ezdxf (ترخيص MIT، حقوق النشر لـ Manfred Moitzi)."},
+    # CAD-BUNDLE-TESTED-CLEARANCE-01: the actual result of this check, in the README.
+    "UI_PCC_CAD_RESULT_MET": {
+        "en": "Result of this check: MET. Tested minimum clearance: %s mm on each side of the board, on both axes.",
+        "ar": "نتيجة هذا الفحص: متحقق (MET). الحد الأدنى المختبَر للخلوص: %s mm على كل جانب من اللوحة، على المحورين كليهما."},
+    "UI_PCC_CAD_RESULT_NOT_MET": {
+        "en": "Result of this check: NOT MET. Tested minimum clearance: %s mm on each side of the board, on both axes.",
+        "ar": "نتيجة هذا الفحص: غير متحقق (NOT MET). الحد الأدنى المختبَر للخلوص: %s mm على كل جانب من اللوحة، على المحورين كليهما."},
+    "UI_PCC_CAD_AXIS_ABOVE": {
+        "en": "%s axis: nominal clearance %s mm on each side, %s mm above the tested minimum.",
+        "ar": "المحور %s: الخلوص الاسمي %s mm على كل جانب، أي أعلى من الحد الأدنى المختبَر بمقدار %s mm."},
+    "UI_PCC_CAD_AXIS_AT": {
+        "en": "%s axis: nominal clearance %s mm on each side, exactly the tested minimum.",
+        "ar": "المحور %s: الخلوص الاسمي %s mm على كل جانب، وهو يساوي الحد الأدنى المختبَر تمامًا."},
+    "UI_PCC_CAD_AXIS_BELOW": {
+        "en": "%s axis: nominal clearance %s mm on each side, %s mm below the tested minimum.",
+        "ar": "المحور %s: الخلوص الاسمي %s mm على كل جانب، أي أقل من الحد الأدنى المختبَر بمقدار %s mm."},
+    "UI_PCC_CAD_AXIS_OVERLAP": {
+        "en": "%s axis: no clearance; the board extends %s mm beyond the region on each side, %s mm below the tested minimum.",
+        "ar": "المحور %s: لا يوجد خلوص؛ تتجاوز اللوحة المنطقة بمقدار %s mm على كل جانب، أي أقل من الحد الأدنى المختبَر بمقدار %s mm."},
+    "UI_PCC_CAD_SCOPE": {
+        "en": "This result compares only the nominal clearance on each side with the tested minimum, on both axes. Any constraint declared separately in the project, such as a required clearance, was not assessed by this check and is not included in these files.",
+        "ar": "تقارن هذه النتيجة فقط الخلوص الاسمي على كل جانب بالحد الأدنى المختبَر، على المحورين كليهما. وأي قيد صُرِّح به على حدة في المشروع، مثل خلوص مطلوب، لم يقيّمه هذا الفحص ولا تتضمنه هذه الملفات."},
 }
 
 
