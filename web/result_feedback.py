@@ -84,11 +84,25 @@ _REASONED_MINIMUM = (
 # never identified (D-4). This branch names the actual cause truthfully. It does
 # NOT claim the answer was wrong, off-topic or low quality, and it does not
 # promise that any particular rewording will be recognised.
+#
+# R2-UNRECOGNISED-ANSWER-DISPLAY-01: the message states only what the app
+# knows — it could not determine how the answer's words respond to the
+# question — and that the point stays open. It no longer tells the inventor to
+# reuse the question's own words, and it does not repeat the save confirmation
+# that the page already shows. It claims neither that the answer is relevant
+# nor that it is off-topic, so it is truthful for a missed paraphrase and for a
+# genuinely unrelated answer alike.
 _WARN_NOT_ADDRESSED = (
-    "This answer was not recognized as responding to the question that was "
-    "asked, so it did not move this point forward. Answering the question "
-    "directly, in the words the question uses, is what the current demo can "
-    "recognize."
+    "This point remains open. The app could not determine how your words "
+    "answer the question that was asked."
+)
+
+# The same meaning for the "Result details" disclosure, in the reader's
+# language, in place of the raw technical reason (which stays unchanged in
+# ``last_result``).
+_DETAIL_NOT_ADDRESSED = (
+    "The app could not determine how the words of your answer relate to the "
+    "question that was asked, so this point stayed open."
 )
 
 # T2-G (`T2G-VERSIONED-IMPLEMENT-01`): the recognized-explicit-unknown reason
@@ -232,4 +246,24 @@ def get_result_feedback(last_result, statement_beside_unknown=False):
         return _NOT_ESTABLISHED
 
     # No result / unrecognized transition: render no feedback message.
+    return None
+
+
+def get_result_detail(last_result):
+    """Plain-language text for the "Result details" disclosure, or None.
+
+    Only the R2 not-addressed reason has one: its raw reason is an internal
+    English token line, so the disclosure shows the same meaning as the
+    primary line instead. Every other reason returns None and keeps its raw
+    reason in the disclosure as before. Pure and display-only; it never
+    mutates ``last_result`` or its raw reason."""
+    if not isinstance(last_result, dict) or last_result.get("transition") != "WARN":
+        return None
+    reason = last_result.get("reason") or ""
+    if any(token in reason for token in (
+            "recorded as an explicit unknown", "recorded as a question or supposition",
+            "recorded as an undecided choice", "recorded as a repeat")):
+        return None
+    if "not addressed" in reason:
+        return _DETAIL_NOT_ADDRESSED
     return None

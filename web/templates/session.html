@@ -795,7 +795,8 @@ body{overflow-wrap:anywhere}
   {% if last_result.get('reason') %}
   <details class="result-details" style="margin-top:4px">
     <summary style="cursor:pointer;font-size:12px;color:#8a97a3">{{ t('UI_B_SESSION_021') }}</summary>
-    <div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">{{ last_result.get('reason') }}</div>
+    {% if current_result_detail %}<div class="reason-detail" style="font-size:12px;color:#8a7a68;margin-top:4px">{{ current_result_detail }}</div>
+    {% else %}<div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">{{ last_result.get('reason') }}</div>{% endif %}
   </details>
   {% endif %}
   {% if last_result.get('direction') %}
