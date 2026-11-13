@@ -365,7 +365,8 @@ def format_exact(value):
 def _outcome(outcome, **extra):
     result = {"outcome": outcome, "missing": [], "inapplicable": [],
               "owner_state": None, "owner_reason": None, "result_identity": None,
-              "margins": None, "axes": None, "region_bound": None}
+              "margins": None, "axes": None, "region_bound": None,
+              "clearance_text": None}
     result.update(extra)
     return result
 
@@ -425,11 +426,22 @@ def evaluate(material, binding, artifact=None, owner_artifact_path=None):
                     values[CLEARANCE_ROLE]):
                 return _outcome(OUTCOME_NOT_COMPUTED, owner_state=state,
                                 owner_reason=_dc.EXECUTION_INTEGRITY_FAILURE)
+            # G1-2-LINKED-CHECK-TESTED-CLEARANCE-01: the nominal clearance on
+            # EACH side of this axis, (region - board) / 2, exact on the entered
+            # decimals and cross-checked against the margin (side - c ==
+            # margin). Negative when the board is wider than the region; the
+            # overlap is then shown as its own positive amount.
+            side = (values[region] - values[board]) / 2
+            if side - values[CLEARANCE_ROLE] != exact[margin]:
+                raise TypeError("per-side clearance disagrees with the margin")
             axes.append({"axis": axis, "margin": exact[margin],
                          "margin_text": format_exact(exact[margin]),
                          "met": exact[margin] >= 0,
                          "shortfall_text": (format_exact(-exact[margin])
-                                            if exact[margin] < 0 else None)})
+                                            if exact[margin] < 0 else None),
+                         "side_gap": side,
+                         "side_gap_text": format_exact(side) if side >= 0 else None,
+                         "overlap_text": format_exact(-side) if side < 0 else None})
     except (KeyError, TypeError):
         return _outcome(OUTCOME_NOT_COMPUTED, owner_state=state,
                         owner_reason=_dc.EXECUTION_INTEGRITY_FAILURE)
@@ -457,5 +469,6 @@ def evaluate(material, binding, artifact=None, owner_artifact_path=None):
                     owner_reason=reason,
                     result_identity=owner.get("result_identity"),
                     margins=copy.deepcopy(exact), axes=axes,
+                    clearance_text=format_exact(values[CLEARANCE_ROLE]),
                     region_bound={"consequence_id": REGION_BOUND_ID,
                                   "consequence_version": REGION_BOUND_VERSION})

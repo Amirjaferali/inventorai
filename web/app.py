@@ -10759,7 +10759,10 @@ def _cel_association(link, constraint_changed, planar):
                 "result": {"status": _CEL_RESULT_MISSING},
                 "constraint_changed": constraint_changed}
     outcome = check["outcome"]
-    result = ({"status": _CEL_RESULT_AVAILABLE, "outcome": outcome}
+    result = ({"status": _CEL_RESULT_AVAILABLE, "outcome": outcome,
+               # G1-2-LINKED-CHECK-TESTED-CLEARANCE-01: the per-side clearance
+               # this saved revision was tested with (MET / NOT MET only).
+               "tested_clearance": check.get("tested_clearance")}
               if outcome in _CEL_OUTCOMES else {"status": _CEL_RESULT_UNAVAILABLE})
     return {"status": _CEL_ASSOCIATION_CURRENT, "check": check, "result": result,
             "constraint_changed": False}

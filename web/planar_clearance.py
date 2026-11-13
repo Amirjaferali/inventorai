@@ -188,7 +188,8 @@ def linked_check(snapshot, revision_id, binding):
         return None
     check = {"interface_id": record.interface_id,
              "interface_description": view["interface_description"],
-             "revision_no": revision.revision_no, "outcome": None}
+             "revision_no": revision.revision_no, "outcome": None,
+             "tested_clearance": None}
     if record.withdrawn:
         check["status"] = LINK_CHECK_WITHDRAWN
     elif record.current_revision.revision_id != revision_id:
@@ -199,7 +200,23 @@ def linked_check(snapshot, revision_id, binding):
         check["status"] = LINK_CHECK_CURRENT
         evaluation = view["evaluation"] or {}
         check["outcome"] = evaluation.get("outcome")
+        check["tested_clearance"] = _tested_clearance(revision, evaluation)
     return check
+
+
+def _tested_clearance(revision, evaluation):
+    """G1-2-LINKED-CHECK-TESTED-CLEARANCE-01: the per-side clearance the
+    linked revision was evaluated with, as exact decimal text, only for a
+    MET / NOT MET result. Read from THAT saved revision's own declared value
+    and required to equal the value the result was computed with; otherwise
+    ``None`` (shown as nothing, never a guess)."""
+    if evaluation.get("outcome") not in (_pcc.OUTCOME_MET, _pcc.OUTCOME_NOT_MET):
+        return None
+    value = _pcc.parse_value(revision.material.values_map().get(_pcc.CLEARANCE_ROLE))
+    if value is None:
+        return None
+    text = _pcc.format_exact(value)
+    return text if text == evaluation.get("clearance_text") else None
 
 
 def linkable_checks(snapshot, binding):

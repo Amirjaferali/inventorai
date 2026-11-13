@@ -1337,7 +1337,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% else %}
     <div><strong>{{ t('UI_CEL_VP_LINKED') }}</strong> <bdi dir="auto">{{ cel.check.interface_description }}</bdi> ({{ t('UI_CEL_CHECK_VERSION') }} <bdi dir="ltr">{{ cel.check.revision_no }}</bdi>)</div>
     {% if cel.status == 'CURRENT' %}
-    {% if cel.result.status == 'available' %}<div data-vp-cel-result="{{ cel.result.outcome }}"><strong>{{ t('UI_CEL_RESULT_LABEL') }}</strong> {{ t('UI_CEL_RESULT_' ~ cel.result.outcome) }}</div>{% else %}<div>{{ t('UI_CEL_RESULT_UNAVAILABLE') }}</div>{% endif %}
+    {% if cel.result.status == 'available' %}<div data-vp-cel-result="{{ cel.result.outcome }}"><strong>{{ t('UI_CEL_RESULT_LABEL') }}</strong> {{ t('UI_CEL_RESULT_' ~ cel.result.outcome) }}</div>{% if cel.result.tested_clearance %}<div data-vp-cel-tested="{{ cel.result.outcome }}"><strong>{{ t('UI_CEL_TESTED_LABEL') }}</strong> <bdi dir="ltr">{{ cel.result.tested_clearance }}</bdi> {{ t('UI_CEL_TESTED_UNIT') }} — {{ t('UI_CEL_TESTED_' ~ cel.result.outcome) }}</div>{% endif %}{% else %}<div>{{ t('UI_CEL_RESULT_UNAVAILABLE') }}</div>{% endif %}
     {% else %}
     <div data-vp-cel-earlier>{{ t('UI_CEL_STATUS_EARLIER') }}</div>
     <div>{{ t('UI_CEL_RESULT_MISSING') }}</div>

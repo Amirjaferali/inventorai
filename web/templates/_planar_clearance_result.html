@@ -132,10 +132,11 @@
   <ul data-pcc-missing>{% for item in e.missing %}<li data-pcc-missing-item="{{ item }}">{{ pcc_missing(item) }}</li>{% endfor %}</ul>
   {% endif %}
   {% if e.outcome in ('MET', 'NOT_MET') %}
+  {% if e.clearance_text %}<p data-pcc-tested><strong>{{ pcc_t('UI_PCC_TESTED_CLEARANCE') }}</strong> <bdi dir="ltr" data-pcc-tested-value>{{ e.clearance_text }} mm</bdi> {{ pcc_t('UI_PCC_EACH_SIDE') }}</p>{% endif %}
   <table class="pcc-table" data-pcc-margins>
-    <tr><th scope="col">{{ pcc_t('UI_PCC_AXIS') }}</th><th scope="col">{{ pcc_t('UI_PCC_MARGIN') }}</th><th scope="col"></th></tr>
+    <tr><th scope="col">{{ pcc_t('UI_PCC_AXIS') }}</th><th scope="col">{{ pcc_t('UI_PCC_SIDE_GAP') }}</th><th scope="col">{{ pcc_t('UI_PCC_MARGIN') }}</th><th scope="col"></th></tr>
     {% for a in e.axes %}
-    <tr data-pcc-axis="{{ a.axis }}"><td><bdi dir="ltr">{{ a.axis|upper }}</bdi></td><td><bdi dir="ltr" data-pcc-margin>{{ a.margin_text }} mm</bdi></td><td>{% if a.met %}{{ pcc_t('UI_PCC_AXIS_MET') }}{% else %}<span data-pcc-shortfall>{{ pcc_t('UI_PCC_AXIS_NOT_MET') }} <bdi dir="ltr">{{ a.shortfall_text }} mm</bdi></span>{% endif %}</td></tr>
+    <tr data-pcc-axis="{{ a.axis }}"><td><bdi dir="ltr">{{ a.axis|upper }}</bdi></td><td>{% if a.side_gap_text is not none %}<bdi dir="ltr" data-pcc-side>{{ a.side_gap_text }} mm</bdi>{% elif a.overlap_text is not none %}<span data-pcc-overlap>{{ pcc_t('UI_PCC_SIDE_OVERLAP') }} <bdi dir="ltr">{{ a.overlap_text }} mm</bdi></span>{% endif %}</td><td><bdi dir="ltr" data-pcc-margin>{{ a.margin_text }} mm</bdi></td><td>{% if a.met %}{{ pcc_t('UI_PCC_AXIS_MET') }}{% else %}<span data-pcc-shortfall>{{ pcc_t('UI_PCC_AXIS_NOT_MET') }} <bdi dir="ltr">{{ a.shortfall_text }} mm</bdi></span>{% endif %}</td></tr>
     {% endfor %}
   </table>
   <p class="pcc-small">{{ pcc_t('UI_PCC_MARGIN_EXPLAINED') }}</p>
