@@ -89,7 +89,8 @@ def test_c01_every_key_has_english_and_arabic_and_the_english_only_notice_is_gon
     # + 16 literal-source aid keys (G1-PCC-LITERAL-SOURCE-AID-01)
     # + 54 board-file source keys (BOARD-OUTLINE-SOURCE-BINDING-01)
     # + 4 current-answer aid keys (G1-CURRENT-ANSWER-DIMENSION-HANDOFF-01)
-    assert len(keys) == 223 and not ui_text.has_string("UI_PCC_ENGLISH_ONLY")
+    # + 4 tested-clearance / per-side keys (G1-2-LINKED-CHECK-TESTED-CLEARANCE-01)
+    assert len(keys) == 227 and not ui_text.has_string("UI_PCC_ENGLISH_ONLY")
     for key in keys:
         entry = ui_text.UI_STRINGS[key]
         assert set(entry) == {"en", "ar"}, key
