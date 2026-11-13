@@ -156,6 +156,51 @@ def diagram(material, evaluation):
 CAD_HANDOFF_FORMAT = "inventorai-planar-clearance-cad-handoff/1"
 CAD_GUIDE_KEYS = tuple("UI_PCC_CAD_GUIDE_%d" % n for n in range(1, 9))
 
+# CAD-BUNDLE-TESTED-CLEARANCE-01: the companion states what the check tested and what
+# MET covers; the README states the same in English and Arabic. Additive within /1: no
+# existing field changes meaning, so existing readers and preserved bundles stay valid.
+CAD_OUTCOME_MEANING = (
+    "MET: on both axes the nominal clearance on each side is at least "
+    "tested_min_clearance_each_side_mm; NOT_MET: on at least one axis it is less. This is the "
+    "result of this check only: any constraint declared separately in the project (for example "
+    "a required clearance) was not assessed and is not included in this bundle.")
+CAD_AXIS_FIELD_DEFINITIONS = {
+    "nominal_clearance_each_side_mm": (
+        "(region - board) / 2 on this axis, from the declared values; null when the board is "
+        "wider than the region"),
+    "overlap_each_side_mm": (
+        "how far the board extends beyond the region on each side of this axis; null when it "
+        "does not"),
+    "margin_mm": (
+        "signed, on each side: (region - board) / 2 minus tested_min_clearance_each_side_mm; "
+        "positive = above the tested minimum, 0 = exactly at it, negative = below it"),
+}
+
+
+def _cad_guide_lines(ev, text, lang):
+    """The README lines for ONE language: the title, then the actual result of this check
+    (tested minimum, outcome, each axis, scope), then the unchanged guide. Every number is
+    the evaluation's own exact text."""
+    lines = [text(CAD_GUIDE_KEYS[0], lang)]
+    key = "UI_PCC_CAD_RESULT_MET" if ev["outcome"] == _pcc.OUTCOME_MET else "UI_PCC_CAD_RESULT_NOT_MET"
+    lines.append(text(key, lang) % ev["clearance_text"])
+    for a in ev["axes"]:
+        axis = a["axis"].upper()
+        if a["overlap_text"] is not None:
+            lines.append(text("UI_PCC_CAD_AXIS_OVERLAP", lang)
+                         % (axis, a["overlap_text"], a["shortfall_text"]))
+        elif a["margin"] > 0:
+            lines.append(text("UI_PCC_CAD_AXIS_ABOVE", lang)
+                         % (axis, a["side_gap_text"], a["margin_text"]))
+        elif a["margin"] == 0:
+            lines.append(text("UI_PCC_CAD_AXIS_AT", lang) % (axis, a["side_gap_text"]))
+        else:
+            lines.append(text("UI_PCC_CAD_AXIS_BELOW", lang)
+                         % (axis, a["side_gap_text"], a["shortfall_text"]))
+    lines.append(text("UI_PCC_CAD_SCOPE", lang))
+    lines.extend(text(k, lang) for k in CAD_GUIDE_KEYS[1:])
+    return lines
+
 
 # G1-2 CONSTRAINT-ENGINEERING-LINK-01: what an inventor-linked check revision
 # is NOW, read only from the planar owner's own validated snapshot and its own
@@ -273,14 +318,23 @@ def cad_handoff_model(project_id, view, text):
         "region_description": m["region_description"],
         "evaluation": {
             "outcome": ev["outcome"],
-            "axes": [{"axis": a["axis"], "margin_mm": a["margin_text"], "met": a["met"],
+            # CAD-BUNDLE-TESTED-CLEARANCE-01: what this check tested and what each axis
+            # has, copied from the same evaluation (never recomputed), so a recipient
+            # with only the files needs no arithmetic.
+            "tested_min_clearance_each_side_mm": ev["clearance_text"],
+            "outcome_meaning": CAD_OUTCOME_MEANING,
+            "axes": [{"axis": a["axis"],
+                      "nominal_clearance_each_side_mm": a["side_gap_text"],
+                      "overlap_each_side_mm": a["overlap_text"],
+                      "margin_mm": a["margin_text"], "met": a["met"],
                       "conditional_min_region_mm": a["region_min_text"],
                       "conditional_additional_mm": a["additional_text"],
                       "conditional_min_region_enterable": a["region_min_enterable"]}
-                     for a in ev["axes"]]},
+                     for a in ev["axes"]],
+            "axis_field_definitions": dict(CAD_AXIS_FIELD_DEFINITIONS)},
         "limitations": list(artifact["limitations"]),
         "region_bound_statements": list(artifact["region_bound"]["statements"]),
-        "guide": {lang: [text(key, lang) for key in CAD_GUIDE_KEYS] for lang in ("en", "ar")},
+        "guide": {lang: _cad_guide_lines(ev, text, lang) for lang in ("en", "ar")},
     }
     src = m.get("source")
     if src is not None:

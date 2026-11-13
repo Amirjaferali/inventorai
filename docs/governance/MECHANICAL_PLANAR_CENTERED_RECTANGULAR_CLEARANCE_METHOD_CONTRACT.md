@@ -300,6 +300,12 @@ bound to that exact DXF by SHA-256, and a UTF-8 `README.txt` guide in English an
   value — it travels only in the companion, labelled conditional. The companion carries the project, interaction,
   component and revision references, the declaration revision, the snapshot digest, the original decimal inputs,
   the method / consequence versions, the outcome, margins, bound, the handoff format version and the limitations.
+  AMENDMENT (CAD-BUNDLE-TESTED-CLEARANCE-01): the companion also carries the tested minimum clearance on each
+  side, each axis's nominal clearance (or overlap) on each side copied from the same evaluation, the meaning of
+  the outcome and the definitions of those fields (`margin_mm` = the signed difference from the tested minimum on
+  each side); the README states the tested minimum, the outcome, each axis and that any separately declared
+  project constraint was not assessed. Additive within `inventorai-planar-clearance-cad-handoff/1`: no existing
+  field changes meaning.
 - **Ownership and boundary (ACE disposition).** The method consumer still owns every verdict, margin and bound; the
   Stage-15 owners still own the declaration; the shared presentation model builds the handoff from ONE validated
   snapshot; a separate adapter (`engine/planar_clearance_cad_export.py`) maps coordinates and formats only and
