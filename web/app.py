@@ -426,7 +426,7 @@ from web.clarification_labels import get_clarification  # Increment 1B: display-
 from web.scaffolding_guidance import get_scaffolding_guidance  # MDN: display-only WARN guidance
 from web.answer_coauthoring_prompts import get_answer_coauthoring_prompts  # GACA Increment 1: display-only advisory prompts
 from web.uncertainty_guidance import get_uncertainty_guidance  # GUS: display-only supportive uncertainty guidance
-from web.result_feedback import get_result_feedback  # PLRF: display-only plain-language result feedback
+from web.result_feedback import get_result_detail, get_result_feedback  # PLRF: display-only plain-language result feedback
 from web.domain_label import public_domain_label as _public_domain_label  # P6-1: central public label resolver (display-only)
 from web import cap01_guidance  # Stage 18 / CAP-01: bounded presentation-profile resolver (display-only)
 # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the method consumer, its adapter (bound
@@ -7820,6 +7820,11 @@ def show_session(sid):
                 statement_beside_unknown=_statement_beside_unknown(
                     entry, state, last_result)),
             _current_ui_lang()),
+        # R2-UNRECOGNISED-ANSWER-DISPLAY-01: the same meaning for the "Result
+        # details" disclosure (None for every other reason, which keeps its raw
+        # reason there). Display-only; `last_result` is unchanged.
+        current_result_detail=ui_text.localize_deep(
+            get_result_detail(last_result), _current_ui_lang()),
         # Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support
         # (Increment Contract PR #127): deterministic, display-only, content-free
         # OPTIONAL prompts naming the KIND of information the inventor could add to
