@@ -56,6 +56,8 @@
     {% endfor %}
   </fieldset>
   <p style="font-size:14px;margin-top:16px">{{ t('UI_S15_IF_YES') }}</p>
+  {#- G1-2-PART-VS-EXTERNAL-OBJECT-01: static guidance only (no prefill, no inference). -#}
+  <p style="font-size:13px;color:#555;margin:0 0 4px 0" data-s15-parts-note>{{ t('UI_S15_PARTS_NOTE') }}</p>
   {% for legend_key, name_field, function_field in [('UI_S15_MECH_LEGEND', 'mech_part_name', 'mech_part_function'), ('UI_S15_ELEC_LEGEND', 'elec_part_name', 'elec_part_function')] %}
   <fieldset style="margin-top:8px;border:1px solid #ccc;border-radius:4px;padding:8px 12px">
     <legend style="font-size:14px">{{ t(legend_key) }}</legend>

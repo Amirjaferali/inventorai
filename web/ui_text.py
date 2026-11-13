@@ -675,6 +675,12 @@ UI_STRINGS = {
         "ar": "ذكرتَ أن اختراعك يتضمن أجزاءً ميكانيكية وأجزاءً كهربائية / إلكترونية تعمل معًا. يُرجى تأكيد ذلك قبل أن يبدأ InventorAI.",
     },
     "UI_S15_IDEA_LABEL": {"en": "Your description", "ar": "وصفك"},
+    # G1-2-PART-VS-EXTERNAL-OBJECT-01: a part belongs to the invention; something it acts on does not
+    # automatically. Static guidance only: nothing is prefilled, inferred or checked from it.
+    "UI_S15_PARTS_NOTE": {
+        "en": "List only the parts your invention is made of. Something your invention works on or is used with, such as the phone a holder holds or the tools a box keeps cool, is not automatically one of its parts. A ready-made part you buy and build into your invention, such as a store-bought fan, does count as a part. You choose each part's name and what it does. If you are not sure which parts belong to your invention, choose “Not sure” above; you do not need to guess.",
+        "ar": "اذكر فقط الأجزاء التي يتكوّن منها اختراعك. فالشيء الذي يعمل عليه اختراعك أو يُستخدم معه، مثل الهاتف الذي يحمله الحامل أو العِدَد التي يبرّدها الصندوق، ليس تلقائيًا جزءًا منه. أما القطعة الجاهزة التي تشتريها وتركّبها في اختراعك، مثل مروحة جاهزة من المتجر، فهي جزء منه. أنت من يختار اسم كل جزء وما يفعله. وإن لم تكن متأكدًا أيّ الأجزاء تنتمي إلى اختراعك، فاختر «لست متأكدًا» أعلاه؛ ولا داعي للتخمين.",
+    },
     "UI_S15_QUESTION": {
         "en": "Does your invention contain mechanical and electrical/electronic parts that work together as parts of the same invention?",
         "ar": "هل يحتوي اختراعك على أجزاء ميكانيكية وأجزاء كهربائية / إلكترونية تعمل معًا بوصفها أجزاءً من الاختراع نفسه؟",
