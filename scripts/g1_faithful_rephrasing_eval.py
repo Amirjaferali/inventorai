@@ -45,9 +45,9 @@ SCHEMA_SHA256 = "6ab0d0bd5f88c76673f93c7156881e67a887ce9809fd4697af2a0a49c950970
 # committed (see the evidence record); pinned here when it is received.
 PACK_ID = "inventorai-g1-faithful-rephrasing-v1"
 CASES_PATH = os.path.join(FIXTURES, "g1_faithful_rephrasing_v1_cases.json")
-CASES_SHA256 = None
+CASES_SHA256 = "47f7738c25900c395e941093ad415585dfa961bec15d6be4bb50ff72212f9ab6"
 REFERENCE_PATH = os.path.join(FIXTURES, "g1_faithful_rephrasing_v1_reference.json")
-REFERENCE_SHA256 = None
+REFERENCE_SHA256 = "b6db3685cdc65dd6ca76ec7ab57afc2b8456f3c79a20d276265d6381f3d37f17"
 
 SUBSETS = ("en", "ar_msa", "ar_gulf_kuwaiti", "ar_egyptian")
 MIN_KEPT = {"en": 14, "ar_msa": 10, "ar_gulf_kuwaiti": 5, "ar_egyptian": 5}

@@ -241,3 +241,76 @@ def test_transport_batching_splits_in_key_order_with_the_same_template():
     assert keys == sorted(keymap) and len(keys) == 40
     amendment = ev.load_prereg()["amendments"][0]
     assert amendment["id"] == "A1" and "before the adjudicator was engaged" in amendment["stage"]
+
+
+# ── The pinned pack and its independent authoring ──────────────────────────
+EVIDENCE = ROOT / "docs" / "benchmarks" / "evidence" / "g1_faithful_rephrasing_v1_authoring"
+
+
+def _authoring_record():
+    return json.loads((EVIDENCE / "authoring_record.json").read_text(encoding="utf-8"))
+
+
+def _evidence(prefix):
+    texts = _authoring_record()["texts"]
+    return [texts[k] for k in sorted(texts) if k.startswith(prefix)]
+
+
+def test_pack_is_pinned_and_matches_the_plan():
+    cases, ref = ev.load_pack()
+    assert (_sha_file(ev.CASES_PATH), _sha_file(ev.REFERENCE_PATH)) == (
+        ev.CASES_SHA256, ev.REFERENCE_SHA256)
+    prereg = ev.load_prereg()
+    for subset, plan in prereg["plan"].items():
+        got = {}
+        for c in cases:
+            if c["variety"] == subset:
+                got[c["category"]] = got.get(c["category"], 0) + 1
+        assert got == plan, subset
+    assert len({c["idea_text"] for c in cases}) == 40
+
+
+def test_preparation_is_valid():
+    cases, ref = ev.load_pack()
+    prep = ev.preparation_checks(cases, ref)
+    assert prep["verdict"] == ev.PREPARATION_VALID, prep
+    assert prep["P6_overlap"] == [] and prep["P5_reference_defects"] == []
+
+
+def _unwrap(delivered):
+    """A cross-session follow-up arrives inside the transport's envelope: a
+    preface, then the message with every line indented by four spaces."""
+    start = delivered.index(">", delivered.index("<cross-session-message")) + 1
+    body = delivered[start:delivered.index("</cross-session-message>")]
+    body = body[body.index("    You are an INDEPENDENT"):]
+    return "\n".join(l[4:] if l.startswith("    ") else l for l in body.split("\n")).rstrip()
+
+
+def test_every_session_received_exactly_the_frozen_rendering():
+    cases, _adjudicated = ev.load_pack()
+    ref = json.loads(Path(ev.REFERENCE_PATH).read_text(encoding="utf-8"))
+    prereg = ev.load_prereg()
+    assert _evidence("author_user_") == [prereg["messages"]["author"]]
+    reader_msgs, _ = ev.render_reader(cases)
+    assert _evidence("reader_user_") == reader_msgs
+    author_pts = {cid: r["points"] for cid, r in ref["author"].items()}
+    reader_pts = {cid: r["points"] for cid, r in ref["reader"].items()}
+    adj_msgs, keymap, sides = ev.render_adjudicator(cases, author_pts, reader_pts)
+    received = _evidence("adjudicator_user_")
+    assert len(received) == len(adj_msgs) == 2
+    assert received[0] == adj_msgs[0]           # the session's first message
+    assert _unwrap(received[1]) == adj_msgs[1]  # a follow-up, inside the transport envelope
+    assert keymap == ref["adjudication"]["keymap"] and sides == ref["adjudication"]["sides"]
+
+
+def test_the_prompt_was_frozen_before_any_case_existed():
+    record = _authoring_record()
+    assert record["prompt_freeze_commit"].startswith("5624f3c8")
+    assert set(record["sha256"]) == set(record["texts"]) and len(record["texts"]) == 8
+    for name, text in record["texts"].items():
+        assert hashlib.sha256(text.encode("utf-8")).hexdigest() == record["sha256"][name]
+    # No case text appears in the frozen prompt module.
+    cases, _ref = ev.load_pack()
+    prompt_src = (ROOT / "scripts" / "g1_faithful_rephrasing_prompt.py").read_text(encoding="utf-8")
+    for c in cases:
+        assert c["idea_text"][:40] not in prompt_src
