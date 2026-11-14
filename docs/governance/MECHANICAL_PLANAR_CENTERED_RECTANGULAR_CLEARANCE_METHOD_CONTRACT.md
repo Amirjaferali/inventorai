@@ -149,6 +149,14 @@ declaration version, stored schema or outcome, and admits no AI or scientific au
   recognised. Known limit: the rule is local to the expression's own sentence, so uncertainty stated in a LATER
   sentence ("My board is 84 x 50 mm. It may change.") is not recognised; the aid claims no semantic understanding,
   and the inventor's explicit board and X / Y choice and the unchanged save remain the only path to a declaration.
+- **Arabic digits and unit (AMENDMENT, AR-NUMERAL-PCC-01, Owner-authorized 2026-11-14).** The pair may also be
+  written `A x B ملم`, and each number may be written wholly in ASCII, Arabic-Indic (`٠–٩`) or Persian (`۰–۹`)
+  digits, with the ASCII dot as its only decimal point; a number that mixes digit systems, the Arabic decimal mark
+  `٫`, any other unit spelling (`مم`, `سم`, …) and `ملم` as the start of a longer word are not recognised. The
+  sentence and the expression are still shown verbatim; the two proposed numbers are the canonical ASCII decimals of
+  §6 (the same digits, one for one), so a pair stated in the idea and in a current answer in different digit systems
+  is the same pair, not a conflict. Every other rule of this section is unchanged. Superseded wording, preserved:
+  "ASCII digits" in the first bullet above.
 - **What the inventor decides.** The page decides nothing. It states that InventorAI has not checked which component
   the numbers describe, which is X or Y, or whether they are correct. Its script fills the two board values and a
   proposed board basis note only after the inventor has chosen the board component in the form AND an explicit X / Y
@@ -221,6 +229,15 @@ every formula, role, unit, outcome and the 128 KiB request cap are unchanged.
   digits and up to four fractional digits (`[0-9]{1,6}(\.[0-9]{1,4})?`); no sign, exponent, separator, Unicode
   digit, unit suffix or normalization; no silent truncation or coercion — anything else is refused at capture and
   never stored. Dimensions must be strictly positive and `c` zero or positive, decided on the exact decimal.
+- **Native-digit entry at the input boundary (AMENDMENT, AR-NUMERAL-PCC-01, Owner-authorized 2026-11-14).** Before
+  the grammar above, the web input boundary (`web/planar_clearance.py` `ascii_digits`, called by the declaration
+  form's capture) replaces each Arabic-Indic (`٠–٩`) or Persian (`۰–۹`) digit of an entered value by the ASCII digit
+  of the same value, one for one; an entry whose digits come from more than one of the three systems is refused.
+  Nothing else is rewritten — no decimal mark (the Arabic decimal mark `٫` stays refused), separator, sign, space,
+  unit or word — so the grammar above, unchanged, still decides, and only the canonical ASCII text is stored, compared
+  for exact retry and "unchanged", bound into revisions and the CAD reference, and shown. A value typed in another
+  digit system is therefore the same declaration value. The method consumer, the shared owner, the adapter and the
+  artifact are not changed; the grammar's "no … Unicode digit … or normalization" stays true of what they receive.
 - **Geometric decision on the exact entered decimals, before any display.** The consumer computes the exact
   rational margins from the entered decimals and decides MET / NOT MET from their signs (the independent form
   `region ≥ board + 2c` per axis gives the same decision). Example: `region_x = 100.1`, `board_x = 99.9`,
@@ -357,9 +374,13 @@ the report document's language. The English variant of every applicability state
 artifact's text word for word, so each Arabic line translates one governed meaning; method, declaration and
 artifact versions are unchanged, and a language change is presentation only — never a new declaration, revision,
 outcome or result. Numbers, `mm`, X / Y, identifiers and digests are LTR-isolated; the sketch is never mirrored.
-Inventor text is stored and shown verbatim, never translated. Numeric entry keeps the §6 ASCII grammar: Arabic-Indic
-or Persian digits, Arabic decimal or group separators, units and words are refused with an Arabic explanation and
-never read as a number (native-digit entry is NOT delivered; it would be a separately scoped numeric-input change).
+Inventor text is stored and shown verbatim, never translated. Numeric entry keeps the §6 ASCII grammar: Arabic decimal
+or group separators, units and words are refused with an Arabic explanation and never read as a number. AMENDED by
+AR-NUMERAL-PCC-01 (Owner-authorized 2026-11-14): native-digit entry IS delivered for this journey only — a value
+written wholly in Arabic-Indic or Persian digits is admitted at the input boundary as the ASCII digits of the same
+value (§6), a value that mixes digit systems is refused, and the literal aid recognises such numbers and `ملم` (§5A).
+Superseded wording, preserved: "Arabic-Indic or Persian digits, Arabic decimal or group separators, units and words
+are refused … (native-digit entry is NOT delivered; it would be a separately scoped numeric-input change)".
 Qualified by synthetic fixtures in Modern Standard Arabic, Kuwaiti / Gulf and Egyptian Arabic alongside English:
 free text (names, region descriptions, basis notes, including uncertainty and negation) is preserved and never
 converted into a dimension, an unknown or an applicability answer — this is NOT understanding of unrestricted

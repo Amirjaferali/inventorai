@@ -78,7 +78,8 @@ def test_r01_one_literal_board_pair_is_located_verbatim(idea, first, second, spa
     "The board is 85 x 56.",                                      # no unit
     "The board is 85 x 56 in.",
     "The board is 85 x 56 mm².",
-    "The board is ٨٥ × ٥٦ mm.",                                   # another digit system
+    "The board is ٨5 × ٥٦ mm.",                                   # digit systems mixed in one number
+    # (AR-NUMERAL-PCC-01: a number wholly in Arabic-Indic / Persian digits is admitted; test_ar_numeral_pcc.py)
     "The board is 85,5 x 56 mm.",                                 # comma decimal
     "The board is 85٫5 x 56 mm.",
     "The board is 1/85 x 56 mm.",

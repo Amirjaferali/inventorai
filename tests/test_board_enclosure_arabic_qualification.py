@@ -10,8 +10,10 @@ test_board_enclosure_planar_clearance*.py):
     snapshot digest and value states in English and Arabic, writes nothing and leaves the session page and the
     stored rows untouched; every outcome / state renders in Arabic with the same underlying meaning;
   * the report / PDF section follows the report DOCUMENT's language seam, not the interface on its own;
-  * numeric input keeps the exact ASCII-decimal grammar: Arabic-Indic or Persian digits, Arabic decimal or
-    group separators, units and words are refused (nothing written, never zero) with an Arabic explanation;
+  * numeric input keeps the exact ASCII-decimal grammar: Arabic decimal or group separators, numbers that mix
+    digit systems, units and words are refused (nothing written, never zero) with an Arabic explanation; since
+    AR-NUMERAL-PCC-01 a number written wholly in Arabic-Indic or Persian digits is saved as the ASCII digits of
+    the same value (pinned by test_ar_numeral_pcc.py);
   * dialect fixtures (English, MSA, Kuwaiti / Gulf, Egyptian): component names, region descriptions and basis
     notes - including ordinary uncertainty and negation - are stored and shown verbatim and never turned into a
     dimension, an "unknown" or an applicability answer; the structured choices alone decide the outcome. This
@@ -289,10 +291,12 @@ def test_r02_the_arabic_pdf_carries_the_same_snapshot_and_outcome(client, monkey
 
 # ==========================================================================
 # 4. numeric input: the exact ASCII grammar, refused otherwise, never zero
+#    (AR-NUMERAL-PCC-01: a number wholly in Arabic-Indic or Persian digits is admitted as the ASCII digits
+#    of the same value - see test_ar_numeral_pcc.py; mixed digits stay refused here)
 # ==========================================================================
-@pytest.mark.parametrize("bad", ["٨٤", "۸۴", "84٫5", "84,5", "84،5", "84 mm", "84مم", "ثمانون",
-                                 "٨٤.٥", "8٤", "1٬000", "−84", "84.5 ", ""])
-def test_n01_non_ascii_digits_separators_units_and_words_are_refused(client, bad):
+@pytest.mark.parametrize("bad", ["84٫5", "84,5", "84،5", "84 mm", "84مم", "ثمانون",
+                                 "٨٤٫٥", "8٤", "٨۴", "1٬000", "−84", "84.5 ", ""])
+def test_n01_mixed_digits_separators_units_and_words_are_refused(client, bad):
     sid, ifc, ids = _web(client)
     _set_lang(client, "ar")
     r = _save(client, sid, ifc, ids, values=(bad, "50", "86", "56", "2"))

@@ -12411,10 +12411,14 @@ def _pcc_capture():
             values.append(_pcc.VALUE_UNKNOWN)
         elif not text:
             values.append(None)
-        elif _pcc.is_admitted_value(role, text):
-            values.append(text)
         else:
-            raise ValueError("inadmissible value")
+            # AR-NUMERAL-PCC-01: Arabic-Indic / Persian digits become the ASCII
+            # digits of the same value; mixed systems are refused; the strict
+            # grammar then decides, unchanged, and only the ASCII text is stored.
+            value = _pcc_view.ascii_digits(text)
+            if value is None or not _pcc.is_admitted_value(role, value):
+                raise ValueError("inadmissible value")
+            values.append(value)
     basis = []
     draft_basis = {}
     for field in _subsystem_model.PLANAR_CLEARANCE_BASIS_FIELDS:

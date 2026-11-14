@@ -432,6 +432,38 @@ def clearance_view(snapshot, interface_id, binding):
     return view
 
 
+# AR-NUMERAL-PCC-01: native-digit entry at the web input boundary. The method's
+# grammar (``_pcc.parse_value``) stays strict ASCII and is not touched; this
+# step only rewrites the DIGITS of an entry, one for one, before it.
+_ASCII_DIGITS = "0123456789"
+_NATIVE_DIGIT_SYSTEMS = ("٠١٢٣٤٥٦٧٨٩", "۰۱۲۳۴۵۶۷۸۹")   # Arabic-Indic, Persian
+_TO_ASCII = str.maketrans("".join(_NATIVE_DIGIT_SYSTEMS), _ASCII_DIGITS * len(_NATIVE_DIGIT_SYSTEMS))
+
+
+def ascii_digits(text):
+    """``text`` with every Arabic-Indic (٠-٩) or Persian (۰-۹) digit replaced by
+    the ASCII digit of the same value, or ``None`` when its digits come from
+    more than one of the three systems (ASCII, Arabic-Indic, Persian).
+
+    Lossless and nothing else: every other character - a decimal mark,
+    separator, sign, space, letter or unit - is left exactly as it is, so the
+    unchanged strict grammar still decides. An ASCII-only text is returned
+    unchanged (the same object)."""
+    if not isinstance(text, str):
+        return None
+    systems = set()
+    for ch in text:
+        if ch in _ASCII_DIGITS:
+            systems.add(0)
+        else:
+            for index, digits in enumerate(_NATIVE_DIGIT_SYSTEMS, 1):
+                if ch in digits:
+                    systems.add(index)
+    if len(systems) > 1:
+        return None
+    return text if systems <= {0} else text.translate(_TO_ASCII)
+
+
 # G1-PCC-LITERAL-SOURCE-AID-01: ONE bounded input aid. It LOCATES one literal
 # "<number> x <number> mm" pair written in the inventor's original idea and
 # shows it with its sentence; it never decides which component is the board,
@@ -445,18 +477,27 @@ AID_ORDERS = ("first_x", "first_y")
 # The opening of the documentary basis note the aid PROPOSES. It is ordinary
 # editable inventor text once in the form: nothing ever parses or checks it.
 AID_NOTE_PREFIX = {"en": "From my original idea: ", "ar": "من فكرتي الأصلية: "}
-_AID_NUMBER = r"[0-9]+(?:\.[0-9]+)?"
+# AR-NUMERAL-PCC-01: a number is written in ONE digit system - ASCII 0-9,
+# Arabic-Indic ٠-٩ or Persian ۰-۹ - with the ASCII dot as its only decimal
+# point. A number that mixes systems ("8٤", "٨٥.5") matches no alternative.
+_AID_NUMBER = (r"(?:[0-9]+(?:\.[0-9]+)?|[٠-٩]+(?:\.[٠-٩]+)?|[۰-۹]+(?:\.[۰-۹]+)?)")
+# Arabic letters, marks and digits: ``ملم`` must not be the start of a longer word.
+# Not the only guard: ``_AID_SUFFIX`` still refuses anything after the expression.
+_AID_AR_WORD = "ؠ-٩ٮ-ۿ"
 # At most three spaces or tabs between the tokens: never a line break (the note
 # field is one line) and never a note longer than its 300-character bound.
+# The unit is ``mm`` or, since AR-NUMERAL-PCC-01, its Arabic spelling ``ملم``.
 _AID_PAIR = re.compile(
-    r"(?<![\w.,٫/+\-–−٠-٩۰-۹])(?P<a>%s)[ \t]{0,3}[x×X*][ \t]{0,3}(?P<b>%s)[ \t]{0,3}mm(?![\w²³])"
-    % (_AID_NUMBER, _AID_NUMBER), re.ASCII)
+    r"(?<![\w.,٫/+\-–−٠-٩۰-۹])(?P<a>%s)[ \t]{0,3}[x×X*][ \t]{0,3}(?P<b>%s)[ \t]{0,3}"
+    r"(?:mm(?![\w²³])|ملم(?![\w²³%s]))"
+    % (_AID_NUMBER, _AID_NUMBER, _AID_AR_WORD), re.ASCII)
 # Any two numbers joined by a multiplication sign, whatever follows (another
 # unit, no unit, other digit systems): a second one makes the idea ambiguous.
 _AID_ANY_PAIR = re.compile(r"\d+(?:[.,٫]\d+)?\s*[x×X*]\s*\d", re.UNICODE)
 _AID_ANY_NUMBER = re.compile(r"\d+(?:[.,٫]\d+)*", re.UNICODE)
-# A sentence ends at ! ? ; ؛ ؟ a line break, or a dot that is not a decimal point.
-_AID_SENTENCE_BREAK = re.compile(r"[!?;؛؟\n]|(?<![0-9])\.|\.(?![0-9])")
+# A sentence ends at ! ? ; ؛ ؟ a line break, or a dot that is not a decimal point
+# (a dot between two digits of the admitted systems is a decimal point).
+_AID_SENTENCE_BREAK = re.compile(r"[!?;؛؟\n]|(?<![0-9٠-٩۰-۹])\.|\.(?![0-9٠-٩۰-۹])")
 # The pair must be BOUND to ONE board (singular) by one of a few fixed
 # syntactic forms; a board merely mentioned elsewhere in the sentence binds
 # nothing ("The board carries a camera that is 80 x 50 mm" abstains). These are
@@ -526,11 +567,15 @@ _AID_UNCERTAIN = re.compile(
 def literal_board_pair(original_idea):
     """The ONE literal board-dimension pair of ``original_idea``, or ``None``.
 
-    Returns ``{"passage", "span", "first", "second", "unit"}`` with every text
-    copied verbatim from the idea. ``first`` / ``second`` are in the order the
-    inventor wrote them; no axis is implied. Refused (``None``) unless ALL hold:
+    Returns ``{"passage", "span", "first", "second", "unit"}``. ``passage`` and
+    ``span`` are copied verbatim from the idea; ``first`` / ``second`` are the
+    two numbers in the order the inventor wrote them, as the canonical ASCII
+    decimals of ``ascii_digits`` (the same text for an ASCII number; digit for
+    digit for an Arabic-Indic or Persian one), and ``unit`` is the method's
+    ``mm``. No axis is implied. Refused (``None``) unless ALL hold:
     the idea has exactly one ``A x B`` pair of any kind and it is ``A x B mm``
-    in ASCII digits; the pair is bound to one board by a fixed syntactic form
+    or ``A x B ملم``, each number in ONE digit system (ASCII, Arabic-Indic or
+    Persian) with an ASCII decimal point; the pair is bound to one board by a fixed syntactic form
     (``_AID_BIND_BEFORE`` / ``_AID_BIND_AFTER``) and ends its sentence
     (``_AID_SUFFIX``, nothing after it but an optional closing bracket); its
     sentence names no other object and holds no other number and no
@@ -561,7 +606,7 @@ def literal_board_pair(original_idea):
         return None
     if len(_AID_ANY_NUMBER.findall(sentence)) != 2:
         return None
-    first, second = pair.group("a"), pair.group("b")
+    first, second = ascii_digits(pair.group("a")), ascii_digits(pair.group("b"))
     if not (_pcc.is_admitted_value("board_x", first)
             and _pcc.is_admitted_value("board_y", second)):
         return None

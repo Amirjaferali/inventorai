@@ -12657,8 +12657,8 @@ UI_STRINGS = {
         "en": "Not saved: this declaration is already withdrawn.",
         "ar": "لم يُحفظ: هذا التصريح مسحوب بالفعل."},
     "UI_PCC_MSG_REJECTED": {
-        "en": "Not saved: please check the values. Each value must be a plain number in millimetres written with the digits 0–9 and a decimal point (up to six digits before the point and four after), dimensions above zero, or marked “I do not know yet” — not both.",
-        "ar": "لم يُحفظ: يُرجى التحقق من القيم. يجب أن تكون كل قيمة رقمًا بسيطًا بالمليمتر مكتوبًا بالأرقام 0–9 والنقطة العشرية (حتى ست خانات قبل النقطة وأربع بعدها)، وأن تكون الأبعاد أكبر من صفر، أو أن تُعلَّم «لا أعرف بعد» — وليس الأمرين معًا."},
+        "en": "Not saved: please check the values. Each value must be a plain number in millimetres written with one kind of digits (0–9, ٠–٩ or ۰–۹) and a dot as the decimal point (up to six digits before the point and four after), dimensions above zero, or marked “I do not know yet” — not both.",
+        "ar": "لم يُحفظ: يُرجى التحقق من القيم. يجب أن تكون كل قيمة رقمًا بسيطًا بالمليمتر مكتوبًا بنوع واحد من الأرقام (0–9 أو ٠–٩ أو ۰–۹) والنقطة (.) فاصلةً عشرية (حتى ست خانات قبل النقطة وأربع بعدها)، وأن تكون الأبعاد أكبر من صفر، أو أن تُعلَّم «لا أعرف بعد» — وليس الأمرين معًا."},
     "UI_PCC_MSG_CONFIRM_WITHDRAW": {
         "en": "Not withdrawn: please confirm the withdrawal.",
         "ar": "لم يُسحب: يُرجى تأكيد السحب."},
@@ -12693,8 +12693,8 @@ UI_STRINGS = {
         "en": "Report generated",
         "ar": "أُنشئ التقرير"},
     "UI_PCC_DIGITS_HELP": {
-        "en": "Use the digits 0–9 and a dot (.) as the decimal point, for example 84.5. Arabic-Indic digits (٠–٩), commas (، or ,) and units typed in the box are not accepted yet; such an entry is refused and never read as a number.",
-        "ar": "استخدم الأرقام 0–9 والنقطة (.) فاصلةً عشرية، مثل 84.5. الأرقام العربية الهندية (٠–٩) والفاصلة (، أو ,) والوحدات المكتوبة داخل الخانة غير مقبولة حاليًا؛ يُرفض مثل هذا الإدخال ولا يُقرأ رقمًا أبدًا."},
+        "en": "Use the digits 0–9, Arabic-Indic digits (٠–٩) or Persian digits (۰–۹), one kind in each number, and a dot (.) as the decimal point, for example 84.5 or ٨٤.٥. The value is saved in the digits 0–9 with the same value. The Arabic decimal mark (٫), commas (، or ,), a number that mixes kinds of digits and units typed in the box are not accepted; such an entry is refused and never read as a number.",
+        "ar": "استخدم الأرقام 0–9 أو الأرقام العربية الهندية (٠–٩) أو الأرقام الفارسية (۰–۹)، نوعًا واحدًا في كل رقم، والنقطة (.) فاصلةً عشرية، مثل 84.5 أو ٨٤.٥. تُحفظ القيمة بالأرقام 0–9 بالقيمة نفسها. الفاصلة العشرية العربية (٫) والفاصلة (، أو ,) والرقم الذي يخلط بين أنواع الأرقام والوحدات المكتوبة داخل الخانة غير مقبولة؛ يُرفض مثل هذا الإدخال ولا يُقرأ رقمًا أبدًا."},
     "UI_PCC_AID_HEADING": {
         "en": "Numbers from your original idea",
         "ar": "أرقام من فكرتك الأصلية"},
