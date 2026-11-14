@@ -197,6 +197,12 @@ select{max-width:100%;padding:6px;font-size:13px}
     {% if not item.withdrawn %}
     <div class="pm-actions">
       <a href="{{ url_for('cap13_planar_moment', sid=sid, correct=item.declaration_id, head=item.head) }}" data-pm-correct>{{ t('UI_PM_CORRECT_LINK') }}</a>
+      {#- G1-MOMENT-TO-REQUIRED-FORCE-01: ONE optional step from a CURRENT item
+          only (no link for any other state); it opens its own page and writes
+          nothing. -#}
+      {% if pmf_offered and item.state == pm_state_current %}
+      <a href="{{ url_for('cap13_planar_moment_required_force', sid=sid, declaration_id=item.declaration_id, head=item.head) }}" data-pm-required-force>{{ t('UI_PMF_LINK') }}</a>
+      {% endif %}
       <form method="POST" action="{{ url_for('cap13_planar_moment_withdraw', sid=sid) }}" data-pm-withdraw-form>
         <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
         <input type="hidden" name="pm_withdraw_submission" value="{{ pm_withdraw_submission }}">

@@ -783,6 +783,14 @@ EXACTLY the following and nothing more.
   generic solver, inverse solver, unit registry or conversion graph; persistence (§12); provider, AI, external-tool or
   external-library execution; and every other §13 / §13A–§13G exclusion.
 
+- **Named exception to "no result is transferred" (AMENDMENT, G1-MOMENT-TO-REQUIRED-FORCE-01, Owner-authorized
+  2026-11-14).** Exactly ONE transfer is admitted: the planar-moment consumer's read-only exact-input-product consequence `P`
+  of ONE CURRENT saved configuration (planar-moment contract §12C) may be offered, by the web layer, as the `M_target` text of
+  ONE required-force use on the same component (required-force contract §5A). Neither consumer imports the other; no
+  method-authority artifact loads another; this owner, its artifact (content version `14`), its implementation version, its
+  bindings, its inventory and every method stay unchanged, and no owner output is passed between methods — `P` is not the
+  planar-moment owner result `M`. Every other transfer stays excluded.
+
 ## 13I. Bounded tenth admission — Electrical / Electronics DC constant-current charge (Correction 10)
 
 The delivered ninth admission (§13H) is expanded, by the Owner-authorized increment named in the CORRECTION 10 header, to
