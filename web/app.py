@@ -16807,6 +16807,10 @@ def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=
                        if saved is not None and saved["available"] else None),
         pm_withdraw_submission=(_fresh_submission_identity(sid, _PM_WITHDRAW_DOMAIN)
                                 if saved is not None and saved["available"] else None),
+        # G1-MOMENT-TO-REQUIRED-FORCE-01: the step is offered only where BOTH
+        # calculations are offered (the same _calc_gate rule), per CURRENT item.
+        pmf_offered=bool(eligible and _cap13f_eligible(sid)),
+        pm_state_current=_PM_STATE_CURRENT,
     ), status)
     response.headers["Cache-Control"] = "no-store"
     return response
@@ -22038,6 +22042,10 @@ def _pm_saved_view(sid, lang, snap=None):
             "method_id": material.method_id,
             "method_version": material.method_version,
             "issues": [], "result": None, "outcome_key": None,
+            # G1-MOMENT-TO-REQUIRED-FORCE-01: the binary64 M of a CURRENT item,
+            # kept beside its display so the transfer step reuses THIS
+            # evaluation (no second one); never rendered by the shared partial.
+            "moment_value": None,
         }
         if record.withdrawn:
             item["state"] = _PM_STATE_WITHDRAWN
@@ -22052,6 +22060,7 @@ def _pm_saved_view(sid, lang, snap=None):
                 if evaluation["outcome"] == _cap13m.OUTCOME_SUCCESS:
                     item["state"] = _PM_STATE_CURRENT
                     item["result"] = _cap13m_result_view(evaluation["result"])
+                    item["moment_value"] = evaluation["result"]["outputs"]["M"]["value"]
                 else:
                     item["state"] = _PM_STATE_NO_RESULT
                     item["outcome_key"] = "UI_CAP13M_OUTCOME_%s" % evaluation["outcome"]
@@ -22350,6 +22359,195 @@ def cap13_planar_moment_withdraw(sid):
                 and stored.revision_no == int(raw_head) + 1)
 
     return _pm_write(sid, part, "withdraw", build, same)
+
+
+# =============================================================================
+# G1-MOMENT-TO-REQUIRED-FORCE-01 — a saved moment as the target of ONE required-force use
+# =============================================================================
+# ONE optional, request-local step from ONE CURRENT saved planar-moment
+# configuration: the exact product P of its saved F and d_perp (the moment
+# consumer's exact-input-product consequence, moment contract §12C) is offered as
+# the target moment of the UNCHANGED required-force calculation (required-force
+# contract §5A), on the same component, after two explicit inventor
+# confirmations (same point and plane; size only). Neither consumer imports the
+# other: this web layer passes P as text through the required-force consumer's
+# own strict capture, so its M_target grammar and every numerical check apply
+# unchanged, and P is refused - never rounded or shortened - when it does not fit.
+# The saved configuration, its revision and the moment method identity are read,
+# never written; nothing is persisted; no equilibrium, holding, direction,
+# adequacy, strength or safety statement is made. Calc/units contract §13H
+# (as amended) names this exception to "no result is transferred".
+_PMF_HEAD_RE = re.compile(r"^(0|[1-9][0-9]?)$")
+_PMF_CONFIRM_YES = "yes"
+_PMF_CONFIRM_FIELDS = ("confirm_same_point", "confirm_size_only")
+_PMF_TARGET_FIELD = _cap13f.VALUE_FIELD % "M_target"
+_PMF_FORM_FIELDS = ((_cap13f.FORM_FIELDS - {_PMF_TARGET_FIELD})
+                    | {"expected_head"} | set(_PMF_CONFIRM_FIELDS))
+
+
+class _PmfRefused(Exception):
+    """The step cannot use this saved configuration now: ``status`` and an
+    EN / AR message key. Nothing is calculated."""
+
+    def __init__(self, status, key):
+        super().__init__(key)
+        self.status, self.key = status, key
+
+
+def _pmf_target(sid, declaration_id, raw_head, lang):
+    """The ONE saved configuration this step uses, re-derived from ONE store
+    snapshot through the unchanged ``_pm_saved_view`` (its own state rule and
+    evaluation), with its exact-input-product consequence. Raises
+    ``_PmfRefused``: malformed id / head (400), unreadable history (503),
+    unknown configuration (404), a different revision than the page showed
+    (409), not CURRENT (409). Otherwise ``{"item", "product", "refusal"}``
+    where ``refusal`` is None only when P may be passed on."""
+    if not _subsystem_model.is_valid_planar_moment_id(declaration_id) \
+            or not isinstance(raw_head, str) or not _PMF_HEAD_RE.match(raw_head):
+        raise _PmfRefused(400, "UI_PMF_MSG_REJECTED")
+    saved = _pm_saved_view(sid, lang)
+    if not saved["available"]:
+        raise _PmfRefused(503, "UI_PMF_MSG_UNAVAILABLE")
+    item = next((i for i in saved["items"] if i["declaration_id"] == declaration_id), None)
+    if item is None:
+        raise _PmfRefused(404, "UI_PMF_MSG_NOT_FOUND")
+    if item["head"] != int(raw_head):
+        raise _PmfRefused(409, "UI_PMF_MSG_STALE")
+    if item["state"] != _PM_STATE_CURRENT:
+        raise _PmfRefused(409, "UI_PMF_MSG_NOT_CURRENT")
+    values = {v["role"]: v["text"] for v in item["values"]}
+    product = _cap13m.exact_input_product(values, item["moment_value"])
+    refusal = None
+    if product["status"] == _cap13m.PRODUCT_NOT_ADMITTED:
+        refusal = "UI_PMF_MSG_NOT_ADMITTED"
+    elif product["status"] != _cap13m.PRODUCT_AVAILABLE:
+        refusal = "UI_PMF_MSG_INTEGRITY"
+    elif _cap13f.parse_value(product["text"], "M_target") is None:
+        # The UNCHANGED required-force grammar decides; nothing is rounded.
+        refusal = "UI_PMF_MSG_NOT_REPRESENTABLE"
+    return {"item": item, "values": values, "product": product, "refusal": refusal}
+
+
+def _render_pmf(sid, declaration_id, status=200, eligible=True, declared_part=None,
+                target=None, captured=None, confirmations=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cap13f.OUTCOME_SUCCESS:
+            view = _cap13f_result_view(evaluation)
+        else:
+            outcome_key = "UI_CAP13F_OUTCOME_%s" % evaluation["outcome"]
+    iso = lambda key: _cap13f_isolate(ui_text.text(key, lang), lang)  # noqa: E731
+    decl_keys = {d: ("UI_PMF_DECL_TARGET_MOMENT" if d == "target_moment"
+                     else "UI_CAP13F_DECL_" + d.upper()) for d in _cap13f.DECLARATION_IDS}
+    response = make_response(render_template(
+        "cap13_planar_moment_required_force.html",
+        sid=sid,
+        declaration_id=declaration_id,
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=iso,
+        disclosure_items=[
+            _cap13f_isolate(part, lang) for part in
+            ui_text.text("UI_CAP13F_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        target=target,
+        consequence_id=_cap13m.EXACT_INPUT_PRODUCT_ID,
+        consequence_version=_cap13m.EXACT_INPUT_PRODUCT_VERSION,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        confirmations=confirmations or {},
+        confirm_fields=_PMF_CONFIRM_FIELDS,
+        confirm_yes=_PMF_CONFIRM_YES,
+        declarations=_cap13f.DECLARATION_IDS,
+        decl_keys=decl_keys,
+        screen_items=_cap13f.SCREEN_ITEMS,
+        decl_field=_cap13f.DECLARATION_FIELD,
+        screen_field=_cap13f.SCREEN_FIELD,
+        distance_field=_cap13f.VALUE_FIELD % "d_perp",
+        answer_applies=_cap13f.ANSWER_APPLIES,
+        answer_does_not_apply=_cap13f.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cap13f.SCREEN_YES,
+        screen_no=_cap13f.SCREEN_NO,
+        max_value_chars=_cap13f.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+def _pmf_gate(sid):
+    """``(eligible, part)``: BOTH the planar-moment and the required-force
+    calculations must be offered here (the same ``_calc_gate`` rule)."""
+    eligible_m, part = _calc_gate(sid, _cap13m)
+    eligible_f, _part = _calc_gate(sid, _cap13f)
+    return eligible_m and eligible_f, part
+
+
+@app.route("/session/<sid>/planar-moment/<declaration_id>/required-force", methods=["GET"])
+def cap13_planar_moment_required_force(sid, declaration_id):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _pmf_gate(sid)
+    if not eligible:
+        return _render_pmf(sid, declaration_id, eligible=False)
+    try:
+        target = _pmf_target(sid, declaration_id, request.args.get("head", ""),
+                             _current_ui_lang())
+    except _PmfRefused as exc:
+        return _render_pmf(sid, declaration_id, status=exc.status, declared_part=part,
+                           error=exc.key)
+    return _render_pmf(sid, declaration_id, declared_part=part, target=target)
+
+
+@app.route("/session/<sid>/planar-moment/<declaration_id>/required-force", methods=["POST"])
+def cap13_planar_moment_required_force_post(sid, declaration_id):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility -> the saved configuration re-read and re-checked NOW (id,
+    # revision shown, CURRENT) -> the exact-input-product consequence and the
+    # unchanged M_target grammar -> strict capture (malformed: 400; M_target is
+    # never taken from the client) -> both confirmations -> the unchanged
+    # required-force consumer (§7 order, owner, decimal reference).
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _pmf_gate(sid)
+    if not eligible:
+        return _render_pmf(sid, declaration_id, eligible=False)
+    form = request.form
+    if set(form.keys()) - _PMF_FORM_FIELDS \
+            or any(len(form.getlist(k)) != 1 for k in form.keys()):
+        return _render_pmf(sid, declaration_id, status=400, declared_part=part,
+                           error="UI_PMF_MSG_REJECTED")
+    try:
+        target = _pmf_target(sid, declaration_id, form.get("expected_head", ""),
+                             _current_ui_lang())
+    except _PmfRefused as exc:
+        return _render_pmf(sid, declaration_id, status=exc.status, declared_part=part,
+                           error=exc.key)
+    if target["refusal"] is not None:
+        return _render_pmf(sid, declaration_id, declared_part=part, target=target)
+    confirmations = {f: form.get(f, "") for f in _PMF_CONFIRM_FIELDS}
+    if any(v not in ("", _PMF_CONFIRM_YES) for v in confirmations.values()):
+        return _render_pmf(sid, declaration_id, status=400, declared_part=part,
+                           error="UI_PMF_MSG_REJECTED")
+    submitted = {k: form.getlist(k) for k in form.keys() if k in _cap13f.FORM_FIELDS}
+    submitted[_PMF_TARGET_FIELD] = [target["product"]["text"]]
+    captured = _cap13f.capture_form(submitted)
+    if captured is None:
+        return _render_pmf(sid, declaration_id, status=400, declared_part=part,
+                           error="UI_PMF_MSG_REJECTED")
+    if any(v != _PMF_CONFIRM_YES for v in confirmations.values()):
+        return _render_pmf(sid, declaration_id, declared_part=part, target=target,
+                           captured=captured, confirmations=confirmations,
+                           error="UI_PMF_MSG_NOT_CONFIRMED")
+    evaluation = _cap13f.evaluate(captured, _CAP13_REQUIRED_FORCE_BINDING)
+    return _render_pmf(sid, declaration_id, declared_part=part, target=target,
+                       captured=captured, confirmations=confirmations,
+                       evaluation=evaluation)
 
 
 # G1-SINGLE-DOMAIN-ENGINEERING-CONTINUATION-01 — the ONE optional secondary step

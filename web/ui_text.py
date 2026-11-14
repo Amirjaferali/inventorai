@@ -6925,6 +6925,86 @@ UI_STRINGS = {
     "UI_PM_MSG_CONFIRM_WITHDRAW": {
         "en": "Not withdrawn: tick the confirmation box first.",
         "ar": "لم يُسحَب: ضع علامة في مربّع التأكيد أولًا."},
+    # G1-MOMENT-TO-REQUIRED-FORCE-01 — a saved moment as the target of ONE
+    # required-force use (moment contract §12C; required-force contract §5A).
+    "UI_PMF_LINK": {
+        "en": "Size one force at another distance from the same point (size only)",
+        "ar": "احسب مقدار قوة واحدة على مسافة أخرى من النقطة نفسها (المقدار فقط)"},
+    "UI_PMF_TITLE": {
+        "en": "Force at another distance for a saved moment (optional, non-binding)",
+        "ar": "القوة على مسافة أخرى لعزم محفوظ (اختياري، غير مُلزِم)"},
+    "UI_PMF_INTRO": {
+        "en": "This step uses ONE saved planar-moment configuration and asks: what size of one force, acting at a perpendicular distance d⊥ you choose from the same point, would have a turning effect of the same size? The target moment is P, the exact product of the force and distance you saved; the existing required-force calculation then gives F = M_target / d⊥. Nothing on this page is saved.",
+        "ar": "تستخدم هذه الخطوة إعدادًا محفوظًا واحدًا لعزم مستوٍ وتسأل: ما مقدار قوة واحدة، تؤثر على مسافة عمودية d⊥ تختارها من النقطة نفسها، يكون لأثر دورانها المقدار نفسه؟ العزم المستهدف هو P، أي حاصل الضرب الدقيق للقوة والمسافة اللتين حفظتهما؛ ثم يعطي حساب القوة اللازمة الموجود F = M_target / d⊥. لا يُحفَظ شيء في هذه الصفحة."},
+    "UI_PMF_SOURCE_HEADING": {
+        "en": "The saved configuration this step uses",
+        "ar": "الإعداد المحفوظ الذي تستخدمه هذه الخطوة"},
+    "UI_PMF_FIELD_REVISION": {
+        "en": "Saved revision",
+        "ar": "المراجعة المحفوظة"},
+    "UI_PMF_FIELD_M_COMPUTED": {
+        "en": "Moment shown on the planar-moment page (M, computed in binary floating point) — N·mm",
+        "ar": "العزم المعروض في صفحة العزم المستوي (M، محسوب بالفاصلة العائمة الثنائية) — N·mm"},
+    "UI_PMF_FIELD_P": {
+        "en": "Target moment used here (P, the exact product of your saved F and d⊥) — N·mm",
+        "ar": "العزم المستهدف المستخدم هنا (P، حاصل الضرب الدقيق لقيمتي F وd⊥ المحفوظتين) — N·mm"},
+    "UI_PMF_P_MEANING": {
+        "en": "P is the exact product of the force F and the distance d⊥ you saved for this configuration, worked out from the numbers exactly as you typed them. It is not the moment shown on the planar-moment page: that moment is computed in binary floating point and may differ from P in its last digits (by at most about 4.4 × 10⁻¹⁶ of P).",
+        "ar": "P هو حاصل الضرب الدقيق للقوة F والمسافة d⊥ اللتين حفظتهما لهذا الإعداد، محسوبًا من الأرقام كما كتبتها تمامًا. وهو ليس العزم المعروض في صفحة العزم المستوي: فذلك العزم محسوب بالفاصلة العائمة الثنائية وقد يختلف عن P في خاناته الأخيرة (بما لا يزيد على نحو 4.4 × 10⁻¹⁶ من P)."},
+    "UI_PMF_CONSEQUENCE_LINE": {
+        "en": "Derived from",
+        "ar": "مشتق من"},
+    "UI_PMF_CONFIRM_HEADING": {
+        "en": "Before calculating, confirm both statements (nothing is ticked for you):",
+        "ar": "قبل الحساب، أكّد العبارتين كلتيهما (لا يُحدَّد شيء نيابةً عنك):"},
+    "UI_PMF_CONFIRM_SAME_POINT": {
+        "en": "I measure d⊥ for this force from the same point I chose for the saved configuration, in the same plane.",
+        "ar": "أقيس d⊥ لهذه القوة من النقطة نفسها التي اخترتها للإعداد المحفوظ، وفي المستوى نفسه."},
+    "UI_PMF_CONFIRM_SIZE_ONLY": {
+        "en": "I only want the size of one force whose turning effect about that point has the same size as the saved one. This does not say that the two turning effects balance, that anything is held, or that any part is strong or safe enough.",
+        "ar": "أريد فقط مقدار قوة واحدة يكون لأثر دورانها حول تلك النقطة المقدار نفسه للأثر المحفوظ. ولا يعني هذا أن أثرَي الدوران متوازنان، ولا أن شيئًا مُثبَّت، ولا أن أي جزء متين أو آمن بما يكفي."},
+    "UI_PMF_DECL_TARGET_MOMENT": {
+        "en": "The target moment M_target is P, the exact product of the force and distance you saved for this configuration; InventorAI multiplied your own two numbers exactly and does not decide that this is the right target or that it is enough, and it adds nothing for friction, losses, starting or holding, or any margin.",
+        "ar": "العزم المستهدف M_target هو P، حاصل الضرب الدقيق للقوة والمسافة اللتين حفظتهما لهذا الإعداد؛ ضرب InventorAI رقميك أنت ضربًا دقيقًا، ولا يقرر أن هذا هو الهدف الصحيح أو أنه كافٍ، ولا يضيف إليه شيئًا للاحتكاك أو الفقد أو بدء الحركة أو التثبيت أو أي هامش."},
+    "UI_PMF_TRANSFER_DISCLOSURE": {
+        "en": "Only sizes are compared. InventorAI does not check the turning direction, whether the two forces balance or hold anything, friction, any other force or load, the strength of any part, or safety.",
+        "ar": "لا يُقارَن إلا المقدار. لا يتحقق InventorAI من اتجاه الدوران، ولا من توازن القوتين أو تثبيتهما لأي شيء، ولا من الاحتكاك، ولا من أي قوة أو حمل آخر، ولا من متانة أي جزء، ولا من السلامة."},
+    "UI_PMF_SUBMIT": {
+        "en": "Calculate the force size",
+        "ar": "احسب مقدار القوة"},
+    "UI_PMF_BACK": {
+        "en": "Back to the planar-moment page",
+        "ar": "العودة إلى صفحة العزم المستوي"},
+    "UI_PMF_MSG_REJECTED": {
+        "en": "This request could not be read, so nothing was calculated. Open the step again from the planar-moment page.",
+        "ar": "تعذّرت قراءة هذا الطلب، لذلك لم يُحسَب شيء. افتح الخطوة من جديد من صفحة العزم المستوي."},
+    "UI_PMF_MSG_UNAVAILABLE": {
+        "en": "The saved configurations cannot be read right now, so nothing is calculated.",
+        "ar": "تتعذّر قراءة الإعدادات المحفوظة الآن، لذلك لا يُحسَب شيء."},
+    "UI_PMF_MSG_NOT_FOUND": {
+        "en": "This saved configuration does not exist in this project, so nothing is calculated.",
+        "ar": "هذا الإعداد المحفوظ غير موجود في هذا المشروع، لذلك لا يُحسَب شيء."},
+    "UI_PMF_MSG_STALE": {
+        "en": "The saved configuration changed since this page was shown, so nothing was calculated. Open the step again from the planar-moment page.",
+        "ar": "تغيّر الإعداد المحفوظ منذ عرض هذه الصفحة، لذلك لم يُحسَب شيء. افتح الخطوة من جديد من صفحة العزم المستوي."},
+    "UI_PMF_MSG_NOT_CURRENT": {
+        "en": "This saved configuration is not current (it needs reconfirmation, has no result now, or was withdrawn), so its moment cannot be used and nothing is calculated.",
+        "ar": "هذا الإعداد المحفوظ ليس حاليًا (يحتاج إلى إعادة تأكيد، أو لا نتيجة له الآن، أو سُحِب)، لذلك لا يمكن استخدام عزمه ولا يُحسَب شيء."},
+    "UI_PMF_MSG_NOT_ADMITTED": {
+        "en": "The planar-moment method does not admit the saved numbers now, so nothing can be passed on.",
+        "ar": "لا تقبل طريقة العزم المستوي الأرقام المحفوظة الآن، لذلك لا يمكن تمرير شيء."},
+    "UI_PMF_MSG_INTEGRITY": {
+        "en": "The exact product of your saved numbers did not agree with the computed moment within the proven bound, so nothing is passed on or calculated.",
+        "ar": "لم يتفق حاصل الضرب الدقيق لأرقامك المحفوظة مع العزم المحسوب ضمن الحد المُثبَت، لذلك لا يُمرَّر شيء ولا يُحسَب شيء."},
+    "UI_PMF_MSG_NOT_REPRESENTABLE": {
+        "en": "The exact product P of your saved F and d⊥ has more digits than the required-force calculation accepts for a target moment (up to 12 digits before the decimal point and 9 after). P is never rounded or shortened, so nothing is passed on. You can still use the separate required-force page with a target moment of your own.",
+        "ar": "لحاصل الضرب الدقيق P لقيمتي F وd⊥ المحفوظتين خانات أكثر مما يقبله حساب القوة اللازمة للعزم المستهدف (حتى 12 خانة قبل الفاصلة العشرية و9 بعدها). لا يُقرَّب P ولا يُختصَر أبدًا، لذلك لا يُمرَّر شيء. ويمكنك مع ذلك استخدام صفحة القوة اللازمة المنفصلة بعزم مستهدف من عندك."},
+    "UI_PMF_MSG_NOT_CONFIRMED": {
+        "en": "Nothing was calculated: both confirmations are needed.",
+        "ar": "لم يُحسَب شيء: التأكيدان كلاهما مطلوبان."},
+    "UI_PMF_MSG_NOT_ELIGIBLE": {
+        "en": "This step is offered only where both the planar-moment and the required-force calculations are offered.",
+        "ar": "تُعرَض هذه الخطوة فقط حيث يُعرَض حساب العزم المستوي وحساب القوة اللازمة كلاهما."},
     "UI_CAP13M_RESULT_M": {
         "en": "Moment magnitude about your point (M) — newton millimetre (N·mm)",
         "ar": "مقدار العزم حول نقطتك (M) — نيوتن مليمتر (N·mm)"},

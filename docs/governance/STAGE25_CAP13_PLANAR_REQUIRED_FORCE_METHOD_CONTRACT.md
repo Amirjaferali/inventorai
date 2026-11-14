@@ -87,6 +87,29 @@ Each is shown as its own statement and answered «applies» or «does not apply�
 | D-5 | `target_moment` | the target moment M_target is your own figure for the turning effect you want this one force to produce; InventorAI does not work it out, check it or decide that it is enough, and it adds nothing for friction, losses, starting or holding, or any margin |
 | D-6 | `static_magnitude` | the force is treated as steady (static), and only its size is wanted, not its direction or the turning direction; no motion, acceleration, impact, vibration or repeated loading is considered |
 
+## 5A. Transferred target moment — ONE same-component use (G1-MOMENT-TO-REQUIRED-FORCE-01)
+
+AMENDMENT (Owner-authorized 2026-11-14). The standalone page, its D-1 to D-6 statements, screen, disclosure, numeric
+domain, outcomes and display are unchanged, and so is this method's governed artifact (version `1`, byte for byte; the
+shared owner's record of it is unchanged). ONE further, separate page uses this unchanged consumer
+(`GET` / `POST /session/<sid>/planar-moment/<declaration_id>/required-force`):
+
+- **The target moment is not typed.** `M_target` is `P`, the exact input product of ONE CURRENT saved planar-moment
+  configuration on the same component (planar-moment contract §12C), sent as exact text through this method's own strict
+  capture, so §6's grammar, positive-distance check, binary acceptance, decimal reference and display apply unchanged. If
+  `P` does not fit the `M_target` grammar, nothing is passed on and nothing is calculated; `P` is never rounded or shortened.
+  `M_target` is never accepted from the client on that page.
+- **D-5 on that page only.** The statement answered for `target_moment` is the transferred-target variant, source-attributed
+  to the saved configuration (component, revision, the §12C consequence identity): "The target moment M_target is P, the exact product of the force and distance you saved for this configuration; InventorAI multiplied your own two numbers exactly and does not decide that this is the right target or that it is enough, and it adds nothing for friction, losses, starting or holding, or any margin." D-1 to D-4, D-6 and the screen are answered as stated in §5 and §8; nothing is pre-selected.
+- **Two explicit confirmations, both required before any calculation:** "I measure d⊥ for this force from the same point I chose for the saved configuration, in the same plane." and "I only want the size of one force whose turning effect about that point has the same size as the saved one. This does not say that the two turning effects balance, that anything is held, or that any part is strong or safe enough."
+- **Added disclosure, shown with every result:** "Only sizes are compared. InventorAI does not check the turning direction, whether the two forces balance or hold anything, friction, any other force or load, the strength of any part, or safety."
+- **Re-checked on every request.** The saved configuration is re-read and must still be the revision the page showed and
+  CURRENT under planar-moment §12A; a correction (409, stale), a withdrawal, a changed component, part link or method
+  identity (409, not current), an unknown configuration (404) or an unreadable history (503) gives no number. Nothing is
+  persisted; the result is not shown in any report, PDF or export.
+- **Never claimed:** equilibrium, a moment balance, turning direction, holding, adequacy, friction or other forces, strength,
+  capacity, suitability or safety.
+
 ## 6. Numeric domain and numerical acceptance
 
 - **Grammar (strict capture).** Strict unsigned ASCII decimal: one to twelve integer digits for `M_target` or one to nine for
@@ -207,7 +230,8 @@ no joint, fastener, shaft, bearing, weld or member capacity, strength, stress, d
 or torque rating; no thickness, material or specification; no design suitability, stability or safety conclusion; no
 three-dimensional moment, several forces, couples, spread-out loads, motion, acceleration, impact, vibration or repeated
 loading; no inference of any moment, distance, point, geometry or declaration; no unit conversion; no transfer of a result
-from or to the planar-moment method or any other calculation; no persistence, report, PDF, Structured Export, API, evidence,
+from or to the planar-moment method or any other calculation (AMENDED by §5A: the ONE named, exact, same-component
+transfer of the planar-moment exact input product `P` into `M_target`, refused when it does not fit; nothing else); no persistence, report, PDF, Structured Export, API, evidence,
 readiness, progression, gap or SafetySignal effect; no Motion activation; no AI or provider call; no eligibility for any part
 other than the one declared Mechanical part (§1), and no inference from a part's name or function.
 

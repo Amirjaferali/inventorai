@@ -29,12 +29,20 @@ THERM-01, persists nothing, reads no project, session, store, answer,
 requirement quantity or SafetySignal, and has no network, provider, model, clock
 or randomness dependency. Nothing here is evidence, an equilibrium, capacity,
 strength, suitability or safety statement.
+
+G1-MOMENT-TO-REQUIRED-FORCE-01 adds ONE read-only derived consequence
+(``exact_input_product``, contract §12C) with its own identity and version. It
+changes neither ``METHOD_ID`` / ``METHOD_VERSION``, nor the governed artifact,
+nor ``evaluate`` / ``format_value``, so the planar-moment method identity that
+saved configurations bind (``engine.record_store.planar_moment_method_identity``)
+is unchanged. This module still imports no other calculation consumer.
 """
 import copy
 import hashlib
 import json
 import math
 import re
+from fractions import Fraction
 from pathlib import Path
 
 from engine import deterministic_calculation as _dc
@@ -430,3 +438,89 @@ def format_value(value):
     round-trip ``repr`` of the binary64 result. No rounding, precision or
     significant-figure policy is applied or implied."""
     return repr(float(value))
+
+
+# =============================================================================
+# G1-MOMENT-TO-REQUIRED-FORCE-01 - the exact-input-product consequence (contract §12C)
+# =============================================================================
+# A separately identified, versioned, READ-ONLY consequence of ONE successful
+# moment evaluation. It is not a second method, not an owner output and not the
+# moment result: it is the exact product P of the two decimals the inventor
+# entered, offered (by the web layer, never by this module) as the target moment
+# of ONE inventor-confirmed required-force use on the same component. Nothing is
+# stored. The moment M stays what the method computed; P and M are different
+# quantities and are never called identical.
+EXACT_INPUT_PRODUCT_ID = "cap13:planar_single_force_moment/exact_input_product"
+EXACT_INPUT_PRODUCT_VERSION = "1"
+
+# The proven worst-case relative distance between M and P (§12C):
+#   each admitted input is a normal binary64 number after ONE correctly rounded
+#   conversion, |fl(x) - x| <= x * u with u = 2**-53; the method adapter accepts
+#   M only within 2**-52 of the exact product of those binary inputs. Hence
+#   |M / P - 1| <= (1 + u)**2 * (1 + 2**-52) - 1.
+UNIT_ROUNDOFF = Fraction(1, 2 ** 53)
+METHOD_ACCEPTANCE_BOUND = Fraction(1, 2 ** 52)   # restated from the method adapter
+INPUT_PRODUCT_INTEGRITY_BOUND = (1 + UNIT_ROUNDOFF) ** 2 * (1 + METHOD_ACCEPTANCE_BOUND) - 1
+
+PRODUCT_AVAILABLE = "AVAILABLE"
+PRODUCT_NOT_ADMITTED = "NOT_ADMITTED"
+PRODUCT_INTEGRITY_FAILURE = "INTEGRITY_FAILURE"
+PRODUCT_STATUSES = (PRODUCT_AVAILABLE, PRODUCT_NOT_ADMITTED, PRODUCT_INTEGRITY_FAILURE)
+
+
+def plain_decimal(value):
+    """The exact, shortest plain decimal text of a positive ``Fraction`` whose
+    denominator has no prime factor other than 2 and 5 (the product of two
+    finite decimals always qualifies). No exponent, no rounding; raises
+    ``ValueError`` for anything else."""
+    if not isinstance(value, Fraction) or value <= 0:
+        raise ValueError("a positive exact Fraction is required")
+    denominator, places = value.denominator, 0
+    while denominator % 10 == 0:
+        denominator //= 10
+        places += 1
+    while denominator % 2 == 0:
+        denominator //= 2
+        places += 1
+    while denominator % 5 == 0:
+        denominator //= 5
+        places += 1
+    if denominator != 1:
+        raise ValueError("not a finite decimal")
+    scaled = value * 10 ** places
+    if scaled.denominator != 1:
+        raise ValueError("not a finite decimal")
+    digits = str(scaled.numerator).rjust(places + 1, "0")
+    if not places:
+        return digits
+    whole, fraction = digits[:-places], digits[-places:].rstrip("0")
+    return whole + ("." + fraction if fraction else "")
+
+
+def exact_input_product(values, moment_value):
+    """The exact-input-product consequence of ONE successful evaluation:
+    ``{"status", "text", "value"}``.
+
+    ``values`` are the saved, verbatim ``F`` and ``d_perp`` strings; each must
+    still pass this method's own strict numeric grammar (``parse_number``) and
+    be strictly positive, else ``NOT_ADMITTED``. ``moment_value`` is the binary64
+    M the unchanged method returned for exactly these strings; it must lie
+    within ``INPUT_PRODUCT_INTEGRITY_BOUND`` of the exact product, else
+    ``INTEGRITY_FAILURE``. On ``AVAILABLE``, ``value`` is the exact ``Fraction``
+    P and ``text`` its exact plain decimal. Pure; never raises; no number on any
+    other status. Whether P fits another method's grammar is NOT decided here."""
+    failed = {"status": None, "text": None, "value": None}
+    try:
+        force_text, distance_text = values["F"], values["d_perp"]
+    except (KeyError, TypeError):
+        return dict(failed, status=PRODUCT_NOT_ADMITTED)
+    force, distance = parse_number(force_text), parse_number(distance_text)
+    if force is None or distance is None or force <= 0.0 or distance <= 0.0:
+        return dict(failed, status=PRODUCT_NOT_ADMITTED)
+    if not isinstance(moment_value, float) or not math.isfinite(moment_value) \
+            or moment_value <= 0.0:
+        return dict(failed, status=PRODUCT_INTEGRITY_FAILURE)
+    product = Fraction(force_text) * Fraction(distance_text)
+    if abs(Fraction(moment_value) - product) > product * INPUT_PRODUCT_INTEGRITY_BOUND:
+        return dict(failed, status=PRODUCT_INTEGRITY_FAILURE)
+    return {"status": PRODUCT_AVAILABLE, "text": plain_decimal(product), "value": product}

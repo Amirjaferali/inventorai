@@ -299,6 +299,36 @@ saved-declaration amendment, preserved — was: "Nothing is persisted; the POST 
   section was produced and that a downloaded copy is a historical record that can be out of date. The report / PDF audience
   is unchanged (the central project authorization), and opening either writes nothing. EN / AR, right-to-left.
 
+## 12C. Derived consequence: the exact input product (G1-MOMENT-TO-REQUIRED-FORCE-01)
+
+AMENDMENT (Owner-authorized 2026-11-14, with two corrections). ONE read-only consequence of ONE successful evaluation, with
+its own identity: `cap13:planar_single_force_moment/exact_input_product`, version `1` (`engine/cap13_planar_moment.py`
+`exact_input_product`). It is not a second method, not an owner output and not the moment result.
+
+- **Definition.** For the saved, verbatim decimals `F` and `d⊥` of ONE configuration in the §12A state CURRENT, `P` is
+  their exact product `Fraction(F) × Fraction(d⊥)`, written as its exact, shortest plain decimal (no exponent, no rounding).
+  Its governed meaning, shown with it: "P is the exact product of the force F and the distance d⊥ you saved for this configuration, worked out from the numbers exactly as you typed them. It is not the moment shown on the planar-moment page: that moment is computed in binary floating point and may differ from P in its last digits (by at most about 4.4 × 10⁻¹⁶ of P)."
+- **Four quantities, never conflated.** `P` (exact decimal product of the saved inputs); `M` (the method's binary64 moment,
+  §6, displayed as its shortest round-trip `repr`); and, downstream in the required-force method, `F_exact = P / d⊥` (its
+  exact rational quotient) and `F_display` (its existing 12-significant-digit presentation). `F_exact × d⊥ = P` holds in
+  rational arithmetic; a rounded `F_display` is never required to reproduce `P`.
+- **Integrity bound (proof).** (i) Every admitted input is a strictly positive strict ASCII decimal of at most 64
+  characters, so its value lies in `[10⁻⁶², 10⁶⁴)`, inside the normal binary64 range. (ii) §6 converts it ONCE with a
+  correctly rounded conversion, so `F' = F(1 + δ₁)`, `d' = d⊥(1 + δ₂)` with `|δᵢ| ≤ u = 2⁻⁵³`. (iii) The method adapter
+  accepts `M` only when `|M − F'd'| ≤ 2⁻⁵² · F'd'`, so `M = F'd'(1 + δ₃)` with `|δ₃| ≤ 2⁻⁵²`. (iv) Hence
+  `M / P = (1 + δ₁)(1 + δ₂)(1 + δ₃)` and `|M / P − 1| ≤ (1 + u)²(1 + 2⁻⁵²) − 1 = B` (the lower side,
+  `1 − (1 − u)²(1 − 2⁻⁵²)`, is smaller). `B ≈ 4.44 × 10⁻¹⁶`. The consequence is AVAILABLE only when `|M − P| ≤ B · P` for
+  the `M` the method returned for exactly these strings; otherwise INTEGRITY_FAILURE and no figure. An input the method no
+  longer admits is NOT_ADMITTED and no figure. Synthetic runs against the real owner are supporting evidence only.
+- **Use.** Only as the target moment of ONE required-force use on the same component (required-force contract §5A), passed
+  as exact text through that method's own strict capture; it is refused — never rounded, shortened or re-expressed — when it
+  does not fit that method's unchanged `M_target` grammar (12 integer, 9 fraction digits).
+- **Backward compatibility (binding).** This method's identity (`cap13:planar_single_force_moment` 1.0), its governed
+  artifact (version `1`, unchanged byte for byte), `evaluate`, `format_value` and the §12A declaration versions are
+  unchanged, so `planar_moment_method_identity()` returns the same tuple and every saved configuration whose other §12A
+  bindings hold stays CURRENT with the identical displayed moment. The consequence is never stored, never shown in the
+  report or PDF (§12B is unchanged) and creates no evidence, readiness, progression, gap or SafetySignal effect.
+
 ## 13. Verification
 
 Focused tests (`tests/test_cap13_planar_moment.py`, `tests/test_cap13_planar_moment_browser.py`): exact-rational reference
