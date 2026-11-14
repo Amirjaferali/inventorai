@@ -98,7 +98,10 @@ def test_n01_the_bound_is_the_proven_expression_from_the_real_rules():
     assert 1 - (1 - u) ** 2 * (1 - 2 * u) <= moment.INPUT_PRODUCT_INTEGRITY_BOUND
     # every admitted input is a NORMAL binary64 number (64 characters at most), so one
     # correctly rounded conversion has relative error at most u
-    smallest, largest = "0." + "0" * 61 + "1", "9" * 64
+    limit = moment.MAX_VALUE_CHARS
+    smallest, largest = "0." + "0" * (limit - 3) + "1", "9" * limit
+    assert len(smallest) == len(largest) == limit
+    assert moment.parse_number("0." + "0" * (limit - 2) + "1") is None     # one character too long
     for text in (smallest, largest):
         assert moment.parse_number(text) is not None
         value = float(text)
@@ -383,7 +386,7 @@ def test_w09_a_changed_method_identity_gives_no_number(mech_client, monkeypatch)
     monkeypatch.setattr(record_store, "planar_moment_method_identity",
                         lambda: real[:3] + ("f" * 64,))
     r = c.get(STEP % (sid, declaration_id) + "?head=0")
-    assert r.status_code == 409 and "data-pmf-product" not in r.get_data(as_text=True)
+    assert r.status_code == 409 and "data-pmf-product>" not in r.get_data(as_text=True)
 
 
 @pytest.mark.parametrize("status_, key", [
@@ -482,3 +485,70 @@ def test_w17_the_contracts_quote_the_governed_english_wording():
         assert ui_text.text(key, "en") in force_contract, key
     assert ui_text.text("UI_PMF_P_MEANING", "en") in moment_contract
     assert "G1-MOMENT-TO-REQUIRED-FORCE-01" in owner_contract
+
+
+def test_w18_more_refusals_and_cross_project_posts(mech_client, monkeypatch):
+    c, sid = mech_client
+    declaration_id, raw = _saved(c, sid)
+    page = c.get(_step_link(raw)).get_data(as_text=True)
+    # a duplicated field, a duplicated head, a head with a trailing newline
+    data = dict(_step_form(page), **_answers())
+    from werkzeug.datastructures import MultiDict
+    pairs = MultiDict(list(data.items()) + [("decl_planar", force.ANSWER_APPLIES)])
+    assert c.post(STEP % (sid, declaration_id), data=pairs).status_code == 400
+    assert c.get(STEP % (sid, declaration_id) + "?head=0&head=0").status_code == 400
+    assert c.get(STEP % (sid, declaration_id), query_string={"head": "0\n"}).status_code == 400
+    # a malformed confirmation is refused before anything else, even when P would be refused
+    assert c.post(STEP % (sid, declaration_id),
+                  data=dict(data, confirm_size_only="on")).status_code == 400
+    # another account's POST is denied and calculates nothing
+    from tests.test_g1_planar_moment_saved_declaration import _client
+    intruder = _client("intruder-post")
+    r = intruder.post(STEP % (sid, declaration_id), data=data)
+    assert r.status_code in (302, 403, 404) and "data-pmf" not in r.get_data(as_text=True)
+
+
+def test_w19_an_unreadable_history_is_unavailable(mech_client, monkeypatch):
+    c, sid = mech_client
+    declaration_id, raw = _saved(c, sid)
+    store = webapp._get_store()
+
+    def broken(project_id):
+        raise RuntimeError("unreadable")
+    monkeypatch.setattr(store, "load_planar_moments", broken)
+    r = c.get(STEP % (sid, declaration_id) + "?head=0")
+    body = r.get_data(as_text=True)
+    assert r.status_code == 503 and 'data-pmf-error="UI_PMF_MSG_UNAVAILABLE"' in body
+    assert "data-pmf-product>" not in body
+
+
+def test_w20_a_result_unavailable_configuration_gives_no_number(mech_client, monkeypatch):
+    c, sid = mech_client
+    declaration_id, raw = _saved(c, sid)
+    monkeypatch.setattr(moment, "evaluate",
+                        lambda captured, binding, **kw: {"outcome": moment.KNOWLEDGE_UNAVAILABLE,
+                                                         "owner_state": None,
+                                                         "owner_reason": None, "result": None})
+    status, raw = _page(c, sid)
+    assert _state(raw) == ["RESULT_UNAVAILABLE"] and _step_link(raw) is None
+    r = c.get(STEP % (sid, declaration_id) + "?head=0")
+    assert r.status_code == 409 and 'data-pmf-error="UI_PMF_MSG_NOT_CURRENT"' in r.get_data(as_text=True)
+
+
+def test_w21_the_integrity_check_runs_end_to_end_on_the_real_consequence(mech_client, monkeypatch):
+    c, sid = mech_client
+    declaration_id, raw = _saved(c, sid)
+    page = c.get(_step_link(raw)).get_data(as_text=True)
+    real = webapp._pm_saved_view
+
+    def drifted(*args, **kwargs):
+        view = real(*args, **kwargs)
+        for item in view["items"]:
+            if item["moment_value"] is not None:
+                item["moment_value"] *= 1 + 1e-12              # far outside the proven bound
+        return view
+    monkeypatch.setattr(webapp, "_pm_saved_view", drifted)
+    for r in (c.get(STEP % (sid, declaration_id) + "?head=0"), _post(c, sid, declaration_id, page)):
+        body = r.get_data(as_text=True)
+        assert 'data-pmf-refusal="UI_PMF_MSG_INTEGRITY"' in body and _result(body) is None
+        assert "data-pmf-product>" not in body                       # no P is shown

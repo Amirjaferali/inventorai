@@ -6928,8 +6928,8 @@ UI_STRINGS = {
     # G1-MOMENT-TO-REQUIRED-FORCE-01 — a saved moment as the target of ONE
     # required-force use (moment contract §12C; required-force contract §5A).
     "UI_PMF_LINK": {
-        "en": "Size one force at another distance from the same point (size only)",
-        "ar": "احسب مقدار قوة واحدة على مسافة أخرى من النقطة نفسها (المقدار فقط)"},
+        "en": "Find the magnitude of one force at another distance from the same point (magnitude only)",
+        "ar": "أوجد مقدار قوة واحدة على مسافة أخرى من النقطة نفسها (المقدار فقط)"},
     "UI_PMF_TITLE": {
         "en": "Force at another distance for a saved moment (optional, non-binding)",
         "ar": "القوة على مسافة أخرى لعزم محفوظ (اختياري، غير مُلزِم)"},

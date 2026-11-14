@@ -22377,7 +22377,7 @@ def cap13_planar_moment_withdraw(sid):
 # never written; nothing is persisted; no equilibrium, holding, direction,
 # adequacy, strength or safety statement is made. Calc/units contract §13H
 # (as amended) names this exception to "no result is transferred".
-_PMF_HEAD_RE = re.compile(r"^(0|[1-9][0-9]?)$")
+_PMF_HEAD_RE = re.compile(r"0|[1-9][0-9]?")
 _PMF_CONFIRM_YES = "yes"
 _PMF_CONFIRM_FIELDS = ("confirm_same_point", "confirm_size_only")
 _PMF_TARGET_FIELD = _cap13f.VALUE_FIELD % "M_target"
@@ -22403,7 +22403,7 @@ def _pmf_target(sid, declaration_id, raw_head, lang):
     (409), not CURRENT (409). Otherwise ``{"item", "product", "refusal"}``
     where ``refusal`` is None only when P may be passed on."""
     if not _subsystem_model.is_valid_planar_moment_id(declaration_id) \
-            or not isinstance(raw_head, str) or not _PMF_HEAD_RE.match(raw_head):
+            or not isinstance(raw_head, str) or not _PMF_HEAD_RE.fullmatch(raw_head):
         raise _PmfRefused(400, "UI_PMF_MSG_REJECTED")
     saved = _pm_saved_view(sid, lang)
     if not saved["available"]:
@@ -22495,8 +22495,9 @@ def cap13_planar_moment_required_force(sid, declaration_id):
     eligible, part = _pmf_gate(sid)
     if not eligible:
         return _render_pmf(sid, declaration_id, eligible=False)
+    heads = request.args.getlist("head")
     try:
-        target = _pmf_target(sid, declaration_id, request.args.get("head", ""),
+        target = _pmf_target(sid, declaration_id, heads[0] if len(heads) == 1 else "",
                              _current_ui_lang())
     except _PmfRefused as exc:
         return _render_pmf(sid, declaration_id, status=exc.status, declared_part=part,
@@ -22522,6 +22523,10 @@ def cap13_planar_moment_required_force_post(sid, declaration_id):
             or any(len(form.getlist(k)) != 1 for k in form.keys()):
         return _render_pmf(sid, declaration_id, status=400, declared_part=part,
                            error="UI_PMF_MSG_REJECTED")
+    confirmations = {f: form.get(f, "") for f in _PMF_CONFIRM_FIELDS}
+    if any(v not in ("", _PMF_CONFIRM_YES) for v in confirmations.values()):
+        return _render_pmf(sid, declaration_id, status=400, declared_part=part,
+                           error="UI_PMF_MSG_REJECTED")
     try:
         target = _pmf_target(sid, declaration_id, form.get("expected_head", ""),
                              _current_ui_lang())
@@ -22530,10 +22535,6 @@ def cap13_planar_moment_required_force_post(sid, declaration_id):
                            error=exc.key)
     if target["refusal"] is not None:
         return _render_pmf(sid, declaration_id, declared_part=part, target=target)
-    confirmations = {f: form.get(f, "") for f in _PMF_CONFIRM_FIELDS}
-    if any(v not in ("", _PMF_CONFIRM_YES) for v in confirmations.values()):
-        return _render_pmf(sid, declaration_id, status=400, declared_part=part,
-                           error="UI_PMF_MSG_REJECTED")
     submitted = {k: form.getlist(k) for k in form.keys() if k in _cap13f.FORM_FIELDS}
     submitted[_PMF_TARGET_FIELD] = [target["product"]["text"]]
     captured = _cap13f.capture_form(submitted)
