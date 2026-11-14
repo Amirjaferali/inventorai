@@ -34,8 +34,8 @@ G1-MOMENT-TO-REQUIRED-FORCE-01 adds ONE read-only derived consequence
 (``exact_input_product``, contract §12C) with its own identity and version. It
 changes neither ``METHOD_ID`` / ``METHOD_VERSION``, nor the governed artifact,
 nor ``evaluate`` / ``format_value``, so the planar-moment method identity that
-saved configurations bind (``engine.record_store.planar_moment_method_identity``)
-is unchanged. This module still imports no other calculation consumer.
+saved configurations bind (method id, version, artifact version and artifact
+digest) is unchanged. This module still imports no other calculation consumer.
 """
 import copy
 import hashlib

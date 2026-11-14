@@ -809,9 +809,12 @@ def test_no_safety_signal_report_export_or_api_surface():
     # G1-PLANAR-MOMENT-SAVED-DECLARATION-01 (Owner-authorized; moment contract
     # §§12-13 as amended) adds exactly the save and withdraw POSTs of the saved
     # configurations, in their own section; the calculation keeps its GET / POST.
+    # G1-MOMENT-TO-REQUIRED-FORCE-01 adds ONE request-local GET / POST step from a
+    # CURRENT saved configuration to the unchanged required-force calculation.
     assert sorted(routes) == sorted(["/session/<sid>/planar-moment"] * 2
                                     + ["/session/<sid>/planar-moment/save",
-                                       "/session/<sid>/planar-moment/withdraw"])
+                                       "/session/<sid>/planar-moment/withdraw"]
+                                    + ["/session/<sid>/planar-moment/<declaration_id>/required-force"] * 2)
     for template in ("deliverable.html", "report.html"):
         path = ROOT / "web" / "templates" / template
         if path.exists():

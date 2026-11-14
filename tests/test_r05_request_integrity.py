@@ -131,6 +131,10 @@ MUTATIONS = (
     # component; both write durable truth.
     "/session/<sid>/planar-moment/save",
     "/session/<sid>/planar-moment/withdraw",
+    # G1-MOMENT-TO-REQUIRED-FORCE-01: ONE request-local required-force use whose
+    # target moment is a CURRENT saved configuration's exact input product. It
+    # persists nothing, but it accepts a POST.
+    "/session/<sid>/planar-moment/<declaration_id>/required-force",
     # Stage 25 / CAP-13 Rotational Load Slice 1: the request-local linear
     # speed-dependent rotational load. It persists nothing, but it accepts a POST.
     "/session/<sid>/rotational-load",
