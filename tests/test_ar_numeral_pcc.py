@@ -192,8 +192,16 @@ def test_f06_the_cad_reference_download_is_identical(client):
         bundles.append((zf.read("geometry.dxf"), json.loads(zf.read("companion.json"))))
     (dxf_a, comp_a), (dxf_b, comp_b) = bundles
     assert _outlines(dxf_a)[1] == _outlines(dxf_b)[1]
-    identity = re.compile(r"pc[dr]-[0-9a-f]{32}|\{[0-9A-F-]{36}\}|^[0-9a-f]{16}$|@ \S+$", re.M)
-    assert identity.sub("", dxf_a.decode("utf-8")) == identity.sub("", dxf_b.decode("utf-8"))
+    lines_a, lines_b = dxf_a.decode("utf-8").splitlines(), dxf_b.decode("utf-8").splitlines()
+    assert len(lines_a) == len(lines_b)
+    # every differing line is one of the project-specific identities, both sides, nothing else
+    identity = re.compile(r"pc[dr]-[0-9a-f]{32}|\{[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}\}|[0-9a-f]{16}"
+                          r"|\d+\.\d+\.\d+ @ \d{4}-\d\d-\d\dT[\d:.]+\+00:00"
+                          # the DXF creation / update date as a Julian day (24xxxxx.f): generation time, never
+                          # a coordinate (at most six integer digits; the geometry is compared above)
+                          r"|24\d{5}\.\d+")
+    differing = [(a, b) for a, b in zip(lines_a, lines_b) if a != b]
+    assert differing and all(identity.fullmatch(a) and identity.fullmatch(b) for a, b in differing)
     for key in comp_a:
         if key not in ("binding", "dxf", "generated_at"):
             assert comp_a[key] == comp_b[key], key

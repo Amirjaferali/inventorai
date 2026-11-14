@@ -482,6 +482,7 @@ AID_NOTE_PREFIX = {"en": "From my original idea: ", "ar": "من فكرتي ال�
 # point. A number that mixes systems ("8٤", "٨٥.5") matches no alternative.
 _AID_NUMBER = (r"(?:[0-9]+(?:\.[0-9]+)?|[٠-٩]+(?:\.[٠-٩]+)?|[۰-۹]+(?:\.[۰-۹]+)?)")
 # Arabic letters, marks and digits: ``ملم`` must not be the start of a longer word.
+# Not the only guard: ``_AID_SUFFIX`` still refuses anything after the expression.
 _AID_AR_WORD = "ؠ-٩ٮ-ۿ"
 # At most three spaces or tabs between the tokens: never a line break (the note
 # field is one line) and never a note longer than its 300-character bound.
