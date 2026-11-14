@@ -206,15 +206,16 @@ def test_planar_clearance_journey(server, page, lang):
         text("UI_PCC_VALUE_UNKNOWN", lang))
     _shot(page, "%s_06_unknown_clearance" % lang)
 
-    # an Arabic-Indic number is refused, never read as a value
-    page.fill("#pcc-v-c", "٢")
+    # an Arabic decimal mark is refused, never read as a value (AR-NUMERAL-PCC-01 admits a number
+    # written wholly in Arabic-Indic digits; the decimal point stays the ASCII dot)
+    page.fill("#pcc-v-c", "٢٫٥")
     page.locator("[data-pcc-form] input[name=unknown_c]").uncheck()
     page.locator("[data-pcc-form] button[type=submit]").click()
     page.wait_for_load_state()
     expect(page.locator("[data-pcc-error]")).to_have_text(text("UI_PCC_MSG_REJECTED", lang))
     expect(page.locator("[data-pcc-outcome]")).to_have_attribute(
         "data-pcc-outcome", "MISSING_INFORMATION")
-    _shot(page, "%s_07_arabic_indic_refused" % lang)
+    _shot(page, "%s_07_arabic_decimal_mark_refused" % lang)
 
     page.set_viewport_size({"width": 390, "height": 900})
     _no_overflow(page, "[data-pcc-page]")

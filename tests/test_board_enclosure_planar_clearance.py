@@ -630,7 +630,7 @@ def test_w02_unknown_input_saves_without_a_comparison(client):
     assert r.status_code == 400                                   # number AND unknown: refused
 
 
-@pytest.mark.parametrize("bad", ["-1", "1e2", "0", "84.12345", "abc", "١٢"])
+@pytest.mark.parametrize("bad", ["-1", "1e2", "0", "84.12345", "abc", "١2"])
 def test_w03_inadmissible_values_are_refused_and_write_nothing(client, bad):
     sid, ifc, ids = _web(client)
     r = _save(client, sid, ifc, ids, values=(bad, "50", "86", "56", "2"))
